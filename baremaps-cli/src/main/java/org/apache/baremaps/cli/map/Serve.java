@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.cli.map;
 
-import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
+import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,16 +21,19 @@ import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.ClassPathResources;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.ServerResources;
+import org.apache.baremaps.server.TileResources;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -72,16 +75,19 @@ public class Serve implements Callable<Integer> {
     var caffeineSpec = CaffeineSpec.parse(cache);
     var datasource = PostgresUtils.dataSource(tileset.getDatabase());
 
+    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new PostgresTileStore(datasource, tileset);
     var tileCache = new TileCache(tileStore, caffeineSpec);
+    var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
 
     // Configure the application
     var application =
         new ResourceConfig()
             .register(CorsFilter.class)
             .register(ServerResources.class)
+            .register(TileResources.class)
             .register(ClassPathResources.class)
-            .register(contextResolverFor(objectMapper))
+            .register(newContextResolver(objectMapper))
             .register(new AbstractBinder() {
               @Override
               protected void configure() {
@@ -91,6 +97,7 @@ public class Serve implements Callable<Integer> {
                 bind(style).to(Path.class).named("style");
                 bind(tileCache).to(TileStore.class);
                 bind(objectMapper).to(ObjectMapper.class);
+                bind(tileStoreSupplier).to(tileStoreType);
               }
             });
 

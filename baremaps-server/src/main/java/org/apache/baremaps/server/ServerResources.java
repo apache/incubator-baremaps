@@ -12,27 +12,17 @@
 
 package org.apache.baremaps.server;
 
-import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
-import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.tilestore.TileCoord;
-import org.apache.baremaps.tilestore.TileStore;
-import org.apache.baremaps.tilestore.TileStoreException;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
 
@@ -44,17 +34,12 @@ public class ServerResources {
 
   private final TileJSON tileJSON;
 
-  private final TileStore tileStore;
-
-  public static final String TILE_ENCODING = "gzip";
-
-  public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
-
   @Inject
-  public ServerResources(@Named("tileset") Path tileset, @Named("style") Path style,
-      TileStore tileStore, ObjectMapper objectMapper) throws IOException {
-    this.tileStore = tileStore;
-    var configReader = new ConfigReader();
+  public ServerResources(
+      @Named("tileset") Path tileset,
+      @Named("style") Path style,
+      ObjectMapper objectMapper) throws IOException {
+    ConfigReader configReader = new ConfigReader();
     this.style = objectMapper.readValue(configReader.read(style), Style.class);
     this.tileJSON = objectMapper.readValue(configReader.read(tileset), TileJSON.class);
   }
@@ -71,28 +56,5 @@ public class ServerResources {
   @Produces(MediaType.APPLICATION_JSON)
   public TileJSON getTileset() {
     return tileJSON;
-  }
-
-  @GET
-  @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
-  public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
-    TileCoord tileCoord = new TileCoord(x, y, z);
-    try {
-      ByteBuffer blob = tileStore.read(tileCoord);
-      if (blob != null) {
-        byte[] bytes = new byte[blob.remaining()];
-        blob.get(bytes);
-        return Response.status(200) // lgtm [java/xss]
-            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-            .header(CONTENT_TYPE, TILE_TYPE)
-            .header(CONTENT_ENCODING, TILE_ENCODING)
-            .entity(bytes)
-            .build();
-      } else {
-        return Response.status(204).build();
-      }
-    } catch (TileStoreException ex) {
-      return Response.status(404).build();
-    }
   }
 }

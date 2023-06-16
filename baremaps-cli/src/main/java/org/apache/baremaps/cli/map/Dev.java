@@ -12,22 +12,27 @@
 
 package org.apache.baremaps.cli.map;
 
-import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
+import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
+import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.ClassPathResources;
 import org.apache.baremaps.server.CorsFilter;
+import org.apache.baremaps.server.TileResources;
 import org.apache.baremaps.server.ViewerResources;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -63,37 +68,46 @@ public class Dev implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     var configReader = new ConfigReader();
-    // Configure serialization
     var objectMapper = objectMapper();
+    var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+    var datasource = PostgresUtils.dataSource(tileset.getDatabase());
 
-    var tileSet = objectMapper.readValue(configReader.read(tileset), Tileset.class);
-    var database = tileSet.getDatabase();
+    // Configure the tile store
+    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
+    var tileStoreSupplier = (Supplier<TileStore>) () -> {
+      try {
+        var tilesetObject = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+        return new PostgresTileStore(datasource, tilesetObject);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
 
-    try (var dataSource = PostgresUtils.dataSource(database)) {
-      // Configure the application
-      var application = new ResourceConfig()
-          .register(CorsFilter.class)
-          .register(ViewerResources.class)
-          .register(ClassPathResources.class)
-          .register(contextResolverFor(objectMapper))
-          .register(new AbstractBinder() {
-            @Override
-            protected void configure() {
-              bind("assets").to(String.class).named("directory");
-              bind("viewer.html").to(String.class).named("index");
-              bind(tileset.toAbsolutePath()).to(Path.class).named("tileset");
-              bind(style.toAbsolutePath()).to(Path.class).named("style");
-              bind(dataSource).to(DataSource.class);
-              bind(objectMapper).to(ObjectMapper.class);
-            }
-          });
+    // Configure the application
+    var application = new ResourceConfig()
+        .register(CorsFilter.class)
+        .register(ViewerResources.class)
+        .register(TileResources.class)
+        .register(ClassPathResources.class)
+        .register(newContextResolver(objectMapper))
+        .register(new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind("assets").to(String.class).named("directory");
+            bind("viewer.html").to(String.class).named("index");
+            bind(Dev.this.tileset.toAbsolutePath()).to(Path.class).named("tileset");
+            bind(style.toAbsolutePath()).to(Path.class).named("style");
+            bind(objectMapper).to(ObjectMapper.class);
+            bind(tileStoreSupplier).to(tileStoreType);
+          }
+        });
 
-      var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-      var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+    var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+    var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
-      logger.info("Listening on {}", serverContext.listenAddress());
-      serverContext.awaitShutdown();
-    }
+    logger.info("Listening on {}", serverContext.listenAddress());
+    serverContext.awaitShutdown();
+
     return 0;
   }
 }

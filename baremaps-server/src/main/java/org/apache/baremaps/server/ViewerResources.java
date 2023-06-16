@@ -12,36 +12,27 @@
 
 package org.apache.baremaps.server;
 
-import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
 import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.tilestore.TileCoord;
-import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
-import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,33 +48,26 @@ public class ViewerResources {
 
   private final Path tileset;
 
-  private final DataSource dataSource;
-
   private final ObjectMapper objectMapper;
-
-  private final Sse sse;
 
   private final SseBroadcaster sseBroadcaster;
 
   private final OutboundSseEvent.Builder sseEventBuilder;
 
-  public static final String TILE_ENCODING = "gzip";
-
-  public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
-
   @Inject
-  public ViewerResources(@Named("tileset") Path tileset, @Named("style") Path style,
-      DataSource dataSource, ObjectMapper objectMapper, Sse sse) {
+  public ViewerResources(
+      @Named("tileset") Path tileset,
+      @Named("style") Path style,
+      ObjectMapper objectMapper,
+      Sse sse) {
     this.tileset = tileset.toAbsolutePath();
     this.style = style.toAbsolutePath();
-    this.dataSource = dataSource;
     this.objectMapper = objectMapper;
-    this.sse = sse;
     this.sseBroadcaster = sse.newBroadcaster();
     this.sseEventBuilder = sse.newEventBuilder();
 
     // Observe the file system for changes
-    var directories = new HashSet<Path>(Arrays.asList(tileset.getParent(), style.getParent()));
+    var directories = new HashSet<>(Arrays.asList(tileset.getParent(), style.getParent()));
     new Thread(new DirectoryWatcher(directories, this::broadcastChanges)).start();
   }
 
@@ -125,28 +109,5 @@ public class ViewerResources {
     var config = configReader.read(tileset);
     var object = objectMapper.readValue(config, TileJSON.class);
     return object;
-  }
-
-  @GET
-  @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
-  public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
-    try {
-      var tileStore = new PostgresTileStore(dataSource,
-          objectMapper.readValue(configReader.read(tileset), Tileset.class));
-      var tileCoord = new TileCoord(x, y, z);
-      var blob = tileStore.read(tileCoord);
-      if (blob != null) {
-        return Response.status(200)
-            .header(CONTENT_TYPE, TILE_TYPE)
-            .header(CONTENT_ENCODING, TILE_ENCODING)
-            .entity(blob.array())
-            .build();
-      } else {
-        return Response.status(204).build();
-      }
-    } catch (Exception ex) {
-      logger.error("Tile error", ex);
-      return Response.status(404).build();
-    }
   }
 }
