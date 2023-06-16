@@ -31,7 +31,7 @@ let directives = [
     },
     {
         filter: ['==', ['get', 'landuse'], 'meadow'],
-        'fill-color': theme.landuseBackgroundMeadowFillColor,
+        'fill-color': theme.landuseOverlayMeadowFillColor,
     },
 ];
 
