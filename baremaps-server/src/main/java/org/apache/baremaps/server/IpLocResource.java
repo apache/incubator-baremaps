@@ -18,15 +18,12 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import com.google.common.net.InetAddresses;
 import io.servicetalk.http.api.StreamingHttpRequest;
 import io.servicetalk.transport.api.ConnectionContext;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.apache.baremaps.iploc.IpLocObject;
@@ -96,21 +93,6 @@ public class IpLocResource {
     } catch (IllegalArgumentException e) {
       logger.error("Error while processing request", e);
       return Response.serverError().build();
-    }
-  }
-
-  @GET
-  @javax.ws.rs.Path("/{path:.*}")
-  public Response get(@PathParam("path") String path) {
-    if (path.equals("") || path.endsWith("/")) {
-      path += "index.html";
-    }
-    path = String.format("iploc/%s", path);
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-      var bytes = inputStream.readAllBytes();
-      return Response.ok().entity(bytes).build();
-    } catch (NullPointerException | IOException e) {
-      return Response.status(404).build();
     }
   }
 

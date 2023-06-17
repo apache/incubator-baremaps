@@ -18,6 +18,7 @@ import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import org.apache.baremaps.server.ClassPathResource;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.GeocoderResource;
 import org.apache.lucene.search.SearcherFactory;
@@ -51,11 +52,16 @@ public class Serve implements Callable<Integer> {
     try (
         var directory = MMapDirectory.open(indexDirectory);
         var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
-      // Configure the application
-      var application = new ResourceConfig().register(CorsFilter.class)
-          .register(GeocoderResource.class).register(new AbstractBinder() {
+
+      var application = new ResourceConfig()
+          .register(CorsFilter.class)
+          .register(GeocoderResource.class)
+          .register(ClassPathResource.class)
+          .register(new AbstractBinder() {
             @Override
             protected void configure() {
+              bind("geocoder").to(String.class).named("directory");
+              bind("index.html").to(String.class).named("index");
               bind(searcherManager).to(SearcherManager.class).named("searcherManager");
             }
           });

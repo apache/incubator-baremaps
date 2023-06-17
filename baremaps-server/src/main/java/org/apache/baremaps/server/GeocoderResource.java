@@ -17,7 +17,6 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -92,21 +91,6 @@ public class GeocoderResource {
       return new GeocoderResult(scoreDoc.score, data);
     } catch (IOException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  @GET
-  @javax.ws.rs.Path("/{path:.*}")
-  public Response get(@PathParam("path") String path) {
-    if (path.equals("") || path.endsWith("/")) {
-      path += "index.html";
-    }
-    path = String.format("geocoder/%s", path);
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-      var bytes = inputStream.readAllBytes();
-      return Response.ok().entity(bytes).build();
-    } catch (NullPointerException | IOException e) {
-      return Response.status(404).build();
     }
   }
 }

@@ -116,11 +116,10 @@ public class Dev implements Callable<Integer> {
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
-            bind(tilesetPath).to(Path.class).named("tileset");
-            bind(stylePath).to(Path.class).named("style");
-            bind("assets").to(String.class).named("directory");
             bind("assets").to(String.class).named("directory");
             bind("viewer.html").to(String.class).named("index");
+            bind(tilesetPath).to(Path.class).named("tileset");
+            bind(stylePath).to(Path.class).named("style");
             bind(tileStoreSupplier).to(tileStoreType);
             bind(styleSupplier).to(styleSupplierType);
             bind(tileJSONSupplier).to(tileJSONSupplierType);

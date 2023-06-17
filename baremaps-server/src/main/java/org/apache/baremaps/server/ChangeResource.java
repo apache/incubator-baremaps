@@ -17,6 +17,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.io.IOException;
 import java.nio.file.*;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -104,8 +105,9 @@ public class ChangeResource {
           }
           key.reset();
         }
-      } catch (Exception e) {
-        logger.error("Error while watching for changes", e);
+      } catch (InterruptedException | IOException e) {
+        logger.error(e.getMessage());
+        Thread.currentThread().interrupt();
       }
     }
   }
