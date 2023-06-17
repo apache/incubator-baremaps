@@ -34,7 +34,7 @@ import org.apache.lucene.search.SearcherManager;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class GeocoderResources {
+public class GeocoderResource {
 
   record GeocoderResponse(List<GeocoderResult> results) {
   }
@@ -47,7 +47,7 @@ public class GeocoderResources {
   private final SearcherManager searcherManager;
 
   @Inject
-  public GeocoderResources(SearcherManager searcherManager) {
+  public GeocoderResource(SearcherManager searcherManager) {
     this.searcherManager = searcherManager;
   }
 

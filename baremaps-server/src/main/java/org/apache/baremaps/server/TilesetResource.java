@@ -22,12 +22,12 @@ import org.apache.baremaps.vectortile.tilejson.TileJSON;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class TilesetRessources {
+public class TilesetResource {
 
   private final Supplier<TileJSON> tileJSONSupplier;
 
   @Inject
-  public TilesetRessources(Supplier<TileJSON> tileJSONSupplier) {
+  public TilesetResource(Supplier<TileJSON> tileJSONSupplier) {
     this.tileJSONSupplier = tileJSONSupplier;
   }
 

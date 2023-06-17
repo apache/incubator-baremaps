@@ -22,12 +22,12 @@ import org.apache.baremaps.vectortile.style.Style;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class StyleRessources {
+public class StyleResource {
 
   private final Supplier<Style> styleSupplier;
 
   @Inject
-  public StyleRessources(Supplier<Style> styleSupplier) {
+  public StyleResource(Supplier<Style> styleSupplier) {
     this.styleSupplier = styleSupplier;
   }
 

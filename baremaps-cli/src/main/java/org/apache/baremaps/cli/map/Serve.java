@@ -89,9 +89,10 @@ public class Serve implements Callable<Integer> {
     var application =
         new ResourceConfig()
             .register(CorsFilter.class)
-            .register(StyleRessources.class)
-            .register(TileResources.class)
-            .register(ClassPathResources.class)
+            .register(TileResource.class)
+            .register(StyleResource.class)
+            .register(TilesetResource.class)
+            .register(ClassPathResource.class)
             .register(newContextResolver(objectMapper))
             .register(new AbstractBinder() {
               @Override

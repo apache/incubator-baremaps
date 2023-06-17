@@ -27,7 +27,7 @@ import org.apache.baremaps.tilestore.TileStoreException;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class TileResources {
+public class TileResource {
 
   public static final String TILE_ENCODING = "gzip";
 
@@ -36,7 +36,7 @@ public class TileResources {
   private final Supplier<TileStore> tileStoreSupplier;
 
   @Inject
-  public TileResources(Supplier<TileStore> tileStoreSupplier) {
+  public TileResource(Supplier<TileStore> tileStoreSupplier) {
     this.tileStoreSupplier = tileStoreSupplier;
   }
 

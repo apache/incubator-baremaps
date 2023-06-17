@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
  */
 @Singleton
 @javax.ws.rs.Path("/")
-public class ClassPathResources {
+public class ClassPathResource {
 
   private final String directory;
 
@@ -39,7 +39,7 @@ public class ClassPathResources {
    * @param index the index
    */
   @Inject
-  public ClassPathResources(
+  public ClassPathResource(
       @Named("directory") String directory,
       @Named("index") String index) {
     this.directory = directory;

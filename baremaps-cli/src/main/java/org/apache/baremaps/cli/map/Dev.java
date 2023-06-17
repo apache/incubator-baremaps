@@ -46,6 +46,7 @@ public class Dev implements Callable<Integer> {
 
   @Mixin
   private Options options;
+
   @Option(names = {"--cache"}, paramLabel = "CACHE", description = "The caffeine cache directive.")
   private String cache = "";
 
@@ -103,17 +104,21 @@ public class Dev implements Callable<Integer> {
       }
     };
 
-    // Configure the application
     var application = new ResourceConfig()
         .register(CorsFilter.class)
-        .register(ViewerResources.class)
-        .register(StyleRessources.class)
-        .register(TileResources.class)
-        .register(ClassPathResources.class)
+        .register(ChangeResource.class)
+        .register(TileResource.class)
+        .register(StyleResource.class)
+        .register(TilesetResource.class)
+        .register(ChangeResource.class)
+        .register(ClassPathResource.class)
         .register(newContextResolver(objectMapper))
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
+            bind(tilesetPath).to(Path.class).named("tileset");
+            bind(stylePath).to(Path.class).named("style");
+            bind("assets").to(String.class).named("directory");
             bind("assets").to(String.class).named("directory");
             bind("viewer.html").to(String.class).named("index");
             bind(tileStoreSupplier).to(tileStoreType);

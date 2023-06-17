@@ -36,14 +36,14 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class IpLocResources {
+public class IpLocResource {
 
-  private static final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
+  private static final Logger logger = LoggerFactory.getLogger(IpLocResource.class);
 
   private final IpLocRepository ipLocRepository;
 
   @Inject
-  public IpLocResources(IpLocRepository ipLocRepository) {
+  public IpLocResource(IpLocRepository ipLocRepository) {
     this.ipLocRepository = ipLocRepository;
   }
 
