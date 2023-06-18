@@ -31,6 +31,9 @@ import org.apache.baremaps.iploc.IpLocRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A resource that provides access to the IP location database.
+ */
 @Singleton
 @javax.ws.rs.Path("/")
 public class IpLocResource {

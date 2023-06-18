@@ -25,6 +25,9 @@ import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
+/**
+ * A resource that provides access to the tiles.
+ */
 @Singleton
 @javax.ws.rs.Path("/")
 public class TileResource {

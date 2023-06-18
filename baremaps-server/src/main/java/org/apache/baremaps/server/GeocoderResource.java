@@ -30,7 +30,9 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 
-
+/**
+ * A resource that provides access to the geocoder.
+ */
 @Singleton
 @javax.ws.rs.Path("/")
 public class GeocoderResource {

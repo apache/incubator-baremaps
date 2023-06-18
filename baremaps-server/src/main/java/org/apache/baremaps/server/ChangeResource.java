@@ -33,6 +33,9 @@ import org.apache.baremaps.config.ConfigReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A resource that provides the changes in the tileset and style.
+ */
 @Singleton
 @javax.ws.rs.Path("/")
 public class ChangeResource {
@@ -51,6 +54,13 @@ public class ChangeResource {
 
   private final OutboundSseEvent.Builder sseEventBuilder;
 
+  /**
+   * Constructs a {@code ChangeResource}.
+   * 
+   * @param tileset the path to the tileset
+   * @param style the path to the style
+   * @param sse the server-sent events
+   */
   @Inject
   public ChangeResource(
       @Named("tileset") Path tileset,
@@ -64,6 +74,11 @@ public class ChangeResource {
     new Thread(changeListener).start();
   }
 
+  /**
+   * Returns the changes in the tileset and style.
+   * 
+   * @param sseEventSink the server-sent events
+   */
   @GET
   @javax.ws.rs.Path("changes")
   @Produces("text/event-stream")
@@ -71,8 +86,14 @@ public class ChangeResource {
     sseBroadcaster.register(sseEventSink);
   }
 
-  public class ChangeListener implements Runnable {
+  /**
+   * A {@code Runnable} that detects changes in the tileset and style.
+   */
+  class ChangeListener implements Runnable {
 
+    /**
+     * Detects changes in the tileset and style and broadcasts them.
+     */
     @Override
     public void run() {
       try (WatchService watchService = FileSystems.getDefault().newWatchService()) {

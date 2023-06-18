@@ -21,6 +21,9 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * A filter that adds CORS headers to requests.
+ */
 @Provider
 public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
@@ -61,7 +64,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
     responseContext.getHeaders().putSingle(VARY, ORIGIN);
   }
 
-  protected void preflight(String origin, ContainerRequestContext requestContext) {
+  private void preflight(String origin, ContainerRequestContext requestContext) {
     // Respond with a 204 no content since we are returning an empty response with just the header
     // for preflight
     var builder = Response.noContent();

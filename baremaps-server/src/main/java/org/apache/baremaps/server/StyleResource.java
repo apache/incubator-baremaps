@@ -20,6 +20,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.baremaps.vectortile.style.Style;
 
+/**
+ * A resource that provides access to the style.
+ */
 @Singleton
 @javax.ws.rs.Path("/")
 public class StyleResource {
