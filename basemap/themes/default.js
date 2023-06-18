@@ -1,5 +1,4 @@
 export default {
-
     aerialwayStyleLinePaintLineColor: 'rgb(177, 177, 175)',
     aerowayLineRunwayLineColor: 'rgba(187, 187, 204, 1.0)',
     aerowayLineTaxiwayLineColor: 'rgba(187, 187, 204, 1.0)',
@@ -607,6 +606,4 @@ export default {
     waterwayLineWaterwayLineColor: 'rgb(170, 211, 223)',
     waterwayTunnelCasingLineColor: 'rgb(170, 211, 223)',
     waterwayTunnelLineLineColor: 'rgb(243, 247, 247)'
-
-
 };
