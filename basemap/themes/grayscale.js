@@ -1,4 +1,4 @@
-import style from './grayscale.js';
+import style from './default.js';
 import {Color} from "../utils/color.js";
 
 export default Object.entries(style).reduce((acc, [key, value]) => {
@@ -7,7 +7,7 @@ export default Object.entries(style).reduce((acc, [key, value]) => {
         acc[key] = value;
         return acc;
     } else {
-        acc[key] = color.grayscale().lighten(0.1).toString();
+        acc[key] = color.grayscale().toString();
         return acc;
     }
 }, {});

@@ -1,5 +1,5 @@
-import style from './grayscale.js';
-import {Color} from "../utils/color.js";
+import style from './default.js';
+import {Color, ColorBlind} from "../utils/color.js";
 
 export default Object.entries(style).reduce((acc, [key, value]) => {
     let color = Color.fromString(value);
@@ -7,7 +7,7 @@ export default Object.entries(style).reduce((acc, [key, value]) => {
         acc[key] = value;
         return acc;
     } else {
-        acc[key] = color.grayscale().lighten(0.1).toString();
+        acc[key] = color.colorblind(ColorBlind.Deuteranomaly).toString();
         return acc;
     }
 }, {});
