@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
@@ -25,7 +26,7 @@ import javax.ws.rs.core.Response;
  * Serves static resources from the class path.
  */
 @Singleton
-@javax.ws.rs.Path("/")
+@Path("/")
 public class ClassPathResource {
 
   private final String directory;
@@ -53,9 +54,9 @@ public class ClassPathResource {
    * @return the response
    */
   @GET
-  @javax.ws.rs.Path("{path:.*}")
+  @Path("{path:.*}")
   public Response get(@PathParam("path") String path) {
-    if (path.equals("") || path.endsWith("/")) {
+    if (path.isEmpty() || path.endsWith("/")) {
       path += index;
     }
     path = String.format("%s/%s", directory, path);

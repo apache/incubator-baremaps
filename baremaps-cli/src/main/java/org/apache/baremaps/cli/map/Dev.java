@@ -86,8 +86,7 @@ public class Dev implements Callable<Integer> {
     var styleSupplier = (Supplier<Style>) () -> {
       try {
         var config = configReader.read(stylePath);
-        var object = objectMapper.readValue(config, Style.class);
-        return object;
+        return objectMapper.readValue(config, Style.class);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -97,8 +96,7 @@ public class Dev implements Callable<Integer> {
     var tileJSONSupplier = (Supplier<TileJSON>) () -> {
       try {
         var config = configReader.read(tilesetPath);
-        var object = objectMapper.readValue(config, TileJSON.class);
-        return object;
+        return objectMapper.readValue(config, TileJSON.class);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
