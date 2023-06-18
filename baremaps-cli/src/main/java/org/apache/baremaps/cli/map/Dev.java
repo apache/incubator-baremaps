@@ -23,12 +23,13 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.*;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
+import org.apache.baremaps.server.CorsFilter;
+import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -69,7 +70,7 @@ public class Dev implements Callable<Integer> {
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
-    var datasource = PostgresUtils.dataSource(tileset.getDatabase());
+    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
 
     var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStoreSupplier = (Supplier<TileStore>) () -> {

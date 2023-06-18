@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sqlite.SQLiteDataSource;
 
-class MBTilesTest extends TileStoreTest {
+class MBTilesStoreTest extends TileStoreTest {
 
   Path file;
 
@@ -43,18 +43,18 @@ class MBTilesTest extends TileStoreTest {
   }
 
   @Override
-  public MBTiles createTileStore() throws Exception {
+  public MBTilesStore createTileStore() throws Exception {
     SQLiteDataSource dataSource = new SQLiteDataSource();
     String url = "jdbc:sqlite:" + file.toAbsolutePath();
     dataSource.setUrl(url);
-    MBTiles tilesStore = new MBTiles(dataSource);
+    MBTilesStore tilesStore = new MBTilesStore(dataSource);
     tilesStore.initializeDatabase();
     return tilesStore;
   }
 
   @Test
   void readWriteMetadata() throws Exception {
-    MBTiles tileStore = createTileStore();
+    MBTilesStore tileStore = createTileStore();
     Map<String, String> metadata = tileStore.readMetadata();
     assertTrue(metadata.size() == 0);
 

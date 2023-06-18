@@ -15,16 +15,55 @@ package org.apache.baremaps.utils;
 
 
 import com.google.common.io.Resources;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteConfig.JournalMode;
+import org.sqlite.SQLiteConfig.LockingMode;
+import org.sqlite.SQLiteConfig.SynchronousMode;
+import org.sqlite.SQLiteConfig.TempStore;
+import org.sqlite.SQLiteDataSource;
 
 /** A helper class for creating executing sql scripts onto a SQLite database */
 public final class SqliteUtils {
+
+  private SqliteUtils() {}
+
+  /**
+   * Create a SQLite data source.
+   *
+   * @param path the path to the SQLite database
+   * @param readOnly
+   * @return the SQLite data source
+   */
+  public static HikariDataSource createDataSource(Path path, boolean readOnly) {
+    var sqliteConfig = new SQLiteConfig();
+    sqliteConfig.setCacheSize(1000000);
+    sqliteConfig.setPageSize(65536);
+    sqliteConfig.setJournalMode(JournalMode.OFF);
+    sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
+    sqliteConfig.setSynchronous(SynchronousMode.OFF);
+    sqliteConfig.setTempStore(TempStore.MEMORY);
+    sqliteConfig.setReadOnly(readOnly);
+
+    var sqliteDataSource = new SQLiteDataSource();
+    sqliteDataSource.setConfig(sqliteConfig);
+    sqliteDataSource.setUrl("jdbc:sqlite:" + path);
+
+    var hikariConfig = new HikariConfig();
+    hikariConfig.setDataSource(sqliteDataSource);
+    hikariConfig.setMaximumPoolSize(1);
+
+    return new HikariDataSource(hikariConfig);
+  }
 
   /**
    * Executes the queries contained in a resource file.

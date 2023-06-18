@@ -17,7 +17,7 @@ package org.apache.baremaps.workflow;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
-import org.apache.baremaps.postgres.PostgresUtils;
+import org.apache.baremaps.utils.PostgresUtils;
 
 /**
  * A context that is passed to the tasks of a workflow and used to share data between tasks.
@@ -33,7 +33,7 @@ public class WorkflowContext {
    * @return the data source
    */
   public DataSource getDataSource(String database) {
-    return dataSources.computeIfAbsent(database, d -> PostgresUtils.dataSource(d));
+    return dataSources.computeIfAbsent(database, d -> PostgresUtils.createDataSource(d));
   }
 
 }

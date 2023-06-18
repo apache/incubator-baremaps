@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStoreException;
-import org.apache.baremaps.tilestore.mbtiles.MBTiles;
-import org.apache.baremaps.workflow.tasks.ExportVectorTiles;
+import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
+import org.apache.baremaps.utils.SqliteUtils;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -42,13 +42,13 @@ public class MBTilesBenchmark {
 
   private Path file;
 
-  private MBTiles mbTiles;
+  private MBTilesStore mbTilesStore;
 
   @Setup
   public void setup() throws IOException, TileStoreException {
     file = Files.createTempFile(Paths.get("."), "baremaps", ".mbtiles");
-    mbTiles = new MBTiles(ExportVectorTiles.createDataSource(file));
-    mbTiles.initializeDatabase();
+    mbTilesStore = new MBTilesStore(SqliteUtils.createDataSource(file, false));
+    mbTilesStore.initializeDatabase();
   }
 
   @TearDown
@@ -62,7 +62,7 @@ public class MBTilesBenchmark {
     for (int i = 0; i < benchmark.iterations; i++) {
       var bytes = new byte[1 << 16];
       random.nextBytes(bytes);
-      mbTiles.put(new TileCoord(0, 0, i), ByteBuffer.wrap(bytes));
+      mbTilesStore.put(new TileCoord(0, 0, i), ByteBuffer.wrap(bytes));
     }
   }
 
@@ -78,12 +78,12 @@ public class MBTilesBenchmark {
       buffers.add(ByteBuffer.wrap(bytes));
       if (coords.size() == 100) {
         random.nextBytes(bytes);
-        mbTiles.put(coords, buffers);
+        mbTilesStore.put(coords, buffers);
         coords.clear();
         buffers.clear();
       }
     }
-    mbTiles.put(coords, buffers);
+    mbTilesStore.put(coords, buffers);
     coords.clear();
     buffers.clear();
   }

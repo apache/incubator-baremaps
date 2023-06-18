@@ -34,7 +34,7 @@ import org.apache.baremaps.tilestore.TileStoreException;
  * <a href="https://docs.mapbox.com/help/glossary/mbtiles/">MBTiles</a> file format for storing
  * tiles.
  */
-public class MBTiles implements TileStore {
+public class MBTilesStore implements TileStore {
 
   private static final String CREATE_TABLE_METADATA =
       "CREATE TABLE IF NOT EXISTS metadata (name TEXT, value TEXT, PRIMARY KEY (name))";
@@ -67,7 +67,7 @@ public class MBTiles implements TileStore {
    *
    * @param dataSource the SQLite datasource
    */
-  public MBTiles(DataSource dataSource) {
+  public MBTilesStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 

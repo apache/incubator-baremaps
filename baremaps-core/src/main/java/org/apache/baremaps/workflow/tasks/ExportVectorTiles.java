@@ -16,8 +16,6 @@ import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,8 +28,9 @@ import org.apache.baremaps.stream.ProgressLogger;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.tilestore.*;
 import org.apache.baremaps.tilestore.file.FileTileStore;
-import org.apache.baremaps.tilestore.mbtiles.MBTiles;
+import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.apache.baremaps.vectortile.tileset.TilesetQuery;
 import org.apache.baremaps.workflow.Task;
@@ -39,12 +38,6 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sqlite.SQLiteConfig;
-import org.sqlite.SQLiteConfig.JournalMode;
-import org.sqlite.SQLiteConfig.LockingMode;
-import org.sqlite.SQLiteConfig.SynchronousMode;
-import org.sqlite.SQLiteConfig.TempStore;
-import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
     Path tileset,
@@ -86,8 +79,8 @@ public record ExportVectorTiles(
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
     if (mbtiles) {
       Files.deleteIfExists(repository);
-      var dataSource = createDataSource(repository);
-      var tilesStore = new MBTiles(dataSource);
+      var dataSource = SqliteUtils.createDataSource(repository, false);
+      var tilesStore = new MBTilesStore(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));
       return tilesStore;
@@ -138,29 +131,4 @@ public record ExportVectorTiles(
     return metadata;
   }
 
-  /**
-   * Create a SQLite data source.
-   * 
-   * @param path the path to the SQLite database
-   * @return the SQLite data source
-   */
-  public static DataSource createDataSource(Path path) {
-    var sqliteConfig = new SQLiteConfig();
-    sqliteConfig.setCacheSize(1000000);
-    sqliteConfig.setPageSize(65536);
-    sqliteConfig.setJournalMode(JournalMode.OFF);
-    sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
-    sqliteConfig.setSynchronous(SynchronousMode.OFF);
-    sqliteConfig.setTempStore(TempStore.MEMORY);
-
-    var sqliteDataSource = new SQLiteDataSource();
-    sqliteDataSource.setConfig(sqliteConfig);
-    sqliteDataSource.setUrl("jdbc:sqlite:" + path);
-
-    var hikariConfig = new HikariConfig();
-    hikariConfig.setDataSource(sqliteDataSource);
-    hikariConfig.setMaximumPoolSize(1);
-
-    return new HikariDataSource(hikariConfig);
-  }
 }

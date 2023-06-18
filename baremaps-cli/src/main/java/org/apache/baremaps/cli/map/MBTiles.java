@@ -26,7 +26,8 @@ import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.ServerResources;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
-import org.apache.baremaps.workflow.tasks.ExportVectorTiles;
+import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
+import org.apache.baremaps.utils.SqliteUtils;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -48,15 +49,15 @@ public class MBTiles implements Callable<Integer> {
 
   @Option(names = {"--mbtiles"}, paramLabel = "MBTILES", description = "The mbtiles file.",
       required = true)
-  private Path mbtiles;
+  private Path mbtilesPath;
 
   @Option(names = {"--tilejson"}, paramLabel = "TILEJSON", description = "The tileJSON file.",
       required = true)
-  private Path tileset;
+  private Path tileJSONPath;
 
   @Option(names = {"--style"}, paramLabel = "STYLE", description = "The style file.",
       required = true)
-  private Path style;
+  private Path stylePath;
 
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
@@ -65,9 +66,9 @@ public class MBTiles implements Callable<Integer> {
   public Integer call() throws Exception {
     var objectMapper = objectMapper();
     var caffeineSpec = CaffeineSpec.parse(cache);
-    var datasource = ExportVectorTiles.createDataSource(mbtiles);
+    var datasource = SqliteUtils.createDataSource(mbtilesPath, true);
 
-    var tileStore = new org.apache.baremaps.tilestore.mbtiles.MBTiles(datasource);
+    var tileStore = new MBTilesStore(datasource);
     var tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Configure the application
@@ -76,8 +77,8 @@ public class MBTiles implements Callable<Integer> {
             .register(newContextResolver(objectMapper)).register(new AbstractBinder() {
               @Override
               protected void configure() {
-                bind(tileset).to(Path.class).named("tileset");
-                bind(style).to(Path.class).named("style");
+                bind(tileJSONPath).to(Path.class).named("tileset");
+                bind(stylePath).to(Path.class).named("style");
                 bind(tileCache).to(TileStore.class);
                 bind(objectMapper).to(ObjectMapper.class);
               }
