@@ -51,19 +51,19 @@ public class TileCache implements TileStore {
   /** {@inheritDoc} */
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
-    return cache.get(tileCoord, t -> {
+    var buffer = cache.get(tileCoord, t -> {
       try {
-        var buffer = tileStore.read(t);
-        if (buffer == null) {
-          return null;
-        } else {
-          return buffer;
-        }
+        return tileStore.read(t);
       } catch (TileStoreException e) {
         logger.error("Unable to read the tile.", e);
         return null;
       }
-    }).duplicate();
+    });
+    if (buffer == null) {
+      return null;
+    } else {
+      return buffer.duplicate();
+    }
   }
 
   /** {@inheritDoc} */
