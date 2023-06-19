@@ -22,8 +22,9 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.iploc.IpLocRepository;
+import org.apache.baremaps.server.ClassPathResource;
 import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.IpLocResources;
+import org.apache.baremaps.server.IpLocResource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -56,16 +57,19 @@ public class Serve implements Callable<Integer> {
     config.addDataSourceProperty("cachePrepStmts", "true");
     config.addDataSourceProperty("prepStmtCacheSize", "250");
     config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-    // config.setReadOnly(true);
     DataSource dataSource = new HikariDataSource(config);
 
     IpLocRepository ipLocRepository = new IpLocRepository(dataSource);
 
-    // Configure the application
-    var application = new ResourceConfig().register(CorsFilter.class).register(IpLocResources.class)
+    var application = new ResourceConfig()
+        .register(CorsFilter.class)
+        .register(IpLocResource.class)
+        .register(ClassPathResource.class)
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
+            bind("iploc").to(String.class).named("directory");
+            bind("index.html").to(String.class).named("index");
             bind(ipLocRepository).to(IpLocRepository.class).named("iplocRepository");
           }
         });

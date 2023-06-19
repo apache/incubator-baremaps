@@ -17,7 +17,6 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +30,12 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 
-
+/**
+ * A resource that provides access to the geocoder.
+ */
 @Singleton
 @javax.ws.rs.Path("/")
-public class GeocoderResources {
+public class GeocoderResource {
 
   record GeocoderResponse(List<GeocoderResult> results) {
   }
@@ -47,7 +48,7 @@ public class GeocoderResources {
   private final SearcherManager searcherManager;
 
   @Inject
-  public GeocoderResources(SearcherManager searcherManager) {
+  public GeocoderResource(SearcherManager searcherManager) {
     this.searcherManager = searcherManager;
   }
 
@@ -92,21 +93,6 @@ public class GeocoderResources {
       return new GeocoderResult(scoreDoc.score, data);
     } catch (IOException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  @GET
-  @javax.ws.rs.Path("/{path:.*}")
-  public Response get(@PathParam("path") String path) {
-    if (path.equals("") || path.endsWith("/")) {
-      path += "index.html";
-    }
-    path = String.format("geocoder/%s", path);
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-      var bytes = inputStream.readAllBytes();
-      return Response.ok().entity(bytes).build();
-    } catch (NullPointerException | IOException e) {
-      return Response.status(404).build();
     }
   }
 }

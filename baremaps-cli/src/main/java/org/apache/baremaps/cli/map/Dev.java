@@ -12,21 +12,25 @@
 
 package org.apache.baremaps.cli.map;
 
-import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
+import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
+import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.postgres.PostgresUtils;
-import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.DevResources;
+import org.apache.baremaps.server.*;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -42,16 +46,17 @@ public class Dev implements Callable<Integer> {
 
   @Mixin
   private Options options;
+
   @Option(names = {"--cache"}, paramLabel = "CACHE", description = "The caffeine cache directive.")
   private String cache = "";
 
   @Option(names = {"--tileset"}, paramLabel = "TILESET", description = "The tileset file.",
       required = true)
-  private Path tileset;
+  private Path tilesetPath;
 
   @Option(names = {"--style"}, paramLabel = "STYLE", description = "The style file.",
       required = true)
-  private Path style;
+  private Path stylePath;
 
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
@@ -62,32 +67,69 @@ public class Dev implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     var configReader = new ConfigReader();
-    // Configure serialization
     var objectMapper = objectMapper();
+    var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
+    var datasource = PostgresUtils.dataSource(tileset.getDatabase());
 
-    var tileSet = objectMapper.readValue(configReader.read(tileset), Tileset.class);
-    var database = tileSet.getDatabase();
+    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
+    var tileStoreSupplier = (Supplier<TileStore>) () -> {
+      try {
+        var tilesetObject =
+            objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
+        return new PostgresTileStore(datasource, tilesetObject);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
 
-    try (var dataSource = PostgresUtils.dataSource(database)) {
-      // Configure the application
-      var application = new ResourceConfig().register(CorsFilter.class).register(DevResources.class)
-          .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {
-            @Override
-            protected void configure() {
-              bind("viewer").to(String.class).named("assets");
-              bind(tileset.toAbsolutePath()).to(Path.class).named("tileset");
-              bind(style.toAbsolutePath()).to(Path.class).named("style");
-              bind(dataSource).to(DataSource.class);
-              bind(objectMapper).to(ObjectMapper.class);
-            }
-          });
+    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
+    var styleSupplier = (Supplier<Style>) () -> {
+      try {
+        var config = configReader.read(stylePath);
+        return objectMapper.readValue(config, Style.class);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
 
-      var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-      var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+    var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
+    var tileJSONSupplier = (Supplier<TileJSON>) () -> {
+      try {
+        var config = configReader.read(tilesetPath);
+        return objectMapper.readValue(config, TileJSON.class);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
 
-      logger.info("Listening on {}", serverContext.listenAddress());
-      serverContext.awaitShutdown();
-    }
+    var application = new ResourceConfig()
+        .register(CorsFilter.class)
+        .register(ChangeResource.class)
+        .register(TileResource.class)
+        .register(StyleResource.class)
+        .register(TilesetResource.class)
+        .register(ChangeResource.class)
+        .register(ClassPathResource.class)
+        .register(newContextResolver(objectMapper))
+        .register(new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind("assets").to(String.class).named("directory");
+            bind("viewer.html").to(String.class).named("index");
+            bind(tilesetPath).to(Path.class).named("tileset");
+            bind(stylePath).to(Path.class).named("style");
+            bind(tileStoreSupplier).to(tileStoreType);
+            bind(styleSupplier).to(styleSupplierType);
+            bind(tileJSONSupplier).to(tileJSONSupplierType);
+          }
+        });
+
+    var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+    var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+
+    logger.info("Listening on {}", serverContext.listenAddress());
+    serverContext.awaitShutdown();
+
     return 0;
   }
 }

@@ -21,6 +21,9 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * A filter that sets the base URI of the request.
+ */
 @Provider
 @PreMatching
 @Singleton
