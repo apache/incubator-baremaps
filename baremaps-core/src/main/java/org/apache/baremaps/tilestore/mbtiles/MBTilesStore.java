@@ -73,7 +73,7 @@ public class MBTilesStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer get(TileCoord tileCoord) throws TileStoreException {
+  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_TILE)) {
       statement.setInt(1, tileCoord.z());
@@ -93,7 +93,7 @@ public class MBTilesStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void put(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
+  public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
       statement.setInt(1, tileCoord.z());
@@ -108,7 +108,7 @@ public class MBTilesStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void put(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
+  public void write(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
       for (int i = 0; i < tileCoords.size(); i++) {

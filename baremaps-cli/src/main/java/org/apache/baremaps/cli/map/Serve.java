@@ -23,15 +23,14 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
-
 import org.apache.baremaps.server.*;
+import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
-import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -71,10 +70,10 @@ public class Serve implements Callable<Integer> {
   public Integer call() throws Exception {
     var objectMapper = objectMapper();
     var configReader = new ConfigReader();
-    var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var caffeineSpec = CaffeineSpec.parse(cache);
-    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
 
+    var tileset = objectMapper.readValue(configReader.read(tilesetPath), Tileset.class);
+    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
     var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new PostgresTileStore(datasource, tileset);
     var tileCache = new TileCache(tileStore, caffeineSpec);

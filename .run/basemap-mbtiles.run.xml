@@ -2,7 +2,7 @@
   <configuration default="false" name="basemap-mbtiles" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
-    <option name="PROGRAM_PARAMETERS" value="map mbtiles --mbtiles $USER_HOME$/Datasets/Baremaps/tiles.mbtiles --tileset tileset.js --style style.js" />
+    <option name="PROGRAM_PARAMETERS" value="map mbtiles --mbtiles $USER_HOME$/Datasets/Baremaps/tiles.mbtiles --tilejson tileset.js --style style.js" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/basemap" />
     <extension name="coverage">
       <pattern>

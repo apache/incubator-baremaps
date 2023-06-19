@@ -41,10 +41,9 @@ public final class SqliteUtils {
    * Create a SQLite data source.
    *
    * @param path the path to the SQLite database
-   * @param readOnly
    * @return the SQLite data source
    */
-  public static HikariDataSource createDataSource(Path path, boolean readOnly) {
+  public static HikariDataSource createDataSource(Path path) {
     var sqliteConfig = new SQLiteConfig();
     sqliteConfig.setCacheSize(1000000);
     sqliteConfig.setPageSize(65536);
@@ -52,7 +51,6 @@ public final class SqliteUtils {
     sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
     sqliteConfig.setSynchronous(SynchronousMode.OFF);
     sqliteConfig.setTempStore(TempStore.MEMORY);
-    sqliteConfig.setReadOnly(readOnly);
 
     var sqliteDataSource = new SQLiteDataSource();
     sqliteDataSource.setConfig(sqliteConfig);

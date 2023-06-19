@@ -35,7 +35,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Fork(value = 1, warmups = 1)
 public class MBTilesBenchmark {
 
-  public SecureRandom random = new SecureRandom();
+  public static SecureRandom random = new SecureRandom();
 
   @Param({"10", "100", "1000"})
   public int iterations;
@@ -47,7 +47,7 @@ public class MBTilesBenchmark {
   @Setup
   public void setup() throws IOException, TileStoreException {
     file = Files.createTempFile(Paths.get("."), "baremaps", ".mbtiles");
-    mbTilesStore = new MBTilesStore(SqliteUtils.createDataSource(file, false));
+    mbTilesStore = new MBTilesStore(SqliteUtils.createDataSource(file));
     mbTilesStore.initializeDatabase();
   }
 
@@ -62,7 +62,7 @@ public class MBTilesBenchmark {
     for (int i = 0; i < benchmark.iterations; i++) {
       var bytes = new byte[1 << 16];
       random.nextBytes(bytes);
-      mbTilesStore.put(new TileCoord(0, 0, i), ByteBuffer.wrap(bytes));
+      mbTilesStore.write(new TileCoord(0, 0, i), ByteBuffer.wrap(bytes));
     }
   }
 
@@ -78,12 +78,12 @@ public class MBTilesBenchmark {
       buffers.add(ByteBuffer.wrap(bytes));
       if (coords.size() == 100) {
         random.nextBytes(bytes);
-        mbTilesStore.put(coords, buffers);
+        mbTilesStore.write(coords, buffers);
         coords.clear();
         buffers.clear();
       }
     }
-    mbTilesStore.put(coords, buffers);
+    mbTilesStore.write(coords, buffers);
     coords.clear();
     buffers.clear();
   }

@@ -38,7 +38,7 @@ public class FileTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer get(TileCoord tileCoord) throws TileStoreException {
+  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
       return ByteBuffer.wrap(Files.readAllBytes(resolve(tileCoord)));
     } catch (IOException e) {
@@ -48,7 +48,7 @@ public class FileTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void put(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
+  public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     try {
       var file = resolve(tileCoord);
       Files.createDirectories(file.getParent());

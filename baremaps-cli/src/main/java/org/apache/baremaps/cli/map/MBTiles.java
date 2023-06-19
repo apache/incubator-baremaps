@@ -15,19 +15,22 @@ package org.apache.baremaps.cli.map;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.ServerResources;
+import org.apache.baremaps.config.ConfigReader;
+import org.apache.baremaps.server.*;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
 import org.apache.baremaps.utils.SqliteUtils;
+import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -65,22 +68,40 @@ public class MBTiles implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     var objectMapper = objectMapper();
+    var configReader = new ConfigReader();
     var caffeineSpec = CaffeineSpec.parse(cache);
-    var datasource = SqliteUtils.createDataSource(mbtilesPath, true);
 
+    var datasource = SqliteUtils.createDataSource(mbtilesPath);
+    var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new MBTilesStore(datasource);
     var tileCache = new TileCache(tileStore, caffeineSpec);
+    var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
+
+    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
+    var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
+    var styleSupplier = (Supplier<Style>) () -> style;
+
+    var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
+    var tileJSON = objectMapper.readValue(configReader.read(tileJSONPath), TileJSON.class);
+    var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
 
     // Configure the application
     var application =
-        new ResourceConfig().register(CorsFilter.class).register(ServerResources.class)
-            .register(newContextResolver(objectMapper)).register(new AbstractBinder() {
+        new ResourceConfig()
+            .register(CorsFilter.class)
+            .register(TileResource.class)
+            .register(StyleResource.class)
+            .register(TilesetResource.class)
+            .register(ClassPathResource.class)
+            .register(newContextResolver(objectMapper))
+            .register(new AbstractBinder() {
               @Override
               protected void configure() {
-                bind(tileJSONPath).to(Path.class).named("tileset");
-                bind(stylePath).to(Path.class).named("style");
-                bind(tileCache).to(TileStore.class);
-                bind(objectMapper).to(ObjectMapper.class);
+                bind("assets").to(String.class).named("directory");
+                bind("server.html").to(String.class).named("index");
+                bind(tileStoreSupplier).to(tileStoreSupplierType);
+                bind(styleSupplier).to(styleSupplierType);
+                bind(tileJSONSupplier).to(tileJSONSupplierType);
               }
             });
 

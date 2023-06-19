@@ -79,7 +79,7 @@ public record ExportVectorTiles(
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
     if (mbtiles) {
       Files.deleteIfExists(repository);
-      var dataSource = SqliteUtils.createDataSource(repository, false);
+      var dataSource = SqliteUtils.createDataSource(repository);
       var tilesStore = new MBTilesStore(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));

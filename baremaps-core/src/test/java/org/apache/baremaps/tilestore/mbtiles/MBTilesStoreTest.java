@@ -13,7 +13,6 @@
 package org.apache.baremaps.tilestore.mbtiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,14 +55,14 @@ class MBTilesStoreTest extends TileStoreTest {
   void readWriteMetadata() throws Exception {
     MBTilesStore tileStore = createTileStore();
     Map<String, String> metadata = tileStore.readMetadata();
-    assertTrue(metadata.size() == 0);
+    assertEquals(0, metadata.size());
 
     Map<String, String> m1 = new HashMap<>();
     m1.put("test", "test");
     tileStore.writeMetadata(m1);
 
     Map<String, String> m2 = tileStore.readMetadata();
-    assertTrue(m2.size() == 1);
-    assertEquals(m2.get("test"), "test");
+    assertEquals(1, m2.size());
+    assertEquals("test", m2.get("test"));
   }
 }
