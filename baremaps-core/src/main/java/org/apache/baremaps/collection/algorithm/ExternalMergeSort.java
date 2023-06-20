@@ -125,8 +125,8 @@ public class ExternalMergeSort {
       }
     }
 
-    for (DataList<T> DataStore : batches) {
-      DataStore.clear();
+    for (DataList<T> batch : batches) {
+      batch.clear();
     }
 
     return counter;

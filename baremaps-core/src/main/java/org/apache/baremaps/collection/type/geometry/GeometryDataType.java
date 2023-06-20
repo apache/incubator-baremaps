@@ -18,7 +18,7 @@ import org.apache.baremaps.collection.type.DataType;
 import org.locationtech.jts.geom.*;
 
 /**
- * A {@code DataType} for {@code MultiPolygon} objects.
+ * A {@code DataType} for {@link Geometry} objects.
  */
 public class GeometryDataType implements DataType<Geometry> {
 

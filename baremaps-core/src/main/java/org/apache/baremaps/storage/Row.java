@@ -42,11 +42,27 @@ public interface Row {
   Object get(String column);
 
   /**
+   * Returns the value of the specified column.
+   *
+   * @param index the index of the column
+   * @return the value of the specified column
+   */
+  Object get(int index);
+
+  /**
    * Sets the value of the specified column.
    * 
    * @param column the column
    * @param value the value
    */
   void set(String column, Object value);
+
+  /**
+   * Sets the value of the specified column.
+   *
+   * @param index the index of the column
+   * @param value the value
+   */
+  void set(int index, Object value);
 
 }

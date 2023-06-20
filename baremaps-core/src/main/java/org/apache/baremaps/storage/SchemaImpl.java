@@ -13,12 +13,39 @@
 package org.apache.baremaps.storage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A schema defines the structure of a table.
  */
-public record SchemaImpl(String name, List<Column> columns) implements Schema {
+public class SchemaImpl implements Schema {
+
+  private final String name;
+
+  private final List<Column> columns;
+
+  private final Map<String, Integer> index;
+
+  public SchemaImpl(String name, List<Column> columns) {
+    this.name = name;
+    this.columns = columns;
+    this.index = new HashMap<>();
+    for (int i = 0; i < columns.size(); i++) {
+      index.put(columns.get(i).name(), i);
+    }
+  }
+
+  @Override
+  public String name() {
+    return name;
+  }
+
+  @Override
+  public List<Column> columns() {
+    return columns;
+  }
 
   /**
    * {@inheritDoc}

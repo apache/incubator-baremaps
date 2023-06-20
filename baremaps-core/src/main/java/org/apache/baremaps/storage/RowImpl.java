@@ -36,6 +36,14 @@ public record RowImpl(Schema schema, List values) implements Row {
    * {@inheritDoc}
    */
   @Override
+  public Object get(int index) {
+    return values.get(index);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public void set(String column, Object value) {
     for (int i = 0; i < schema().columns().size(); i++) {
       if (schema().columns().get(i).name().equals(column)) {
@@ -44,6 +52,11 @@ public record RowImpl(Schema schema, List values) implements Row {
       }
     }
     throw new IllegalArgumentException("Column " + column + " not found.");
+  }
+
+  @Override
+  public void set(int index, Object value) {
+    values.set(index, value);
   }
 
 }

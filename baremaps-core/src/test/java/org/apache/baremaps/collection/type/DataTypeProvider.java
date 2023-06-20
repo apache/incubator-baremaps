@@ -17,10 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.type.geometry.*;
+import org.apache.baremaps.storage.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
 
 public class DataTypeProvider {
+
+  private final Schema schema = new SchemaImpl("row",
+      List.of(new ColumnImpl("integer", Integer.class), new ColumnImpl("string", String.class)));
 
   private static Stream<Arguments> dataTypes() {
     return Stream.of(
@@ -260,12 +264,17 @@ public class DataTypeProvider {
                                             new Coordinate(3, 2), new Coordinate(4, 2),
                                             new Coordinate(4, 1), new Coordinate(3, 1)})})})),
 
+        // Row
+        // Arguments.of(new RowDataType(sc), )
+
+
         // Geometry
         Arguments.of(new GeometryDataType(),
             new GeometryFactory().createEmpty(0)),
         Arguments.of(new GeometryDataType(),
             new GeometryFactory()
                 .createPoint(new Coordinate(1, 1))));
+
 
   }
 }
