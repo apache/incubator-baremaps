@@ -10,11 +10,13 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.type;
+package org.apache.baremaps.collection.type.geometry;
 
 
 
 import java.nio.ByteBuffer;
+import org.apache.baremaps.collection.type.DataType;
+import org.apache.baremaps.collection.type.MemoryAlignedDataType;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A {@link DataType} for reading and writing {@link Coordinate}s in {@link ByteBuffer}s. */

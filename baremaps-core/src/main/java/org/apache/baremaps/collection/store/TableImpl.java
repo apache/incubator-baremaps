@@ -12,30 +12,29 @@
 
 package org.apache.baremaps.collection.store;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import org.apache.baremaps.collection.AbstractDataCollection;
+import org.apache.baremaps.collection.DataCollection;
 
 /**
  * A table is a collection of rows respecting a schema.
  */
-public class TableImpl extends ArrayList<Row> implements Table {
+public class TableImpl extends AbstractDataCollection<Row> implements Table {
 
-  private final Schema dataType;
+  private final Schema schema;
+
+  private final Collection<Row> rows;
 
   /**
    * Constructs a table with the specified schema.
    *
    * @param schema the schema of the table
+   * @param rows the collection of rows
    */
-  public TableImpl(Schema schema) {
-    this.dataType = schema;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public long sizeAsLong() {
-    return size();
+  public TableImpl(Schema schema, Collection<Row> rows) {
+    this.schema = schema;
+    this.rows = rows;
   }
 
   /**
@@ -43,6 +42,34 @@ public class TableImpl extends ArrayList<Row> implements Table {
    */
   @Override
   public Schema schema() {
-    return dataType;
+    return schema;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean add(Row e) {
+    return rows.add(e);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Iterator<Row> iterator() {
+    return rows.iterator();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public long sizeAsLong() {
+    if (rows instanceof DataCollection dataCollection) {
+      return dataCollection.sizeAsLong();
+    } else {
+      return rows.size();
+    }
   }
 }

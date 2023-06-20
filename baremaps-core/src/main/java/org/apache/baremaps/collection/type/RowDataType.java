@@ -10,24 +10,42 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.store;
+package org.apache.baremaps.collection.type;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-import org.apache.baremaps.collection.type.*;
+import org.apache.baremaps.collection.store.Row;
+import org.apache.baremaps.collection.store.RowImpl;
+import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.type.geometry.*;
+import org.locationtech.jts.geom.*;
 
 public class RowDataType implements DataType<Row> {
 
-  private static final Map<Class, DataType> types = Map.of(
-      Byte.class, new ByteDataType(),
-      Boolean.class, new BooleanDataType(),
-      Short.class, new ShortDataType(),
-      Integer.class, new IntegerDataType(),
-      Long.class, new LongDataType(),
-      Float.class, new FloatDataType(),
-      Double.class, new DoubleDataType(),
-      String.class, new StringDataType());
+  private static final Map<Class, DataType> types;
+
+  static {
+    types = new HashMap<>();
+    types.put(Byte.class, new ByteDataType());
+    types.put(Boolean.class, new BooleanDataType());
+    types.put(Short.class, new ShortDataType());
+    types.put(Integer.class, new IntegerDataType());
+    types.put(Long.class, new LongDataType());
+    types.put(Float.class, new FloatDataType());
+    types.put(Double.class, new DoubleDataType());
+    types.put(String.class, new StringDataType());
+    types.put(Geometry.class, new GeometryDataType());
+    types.put(Point.class, new PointDataType());
+    types.put(LineString.class, new LineStringDataType());
+    types.put(Polygon.class, new PolygonDataType());
+    types.put(MultiPoint.class, new MultiPointDataType());
+    types.put(MultiLineString.class, new MultiLineStringDataType());
+    types.put(MultiPolygon.class, new MultiPolygonDataType());
+    types.put(GeometryCollection.class, new GeometryCollectionDataType());
+    types.put(Coordinate.class, new CoordinateDataType());
+  }
 
   private final Schema schema;
 
@@ -62,8 +80,8 @@ public class RowDataType implements DataType<Row> {
       var columnType = column.type();
       var dataType = types.get(columnType);
       var value = row.get(i);
-      dataType.write(buffer, position, value);
-      p += dataType.size(buffer, position);
+      dataType.write(buffer, p, value);
+      p += dataType.size(buffer, p);
     }
     buffer.putInt(position, p - position);
   }

@@ -21,7 +21,7 @@ public interface DataCollection<E> extends Collection<E> {
    *
    * @return the number of values
    */
-  public abstract long sizeAsLong();
+  long sizeAsLong();
 
   /** {@inheritDoc} */
   default int size() {

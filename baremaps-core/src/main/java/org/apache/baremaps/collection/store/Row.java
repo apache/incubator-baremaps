@@ -65,4 +65,27 @@ public interface Row {
    */
   void set(int index, Object value);
 
+  /**
+   * Sets the value of the specified column and returns the row.
+   *
+   * @param column the column
+   * @param value the value
+   * @return the row
+   */
+  default Row with(String column, Object value) {
+    set(column, value);
+    return this;
+  }
+
+  /**
+   * Sets the value of the specified column and returns the row.
+   *
+   * @param index the index of the column
+   * @param value the value
+   * @return the row
+   */
+  default Row with(int index, Object value) {
+    set(index, value);
+    return this;
+  }
 }

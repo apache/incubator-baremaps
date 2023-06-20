@@ -16,9 +16,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import org.apache.baremaps.collection.AppendOnlyBuffer;
+import org.apache.baremaps.collection.IndexedDataList;
+import org.apache.baremaps.collection.store.*;
+import org.apache.baremaps.collection.type.RowDataType;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
@@ -33,24 +36,37 @@ import org.apache.calcite.sql.type.SqlTypeName;
 
 public class Calcite {
 
-  public static final List<Object[]> PLAYER_DATA_AS_OBJECT_ARRAY = Arrays.asList(
-      new Object[] {1, "Wizard", 5},
-      new Object[] {2, "Hunter", 7}
+  private static final Schema PLAYER_SCHEMA = new SchemaImpl("player", List.of(
+      new ColumnImpl("id", Integer.class),
+      new ColumnImpl("name", String.class),
+      new ColumnImpl("level", Integer.class)));
 
-  );
-  public static final List<Object[]> EQUIPMENT_DATA_AS_OBJECT_ARRAY = Arrays.asList(
-      new Object[] {1, "fireball", 7, 1},
-      new Object[] {2, "rifle", 4, 2});
+  private static final Table PLAYER_TABLE = new TableImpl(
+      PLAYER_SCHEMA,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(PLAYER_SCHEMA))));
 
+  static {
+    PLAYER_TABLE.add(new RowImpl(PLAYER_TABLE.schema(), List.of(1, "Wizard", 5)));
+    PLAYER_TABLE.add(new RowImpl(PLAYER_TABLE.schema(), List.of(2, "Hunter", 7)));
+  }
+
+  private static final Schema EQUIPMENT_SCHEMA = new SchemaImpl("equipment", List.of(
+      new ColumnImpl("id", Integer.class),
+      new ColumnImpl("name", String.class),
+      new ColumnImpl("damage", Integer.class),
+      new ColumnImpl("player_id", Integer.class)));
+
+  private static final Table EQUIPMENT_TABLE = new TableImpl(
+      EQUIPMENT_SCHEMA,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(EQUIPMENT_SCHEMA))));
+
+  static {
+    EQUIPMENT_TABLE.add(new RowImpl(EQUIPMENT_TABLE.schema(), List.of(1, "fireball", 7, 1)));
+    EQUIPMENT_TABLE.add(new RowImpl(EQUIPMENT_TABLE.schema(), List.of(2, "rifle", 4, 2)));
+  }
 
   public static void main(String[] args) throws SQLException {
-
-
-    RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-    RelDataTypeFactory.Builder playerType = new RelDataTypeFactory.Builder(typeFactory);
-
     Properties info = new Properties();
-    // https://calcite.apache.org/javadocAggregate/org/apache/calcite/config/Lex.html#JAVA
     info.setProperty("lex", "MYSQL");
 
     Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
@@ -59,23 +75,11 @@ public class Calcite {
 
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-    playerType.add("id", SqlTypeName.INTEGER);
-    playerType.add("name", SqlTypeName.VARCHAR);
-    playerType.add("level", SqlTypeName.INTEGER);
-
-    ListTable playerTable = new ListTable(playerType.build(), PLAYER_DATA_AS_OBJECT_ARRAY);
+    ListTable playerTable = new ListTable(PLAYER_TABLE);
     rootSchema.add("player", playerTable);
 
-    RelDataTypeFactory.Builder equipmentType = new RelDataTypeFactory.Builder(typeFactory);
-
-    equipmentType.add("id", SqlTypeName.INTEGER);
-    equipmentType.add("name", SqlTypeName.VARCHAR);
-    equipmentType.add("damage", SqlTypeName.INTEGER);
-    equipmentType.add("player_id", SqlTypeName.INTEGER);
-
-    ListTable equipmentTable = new ListTable(equipmentType.build(), EQUIPMENT_DATA_AS_OBJECT_ARRAY);
+    ListTable equipmentTable = new ListTable(EQUIPMENT_TABLE);
     rootSchema.add("equipment", equipmentTable);
-
 
     String sql =
         "SELECT player.name, equipment.name FROM player INNER JOIN equipment ON player.id = equipment.player_id ";
@@ -87,7 +91,6 @@ public class Calcite {
     }
     System.out.println(b);
 
-
     resultSet.close();
   }
 
@@ -95,22 +98,36 @@ public class Calcite {
    * A simple table based on a list.
    */
   private static class ListTable extends AbstractTable implements ScannableTable {
-    private final RelDataType rowType;
-    private final List<Object[]> data;
 
-    ListTable(RelDataType rowType, List<Object[]> data) {
-      this.rowType = rowType;
-      this.data = data;
+    private final Table table;
+
+    ListTable(Table table) {
+      this.table = table;
     }
 
     @Override
     public Enumerable<Object[]> scan(final DataContext root) {
-      return Linq4j.asEnumerable(data);
+      var collection = new TableAdapter<>(table, row -> row.values().toArray());
+      return Linq4j.asEnumerable(collection);
     }
 
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-      return rowType;
+      var rowType = new RelDataTypeFactory.Builder(typeFactory);
+      for (Column column : table.schema().columns()) {
+        rowType.add(column.name(), toSqlType(column.type()));
+      }
+      return rowType.build();
+    }
+
+    private RelDataType toSqlType(Class type) {
+      if (type.equals(Integer.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.INTEGER);
+      } else if (type.equals(String.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.VARCHAR);
+      } else {
+        throw new IllegalArgumentException();
+      }
     }
   }
 }

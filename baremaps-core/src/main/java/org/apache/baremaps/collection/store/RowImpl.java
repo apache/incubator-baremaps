@@ -54,6 +54,9 @@ public record RowImpl(Schema schema, List values) implements Row {
     throw new IllegalArgumentException("Column " + column + " not found.");
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void set(int index, Object value) {
     values.set(index, value);

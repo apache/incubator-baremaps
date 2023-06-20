@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.store.ColumnImpl;
+import org.apache.baremaps.collection.store.Row;
 import org.apache.baremaps.collection.store.Schema;
 import org.apache.baremaps.collection.store.SchemaImpl;
 import org.apache.baremaps.collection.type.geometry.*;
@@ -25,8 +26,58 @@ import org.locationtech.jts.geom.*;
 
 public class DataTypeProvider {
 
-  private final Schema schema = new SchemaImpl("row",
-      List.of(new ColumnImpl("integer", Integer.class), new ColumnImpl("string", String.class)));
+  private static final GeometryFactory geometryFactory = new GeometryFactory();
+
+  private static final Schema schema = new SchemaImpl("row", List.of(
+      new ColumnImpl("byte", Byte.class),
+      new ColumnImpl("boolean", Boolean.class),
+      new ColumnImpl("short", Short.class),
+      new ColumnImpl("integer", Integer.class),
+      new ColumnImpl("long", Long.class),
+      new ColumnImpl("float", Float.class),
+      new ColumnImpl("double", Double.class),
+      new ColumnImpl("string", String.class),
+      new ColumnImpl("geometry", Geometry.class),
+      new ColumnImpl("point", Point.class),
+      new ColumnImpl("linestring", LineString.class),
+      new ColumnImpl("polygon", Polygon.class),
+      new ColumnImpl("multipoint", MultiPoint.class),
+      new ColumnImpl("multilinestring", MultiLineString.class),
+      new ColumnImpl("multipolygon", MultiPolygon.class),
+      new ColumnImpl("geometrycollection", GeometryCollection.class),
+      new ColumnImpl("coordinate", Coordinate.class)));
+
+  private static final Row row = schema.createRow()
+      .with("byte", Byte.MAX_VALUE)
+      .with("boolean", true)
+      .with("short", Short.MAX_VALUE)
+      .with("integer", Integer.MAX_VALUE)
+      .with("long", Long.MAX_VALUE)
+      .with("float", Float.MAX_VALUE)
+      .with("double", Double.MAX_VALUE)
+      .with("string", "Hello, World!")
+      .with("geometry", geometryFactory.createPoint(new Coordinate(0, 0)))
+      .with("point", geometryFactory.createPoint(new Coordinate(0, 0)))
+      .with("linestring",
+          geometryFactory
+              .createLineString(new Coordinate[] {new Coordinate(0, 0), new Coordinate(1, 1)}))
+      .with("polygon",
+          geometryFactory.createPolygon(new Coordinate[] {new Coordinate(0, 0),
+              new Coordinate(1, 1), new Coordinate(0, 1), new Coordinate(0, 0)}))
+      .with("multipoint",
+          geometryFactory
+              .createMultiPoint(new Coordinate[] {new Coordinate(0, 0), new Coordinate(1, 1)}))
+      .with("multilinestring",
+          geometryFactory.createMultiLineString(new LineString[] {geometryFactory
+              .createLineString(new Coordinate[] {new Coordinate(0, 0), new Coordinate(1, 1)})}))
+      .with("multipolygon",
+          geometryFactory.createMultiPolygon(
+              new Polygon[] {geometryFactory.createPolygon(new Coordinate[] {new Coordinate(0, 0),
+                  new Coordinate(1, 1), new Coordinate(0, 1), new Coordinate(0, 0)})}))
+      .with("geometrycollection",
+          geometryFactory.createGeometryCollection(
+              new Geometry[] {geometryFactory.createPoint(new Coordinate(0, 0))}))
+      .with("coordinate", new Coordinate(0, 0));
 
   private static Stream<Arguments> dataTypes() {
     return Stream.of(
@@ -267,8 +318,7 @@ public class DataTypeProvider {
                                             new Coordinate(4, 1), new Coordinate(3, 1)})})})),
 
         // Row
-        // Arguments.of(new RowDataType(sc), )
-
+        Arguments.of(new RowDataType(schema), row),
 
         // Geometry
         Arguments.of(new GeometryDataType(),
