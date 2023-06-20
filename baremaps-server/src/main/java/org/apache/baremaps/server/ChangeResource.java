@@ -30,6 +30,7 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.config.ConfigReader;
+import org.jvnet.hk2.annotations.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +64,8 @@ public class ChangeResource {
    */
   @Inject
   public ChangeResource(
-      @Named("tileset") Path tileset,
-      @Named("style") Path style,
+      @Named("tileset") @Optional Path tileset,
+      @Named("style") @Optional Path style,
       Sse sse) {
     this.tileset = tileset;
     this.style = style;
