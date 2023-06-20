@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.apache.baremaps.collection.store.*;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.GeometryConversions;

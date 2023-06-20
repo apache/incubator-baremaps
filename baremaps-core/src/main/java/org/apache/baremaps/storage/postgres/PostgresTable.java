@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-
 import org.apache.baremaps.collection.store.AbstractTable;
 import org.apache.baremaps.collection.store.Row;
 import org.apache.baremaps.collection.store.RowImpl;

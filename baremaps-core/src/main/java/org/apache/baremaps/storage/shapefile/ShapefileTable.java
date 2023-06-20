@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import org.apache.baremaps.collection.store.AbstractTable;
 import org.apache.baremaps.collection.store.Row;
 import org.apache.baremaps.collection.store.Schema;

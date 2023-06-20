@@ -20,11 +20,11 @@ import javax.sql.DataSource;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.apache.baremaps.collection.store.Table;
 import org.apache.baremaps.ogcapi.api.CollectionsApi;
 import org.apache.baremaps.ogcapi.model.Collection;
 import org.apache.baremaps.ogcapi.model.Collections;
 import org.apache.baremaps.ogcapi.model.Link;
-import org.apache.baremaps.collection.store.Table;
 import org.apache.baremaps.storage.postgres.PostgresStore;
 
 /**

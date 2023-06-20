@@ -16,7 +16,6 @@ import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FA
 
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.baremaps.collection.store.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;

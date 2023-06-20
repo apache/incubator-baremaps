@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-
 import org.apache.baremaps.collection.store.*;
 import org.apache.baremaps.postgres.copy.CopyWriter;
 import org.apache.baremaps.postgres.copy.GeometryValueHandler;
