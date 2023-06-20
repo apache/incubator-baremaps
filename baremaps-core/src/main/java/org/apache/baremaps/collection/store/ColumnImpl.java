@@ -10,20 +10,11 @@
  * the License.
  */
 
-package org.apache.baremaps.storage;
-
-import org.apache.baremaps.collection.DataCollection;
+package org.apache.baremaps.collection.store;
 
 /**
- * A table is a collection of rows respecting a schema.
+ * A column in a table.
  */
-public interface Table extends DataCollection<Row> {
-
-  /**
-   * Returns the schema of the table.
-   *
-   * @return the schema of the table
-   */
-  Schema schema();
+public record ColumnImpl(String name, Class type) implements Column {
 
 }

@@ -16,8 +16,11 @@ package org.apache.baremaps.collection.type;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import org.apache.baremaps.collection.store.ColumnImpl;
+import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.store.SchemaImpl;
 import org.apache.baremaps.collection.type.geometry.*;
-import org.apache.baremaps.storage.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
 

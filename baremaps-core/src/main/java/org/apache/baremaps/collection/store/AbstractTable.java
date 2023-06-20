@@ -10,34 +10,13 @@
  * the License.
  */
 
-package org.apache.baremaps.storage;
+package org.apache.baremaps.collection.store;
 
-import java.util.List;
+import org.apache.baremaps.collection.AbstractDataCollection;
 
 /**
- * A schema defines the structure of a table.
+ * A table is a collection of rows respecting a schema.
  */
-public interface Schema {
-
-  /**
-   * Returns the name of the schema.
-   * 
-   * @return the name of the schema
-   */
-  String name();
-
-  /**
-   * Returns the columns of the schema.
-   * 
-   * @return the columns of the schema
-   */
-  List<Column> columns();
-
-  /**
-   * Creates a new row of the schema.
-   * 
-   * @return a new row of the schema
-   */
-  Row createRow();
+public abstract class AbstractTable extends AbstractDataCollection<Row> implements Table {
 
 }

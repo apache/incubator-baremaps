@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.storage;
+package org.apache.baremaps.collection.store;
 
 import java.util.ArrayList;
 

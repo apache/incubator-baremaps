@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.storage.Store;
-import org.apache.baremaps.storage.Table;
-import org.apache.baremaps.storage.TableException;
+import org.apache.baremaps.collection.store.Store;
+import org.apache.baremaps.collection.store.Table;
+import org.apache.baremaps.collection.store.TableException;
 
 /**
  * A store corresponding to the flatgeobuf files of a directory.

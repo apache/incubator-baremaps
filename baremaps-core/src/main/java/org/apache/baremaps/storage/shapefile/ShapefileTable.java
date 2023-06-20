@@ -17,7 +17,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.storage.*;
+
+import org.apache.baremaps.collection.store.AbstractTable;
+import org.apache.baremaps.collection.store.Row;
+import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.store.TableException;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 

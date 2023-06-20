@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
-import org.apache.baremaps.storage.Row;
-import org.apache.baremaps.storage.Schema;
+import org.apache.baremaps.collection.store.Row;
+import org.apache.baremaps.collection.store.Schema;
 import org.apache.baremaps.vectortile.expression.Expressions;
 import org.apache.baremaps.vectortile.expression.Expressions.*;
 import org.junit.jupiter.api.Test;

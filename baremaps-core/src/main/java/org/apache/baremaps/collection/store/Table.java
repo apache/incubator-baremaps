@@ -10,13 +10,20 @@
  * the License.
  */
 
-package org.apache.baremaps.storage;
+package org.apache.baremaps.collection.store;
 
-import org.apache.baremaps.collection.AbstractDataCollection;
+import org.apache.baremaps.collection.DataCollection;
 
 /**
  * A table is a collection of rows respecting a schema.
  */
-public abstract class AbstractTable extends AbstractDataCollection<Row> implements Table {
+public interface Table extends DataCollection<Row> {
+
+  /**
+   * Returns the schema of the table.
+   *
+   * @return the schema of the table
+   */
+  Schema schema();
 
 }

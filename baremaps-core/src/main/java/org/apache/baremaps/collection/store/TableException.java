@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.storage;
+package org.apache.baremaps.collection.store;
 
 /** Signals that an exception occurred in a table. */
 public class TableException extends RuntimeException {

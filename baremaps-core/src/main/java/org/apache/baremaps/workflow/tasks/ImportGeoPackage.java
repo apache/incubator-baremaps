@@ -13,7 +13,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
-import org.apache.baremaps.storage.TableDecorator;
+import org.apache.baremaps.collection.store.TableDecorator;
 import org.apache.baremaps.storage.geopackage.GeoPackageStore;
 import org.apache.baremaps.storage.postgres.PostgresStore;
 import org.apache.baremaps.utils.ProjectionTransformer;

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.apache.baremaps.storage.MockTable;
-import org.apache.baremaps.storage.RowImpl;
+import org.apache.baremaps.collection.store.RowImpl;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
