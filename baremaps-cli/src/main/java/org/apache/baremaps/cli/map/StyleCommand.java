@@ -18,6 +18,7 @@ import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -45,9 +46,9 @@ public class StyleCommand implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(names = {"--tilesUrl"}, paramLabel = "TILES_URL", description = "The tiles url.",
+  @Option(names = {"--tiles"}, paramLabel = "TILES", description = "The tiles url.",
       required = true)
-  private Path tilesUrl;
+  private URL tilesUrl;
 
   @Option(names = {"--style"}, paramLabel = "STYLE", description = "The style file.",
       required = true)
@@ -89,7 +90,6 @@ public class StyleCommand implements Callable<Integer> {
           protected void configure() {
             bind("assets").to(String.class).named("directory");
             bind("viewer.html").to(String.class).named("index");
-            bind(tilesUrl).to(Path.class).named("tilesUrl");
             bind(stylePath).to(Path.class).named("style");
             bind(styleSupplier).to(styleSupplierType);
           }
