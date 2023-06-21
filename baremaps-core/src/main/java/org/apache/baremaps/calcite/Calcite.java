@@ -12,6 +12,7 @@
 
 package org.apache.baremaps.calcite;
 
+import com.google.common.collect.ImmutableList;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -29,49 +30,59 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Linq4j;
+import org.apache.calcite.model.ModelHandler;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.runtime.SpatialTypeFunctions;
+import org.apache.calcite.runtime.SpatialTypeFunctions.Accum;
+import org.apache.calcite.runtime.SpatialTypeFunctions.Collect;
+import org.apache.calcite.runtime.SpatialTypeFunctions.Union;
 import org.apache.calcite.schema.ScannableTable;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.calcite.schema.impl.AggregateFunctionImpl;
+import org.apache.calcite.sql.fun.SqlSpatialTypeFunctions;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.locationtech.jts.geom.*;
 
 public class Calcite {
 
-  private static final DataSchema PLAYER_DATA_SCHEMA = new DataSchemaImpl("player", List.of(
+  private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+
+  private static final DataSchema CITY_SCHEMA = new DataSchemaImpl("country", List.of(
       new DataColumnImpl("id", Integer.class),
       new DataColumnImpl("name", String.class),
-      new DataColumnImpl("level", Integer.class)));
+      new DataColumnImpl("geometry", Geometry.class)));
 
-  private static final DataTable PLAYER_DATA_TABLE = new DataTableImpl(
-      PLAYER_DATA_SCHEMA,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(PLAYER_DATA_SCHEMA))));
+  private static final DataTable CITY_TABLE = new DataTableImpl(
+      CITY_SCHEMA,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(CITY_SCHEMA))));
 
   static {
-    PLAYER_DATA_TABLE.add(new DataRowImpl(PLAYER_DATA_TABLE.schema(), List.of(1, "Wizard", 5)));
-    PLAYER_DATA_TABLE.add(new DataRowImpl(PLAYER_DATA_TABLE.schema(), List.of(2, "Hunter", 7)));
+    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.schema(),
+        List.of(1, "Paris", GEOMETRY_FACTORY.createPoint(new Coordinate(2.3522, 48.8566)))));
+    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.schema(),
+        List.of(2, "New York", GEOMETRY_FACTORY.createPoint(new Coordinate(-74.0060, 40.7128)))));
   }
 
-  private static final DataSchema EQUIPMENT_DATA_SCHEMA = new DataSchemaImpl("equipment", List.of(
-      new DataColumnImpl("id", Integer.class),
-      new DataColumnImpl("name", String.class),
-      new DataColumnImpl("damage", Integer.class),
-      new DataColumnImpl("player_id", Integer.class)));
+  private static final DataSchema POPULATION_SCHEMA = new DataSchemaImpl("population", List.of(
+      new DataColumnImpl("country_id", Integer.class),
+      new DataColumnImpl("population", Integer.class)));
 
-  private static final DataTable EQUIPMENT_DATA_TABLE = new DataTableImpl(
-      EQUIPMENT_DATA_SCHEMA,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(EQUIPMENT_DATA_SCHEMA))));
+  private static final DataTable POPULATION_TABLE = new DataTableImpl(
+      POPULATION_SCHEMA,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(POPULATION_SCHEMA))));
 
   static {
-    EQUIPMENT_DATA_TABLE
-        .add(new DataRowImpl(EQUIPMENT_DATA_TABLE.schema(), List.of(1, "fireball", 7, 1)));
-    EQUIPMENT_DATA_TABLE
-        .add(new DataRowImpl(EQUIPMENT_DATA_TABLE.schema(), List.of(2, "rifle", 4, 2)));
+    POPULATION_TABLE
+        .add(new DataRowImpl(POPULATION_TABLE.schema(), List.of(1, 2_161_000)));
+    POPULATION_TABLE
+        .add(new DataRowImpl(POPULATION_TABLE.schema(), List.of(2, 8_336_000)));
   }
 
   public static void main(String[] args) throws SQLException {
     Properties info = new Properties();
-    info.setProperty("lex", "JAVA");
+    info.setProperty("lex", "MYSQL");
 
     Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
     CalciteConnection calciteConnection =
@@ -79,21 +90,29 @@ public class Calcite {
 
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-    ListTable playerTable = new ListTable(PLAYER_DATA_TABLE);
-    rootSchema.add("player", playerTable);
+    final ImmutableList<String> emptyPath = ImmutableList.of();
+    ModelHandler.addFunctions(rootSchema, null, emptyPath,
+        SpatialTypeFunctions.class.getName(), "*", true);
+    ModelHandler.addFunctions(rootSchema, null, emptyPath,
+        SqlSpatialTypeFunctions.class.getName(), "*", true);
 
-    ListTable equipmentTable = new ListTable(EQUIPMENT_DATA_TABLE);
-    rootSchema.add("equipment", equipmentTable);
+    rootSchema.add("ST_UNION", AggregateFunctionImpl.create(Union.class));
+    rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(Accum.class));
+    rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
+
+    ListTable cityTable = new ListTable(CITY_TABLE);
+    rootSchema.add("country", cityTable);
+
+    ListTable populationTable = new ListTable(POPULATION_TABLE);
+    rootSchema.add("population", populationTable);
 
     String sql =
-        "SELECT player.name, equipment.name FROM player INNER JOIN equipment ON player.id = equipment.player_id ";
+        "SELECT name, ST_Buffer(geometry, 10), population FROM country INNER JOIN population ON country.id = population.country_id";
     ResultSet resultSet = connection.createStatement().executeQuery(sql);
-    StringBuilder b = new StringBuilder();
     while (resultSet.next()) {
-      b.append(resultSet.getString(1)).append(" attacks with ");
-      b.append(resultSet.getString(2)).append(" !\n");
+      System.out.println(
+          resultSet.getString(1) + ", " + resultSet.getObject(2) + ", " + resultSet.getInt(3));
     }
-    System.out.println(b);
 
     resultSet.close();
   }
@@ -126,12 +145,36 @@ public class Calcite {
     }
 
     private RelDataType toSqlType(Class type) {
-      if (type.equals(Integer.class)) {
-        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.INTEGER);
-      } else if (type.equals(String.class)) {
+      if (type.equals(String.class)) {
         return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.VARCHAR);
+      } else if (type.equals(Boolean.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.BOOLEAN);
+      } else if (type.equals(Short.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.SMALLINT);
+      } else if (type.equals(Integer.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.INTEGER);
+      } else if (type.equals(Float.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.FLOAT);
+      } else if (type.equals(Double.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.DOUBLE);
+      } else if (type.equals(Geometry.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
+      } else if (type.equals(Point.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
+      } else if (type.equals(LineString.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
+      } else if (type.equals(Polygon.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
+      } else if (type.equals(MultiPoint.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
+      } else if (type.equals(MultiLineString.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
+      } else if (type.equals(MultiPolygon.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
+      } else if (type.equals(GeometryCollection.class)) {
+        return new JavaTypeFactoryImpl().createSqlType(SqlTypeName.GEOMETRY);
       } else {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Unsupported type " + type);
       }
     }
   }

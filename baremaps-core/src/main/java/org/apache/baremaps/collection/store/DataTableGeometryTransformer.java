@@ -17,7 +17,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
- * A transformer that applies a {@code GeometryTransformer} to the geometries of a {@code DataTable}.
+ * A transformer that applies a {@code GeometryTransformer} to the geometries of a
+ * {@code DataTable}.
  */
 public class DataTableGeometryTransformer implements Function<DataRow, DataRow> {
 
@@ -31,7 +32,8 @@ public class DataTableGeometryTransformer implements Function<DataRow, DataRow> 
    * @param dataTable the table to transform
    * @param geometryTransformer the geometry transformer
    */
-  public DataTableGeometryTransformer(DataTable dataTable, GeometryTransformer geometryTransformer) {
+  public DataTableGeometryTransformer(DataTable dataTable,
+      GeometryTransformer geometryTransformer) {
     this.dataTable = dataTable;
     this.geometryTransformer = geometryTransformer;
   }

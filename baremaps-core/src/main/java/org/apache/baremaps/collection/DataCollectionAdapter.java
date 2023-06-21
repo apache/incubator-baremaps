@@ -15,8 +15,6 @@ package org.apache.baremaps.collection;
 
 import java.util.Iterator;
 import java.util.function.Function;
-import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.collection.DataCollection;
 
 /**
  * A decorator for a table that transforms the geometries of the rows.
