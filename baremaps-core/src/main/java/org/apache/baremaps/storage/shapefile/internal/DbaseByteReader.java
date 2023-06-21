@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.MessageFormat;
 import java.util.*;
-import org.apache.baremaps.collection.store.Row;
+import org.apache.baremaps.collection.store.DataRow;
 
 /**
  * Reader of a Database Binary content.
@@ -99,9 +99,9 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   /**
    * Load a row into a feature.
    *
-   * @param row Feature to fill.
+   * @param dataRow Feature to fill.
    */
-  public void loadRow(Row row) {
+  public void loadRow(DataRow dataRow) {
     // TODO: ignore deleted records
     getByteBuffer().get(); // denotes whether deleted or current
     // read first part of record
@@ -138,7 +138,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
         case DateTime -> value;
       };
 
-      row.set(fieldDescriptor.getName(), object);
+      dataRow.set(fieldDescriptor.getName(), object);
     }
   }
 

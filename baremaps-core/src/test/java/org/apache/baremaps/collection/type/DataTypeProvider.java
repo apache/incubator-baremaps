@@ -16,10 +16,9 @@ package org.apache.baremaps.collection.type;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.baremaps.collection.store.ColumnImpl;
-import org.apache.baremaps.collection.store.Row;
-import org.apache.baremaps.collection.store.Schema;
-import org.apache.baremaps.collection.store.SchemaImpl;
+import org.apache.baremaps.collection.store.*;
+import org.apache.baremaps.collection.store.DataSchema;
+import org.apache.baremaps.collection.store.DataSchemaImpl;
 import org.apache.baremaps.collection.type.geometry.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
@@ -28,26 +27,26 @@ public class DataTypeProvider {
 
   private static final GeometryFactory geometryFactory = new GeometryFactory();
 
-  private static final Schema schema = new SchemaImpl("row", List.of(
-      new ColumnImpl("byte", Byte.class),
-      new ColumnImpl("boolean", Boolean.class),
-      new ColumnImpl("short", Short.class),
-      new ColumnImpl("integer", Integer.class),
-      new ColumnImpl("long", Long.class),
-      new ColumnImpl("float", Float.class),
-      new ColumnImpl("double", Double.class),
-      new ColumnImpl("string", String.class),
-      new ColumnImpl("geometry", Geometry.class),
-      new ColumnImpl("point", Point.class),
-      new ColumnImpl("linestring", LineString.class),
-      new ColumnImpl("polygon", Polygon.class),
-      new ColumnImpl("multipoint", MultiPoint.class),
-      new ColumnImpl("multilinestring", MultiLineString.class),
-      new ColumnImpl("multipolygon", MultiPolygon.class),
-      new ColumnImpl("geometrycollection", GeometryCollection.class),
-      new ColumnImpl("coordinate", Coordinate.class)));
+  private static final DataSchema DATA_SCHEMA = new DataSchemaImpl("row", List.of(
+      new DataColumnImpl("byte", Byte.class),
+      new DataColumnImpl("boolean", Boolean.class),
+      new DataColumnImpl("short", Short.class),
+      new DataColumnImpl("integer", Integer.class),
+      new DataColumnImpl("long", Long.class),
+      new DataColumnImpl("float", Float.class),
+      new DataColumnImpl("double", Double.class),
+      new DataColumnImpl("string", String.class),
+      new DataColumnImpl("geometry", Geometry.class),
+      new DataColumnImpl("point", Point.class),
+      new DataColumnImpl("linestring", LineString.class),
+      new DataColumnImpl("polygon", Polygon.class),
+      new DataColumnImpl("multipoint", MultiPoint.class),
+      new DataColumnImpl("multilinestring", MultiLineString.class),
+      new DataColumnImpl("multipolygon", MultiPolygon.class),
+      new DataColumnImpl("geometrycollection", GeometryCollection.class),
+      new DataColumnImpl("coordinate", Coordinate.class)));
 
-  private static final Row row = schema.createRow()
+  private static final DataRow DATA_ROW = DATA_SCHEMA.createRow()
       .with("byte", Byte.MAX_VALUE)
       .with("boolean", true)
       .with("short", Short.MAX_VALUE)
@@ -318,7 +317,7 @@ public class DataTypeProvider {
                                             new Coordinate(4, 1), new Coordinate(3, 1)})})})),
 
         // Row
-        Arguments.of(new RowDataType(schema), row),
+        Arguments.of(new RowDataType(DATA_SCHEMA), DATA_ROW),
 
         // Geometry
         Arguments.of(new GeometryDataType(),

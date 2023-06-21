@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.collection.store.AbstractTable;
-import org.apache.baremaps.collection.store.Row;
-import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.store.AbstractDataTable;
+import org.apache.baremaps.collection.store.DataRow;
+import org.apache.baremaps.collection.store.DataSchema;
 import org.apache.baremaps.storage.flatgeobuf.internal.TableConversions;
 import org.locationtech.jts.geom.*;
 import org.wololo.flatgeobuf.Constants;
@@ -38,45 +38,45 @@ import org.wololo.flatgeobuf.generated.GeometryType;
 /**
  * A table that stores rows in a flatgeobuf file.
  */
-public class FlatGeoBufTable extends AbstractTable {
+public class FlatGeoBufDataTable extends AbstractDataTable {
 
   private final Path file;
 
-  private Schema schema;
+  private DataSchema dataSchema;
 
   /**
    * Constructs a table from a flatgeobuf file (used for reading).
    *
    * @param file the path to the flatgeobuf file
    */
-  public FlatGeoBufTable(Path file) {
+  public FlatGeoBufDataTable(Path file) {
     this.file = file;
-    this.schema = readSchema(file);
+    this.dataSchema = readSchema(file);
   }
 
   /**
    * Constructs a table from a flatgeobuf file and a schema (used for writing).
    *
    * @param file the path to the flatgeobuf file
-   * @param schema the schema of the table
+   * @param dataSchema the schema of the table
    */
-  public FlatGeoBufTable(Path file, Schema schema) {
+  public FlatGeoBufDataTable(Path file, DataSchema dataSchema) {
     this.file = file;
-    this.schema = schema;
+    this.dataSchema = dataSchema;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Schema schema() {
-    return schema;
+  public DataSchema schema() {
+    return dataSchema;
   }
 
   /**
    * {@inheritDoc}
    */
-  public static Schema readSchema(Path file) {
+  public static DataSchema readSchema(Path file) {
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
       // try to read the schema from the file
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
@@ -91,7 +91,7 @@ public class FlatGeoBufTable extends AbstractTable {
    * {@inheritDoc}
    */
   @Override
-  public Iterator<Row> iterator() {
+  public Iterator<DataRow> iterator() {
     try {
       var channel = FileChannel.open(file, StandardOpenOption.READ);
 
@@ -108,7 +108,7 @@ public class FlatGeoBufTable extends AbstractTable {
       buffer.clear();
 
       // create the feature stream
-      return new RowIterator(channel, headerMeta, schema, buffer);
+      return new RowIterator(channel, headerMeta, dataSchema, buffer);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -149,7 +149,7 @@ public class FlatGeoBufTable extends AbstractTable {
    * @param features the collection of rows to write
    * @throws IOException if an error occurs while writing the rows
    */
-  public void write(Collection<Row> features) throws IOException {
+  public void write(Collection<DataRow> features) throws IOException {
     try (
         var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         var outputStream = Channels.newOutputStream(channel)) {
@@ -162,9 +162,9 @@ public class FlatGeoBufTable extends AbstractTable {
       headerMeta.indexNodeSize = 16;
       headerMeta.srid = 3857;
       headerMeta.featuresCount =
-          features instanceof AbstractDataCollection<Row>c ? c.sizeAsLong() : features.size();
-      headerMeta.name = schema.name();
-      headerMeta.columns = TableConversions.asColumns(schema.columns());
+          features instanceof AbstractDataCollection<DataRow>c ? c.sizeAsLong() : features.size();
+      headerMeta.name = dataSchema.name();
+      headerMeta.columns = TableConversions.asColumns(dataSchema.columns());
       HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
 
       var indexSize =
@@ -221,11 +221,11 @@ public class FlatGeoBufTable extends AbstractTable {
   /**
    * An iterator over rows in a flatgeobuf file.
    */
-  public static class RowIterator implements Iterator<Row> {
+  public static class RowIterator implements Iterator<DataRow> {
 
     private final HeaderMeta headerMeta;
 
-    private final Schema schema;
+    private final DataSchema dataSchema;
 
     private final SeekableByteChannel channel;
 
@@ -238,14 +238,14 @@ public class FlatGeoBufTable extends AbstractTable {
      *
      * @param channel the channel to read from
      * @param headerMeta the header meta
-     * @param schema the schema of the table
+     * @param dataSchema the schema of the table
      * @param buffer the buffer to use
      */
     public RowIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
-        Schema schema, ByteBuffer buffer) {
+        DataSchema dataSchema, ByteBuffer buffer) {
       this.channel = channel;
       this.headerMeta = headerMeta;
-      this.schema = schema;
+      this.dataSchema = dataSchema;
       this.buffer = buffer;
     }
 
@@ -261,14 +261,14 @@ public class FlatGeoBufTable extends AbstractTable {
      * {@inheritDoc}
      */
     @Override
-    public Row next() {
+    public DataRow next() {
       try {
         channel.read(buffer);
         buffer.flip();
 
         var featureSize = buffer.getInt();
         var row =
-            TableConversions.asRow(headerMeta, schema, Feature.getRootAsFeature(buffer));
+            TableConversions.asRow(headerMeta, dataSchema, Feature.getRootAsFeature(buffer));
 
         buffer.position(Integer.BYTES + featureSize);
         buffer.compact();

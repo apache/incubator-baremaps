@@ -20,42 +20,54 @@ import java.util.Map;
 /**
  * A schema defines the structure of a table.
  */
-public class SchemaImpl implements Schema {
+public class DataSchemaImpl implements DataSchema {
 
   private final String name;
 
-  private final List<Column> columns;
+  private final List<DataColumn> dataColumns;
 
   private final Map<String, Integer> index;
 
-  public SchemaImpl(String name, List<Column> columns) {
+  /**
+   * Constructs a schema.
+   *
+   * @param name the name of the schema
+   * @param dataColumns the columns of the schema
+   */
+  public DataSchemaImpl(String name, List<DataColumn> dataColumns) {
     this.name = name;
-    this.columns = columns;
+    this.dataColumns = dataColumns;
     this.index = new HashMap<>();
-    for (int i = 0; i < columns.size(); i++) {
-      index.put(columns.get(i).name(), i);
+    for (int i = 0; i < dataColumns.size(); i++) {
+      index.put(dataColumns.get(i).name(), i);
     }
-  }
-
-  @Override
-  public String name() {
-    return name;
-  }
-
-  @Override
-  public List<Column> columns() {
-    return columns;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Row createRow() {
-    var values = new ArrayList<>(columns.size());
-    for (int i = 0; i < columns.size(); i++) {
+  public String name() {
+    return name;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<DataColumn> columns() {
+    return dataColumns;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DataRow createRow() {
+    var values = new ArrayList<>(dataColumns.size());
+    for (int i = 0; i < dataColumns.size(); i++) {
       values.add(null);
     }
-    return new RowImpl(this, values);
+    return new DataRowImpl(this, values);
   }
 }

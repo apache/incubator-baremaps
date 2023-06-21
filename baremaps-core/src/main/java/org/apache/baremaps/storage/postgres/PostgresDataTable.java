@@ -21,31 +21,31 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.store.AbstractTable;
-import org.apache.baremaps.collection.store.Row;
-import org.apache.baremaps.collection.store.RowImpl;
-import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.store.AbstractDataTable;
+import org.apache.baremaps.collection.store.DataRow;
+import org.apache.baremaps.collection.store.DataRowImpl;
+import org.apache.baremaps.collection.store.DataSchema;
 import org.apache.baremaps.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 
 /**
  * A table that stores rows in a Postgres table.
  */
-public class PostgresTable extends AbstractTable {
+public class PostgresDataTable extends AbstractDataTable {
 
   private final DataSource dataSource;
 
-  private final Schema schema;
+  private final DataSchema dataSchema;
 
   /**
    * Constructs a table with a given name and a given schema.
    * 
    * @param dataSource the data source
-   * @param schema the schema of the table
+   * @param dataSchema the schema of the table
    */
-  public PostgresTable(DataSource dataSource, Schema schema) {
+  public PostgresDataTable(DataSource dataSource, DataSchema dataSchema) {
     this.dataSource = dataSource;
-    this.schema = schema;
+    this.dataSchema = dataSchema;
   }
 
   /**
@@ -60,7 +60,7 @@ public class PostgresTable extends AbstractTable {
    * {@inheritDoc}
    */
   @Override
-  public Stream<Row> stream() {
+  public Stream<DataRow> stream() {
     var iterator = iterator();
     var spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
     var stream = StreamSupport.stream(spliterator, false);
@@ -72,7 +72,7 @@ public class PostgresTable extends AbstractTable {
    */
   @Override
   public long sizeAsLong() {
-    var countQuery = count(schema);
+    var countQuery = count(dataSchema);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(countQuery);
         var resultSet = statement.executeQuery()) {
@@ -87,20 +87,20 @@ public class PostgresTable extends AbstractTable {
    * {@inheritDoc}
    */
   @Override
-  public Schema schema() {
-    return schema;
+  public DataSchema schema() {
+    return dataSchema;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean add(Row row) {
-    var query = insert(schema);
+  public boolean add(DataRow dataRow) {
+    var query = insert(dataSchema);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(query)) {
-      for (int i = 1; i <= schema.columns().size(); i++) {
-        var value = row.get(schema.columns().get(i - 1).name());
+      for (int i = 1; i <= dataSchema.columns().size(); i++) {
+        var value = dataRow.get(dataSchema.columns().get(i - 1).name());
         if (value instanceof Geometry geometry) {
           statement.setBytes(i, GeometryUtils.serialize(geometry));
         } else {
@@ -117,12 +117,12 @@ public class PostgresTable extends AbstractTable {
    * {@inheritDoc}
    */
   @Override
-  public boolean addAll(Collection<? extends Row> rows) {
+  public boolean addAll(Collection<? extends DataRow> rows) {
     try (var connection = dataSource.getConnection();
-        var statement = connection.prepareStatement(insert(schema))) {
+        var statement = connection.prepareStatement(insert(dataSchema))) {
       for (var row : rows) {
-        for (int i = 1; i <= schema.columns().size(); i++) {
-          var value = row.get(schema.columns().get(i - 1).name());
+        for (int i = 1; i <= dataSchema.columns().size(); i++) {
+          var value = row.get(dataSchema.columns().get(i - 1).name());
           if (value instanceof Geometry geometry) {
             statement.setBytes(i, GeometryUtils.serialize(geometry));
           } else {
@@ -141,11 +141,11 @@ public class PostgresTable extends AbstractTable {
   /**
    * Generates a query that selects all the rows of a table.
    *
-   * @param schema the schema of the table
+   * @param dataSchema the schema of the table
    * @return the query
    */
-  protected static String select(Schema schema) {
-    var columns = schema.columns().stream()
+  protected static String select(DataSchema dataSchema) {
+    var columns = dataSchema.columns().stream()
         .map(column -> {
           if (column.type().isAssignableFrom(Geometry.class)) {
             return String.format("st_asbinary(\"%s\") AS \"%s\"", column.name(), column.name());
@@ -154,41 +154,41 @@ public class PostgresTable extends AbstractTable {
           }
         })
         .toList();
-    return "SELECT " + String.join(", ", columns) + " FROM \"" + schema.name() + "\"";
+    return "SELECT " + String.join(", ", columns) + " FROM \"" + dataSchema.name() + "\"";
   }
 
   /**
    * Generates a query that counts the number of rows of a table.
    *
-   * @param schema the schema of the table
+   * @param dataSchema the schema of the table
    * @return the query
    */
-  protected static String insert(Schema schema) {
-    var columns = schema.columns().stream()
+  protected static String insert(DataSchema dataSchema) {
+    var columns = dataSchema.columns().stream()
         .map(column -> String.format("\"%s\"", column.name()))
         .toList();
-    var values = schema.columns().stream()
+    var values = dataSchema.columns().stream()
         .map(column -> "?")
         .toList();
     return "INSERT INTO \""
-        + schema.name() + "\" (" + String.join(", ", columns) + ") "
+        + dataSchema.name() + "\" (" + String.join(", ", columns) + ") "
         + "VALUES (" + String.join(", ", values) + ")";
   }
 
   /**
    * Generates a query that counts the number of rows of a table.
    *
-   * @param schema the schema of the table
+   * @param dataSchema the schema of the table
    * @return the query
    */
-  protected String count(Schema schema) {
-    return String.format("SELECT COUNT(*) FROM \"%s\"", schema.name());
+  protected String count(DataSchema dataSchema) {
+    return String.format("SELECT COUNT(*) FROM \"%s\"", dataSchema.name());
   }
 
   /**
    * An iterator that iterates over the rows of a table.
    */
-  public class PostgresIterator implements Iterator<Row>, AutoCloseable {
+  public class PostgresIterator implements Iterator<DataRow>, AutoCloseable {
 
     private Connection connection;
     private Statement statement;
@@ -202,7 +202,7 @@ public class PostgresTable extends AbstractTable {
       try {
         connection = dataSource.getConnection();
         statement = connection.createStatement();
-        resultSet = statement.executeQuery(select(schema));
+        resultSet = statement.executeQuery(select(dataSchema));
         hasNext = resultSet.next();
       } catch (SQLException e) {
         close();
@@ -225,14 +225,14 @@ public class PostgresTable extends AbstractTable {
      * {@inheritDoc}
      */
     @Override
-    public Row next() {
+    public DataRow next() {
       if (!hasNext) {
         throw new NoSuchElementException();
       }
       try {
         List<Object> values = new ArrayList<>();
-        for (int i = 0; i < schema.columns().size(); i++) {
-          var column = schema.columns().get(i);
+        for (int i = 0; i < dataSchema.columns().size(); i++) {
+          var column = dataSchema.columns().get(i);
           if (column.type().isAssignableFrom(Geometry.class)) {
             values.add(GeometryUtils.deserialize(resultSet.getBytes(i + 1)));
           } else {
@@ -240,7 +240,7 @@ public class PostgresTable extends AbstractTable {
           }
         }
         hasNext = resultSet.next();
-        return new RowImpl(schema, values);
+        return new DataRowImpl(dataSchema, values);
       } catch (SQLException e) {
         close();
         throw new RuntimeException("Error while fetching the next result", e);

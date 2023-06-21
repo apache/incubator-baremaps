@@ -12,53 +12,45 @@
 
 package org.apache.baremaps.collection.store;
 
-import java.util.Collection;
+
 import java.util.Iterator;
+import java.util.function.Function;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.collection.DataCollection;
 
 /**
- * A table is a collection of rows respecting a schema.
+ * A decorator for a table that transforms the geometries of the rows.
  */
-public class TableImpl extends AbstractDataCollection<Row> implements Table {
+public class DataTableAdapter extends AbstractDataCollection<DataRow> implements DataTable {
 
-  private final Schema schema;
+  private final DataTable dataTable;
 
-  private final Collection<Row> rows;
+  private final Function<DataRow, DataRow> transformer;
 
   /**
-   * Constructs a table with the specified schema.
+   * Constructs a new table decorator.
    *
-   * @param schema the schema of the table
-   * @param rows the collection of rows
+   * @param dataTable the table to decorate
+   * @param transformer the row transformer
    */
-  public TableImpl(Schema schema, Collection<Row> rows) {
-    this.schema = schema;
-    this.rows = rows;
+  public DataTableAdapter(DataTable dataTable, Function<DataRow, DataRow> transformer) {
+    this.dataTable = dataTable;
+    this.transformer = transformer;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Schema schema() {
-    return schema;
+  public DataSchema schema() {
+    return dataTable.schema();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean add(Row e) {
-    return rows.add(e);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Iterator<Row> iterator() {
-    return rows.iterator();
+  public Iterator iterator() {
+    return dataTable.stream().map(this.transformer).iterator();
   }
 
   /**
@@ -66,10 +58,8 @@ public class TableImpl extends AbstractDataCollection<Row> implements Table {
    */
   @Override
   public long sizeAsLong() {
-    if (rows instanceof DataCollection dataCollection) {
-      return dataCollection.sizeAsLong();
-    } else {
-      return rows.size();
-    }
+    return dataTable.sizeAsLong();
   }
+
+
 }

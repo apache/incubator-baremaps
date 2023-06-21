@@ -25,11 +25,11 @@ import org.locationtech.jts.geom.*;
 /**
  * A table that stores rows in a GeoPackage table.
  */
-public class GeoPackageTable extends AbstractDataCollection<Row> implements Table {
+public class GeoPackageDataTable extends AbstractDataCollection<DataRow> implements DataTable {
 
   private final FeatureDao featureDao;
 
-  private final Schema schema;
+  private final DataSchema dataSchema;
 
   private final GeometryFactory geometryFactory;
 
@@ -38,16 +38,16 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Tabl
    *
    * @param featureDao the feature DAO
    */
-  public GeoPackageTable(FeatureDao featureDao) {
+  public GeoPackageDataTable(FeatureDao featureDao) {
     this.featureDao = featureDao;
     var name = featureDao.getTableName();
-    var columns = new ArrayList<Column>();
+    var columns = new ArrayList<DataColumn>();
     for (FeatureColumn column : featureDao.getColumns()) {
       var propertyName = column.getName();
       var propertyType = classType(column);
-      columns.add(new ColumnImpl(propertyName, propertyType));
+      columns.add(new DataColumnImpl(propertyName, propertyType));
     }
-    schema = new SchemaImpl(name, columns);
+    dataSchema = new DataSchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
@@ -63,8 +63,8 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Tabl
    * {@inheritDoc}
    */
   @Override
-  public Iterator<Row> iterator() {
-    return new GeopackageIterator(featureDao.queryForAll(), schema);
+  public Iterator<DataRow> iterator() {
+    return new GeopackageIterator(featureDao.queryForAll(), dataSchema);
   }
 
   /**
@@ -79,8 +79,8 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Tabl
    * {@inheritDoc}
    */
   @Override
-  public Schema schema() {
-    return schema;
+  public DataSchema schema() {
+    return dataSchema;
   }
 
   /**
@@ -213,11 +213,11 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Tabl
   /**
    * An iterator over the rows of a GeoPackage table.
    */
-  public class GeopackageIterator implements Iterator<Row> {
+  public class GeopackageIterator implements Iterator<DataRow> {
 
     private final FeatureResultSet featureResultSet;
 
-    private final Schema schema;
+    private final DataSchema dataSchema;
 
     private boolean hasNext;
 
@@ -225,11 +225,11 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Tabl
      * Constructs an iterator from a feature result set.
      *
      * @param featureResultSet the feature result set
-     * @param schema the schema of the table
+     * @param dataSchema the schema of the table
      */
-    public GeopackageIterator(FeatureResultSet featureResultSet, Schema schema) {
+    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema dataSchema) {
       this.featureResultSet = featureResultSet;
-      this.schema = schema;
+      this.dataSchema = dataSchema;
       this.hasNext = featureResultSet.moveToFirst();
     }
 
@@ -245,19 +245,19 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Tabl
      * {@inheritDoc}
      */
     @Override
-    public Row next() {
+    public DataRow next() {
       if (!hasNext) {
         throw new NoSuchElementException();
       }
-      Row row = schema.createRow();
+      DataRow dataRow = dataSchema.createRow();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {
-          row.set(featureColumn.getName(), asJavaValue(value));
+          dataRow.set(featureColumn.getName(), asJavaValue(value));
         }
       }
       hasNext = featureResultSet.moveToNext();
-      return row;
+      return dataRow;
     }
   }
 

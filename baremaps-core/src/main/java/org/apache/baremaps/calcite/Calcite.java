@@ -16,9 +16,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
+import org.apache.baremaps.collection.DataCollectionAdapter;
 import org.apache.baremaps.collection.IndexedDataList;
 import org.apache.baremaps.collection.store.*;
 import org.apache.baremaps.collection.type.RowDataType;
@@ -36,38 +38,40 @@ import org.apache.calcite.sql.type.SqlTypeName;
 
 public class Calcite {
 
-  private static final Schema PLAYER_SCHEMA = new SchemaImpl("player", List.of(
-      new ColumnImpl("id", Integer.class),
-      new ColumnImpl("name", String.class),
-      new ColumnImpl("level", Integer.class)));
+  private static final DataSchema PLAYER_DATA_SCHEMA = new DataSchemaImpl("player", List.of(
+      new DataColumnImpl("id", Integer.class),
+      new DataColumnImpl("name", String.class),
+      new DataColumnImpl("level", Integer.class)));
 
-  private static final Table PLAYER_TABLE = new TableImpl(
-      PLAYER_SCHEMA,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(PLAYER_SCHEMA))));
+  private static final DataTable PLAYER_DATA_TABLE = new DataTableImpl(
+      PLAYER_DATA_SCHEMA,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(PLAYER_DATA_SCHEMA))));
 
   static {
-    PLAYER_TABLE.add(new RowImpl(PLAYER_TABLE.schema(), List.of(1, "Wizard", 5)));
-    PLAYER_TABLE.add(new RowImpl(PLAYER_TABLE.schema(), List.of(2, "Hunter", 7)));
+    PLAYER_DATA_TABLE.add(new DataRowImpl(PLAYER_DATA_TABLE.schema(), List.of(1, "Wizard", 5)));
+    PLAYER_DATA_TABLE.add(new DataRowImpl(PLAYER_DATA_TABLE.schema(), List.of(2, "Hunter", 7)));
   }
 
-  private static final Schema EQUIPMENT_SCHEMA = new SchemaImpl("equipment", List.of(
-      new ColumnImpl("id", Integer.class),
-      new ColumnImpl("name", String.class),
-      new ColumnImpl("damage", Integer.class),
-      new ColumnImpl("player_id", Integer.class)));
+  private static final DataSchema EQUIPMENT_DATA_SCHEMA = new DataSchemaImpl("equipment", List.of(
+      new DataColumnImpl("id", Integer.class),
+      new DataColumnImpl("name", String.class),
+      new DataColumnImpl("damage", Integer.class),
+      new DataColumnImpl("player_id", Integer.class)));
 
-  private static final Table EQUIPMENT_TABLE = new TableImpl(
-      EQUIPMENT_SCHEMA,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(EQUIPMENT_SCHEMA))));
+  private static final DataTable EQUIPMENT_DATA_TABLE = new DataTableImpl(
+      EQUIPMENT_DATA_SCHEMA,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(EQUIPMENT_DATA_SCHEMA))));
 
   static {
-    EQUIPMENT_TABLE.add(new RowImpl(EQUIPMENT_TABLE.schema(), List.of(1, "fireball", 7, 1)));
-    EQUIPMENT_TABLE.add(new RowImpl(EQUIPMENT_TABLE.schema(), List.of(2, "rifle", 4, 2)));
+    EQUIPMENT_DATA_TABLE
+        .add(new DataRowImpl(EQUIPMENT_DATA_TABLE.schema(), List.of(1, "fireball", 7, 1)));
+    EQUIPMENT_DATA_TABLE
+        .add(new DataRowImpl(EQUIPMENT_DATA_TABLE.schema(), List.of(2, "rifle", 4, 2)));
   }
 
   public static void main(String[] args) throws SQLException {
     Properties info = new Properties();
-    info.setProperty("lex", "MYSQL");
+    info.setProperty("lex", "JAVA");
 
     Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
     CalciteConnection calciteConnection =
@@ -75,10 +79,10 @@ public class Calcite {
 
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-    ListTable playerTable = new ListTable(PLAYER_TABLE);
+    ListTable playerTable = new ListTable(PLAYER_DATA_TABLE);
     rootSchema.add("player", playerTable);
 
-    ListTable equipmentTable = new ListTable(EQUIPMENT_TABLE);
+    ListTable equipmentTable = new ListTable(EQUIPMENT_DATA_TABLE);
     rootSchema.add("equipment", equipmentTable);
 
     String sql =
@@ -99,23 +103,24 @@ public class Calcite {
    */
   private static class ListTable extends AbstractTable implements ScannableTable {
 
-    private final Table table;
+    private final DataTable dataTable;
 
-    ListTable(Table table) {
-      this.table = table;
+    ListTable(DataTable dataTable) {
+      this.dataTable = dataTable;
     }
 
     @Override
     public Enumerable<Object[]> scan(final DataContext root) {
-      var collection = new TableAdapter<>(table, row -> row.values().toArray());
+      Collection<Object[]> collection =
+          new DataCollectionAdapter<>(dataTable, row -> row.values().toArray());
       return Linq4j.asEnumerable(collection);
     }
 
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
       var rowType = new RelDataTypeFactory.Builder(typeFactory);
-      for (Column column : table.schema().columns()) {
-        rowType.add(column.name(), toSqlType(column.type()));
+      for (DataColumn dataColumn : dataTable.schema().columns()) {
+        rowType.add(dataColumn.name(), toSqlType(dataColumn.type()));
       }
       return rowType.build();
     }

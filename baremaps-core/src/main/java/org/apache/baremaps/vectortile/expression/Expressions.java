@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import org.apache.baremaps.collection.store.Row;
+import org.apache.baremaps.collection.store.DataRow;
 import org.locationtech.jts.geom.*;
 
 public interface Expressions {
@@ -41,7 +41,7 @@ public interface Expressions {
 
     String name();
 
-    T evaluate(Row feature);
+    T evaluate(DataRow feature);
 
   }
 
@@ -53,7 +53,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow dataRow) {
       return value;
     }
   }
@@ -66,8 +66,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      Object value = expression.evaluate(row);
+    public Object evaluate(DataRow dataRow) {
+      Object value = expression.evaluate(dataRow);
       if (value instanceof List list && index >= 0 && index < list.size()) {
         return list.get(index);
       }
@@ -83,8 +83,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      return row.get(property);
+    public Object evaluate(DataRow dataRow) {
+      return dataRow.get(property);
     }
   }
 
@@ -96,8 +96,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
-      return row.get(property) != null;
+    public Boolean evaluate(DataRow dataRow) {
+      return dataRow.get(property) != null;
     }
   }
 
@@ -109,8 +109,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
-      var expressionValue = expression.evaluate(row);
+    public Boolean evaluate(DataRow dataRow) {
+      var expressionValue = expression.evaluate(dataRow);
       if (expressionValue instanceof List list) {
         return list.contains(value);
       } else if (expressionValue instanceof String string) {
@@ -129,8 +129,8 @@ public interface Expressions {
     }
 
     @Override
-    public Integer evaluate(Row row) {
-      var expressionValue = expression.evaluate(row);
+    public Integer evaluate(DataRow dataRow) {
+      var expressionValue = expression.evaluate(dataRow);
       if (expressionValue instanceof List list) {
         return list.indexOf(value);
       } else if (expressionValue instanceof String string) {
@@ -149,8 +149,8 @@ public interface Expressions {
     }
 
     @Override
-    public Integer evaluate(Row row) {
-      Object value = expression.evaluate(row);
+    public Integer evaluate(DataRow dataRow) {
+      Object value = expression.evaluate(dataRow);
       if (value instanceof String string) {
         return string.length();
       } else if (value instanceof List list) {
@@ -173,14 +173,14 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      Object value = expression.evaluate(row);
-      var startIndex = (Integer) start.evaluate(row);
+    public Object evaluate(DataRow dataRow) {
+      Object value = expression.evaluate(dataRow);
+      var startIndex = (Integer) start.evaluate(dataRow);
       if (value instanceof String string) {
-        var endIndex = end == null ? string.length() : (Integer) end.evaluate(row);
+        var endIndex = end == null ? string.length() : (Integer) end.evaluate(dataRow);
         return string.substring(startIndex, endIndex);
       } else if (value instanceof List list) {
-        var endIndex = end == null ? list.size() : (Integer) end.evaluate(row);
+        var endIndex = end == null ? list.size() : (Integer) end.evaluate(dataRow);
         return list.subList(startIndex, endIndex);
       } else {
         return List.of();
@@ -196,8 +196,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      return !(boolean) expression.evaluate(row);
+    public Object evaluate(DataRow dataRow) {
+      return !(boolean) expression.evaluate(dataRow);
     }
   }
 
@@ -209,8 +209,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      return new Not(new Equal(left, right)).evaluate(row);
+    public Object evaluate(DataRow dataRow) {
+      return new Not(new Equal(left, right)).evaluate(dataRow);
     }
   }
 
@@ -222,8 +222,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
-      return (double) left.evaluate(row) < (double) right.evaluate(row);
+    public Boolean evaluate(DataRow dataRow) {
+      return (double) left.evaluate(dataRow) < (double) right.evaluate(dataRow);
     }
   }
 
@@ -235,8 +235,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      return (double) left.evaluate(row) <= (double) right.evaluate(row);
+    public Object evaluate(DataRow dataRow) {
+      return (double) left.evaluate(dataRow) <= (double) right.evaluate(dataRow);
     }
   }
 
@@ -248,8 +248,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      return left.evaluate(row).equals(right.evaluate(row));
+    public Object evaluate(DataRow dataRow) {
+      return left.evaluate(dataRow).equals(right.evaluate(dataRow));
     }
   }
 
@@ -261,8 +261,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
-      return (double) left.evaluate(row) > (double) right.evaluate(row);
+    public Boolean evaluate(DataRow dataRow) {
+      return (double) left.evaluate(dataRow) > (double) right.evaluate(dataRow);
     }
   }
 
@@ -274,8 +274,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
-      return (double) left.evaluate(row) >= (double) right.evaluate(row);
+    public Boolean evaluate(DataRow dataRow) {
+      return (double) left.evaluate(dataRow) >= (double) right.evaluate(dataRow);
     }
   }
 
@@ -287,8 +287,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      return expressions.stream().allMatch(expression -> (boolean) expression.evaluate(row));
+    public Object evaluate(DataRow dataRow) {
+      return expressions.stream().allMatch(expression -> (boolean) expression.evaluate(dataRow));
     }
   }
 
@@ -300,8 +300,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      return expressions.stream().anyMatch(expression -> (boolean) expression.evaluate(row));
+    public Object evaluate(DataRow dataRow) {
+      return expressions.stream().anyMatch(expression -> (boolean) expression.evaluate(dataRow));
     }
   }
 
@@ -313,11 +313,11 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
-      if ((boolean) condition.evaluate(row)) {
-        return then.evaluate(row);
+    public Object evaluate(DataRow dataRow) {
+      if ((boolean) condition.evaluate(dataRow)) {
+        return then.evaluate(dataRow);
       } else {
-        return otherwise.evaluate(row);
+        return otherwise.evaluate(dataRow);
       }
     }
   }
@@ -330,9 +330,9 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow dataRow) {
       for (Expression expression : expressions) {
-        Object value = expression.evaluate(row);
+        Object value = expression.evaluate(dataRow);
         if (value != null) {
           return value;
         }
@@ -350,20 +350,20 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow dataRow) {
       if (cases.size() % 2 != 0) {
         throw new IllegalArgumentException(
             "match expression must have an even number of arguments");
       }
-      var inputValue = input.evaluate(row);
+      var inputValue = input.evaluate(dataRow);
       for (int i = 0; i < cases.size(); i += 2) {
         Expression condition = cases.get(i);
         Expression then = cases.get(i + 1);
-        if (inputValue.equals(condition.evaluate(row))) {
-          return then.evaluate(row);
+        if (inputValue.equals(condition.evaluate(dataRow))) {
+          return then.evaluate(dataRow);
         }
       }
-      return fallback.evaluate(row);
+      return fallback.evaluate(dataRow);
     }
   }
 
@@ -375,7 +375,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow dataRow) {
       throw new UnsupportedOperationException("within expression is not supported");
     }
   }
@@ -388,8 +388,8 @@ public interface Expressions {
     }
 
     @Override
-    public String evaluate(Row row) {
-      Object property = row.get("geom");
+    public String evaluate(DataRow dataRow) {
+      Object property = dataRow.get("geom");
       if (property instanceof Point) {
         return "Point";
       } else if (property instanceof LineString) {
@@ -518,7 +518,7 @@ public interface Expressions {
     return mapper.writeValueAsString(expression);
   }
 
-  static Predicate<Row> asPredicate(Expression expression) {
+  static Predicate<DataRow> asPredicate(Expression expression) {
     return row -> {
       var result = expression.evaluate(row);
       if (result instanceof Boolean booleanResult) {

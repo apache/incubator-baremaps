@@ -14,21 +14,21 @@ package org.apache.baremaps.storage.postgres;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.baremaps.collection.store.TableException;
-import org.apache.baremaps.storage.MockTable;
+import org.apache.baremaps.collection.store.DataTableException;
+import org.apache.baremaps.storage.MockDataTable;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresStoreTest extends PostgresContainerTest {
+class PostgresDataStoreTest extends PostgresContainerTest {
 
-  private PostgresStore store;
+  private PostgresDataStore store;
 
   @BeforeEach
   void init() {
-    store = new PostgresStore(dataSource());
-    store.add(new MockTable());
+    store = new PostgresDataStore(dataSource());
+    store.add(new MockDataTable());
   }
 
   @Test
@@ -49,6 +49,6 @@ class PostgresStoreTest extends PostgresContainerTest {
   @Tag("integration")
   void remove() {
     store.remove("mock");
-    assertThrows(TableException.class, () -> store.get("mock"));
+    assertThrows(DataTableException.class, () -> store.get("mock"));
   }
 }

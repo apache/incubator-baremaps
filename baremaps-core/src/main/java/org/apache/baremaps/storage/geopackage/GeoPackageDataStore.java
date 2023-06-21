@@ -17,14 +17,14 @@ import java.nio.file.Path;
 import java.util.Collection;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.collection.store.Store;
-import org.apache.baremaps.collection.store.Table;
-import org.apache.baremaps.collection.store.TableException;
+import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.store.DataTable;
+import org.apache.baremaps.collection.store.DataTableException;
 
 /**
  * A store corresponding to a GeoPackage database.
  */
-public class GeoPackageStore implements Store, AutoCloseable {
+public class GeoPackageDataStore implements DataStore, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
@@ -33,7 +33,7 @@ public class GeoPackageStore implements Store, AutoCloseable {
    *
    * @param file the path to the GeoPackage database
    */
-  public GeoPackageStore(Path file) {
+  public GeoPackageDataStore(Path file) {
     this.geoPackage = GeoPackageManager.open(file.toFile());
   }
 
@@ -49,7 +49,7 @@ public class GeoPackageStore implements Store, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public Collection<String> list() throws TableException {
+  public Collection<String> list() throws DataTableException {
     return geoPackage.getFeatureTables();
   }
 
@@ -57,15 +57,15 @@ public class GeoPackageStore implements Store, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public Table get(String name) throws TableException {
-    return new GeoPackageTable(geoPackage.getFeatureDao(name));
+  public DataTable get(String name) throws DataTableException {
+    return new GeoPackageDataTable(geoPackage.getFeatureDao(name));
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void add(Table value) throws TableException {
+  public void add(DataTable value) throws DataTableException {
     throw new UnsupportedOperationException();
   }
 
@@ -73,7 +73,7 @@ public class GeoPackageStore implements Store, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public void remove(String name) throws TableException {
+  public void remove(String name) throws DataTableException {
     throw new UnsupportedOperationException();
   }
 }

@@ -17,13 +17,13 @@ import org.apache.baremaps.collection.DataCollection;
 /**
  * A table is a collection of rows respecting a schema.
  */
-public interface Table extends DataCollection<Row> {
+public interface DataTable extends DataCollection<DataRow> {
 
   /**
    * Returns the schema of the table.
    *
    * @return the schema of the table
    */
-  Schema schema();
+  DataSchema schema();
 
 }

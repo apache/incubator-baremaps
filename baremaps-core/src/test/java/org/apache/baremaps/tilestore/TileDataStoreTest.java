@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public abstract class TileStoreTest {
+public abstract class TileDataStoreTest {
 
   // TODO: try to move this in the testing module
 

@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.store.DataSchema;
 
 /**
  * Provides a ShapeFile Reader.
@@ -44,7 +44,7 @@ public class ShapefileReader {
   private File shapeFileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private Schema schema;
+  private DataSchema dataSchema;
 
   /** Shapefile descriptor. */
   private ShapefileDescriptor shapefileDescriptor;
@@ -117,8 +117,8 @@ public class ShapefileReader {
    *
    * @return the schema.
    */
-  public Schema getSchema() {
-    return this.schema;
+  public DataSchema getSchema() {
+    return this.dataSchema;
   }
 
   /**
@@ -174,7 +174,7 @@ public class ShapefileReader {
   public ShapefileInputStream read() throws IOException {
     ShapefileInputStream is =
         new ShapefileInputStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
-    this.schema = is.getSchema();
+    this.dataSchema = is.getSchema();
     this.shapefileDescriptor = is.getShapefileDescriptor();
     this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
     return is;

@@ -13,9 +13,10 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
-import org.apache.baremaps.collection.store.TableDecorator;
-import org.apache.baremaps.storage.postgres.PostgresStore;
-import org.apache.baremaps.storage.shapefile.ShapefileTable;
+import org.apache.baremaps.collection.store.DataTableGeometryTransformer;
+import org.apache.baremaps.collection.store.DataTableAdapter;
+import org.apache.baremaps.storage.postgres.PostgresDataStore;
+import org.apache.baremaps.storage.shapefile.ShapefileDataTable;
 import org.apache.baremaps.utils.ProjectionTransformer;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -33,11 +34,13 @@ public record ImportShapefile(Path file, String database, Integer sourceSRID, In
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
     try {
-      var featureSet = new ShapefileTable(path);
+      var shapefileDataTable = new ShapefileDataTable(path);
       var dataSource = context.getDataSource(database);
-      var postgresDatabase = new PostgresStore(dataSource);
-      postgresDatabase.add(new TableDecorator(
-          featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
+      var postgresDataStore = new PostgresDataStore(dataSource);
+      var rowTransformer = new DataTableGeometryTransformer(shapefileDataTable,
+          new ProjectionTransformer(sourceSRID, targetSRID));
+      var transformedDataTable = new DataTableAdapter(shapefileDataTable, rowTransformer);
+      postgresDataStore.add(transformedDataTable);
     } catch (Exception e) {
       throw new WorkflowException(e);
     }

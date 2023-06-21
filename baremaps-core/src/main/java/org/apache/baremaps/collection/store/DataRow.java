@@ -17,14 +17,14 @@ import java.util.List;
 /**
  * A row in a table.
  */
-public interface Row {
+public interface DataRow {
 
   /**
    * Returns the schema of the row.
    * 
    * @return the schema of the row
    */
-  Schema schema();
+  DataSchema schema();
 
   /**
    * Returns the values of the columns in the row.
@@ -72,7 +72,7 @@ public interface Row {
    * @param value the value
    * @return the row
    */
-  default Row with(String column, Object value) {
+  default DataRow with(String column, Object value) {
     set(column, value);
     return this;
   }
@@ -84,7 +84,7 @@ public interface Row {
    * @param value the value
    * @return the row
    */
-  default Row with(int index, Object value) {
+  default DataRow with(int index, Object value) {
     set(index, value);
     return this;
   }

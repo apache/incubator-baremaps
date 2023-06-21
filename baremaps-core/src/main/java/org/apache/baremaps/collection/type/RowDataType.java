@@ -16,13 +16,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.baremaps.collection.store.Row;
-import org.apache.baremaps.collection.store.RowImpl;
-import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.store.DataRow;
+import org.apache.baremaps.collection.store.DataRowImpl;
+import org.apache.baremaps.collection.store.DataSchema;
 import org.apache.baremaps.collection.type.geometry.*;
 import org.locationtech.jts.geom.*;
 
-public class RowDataType implements DataType<Row> {
+public class RowDataType implements DataType<DataRow> {
 
   private static final Map<Class, DataType> types;
 
@@ -47,20 +47,20 @@ public class RowDataType implements DataType<Row> {
     types.put(Coordinate.class, new CoordinateDataType());
   }
 
-  private final Schema schema;
+  private final DataSchema dataSchema;
 
-  public RowDataType(Schema schema) {
-    this.schema = schema;
+  public RowDataType(DataSchema dataSchema) {
+    this.dataSchema = dataSchema;
   }
 
   @Override
-  public int size(Row row) {
+  public int size(DataRow dataRow) {
     var size = Integer.BYTES;
-    var columns = schema.columns();
+    var columns = dataSchema.columns();
     for (int i = 0; i < columns.size(); i++) {
       var columnType = columns.get(i).type();
       var dataType = types.get(columnType);
-      var value = row.get(i);
+      var value = dataRow.get(i);
       size += dataType.size(value);
     }
     return size;
@@ -72,14 +72,14 @@ public class RowDataType implements DataType<Row> {
   }
 
   @Override
-  public void write(final ByteBuffer buffer, final int position, final Row row) {
+  public void write(final ByteBuffer buffer, final int position, final DataRow dataRow) {
     var p = position + Integer.BYTES;
-    var columns = schema.columns();
+    var columns = dataSchema.columns();
     for (int i = 0; i < columns.size(); i++) {
       var column = columns.get(i);
       var columnType = column.type();
       var dataType = types.get(columnType);
-      var value = row.get(i);
+      var value = dataRow.get(i);
       dataType.write(buffer, p, value);
       p += dataType.size(buffer, p);
     }
@@ -87,9 +87,9 @@ public class RowDataType implements DataType<Row> {
   }
 
   @Override
-  public Row read(final ByteBuffer buffer, final int position) {
+  public DataRow read(final ByteBuffer buffer, final int position) {
     var p = position + Integer.BYTES;
-    var columns = schema.columns();
+    var columns = dataSchema.columns();
     var values = new ArrayList();
     for (int i = 0; i < columns.size(); i++) {
       var column = columns.get(i);
@@ -98,6 +98,6 @@ public class RowDataType implements DataType<Row> {
       values.add(dataType.read(buffer, p));
       p += dataType.size(buffer, p);
     }
-    return new RowImpl(schema, values);
+    return new DataRowImpl(dataSchema, values);
   }
 }

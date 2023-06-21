@@ -19,7 +19,7 @@ import java.util.List;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.junit.jupiter.api.Test;
 
-class PostgresTileStoreTest {
+class PostgresTileDataStoreTest {
 
   @Test
   void sameQueries() {

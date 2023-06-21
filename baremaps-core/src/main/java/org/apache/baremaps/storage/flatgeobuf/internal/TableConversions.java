@@ -34,16 +34,16 @@ import org.wololo.flatgeobuf.generated.Header;
 
 public class TableConversions {
 
-  public static Schema asFeatureType(HeaderMeta headerMeta) {
+  public static DataSchema asFeatureType(HeaderMeta headerMeta) {
     var name = headerMeta.name;
     var columns = headerMeta.columns.stream()
-        .map(column -> new ColumnImpl(column.name, column.getBinding()))
-        .map(Column.class::cast)
+        .map(column -> new DataColumnImpl(column.name, column.getBinding()))
+        .map(DataColumn.class::cast)
         .toList();
-    return new SchemaImpl(name, columns);
+    return new DataSchemaImpl(name, columns);
   }
 
-  public static Row asRow(HeaderMeta headerMeta, Schema dataType, Feature feature) {
+  public static DataRow asRow(HeaderMeta headerMeta, DataSchema dataType, Feature feature) {
     var values = new ArrayList();
 
     var geometryBuffer = feature.geometry();
@@ -60,7 +60,7 @@ public class TableConversions {
       }
     }
 
-    return new RowImpl(dataType, values);
+    return new DataRowImpl(dataType, values);
   }
 
   public static void writeHeaderMeta(HeaderMeta headerMeta, WritableByteChannel channel,
@@ -189,20 +189,20 @@ public class TableConversions {
       Double.class, ColumnType.Double,
       String.class, ColumnType.String);
 
-  public static List<ColumnMeta> asColumns(List<Column> columns) {
-    return columns.stream()
+  public static List<ColumnMeta> asColumns(List<DataColumn> dataColumns) {
+    return dataColumns.stream()
         .map(TableConversions::asColumn)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
-  public static ColumnMeta asColumn(Column column) {
-    var type = types.get(column.type());
+  public static ColumnMeta asColumn(DataColumn dataColumn) {
+    var type = types.get(dataColumn.type());
     if (type == null) {
       return null;
     }
     var columnMeta = new ColumnMeta();
-    columnMeta.name = column.name();
+    columnMeta.name = dataColumn.name();
     columnMeta.type = type.byteValue();
     return columnMeta;
   }

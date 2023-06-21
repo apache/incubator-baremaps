@@ -16,22 +16,22 @@ import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FA
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import org.apache.baremaps.collection.store.RowImpl;
-import org.apache.baremaps.storage.MockTable;
+import org.apache.baremaps.collection.store.DataRowImpl;
+import org.apache.baremaps.storage.MockDataTable;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class PostgresTableTest extends PostgresContainerTest {
+class PostgresDataTableTest extends PostgresContainerTest {
 
-  private PostgresStore store;
+  private PostgresDataStore store;
 
   @BeforeEach
   void init() {
-    store = new PostgresStore(dataSource());
-    store.add(new MockTable());
+    store = new PostgresDataStore(dataSource());
+    store.add(new MockDataTable());
   }
 
   @Test
@@ -64,7 +64,7 @@ class PostgresTableTest extends PostgresContainerTest {
   void add() {
     var table = store.get("mock");
     var schema = table.schema();
-    var added = table.add(new RowImpl(schema,
+    var added = table.add(new DataRowImpl(schema,
         List.of("string", 6, 6.0, 6.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(6, 6)))));
     assertTrue(added);
     assertEquals(6, table.size());
@@ -76,9 +76,9 @@ class PostgresTableTest extends PostgresContainerTest {
     var table = store.get("mock");
     var schema = table.schema();
     var added = table.addAll(List.of(
-        new RowImpl(schema,
+        new DataRowImpl(schema,
             List.of("string", 6, 6.0, 6.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(6, 6)))),
-        new RowImpl(schema,
+        new DataRowImpl(schema,
             List.of("string", 7, 7.0, 7.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(7, 7))))));
     assertTrue(added);
     assertEquals(7, table.size());

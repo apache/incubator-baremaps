@@ -20,44 +20,44 @@ import org.apache.baremaps.collection.store.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 
-public class MockTable extends AbstractTable {
+public class MockDataTable extends AbstractDataTable {
 
-  private final Schema schema;
+  private final DataSchema dataSchema;
 
-  private final List<Row> rows;
+  private final List<DataRow> dataRows;
 
-  public MockTable() {
-    this.schema = new SchemaImpl("mock", List.of(
-        new ColumnImpl("string", String.class),
-        new ColumnImpl("integer", Integer.class),
-        new ColumnImpl("double", Double.class),
-        new ColumnImpl("float", Float.class),
-        new ColumnImpl("geometry", Geometry.class)));
-    this.rows = List.of(
-        new RowImpl(schema,
+  public MockDataTable() {
+    this.dataSchema = new DataSchemaImpl("mock", List.of(
+        new DataColumnImpl("string", String.class),
+        new DataColumnImpl("integer", Integer.class),
+        new DataColumnImpl("double", Double.class),
+        new DataColumnImpl("float", Float.class),
+        new DataColumnImpl("geometry", Geometry.class)));
+    this.dataRows = List.of(
+        new DataRowImpl(dataSchema,
             List.of("string", 1, 1.0, 1.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)))),
-        new RowImpl(schema,
+        new DataRowImpl(dataSchema,
             List.of("string", 2, 2.0, 2.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(2, 2)))),
-        new RowImpl(schema,
+        new DataRowImpl(dataSchema,
             List.of("string", 3, 3.0, 3.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(3, 3)))),
-        new RowImpl(schema,
+        new DataRowImpl(dataSchema,
             List.of("string", 4, 4.0, 4.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(4, 4)))),
-        new RowImpl(schema,
+        new DataRowImpl(dataSchema,
             List.of("string", 5, 5.0, 5.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(5, 5)))));
   }
 
   @Override
-  public Iterator<Row> iterator() {
-    return rows.iterator();
+  public Iterator<DataRow> iterator() {
+    return dataRows.iterator();
   }
 
   @Override
   public long sizeAsLong() {
-    return rows.size();
+    return dataRows.size();
   }
 
   @Override
-  public Schema schema() {
-    return schema;
+  public DataSchema schema() {
+    return dataSchema;
   }
 }

@@ -13,16 +13,17 @@
 package org.apache.baremaps.collection.store;
 
 /** Signals that an exception occurred in a table. */
-public class TableException extends RuntimeException {
-  /** Constructs a {@code TableException} with {@code null} as its error detail message. */
-  public TableException() {}
+public class DataTableException extends RuntimeException {
+
+  /** Constructs a {@link DataTableException} with {@code null} as its error detail message. */
+  public DataTableException() {}
 
   /**
    * Constructs an {@code TableException} with the specified detail message.
    *
    * @param message the message
    */
-  public TableException(String message) {
+  public DataTableException(String message) {
     super(message);
   }
 
@@ -31,7 +32,7 @@ public class TableException extends RuntimeException {
    *
    * @param cause the cause
    */
-  public TableException(Throwable cause) {
+  public DataTableException(Throwable cause) {
     super(cause);
   }
 
@@ -41,7 +42,7 @@ public class TableException extends RuntimeException {
    * @param message the message
    * @param cause the cause
    */
-  public TableException(String message, Throwable cause) {
+  public DataTableException(String message, Throwable cause) {
     super(message, cause);
   }
 }

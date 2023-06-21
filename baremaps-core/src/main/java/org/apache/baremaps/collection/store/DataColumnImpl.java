@@ -15,6 +15,6 @@ package org.apache.baremaps.collection.store;
 /**
  * A column in a table.
  */
-public record ColumnImpl(String name, Class type) implements Column {
+public record DataColumnImpl(String name, Class type) implements DataColumn {
 
 }

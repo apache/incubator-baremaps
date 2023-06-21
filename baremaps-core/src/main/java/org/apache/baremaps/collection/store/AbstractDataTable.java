@@ -12,23 +12,11 @@
 
 package org.apache.baremaps.collection.store;
 
+import org.apache.baremaps.collection.AbstractDataCollection;
+
 /**
- * A column in a table.
+ * A table is a collection of rows respecting a schema.
  */
-public interface Column {
-
-  /**
-   * Returns the name of the column.
-   *
-   * @return the name of the column
-   */
-  String name();
-
-  /**
-   * Returns the type of the column.
-   *
-   * @return the type of the column
-   */
-  <T> Class<T> type();
+public abstract class AbstractDataTable extends AbstractDataCollection<DataRow> implements DataTable {
 
 }

@@ -17,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-class GeoPackageStoreTest {
+class GeoPackageDataStoreTest {
 
   @Test
   void schema() {
-    var geoPackageStore = new GeoPackageStore(TestFiles.resolve("countries.gpkg"));
+    var geoPackageStore = new GeoPackageDataStore(TestFiles.resolve("countries.gpkg"));
     var table = geoPackageStore.get("countries");
     var schema = table.schema();
     assertEquals(schema.name(), "countries");
@@ -30,7 +30,7 @@ class GeoPackageStoreTest {
 
   @Test
   void read() {
-    var geoPackageStore = new GeoPackageStore(TestFiles.resolve("countries.gpkg"));
+    var geoPackageStore = new GeoPackageDataStore(TestFiles.resolve("countries.gpkg"));
     var table = geoPackageStore.get("countries");
     assertEquals(179, table.sizeAsLong());
     assertEquals(179, table.stream().count());

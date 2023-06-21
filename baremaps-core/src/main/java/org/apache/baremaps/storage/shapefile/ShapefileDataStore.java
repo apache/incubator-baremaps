@@ -18,14 +18,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.collection.store.Store;
-import org.apache.baremaps.collection.store.Table;
-import org.apache.baremaps.collection.store.TableException;
+import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.store.DataTable;
+import org.apache.baremaps.collection.store.DataTableException;
 
 /**
  * A store corresponding to the shapefiles of a directory.
  */
-public class ShapefileStore implements Store {
+public class ShapefileDataStore implements DataStore {
 
   private final Path directory;
 
@@ -34,7 +34,7 @@ public class ShapefileStore implements Store {
    *
    * @param directory the directory
    */
-  public ShapefileStore(Path directory) {
+  public ShapefileDataStore(Path directory) {
     this.directory = directory;
   }
 
@@ -49,7 +49,7 @@ public class ShapefileStore implements Store {
           .map(file -> file.getFileName().toString())
           .toList();
     } catch (IOException e) {
-      throw new TableException(e);
+      throw new DataTableException(e);
     }
   }
 
@@ -57,15 +57,15 @@ public class ShapefileStore implements Store {
    * {@inheritDoc}
    */
   @Override
-  public Table get(String name) {
-    return new ShapefileTable(directory.resolve(name));
+  public DataTable get(String name) {
+    return new ShapefileDataTable(directory.resolve(name));
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void add(Table value) {
+  public void add(DataTable value) {
     throw new UnsupportedOperationException();
   }
 

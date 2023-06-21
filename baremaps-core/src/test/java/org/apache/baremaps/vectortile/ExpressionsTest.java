@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
-import org.apache.baremaps.collection.store.Row;
-import org.apache.baremaps.collection.store.Schema;
+import org.apache.baremaps.collection.store.DataRow;
+import org.apache.baremaps.collection.store.DataSchema;
 import org.apache.baremaps.vectortile.expression.Expressions;
 import org.apache.baremaps.vectortile.expression.Expressions.*;
 import org.junit.jupiter.api.Test;
@@ -27,10 +27,10 @@ class ExpressionsTest {
   record Property(String name, Object value) {
   }
 
-  record RowMock(List<Property> properties) implements Row {
+  record DataRowMock(List<Property> properties) implements DataRow {
 
     @Override
-    public Schema schema() {
+    public DataSchema schema() {
       throw new UnsupportedOperationException();
     }
 
@@ -83,15 +83,15 @@ class ExpressionsTest {
   @Test
   public void get() throws IOException {
     assertEquals("value",
-        new Get("key").evaluate(new RowMock(List.of(new Property("key", "value")))));
-    assertEquals(null, new Get("key").evaluate(new RowMock(List.of())));
+        new Get("key").evaluate(new DataRowMock(List.of(new Property("key", "value")))));
+    assertEquals(null, new Get("key").evaluate(new DataRowMock(List.of())));
   }
 
   @Test
   public void has() throws IOException {
     assertEquals(true,
-        new Has("key").evaluate(new RowMock(List.of(new Property("key", "value")))));
-    assertEquals(false, new Has("key").evaluate(new RowMock(List.of())));
+        new Has("key").evaluate(new DataRowMock(List.of(new Property("key", "value")))));
+    assertEquals(false, new Has("key").evaluate(new DataRowMock(List.of())));
   }
 
   @Test

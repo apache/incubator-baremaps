@@ -16,18 +16,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.collection.store.Store;
-import org.apache.baremaps.collection.store.Table;
-import org.apache.baremaps.collection.store.TableException;
+import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.store.DataTable;
+import org.apache.baremaps.collection.store.DataTableException;
 
 /**
  * A store corresponding to the flatgeobuf files of a directory.
  */
-public class FlatGeoBufStore implements Store {
+public class FlatGeoBufDataStore implements DataStore {
 
   private final Path directory;
 
-  public FlatGeoBufStore(Path directory) {
+  public FlatGeoBufDataStore(Path directory) {
     this.directory = directory;
   }
 
@@ -35,14 +35,14 @@ public class FlatGeoBufStore implements Store {
    * {@inheritDoc}
    */
   @Override
-  public Collection<String> list() throws TableException {
+  public Collection<String> list() throws DataTableException {
     try (var files = Files.list(directory)) {
       return files
           .filter(file -> file.toString().toLowerCase().endsWith(".fgb"))
           .map(file -> file.getFileName().toString())
           .toList();
     } catch (IOException e) {
-      throw new TableException(e);
+      throw new DataTableException(e);
     }
   }
 
@@ -50,26 +50,26 @@ public class FlatGeoBufStore implements Store {
    * {@inheritDoc}
    */
   @Override
-  public Table get(String name) throws TableException {
+  public DataTable get(String name) throws DataTableException {
     var path = directory.resolve(name);
-    return new FlatGeoBufTable(path);
+    return new FlatGeoBufDataTable(path);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void add(Table table) throws TableException {
-    var filename = table.schema().name();
+  public void add(DataTable dataTable) throws DataTableException {
+    var filename = dataTable.schema().name();
     filename = filename.endsWith(".fgb") ? filename : filename + ".fgb";
     var path = directory.resolve(filename);
     try {
       Files.deleteIfExists(path);
       Files.createFile(path);
-      var flatGeoBufTable = new FlatGeoBufTable(path, table.schema());
-      flatGeoBufTable.write(table);
+      var flatGeoBufTable = new FlatGeoBufDataTable(path, dataTable.schema());
+      flatGeoBufTable.write(dataTable);
     } catch (IOException e) {
-      throw new TableException(e);
+      throw new DataTableException(e);
     }
   }
 
@@ -77,16 +77,16 @@ public class FlatGeoBufStore implements Store {
    * {@inheritDoc}
    */
   @Override
-  public void remove(String name) throws TableException {
+  public void remove(String name) throws DataTableException {
     var path = directory.resolve(name);
     if (name.equals(path.getFileName().toString())) {
       try {
         Files.delete(path);
       } catch (IOException e) {
-        throw new TableException(e);
+        throw new DataTableException(e);
       }
     } else {
-      throw new TableException("Table not found");
+      throw new DataTableException("Table not found");
     }
   }
 }

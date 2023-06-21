@@ -25,7 +25,7 @@
             border: 1px solid black;
         }
 
-        table {
+        dataTable {
             border-collapse: collapse;
         }
     </style>
@@ -37,8 +37,8 @@
     <input type="text" id="countryCode" name="countryCode" placeholder="Country code" value=""/>
     <input type="submit" value="Submit"/>
 </form>
-<!-- The table of retrieved locations -->
-<table id="results"></table>
+<!-- The dataTable of retrieved locations -->
+<dataTable id="results"></dataTable>
 
 <script>
 
@@ -46,8 +46,8 @@
     const searchForm = document.getElementById('searchForm');
     searchForm.addEventListener('submit', search);
 
-    // Get the table of results
-    const table = document.getElementById('results');
+    // Get the dataTable of results
+    const dataTable = document.getElementById('results');
 
     function search(event) {
         event.preventDefault();
@@ -60,28 +60,28 @@
         fetch(`${window.location.origin}/api/geocoder?${queryString}`)
             .then(response => response.json())
             .then(response => {
-                // Extract the headers from the first row
+                // Extract the headers from the first dataRow
                 const headers = response.results && response.results.length > 0
                     ? Object.keys(response.results[0].data).sort()
                     : [];
 
-                // Clear the results table
-                table.innerHTML = '';
+                // Clear the results dataTable
+                dataTable.innerHTML = '';
 
-                // Insert the headers in the table
-                const headerRow = table.insertRow();
+                // Insert the headers in the dataTable
+                const headerRow = dataTable.insertRow();
                 headerRow.innerHTML = `<th>#</th><th>score</th>${headers.map(header => `<th>${header}</th>`).join('')}`;
 
-                // Insert the results in the table
+                // Insert the results in the dataTable
                 response.results.forEach((result, index) => {
-                    const row = table.insertRow();
-                    row.insertCell().innerText = index;
-                    row.insertCell().innerText = result.score;
+                    const dataRow = dataTable.insertRow();
+                    dataRow.insertCell().innerText = index;
+                    dataRow.insertCell().innerText = result.score;
                     headers.forEach(header => {
                         if (result.data[header] !== undefined) {
-                            row.insertCell().innerText = result.data[header];
+                            dataRow.insertCell().innerText = result.data[header];
                         } else {
-                            row.insertCell().innerText = '';
+                            dataRow.insertCell().innerText = '';
                         }
                     });
                 });

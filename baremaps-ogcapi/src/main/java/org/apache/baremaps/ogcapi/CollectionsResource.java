@@ -20,12 +20,12 @@ import javax.sql.DataSource;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.apache.baremaps.collection.store.Table;
+import org.apache.baremaps.collection.store.DataTable;
 import org.apache.baremaps.ogcapi.api.CollectionsApi;
 import org.apache.baremaps.ogcapi.model.Collection;
 import org.apache.baremaps.ogcapi.model.Collections;
 import org.apache.baremaps.ogcapi.model.Link;
-import org.apache.baremaps.storage.postgres.PostgresStore;
+import org.apache.baremaps.storage.postgres.PostgresDataStore;
 
 /**
  * A resource that provides access to collections.
@@ -36,7 +36,7 @@ public class CollectionsResource implements CollectionsApi {
   @Context
   UriInfo uriInfo;
 
-  private final PostgresStore store;
+  private final PostgresDataStore store;
 
   /**
    * Constructs a {@code CollectionsResource}.
@@ -45,7 +45,7 @@ public class CollectionsResource implements CollectionsApi {
    */
   @Inject
   public CollectionsResource(DataSource dataSource) {
-    this.store = new PostgresStore(dataSource);
+    this.store = new PostgresDataStore(dataSource);
   }
 
   /**
@@ -80,11 +80,11 @@ public class CollectionsResource implements CollectionsApi {
   /**
    * Returns the collection info for the specified table.
    *
-   * @param table the table
+   * @param dataTable the table
    * @return the collection info
    */
-  private Collection getCollection(Table table) {
-    var name = table.schema().name();
+  private Collection getCollection(DataTable dataTable) {
+    var name = dataTable.schema().name();
     var collection = new Collection();
     collection.setId(name);
     collection.setTitle(name);

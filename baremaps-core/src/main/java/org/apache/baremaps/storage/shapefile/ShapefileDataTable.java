@@ -17,17 +17,17 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.collection.store.AbstractTable;
-import org.apache.baremaps.collection.store.Row;
-import org.apache.baremaps.collection.store.Schema;
-import org.apache.baremaps.collection.store.TableException;
+import org.apache.baremaps.collection.store.AbstractDataTable;
+import org.apache.baremaps.collection.store.DataRow;
+import org.apache.baremaps.collection.store.DataSchema;
+import org.apache.baremaps.collection.store.DataTableException;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 
 /**
  * A table that stores rows in a shapefile.
  */
-public class ShapefileTable extends AbstractTable {
+public class ShapefileDataTable extends AbstractDataTable {
 
   private final ShapefileReader shapeFile;
 
@@ -36,7 +36,7 @@ public class ShapefileTable extends AbstractTable {
    *
    * @param file the path to the shapefile
    */
-  public ShapefileTable(Path file) {
+  public ShapefileDataTable(Path file) {
     this.shapeFile = new ShapefileReader(file.toString());
   }
 
@@ -44,11 +44,11 @@ public class ShapefileTable extends AbstractTable {
    * {@inheritDoc}
    */
   @Override
-  public Schema schema() throws TableException {
+  public DataSchema schema() throws DataTableException {
     try (var input = shapeFile.read()) {
       return input.getSchema();
     } catch (IOException e) {
-      throw new TableException(e);
+      throw new DataTableException(e);
     }
   }
 
@@ -56,7 +56,7 @@ public class ShapefileTable extends AbstractTable {
    * {@inheritDoc}
    */
   @Override
-  public Iterator<Row> iterator() {
+  public Iterator<DataRow> iterator() {
     try {
       return new ShapefileIterator(shapeFile.read());
     } catch (IOException e) {
@@ -76,11 +76,11 @@ public class ShapefileTable extends AbstractTable {
   /**
    * An iterator over the rows of a shapefile.
    */
-  public static class ShapefileIterator implements Iterator<Row> {
+  public static class ShapefileIterator implements Iterator<DataRow> {
 
     private final ShapefileInputStream shapefileInputStream;
 
-    private Row next;
+    private DataRow next;
 
     /**
      * Constructs an iterator from a shapefile input stream.
@@ -111,12 +111,12 @@ public class ShapefileTable extends AbstractTable {
      * {@inheritDoc}
      */
     @Override
-    public Row next() {
+    public DataRow next() {
       try {
         if (next == null) {
           next = shapefileInputStream.readRow();
         }
-        Row current = next;
+        DataRow current = next;
         next = null;
         return current;
       } catch (Exception e) {

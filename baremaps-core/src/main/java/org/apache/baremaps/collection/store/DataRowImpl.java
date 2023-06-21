@@ -17,15 +17,23 @@ import java.util.List;
 /**
  * A row in a table.
  */
-public record RowImpl(Schema schema, List values) implements Row {
+public record DataRowImpl(DataSchema dataSchema, List values) implements DataRow {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DataSchema schema() {
+    return null;
+  }
 
   /**
    * {@inheritDoc}
    */
   @Override
   public Object get(String column) {
-    for (int i = 0; i < schema().columns().size(); i++) {
-      if (schema().columns().get(i).name().equals(column)) {
+    for (int i = 0; i < dataSchema().columns().size(); i++) {
+      if (dataSchema().columns().get(i).name().equals(column)) {
         return values.get(i);
       }
     }
@@ -45,8 +53,8 @@ public record RowImpl(Schema schema, List values) implements Row {
    */
   @Override
   public void set(String column, Object value) {
-    for (int i = 0; i < schema().columns().size(); i++) {
-      if (schema().columns().get(i).name().equals(column)) {
+    for (int i = 0; i < dataSchema().columns().size(); i++) {
+      if (dataSchema().columns().get(i).name().equals(column)) {
         values.set(i, value);
         return;
       }

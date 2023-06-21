@@ -12,40 +12,32 @@
 
 package org.apache.baremaps.collection.store;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
- * A store is a collection of tables.
+ * A schema defines the structure of a table.
  */
-public interface Store {
+public interface DataSchema {
 
   /**
-   * Lists the names of the tables.
+   * Returns the name of the schema.
    * 
-   * @return the names of the tables
+   * @return the name of the schema
    */
-  Collection<String> list() throws TableException;
+  String name();
 
   /**
-   * Gets a table by its name.
+   * Returns the columns of the schema.
    * 
-   * @param name the name of the table
-   * @return the table
+   * @return the columns of the schema
    */
-  Table get(String name) throws TableException;
+  List<DataColumn> columns();
 
   /**
-   * Adds a table to the store.
+   * Creates a new row of the schema.
    * 
-   * @param value the table
+   * @return a new row of the schema
    */
-  void add(Table value) throws TableException;
-
-  /**
-   * Removes a table from the store.
-   * 
-   * @param name the name of the table
-   */
-  void remove(String name) throws TableException;
+  DataRow createRow();
 
 }
