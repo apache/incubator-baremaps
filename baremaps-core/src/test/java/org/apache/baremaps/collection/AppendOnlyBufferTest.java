@@ -12,6 +12,7 @@
 
 package org.apache.baremaps.collection;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -73,7 +74,25 @@ class AppendOnlyBufferTest {
     // read values
     int count = 0;
     for (var v : collection) {
-      assertEquals(value, v);
+      if (value instanceof byte[]) {
+        assertArrayEquals((byte[]) value, (byte[]) v);
+      } else if (value instanceof short[]) {
+        assertArrayEquals((short[]) value, (short[]) v);
+      } else if (value instanceof int[]) {
+        assertArrayEquals((int[]) value, (int[]) v);
+      } else if (value instanceof long[]) {
+        assertArrayEquals((long[]) value, (long[]) v);
+      } else if (value instanceof float[]) {
+        assertArrayEquals((float[]) value, (float[]) v);
+      } else if (value instanceof double[]) {
+        assertArrayEquals((double[]) value, (double[]) v);
+      } else if (value instanceof char[]) {
+        assertArrayEquals((char[]) value, (char[]) v);
+      } else if (value instanceof boolean[]) {
+        assertArrayEquals((boolean[]) value, (boolean[]) v);
+      } else {
+        assertEquals(value, v);
+      }
       count++;
     }
 

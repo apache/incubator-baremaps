@@ -34,9 +34,8 @@ public class DoubleArrayDataType implements DataType<double[]> {
   /** {@inheritDoc} */
   @Override
   public void write(final ByteBuffer buffer, final int position, final double[] values) {
-    var p = position;
-    buffer.putInt(p, size(values));
-    p += Integer.BYTES;
+    buffer.putInt(position, size(values));
+    int p = position + Integer.BYTES;
     for (double value : values) {
       buffer.putDouble(p, value);
       p += Double.BYTES;
