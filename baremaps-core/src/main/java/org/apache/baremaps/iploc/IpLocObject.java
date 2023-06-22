@@ -20,6 +20,10 @@ public record IpLocObject(
     InetRange inetRange,
     Coordinate coordinate,
     String network,
-    String country) {
+    String country,
+
+    String source,
+
+    String precision) {
 
 }

@@ -54,7 +54,7 @@ public class GeocoderResource {
 
   @GET
   @javax.ws.rs.Path("/api/geocoder")
-  public Response getIpToLocation(
+  public Response searchLocations(
       @QueryParam("queryText") String queryText,
       @QueryParam("countryCode") @DefaultValue("") String countryCode,
       @QueryParam("limit") @DefaultValue("10") int limit) throws IOException {
@@ -62,7 +62,8 @@ public class GeocoderResource {
       throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
           .entity("The queryText parameter is mandatory").build());
     }
-    var query = new GeonamesQueryBuilder().queryText(queryText).countryCode(countryCode).build();
+    var query = new GeonamesQueryBuilder()
+        .queryText(queryText).countryCode(countryCode).withScoringByPopulation().build();
     var searcher = searcherManager.acquire();
     try {
       var result = searcher.search(query, limit);

@@ -43,15 +43,9 @@ public record DownloadUrl(String url, Path path, boolean replaceExisting) implem
 
     if (isHttp(targetUrl)) {
       if (Files.exists(targetPath) && !replaceExisting) {
-        var head = (HttpURLConnection) targetUrl.openConnection();
-        head.setInstanceFollowRedirects(true);
-        head.setRequestMethod("HEAD");
-        var contentLength = head.getContentLengthLong();
-        head.disconnect();
-        if (Files.size(targetPath) == contentLength) {
           logger.info("Skipping download of {} to {}", url, path);
           return;
-        }
+
       }
 
       var get = (HttpURLConnection) targetUrl.openConnection();

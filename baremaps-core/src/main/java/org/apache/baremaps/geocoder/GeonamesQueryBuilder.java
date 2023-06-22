@@ -17,10 +17,12 @@ package org.apache.baremaps.geocoder;
 import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.function.FunctionScoreQuery;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.DoubleValuesSource;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
@@ -34,6 +36,9 @@ public class GeonamesQueryBuilder {
   private String queryText;
 
   private String countryCode = "";
+
+  private boolean scoringByPopulation;
+
 
   public GeonamesQueryBuilder() {
     this(GeocoderConstants.ANALYZER);
@@ -53,15 +58,20 @@ public class GeonamesQueryBuilder {
     return this;
   }
 
+  public GeonamesQueryBuilder withScoringByPopulation() {
+    this.scoringByPopulation = true;
+    return this;
+  }
+
   public Query build() {
     var builder = new BooleanQuery.Builder();
 
     if (queryText != null) {
       var queryTextEsc = QueryParser.escape(queryText);
       if (!queryTextEsc.isBlank()) {
-        var fieldWeights = Map.of("name", 1f, "country", 1f);
+        var fieldWeights = Map.of("name", 1f, "asciiname", 1f);
         var termsQuery = new SimpleQueryParser(analyzer, fieldWeights).parse(queryTextEsc);
-        builder.add(termsQuery, BooleanClause.Occur.SHOULD);
+        builder.add(termsQuery, BooleanClause.Occur.MUST);
       }
     }
 
@@ -71,6 +81,11 @@ public class GeonamesQueryBuilder {
         var countryCodeQuery = new TermQuery(new Term("countryCode", countryCodeEsc));
         builder.add(countryCodeQuery, BooleanClause.Occur.MUST);
       }
+    }
+
+    if (scoringByPopulation) {
+      var query = builder.build();
+      return FunctionScoreQuery.boostByValue(query, DoubleValuesSource.fromLongField("population"));
     }
 
     return builder.build();
