@@ -47,7 +47,7 @@ public class LineStringDataType implements DataType<LineString> {
    * {@inheritDoc}
    */
   @Override
-  public int size(LineString value) {
+  public int size(final LineString value) {
     return coordinateArrayDataType.size(value.getCoordinates());
   }
 
@@ -55,7 +55,7 @@ public class LineStringDataType implements DataType<LineString> {
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return coordinateArrayDataType.size(buffer, position);
   }
 
@@ -63,7 +63,7 @@ public class LineStringDataType implements DataType<LineString> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, LineString value) {
+  public void write(final ByteBuffer buffer, final int position, final LineString value) {
     coordinateArrayDataType.write(buffer, position, value.getCoordinates());
   }
 
@@ -71,7 +71,7 @@ public class LineStringDataType implements DataType<LineString> {
    * {@inheritDoc}
    */
   @Override
-  public LineString read(ByteBuffer buffer, int position) {
+  public LineString read(final ByteBuffer buffer, final int position) {
     var coordinates = coordinateArrayDataType.read(buffer, position);
     return geometryFactory.createLineString(coordinates);
   }

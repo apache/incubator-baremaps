@@ -49,7 +49,7 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
    * {@inheritDoc}
    */
   @Override
-  public int size(MultiLineString value) {
+  public int size(final MultiLineString value) {
     int size = Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
       size += lineStringDataType.size((LineString) value.getGeometryN(i));
@@ -61,7 +61,7 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
@@ -69,12 +69,12 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, MultiLineString value) {
+  public void write(final ByteBuffer buffer, final int position, final MultiLineString value) {
     buffer.putInt(position, size(value));
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
-      lineStringDataType.write(buffer, position, (LineString) value.getGeometryN(i));
-      position += buffer.getInt(position);
+      lineStringDataType.write(buffer, p, (LineString) value.getGeometryN(i));
+      p += buffer.getInt(p);
     }
   }
 
@@ -82,15 +82,15 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
    * {@inheritDoc}
    */
   @Override
-  public MultiLineString read(ByteBuffer buffer, int position) {
+  public MultiLineString read(final ByteBuffer buffer, final int position) {
     var size = size(buffer, position);
     var limit = position + size;
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     var lineStrings = new ArrayList<LineString>();
-    while (position < limit) {
-      var lineString = lineStringDataType.read(buffer, position);
+    while (p < limit) {
+      var lineString = lineStringDataType.read(buffer, p);
       lineStrings.add(lineString);
-      position += lineStringDataType.size(buffer, position);
+      p += lineStringDataType.size(buffer, p);
     }
     return geometryFactory.createMultiLineString(lineStrings.toArray(LineString[]::new));
   }

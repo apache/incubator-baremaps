@@ -50,7 +50,7 @@ public class PolygonDataType implements DataType<Polygon> {
    * {@inheritDoc}
    */
   @Override
-  public int size(Polygon value) {
+  public int size(final Polygon value) {
     int size = Integer.BYTES;
 
     // Add the size of the exterior ring
@@ -70,7 +70,7 @@ public class PolygonDataType implements DataType<Polygon> {
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return coordinateArrayDataType.size(buffer, position);
   }
 
@@ -78,20 +78,20 @@ public class PolygonDataType implements DataType<Polygon> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, Polygon value) {
+  public void write(final ByteBuffer buffer, final int position, final Polygon value) {
     buffer.putInt(position, size(value));
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
 
     // Write the exterior ring
     var exteriorRing = value.getExteriorRing();
-    coordinateArrayDataType.write(buffer, position, exteriorRing.getCoordinates());
-    position += coordinateArrayDataType.size(exteriorRing.getCoordinates());
+    coordinateArrayDataType.write(buffer, p, exteriorRing.getCoordinates());
+    p += coordinateArrayDataType.size(exteriorRing.getCoordinates());
 
     // Write the interior rings
     for (int i = 0; i < value.getNumInteriorRing(); i++) {
       var interiorRing = value.getInteriorRingN(i);
-      coordinateArrayDataType.write(buffer, position, interiorRing.getCoordinates());
-      position += coordinateArrayDataType.size(interiorRing.getCoordinates());
+      coordinateArrayDataType.write(buffer, p, interiorRing.getCoordinates());
+      p += coordinateArrayDataType.size(interiorRing.getCoordinates());
     }
   }
 
@@ -99,24 +99,24 @@ public class PolygonDataType implements DataType<Polygon> {
    * {@inheritDoc}
    */
   @Override
-  public Polygon read(ByteBuffer buffer, int position) {
+  public Polygon read(final ByteBuffer buffer, final int position) {
     var size = size(buffer, position);
     var limit = position + size;
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
 
 
     // Read the exterior ring
-    var exteriorRingCoordinates = coordinateArrayDataType.read(buffer, position);
+    var exteriorRingCoordinates = coordinateArrayDataType.read(buffer, p);
     var exteriorRing = geometryFactory.createLinearRing(exteriorRingCoordinates);
-    position += coordinateArrayDataType.size(buffer, position);
+    p += coordinateArrayDataType.size(buffer, p);
 
     // Read the interior rings
     var interiorRings = new ArrayList<LineString>();
-    while (position < limit) {
-      var interiorRingCoordinates = coordinateArrayDataType.read(buffer, position);
+    while (p < limit) {
+      var interiorRingCoordinates = coordinateArrayDataType.read(buffer, p);
       var interiorRing = geometryFactory.createLinearRing(interiorRingCoordinates);
       interiorRings.add(interiorRing);
-      position += coordinateArrayDataType.size(buffer, position);
+      p += coordinateArrayDataType.size(buffer, p);
     }
 
     return geometryFactory.createPolygon(exteriorRing, interiorRings.toArray(LinearRing[]::new));

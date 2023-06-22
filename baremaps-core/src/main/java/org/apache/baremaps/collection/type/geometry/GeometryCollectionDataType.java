@@ -61,7 +61,7 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
    * {@inheritDoc}
    */
   @Override
-  public int size(GeometryCollection value) {
+  public int size(final GeometryCollection value) {
     int size = Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
       size += geometryDataType.size(value.getGeometryN(i));
@@ -73,7 +73,7 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
@@ -81,13 +81,13 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, GeometryCollection value) {
+  public void write(final ByteBuffer buffer, final int position, final GeometryCollection value) {
     buffer.putInt(position, size(value));
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
       var geometry = value.getGeometryN(i);
-      geometryDataType.write(buffer, position, geometry);
-      position += geometryDataType.size(buffer, position);
+      geometryDataType.write(buffer, p, geometry);
+      p += geometryDataType.size(buffer, p);
     }
   }
 
@@ -95,15 +95,15 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
    * {@inheritDoc}
    */
   @Override
-  public GeometryCollection read(ByteBuffer buffer, int position) {
+  public GeometryCollection read(final ByteBuffer buffer, final int position) {
     var size = size(buffer, position);
     var limit = position + size;
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     var geometries = new ArrayList<Geometry>();
-    while (position < limit) {
-      var geometry = geometryDataType.read(buffer, position);
+    while (p < limit) {
+      var geometry = geometryDataType.read(buffer, p);
       geometries.add(geometry);
-      position += geometryDataType.size(geometry);
+      p += geometryDataType.size(geometry);
     }
     return geometryFactory.createGeometryCollection(geometries.toArray(Geometry[]::new));
   }

@@ -30,7 +30,7 @@ public class FloatDataType extends MemoryAlignedDataType<Float> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, Float value) {
+  public void write(final ByteBuffer buffer, final int position, final Float value) {
     buffer.putFloat(position, value);
   }
 
@@ -38,7 +38,7 @@ public class FloatDataType extends MemoryAlignedDataType<Float> {
    * {@inheritDoc}
    */
   @Override
-  public Float read(ByteBuffer buffer, int position) {
+  public Float read(final ByteBuffer buffer, final int position) {
     return buffer.getFloat(position);
   }
 }

@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.baremaps.collection.store.DataColumn;
 import org.apache.baremaps.collection.store.DataRow;
 import org.apache.baremaps.collection.store.DataRowImpl;
 import org.apache.baremaps.collection.store.DataSchema;
@@ -54,7 +55,7 @@ public class RowDataType implements DataType<DataRow> {
   }
 
   @Override
-  public int size(DataRow dataRow) {
+  public int size(final DataRow dataRow) {
     var size = Integer.BYTES;
     var columns = dataSchema.columns();
     for (int i = 0; i < columns.size(); i++) {
@@ -67,7 +68,7 @@ public class RowDataType implements DataType<DataRow> {
   }
 
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
@@ -91,8 +92,7 @@ public class RowDataType implements DataType<DataRow> {
     var p = position + Integer.BYTES;
     var columns = dataSchema.columns();
     var values = new ArrayList();
-    for (int i = 0; i < columns.size(); i++) {
-      var column = columns.get(i);
+    for (DataColumn column : columns) {
       var columnType = column.type();
       var dataType = types.get(columnType);
       values.add(dataType.read(buffer, p));

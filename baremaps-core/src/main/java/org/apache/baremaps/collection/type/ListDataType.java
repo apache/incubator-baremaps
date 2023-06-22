@@ -30,13 +30,13 @@ public class ListDataType<T> implements DataType<List<T>> {
    *
    * @param dataType the data type of the values
    */
-  public ListDataType(DataType<T> dataType) {
+  public ListDataType(final DataType<T> dataType) {
     this.dataType = dataType;
   }
 
   /** {@inheritDoc} */
   @Override
-  public int size(List<T> values) {
+  public int size(final List<T> values) {
     int size = Integer.BYTES;
     for (T value : values) {
       size += dataType.size(value);
@@ -45,24 +45,24 @@ public class ListDataType<T> implements DataType<List<T>> {
   }
 
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, List<T> values) {
+  public void write(final ByteBuffer buffer, final int position, final List<T> values) {
     buffer.putInt(position, size(values));
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     for (T value : values) {
-      dataType.write(buffer, position, value);
-      position += dataType.size(value);
+      dataType.write(buffer, p, value);
+      p += dataType.size(value);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<T> read(ByteBuffer buffer, int position) {
+  public List<T> read(final ByteBuffer buffer, final int position) {
     var size = buffer.getInt(position);
     var list = new ArrayList<T>(size);
     for (var p = position + Integer.BYTES; p < position + size; p += dataType.size(buffer, p)) {

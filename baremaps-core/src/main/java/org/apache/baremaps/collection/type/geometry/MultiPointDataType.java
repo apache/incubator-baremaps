@@ -46,7 +46,7 @@ public class MultiPointDataType implements DataType<MultiPoint> {
    * {@inheritDoc}
    */
   @Override
-  public int size(MultiPoint value) {
+  public int size(final MultiPoint value) {
     return coordinateArrayDataType.size(value.getCoordinates());
   }
 
@@ -54,7 +54,7 @@ public class MultiPointDataType implements DataType<MultiPoint> {
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return coordinateArrayDataType.size(buffer, position);
   }
 
@@ -62,7 +62,7 @@ public class MultiPointDataType implements DataType<MultiPoint> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, MultiPoint value) {
+  public void write(final ByteBuffer buffer, final int position, final MultiPoint value) {
     coordinateArrayDataType.write(buffer, position, value.getCoordinates());
   }
 
@@ -70,7 +70,7 @@ public class MultiPointDataType implements DataType<MultiPoint> {
    * {@inheritDoc}
    */
   @Override
-  public MultiPoint read(ByteBuffer buffer, int position) {
+  public MultiPoint read(final ByteBuffer buffer, final int position) {
     var coordinates = coordinateArrayDataType.read(buffer, position);
     return geometryFactory.createMultiPoint(coordinates);
   }

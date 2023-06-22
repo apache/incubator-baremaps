@@ -26,13 +26,13 @@ public class ByteDataType extends MemoryAlignedDataType<Byte> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Byte value) {
+  public void write(final ByteBuffer buffer, final int position, final Byte value) {
     buffer.put(position, value);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Byte read(ByteBuffer buffer, int position) {
+  public Byte read(final ByteBuffer buffer, final int position) {
     return buffer.get(position);
   }
 }

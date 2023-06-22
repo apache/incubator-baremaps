@@ -138,8 +138,8 @@ public class Calcite {
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
       var rowType = new RelDataTypeFactory.Builder(typeFactory);
-      for (DataColumn dataColumn : dataTable.schema().columns()) {
-        rowType.add(dataColumn.name(), toSqlType(dataColumn.type()));
+      for (DataColumn column : dataTable.schema().columns()) {
+        rowType.add(column.name(), toSqlType(column.type()));
       }
       return rowType.build();
     }

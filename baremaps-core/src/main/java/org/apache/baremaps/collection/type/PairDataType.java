@@ -24,7 +24,7 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
   private final FixedSizeDataType<L> left;
   private final FixedSizeDataType<R> right;
 
-  public PairDataType(FixedSizeDataType<L> left, FixedSizeDataType<R> right) {
+  public PairDataType(final FixedSizeDataType<L> left, final FixedSizeDataType<R> right) {
     super(left.size() + right.size());
     this.left = left;
     this.right = right;
@@ -32,14 +32,14 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Pair<L, R> value) {
+  public void write(final ByteBuffer buffer, final int position, final Pair<L, R> value) {
     left.write(buffer, position, value.left());
     right.write(buffer, position + left.size(), value.right());
   }
 
   /** {@inheritDoc} */
   @Override
-  public Pair<L, R> read(ByteBuffer buffer, int position) {
+  public Pair<L, R> read(final ByteBuffer buffer, final int position) {
     return new Pair<>(
         left.read(buffer, position),
         right.read(buffer, position + left.size()));
@@ -66,7 +66,7 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
       if (this == o) {
         return true;
       }

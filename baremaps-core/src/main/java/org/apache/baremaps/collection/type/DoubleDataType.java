@@ -26,13 +26,13 @@ public class DoubleDataType extends MemoryAlignedDataType<Double> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Double value) {
+  public void write(final ByteBuffer buffer, final int position, final Double value) {
     buffer.putDouble(position, value);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Double read(ByteBuffer buffer, int position) {
+  public Double read(final ByteBuffer buffer, final int position) {
     return buffer.getDouble(position);
   }
 }

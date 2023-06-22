@@ -47,7 +47,7 @@ public class MultiPolygonDataType implements DataType<MultiPolygon> {
    * {@inheritDoc}
    */
   @Override
-  public int size(MultiPolygon value) {
+  public int size(final MultiPolygon value) {
     int size = Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
       size += polygonDataType.size((Polygon) value.getGeometryN(i));
@@ -59,7 +59,7 @@ public class MultiPolygonDataType implements DataType<MultiPolygon> {
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
@@ -67,12 +67,12 @@ public class MultiPolygonDataType implements DataType<MultiPolygon> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, MultiPolygon value) {
+  public void write(final ByteBuffer buffer, final int position, final MultiPolygon value) {
     buffer.putInt(position, size(value));
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
-      polygonDataType.write(buffer, position, (Polygon) value.getGeometryN(i));
-      position += buffer.getInt(position);
+      polygonDataType.write(buffer, p, (Polygon) value.getGeometryN(i));
+      p += buffer.getInt(p);
     }
   }
 
@@ -80,15 +80,15 @@ public class MultiPolygonDataType implements DataType<MultiPolygon> {
    * {@inheritDoc}
    */
   @Override
-  public MultiPolygon read(ByteBuffer buffer, int position) {
+  public MultiPolygon read(final ByteBuffer buffer, final int position) {
     var size = size(buffer, position);
     var limit = position + size;
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     var polygons = new ArrayList<Polygon>();
-    while (position < limit) {
-      var polygon = polygonDataType.read(buffer, position);
+    while (p < limit) {
+      var polygon = polygonDataType.read(buffer, p);
       polygons.add(polygon);
-      position += polygonDataType.size(buffer, position);
+      p += polygonDataType.size(buffer, p);
     }
     return geometryFactory.createMultiPolygon(polygons.toArray(Polygon[]::new));
   }

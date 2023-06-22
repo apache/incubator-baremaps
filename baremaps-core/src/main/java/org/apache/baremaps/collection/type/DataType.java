@@ -30,7 +30,7 @@ public interface DataType<T> {
    * @param value the value
    * @return the size of the value
    */
-  int size(T value);
+  int size(final T value);
 
   /**
    * Returns the size of the value stored at the specified position in a {@link ByteBuffer}.
@@ -39,7 +39,7 @@ public interface DataType<T> {
    * @param position the position
    * @return the size of the value
    */
-  int size(ByteBuffer buffer, int position);
+  int size(final ByteBuffer buffer, final int position);
 
   /**
    * Write a value.
@@ -48,7 +48,7 @@ public interface DataType<T> {
    * @param position the absolute position of the value within the buffer
    * @param value the value
    */
-  void write(ByteBuffer buffer, int position, T value);
+  void write(final ByteBuffer buffer, final int position, final T value);
 
   /**
    * Read a value.
@@ -57,5 +57,5 @@ public interface DataType<T> {
    * @param position the absolute position of the value within the buffer
    * @return the object
    */
-  T read(ByteBuffer buffer, int position);
+  T read(final ByteBuffer buffer, final int position);
 }

@@ -23,20 +23,20 @@ public class WKBDataType implements DataType<Geometry> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(Geometry value) {
+  public int size(final Geometry value) {
     byte[] bytes = GeometryUtils.serialize(value);
     return Integer.BYTES + bytes.length;
   }
 
   /** {@inheritDoc} */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Geometry value) {
+  public void write(final ByteBuffer buffer, final int position, final Geometry value) {
     byte[] bytes = GeometryUtils.serialize(value);
     buffer.putInt(position, Integer.BYTES + bytes.length);
     buffer.put(position + Integer.BYTES, bytes);
@@ -44,7 +44,7 @@ public class WKBDataType implements DataType<Geometry> {
 
   /** {@inheritDoc} */
   @Override
-  public Geometry read(ByteBuffer buffer, int position) {
+  public Geometry read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
     byte[] bytes = new byte[Math.max(size - Integer.BYTES, 0)];
     buffer.get(position + Integer.BYTES, bytes);

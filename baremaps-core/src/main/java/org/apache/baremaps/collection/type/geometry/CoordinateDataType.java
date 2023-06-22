@@ -29,14 +29,14 @@ public class CoordinateDataType extends MemoryAlignedDataType<Coordinate> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Coordinate value) {
+  public void write(final ByteBuffer buffer, final int position, final Coordinate value) {
     buffer.putDouble(position, value.x);
     buffer.putDouble(position + Double.BYTES, value.y);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Coordinate read(ByteBuffer buffer, int position) {
+  public Coordinate read(final ByteBuffer buffer, final int position) {
     double x = buffer.getDouble(position);
     double y = buffer.getDouble(position + Double.BYTES);
     return new Coordinate(x, y);

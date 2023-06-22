@@ -15,16 +15,14 @@ package org.apache.baremaps.collection.type;
 
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of longs in {@link ByteBuffer}s. */
-public class LongListDataType implements DataType<List<Long>> {
+/** A {@link DataType} for reading and writing lists of doubles in {@link ByteBuffer}s. */
+public class DoubleArrayDataType implements DataType<double[]> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(final List<Long> values) {
-    return Integer.BYTES + values.size() * Long.BYTES;
+  public int size(final double[] values) {
+    return Integer.BYTES + values.length * Double.BYTES;
   }
 
   /** {@inheritDoc} */
@@ -35,22 +33,26 @@ public class LongListDataType implements DataType<List<Long>> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(final ByteBuffer buffer, final int position, final List<Long> values) {
-    buffer.putInt(position, size(values));
-    var p = position + Integer.BYTES;
-    for (Long value : values) {
-      buffer.putLong(p, value);
-      p += Long.BYTES;
+  public void write(final ByteBuffer buffer, final int position, final double[] values) {
+    var p = position;
+    buffer.putInt(p, size(values));
+    p += Integer.BYTES;
+    for (double value : values) {
+      buffer.putDouble(p, value);
+      p += Double.BYTES;
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Long> read(final ByteBuffer buffer, final int position) {
+  public double[] read(final ByteBuffer buffer, final int position) {
     var size = buffer.getInt(position);
-    var list = new ArrayList<Long>(size);
-    for (var p = position + Integer.BYTES; p < position + size; p += Long.BYTES) {
-      list.add(buffer.getLong(p));
+    var length = (size - Integer.BYTES) / Double.BYTES;
+    var list = new double[length];
+    var index = 0;
+    for (var p = position + Integer.BYTES; p < position + size; p += Double.BYTES) {
+      list[index] = buffer.getDouble(p);
+      index++;
     }
     return list;
   }

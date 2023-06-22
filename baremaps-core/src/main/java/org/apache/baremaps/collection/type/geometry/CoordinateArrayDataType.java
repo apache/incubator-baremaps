@@ -25,7 +25,7 @@ public class CoordinateArrayDataType implements DataType<Coordinate[]> {
    * {@inheritDoc}
    */
   @Override
-  public int size(Coordinate[] value) {
+  public int size(final Coordinate[] value) {
     return Integer.BYTES + Double.BYTES * 2 * value.length;
   }
 
@@ -33,7 +33,7 @@ public class CoordinateArrayDataType implements DataType<Coordinate[]> {
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
@@ -41,15 +41,15 @@ public class CoordinateArrayDataType implements DataType<Coordinate[]> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, Coordinate[] value) {
+  public void write(final ByteBuffer buffer, final int position, final Coordinate[] value) {
     buffer.putInt(position, size(value));
-    position += Integer.BYTES;
+    int p = position + Integer.BYTES;
     for (int i = 0; i < value.length; i++) {
       Coordinate coordinate = value[i];
-      buffer.putDouble(position, coordinate.x);
-      position += Double.BYTES;
-      buffer.putDouble(position, coordinate.y);
-      position += Double.BYTES;
+      buffer.putDouble(p, coordinate.x);
+      p += Double.BYTES;
+      buffer.putDouble(p, coordinate.y);
+      p += Double.BYTES;
     }
   }
 
@@ -57,16 +57,16 @@ public class CoordinateArrayDataType implements DataType<Coordinate[]> {
    * {@inheritDoc}
    */
   @Override
-  public Coordinate[] read(ByteBuffer buffer, int position) {
+  public Coordinate[] read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
     int numPoints = (size - Integer.BYTES) / (Double.BYTES * 2);
-    position += Integer.BYTES;
+    int p = position + Integer.BYTES;
     Coordinate[] coordinates = new Coordinate[numPoints];
     for (int i = 0; i < numPoints; i++) {
-      double x = buffer.getDouble(position);
-      double y = buffer.getDouble(position + Double.BYTES);
+      double x = buffer.getDouble(p);
+      double y = buffer.getDouble(p + Double.BYTES);
       coordinates[i] = new Coordinate(x, y);
-      position += Double.BYTES * 2;
+      p += Double.BYTES * 2;
     }
     return coordinates;
   }

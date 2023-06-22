@@ -22,13 +22,13 @@ public class MapDataType<K, V> implements DataType<Map<K, V>> {
 
   private final DataType<V> valueType;
 
-  public MapDataType(DataType<K> keyType, DataType<V> valueType) {
+  public MapDataType(final DataType<K> keyType, final DataType<V> valueType) {
     this.keyType = keyType;
     this.valueType = valueType;
   }
 
   @Override
-  public int size(Map<K, V> value) {
+  public int size(final Map<K, V> value) {
     int size = Integer.BYTES;
     for (Map.Entry<K, V> entry : value.entrySet()) {
       size += keyType.size(entry.getKey());
@@ -38,24 +38,24 @@ public class MapDataType<K, V> implements DataType<Map<K, V>> {
   }
 
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
   @Override
-  public void write(ByteBuffer buffer, int position, Map<K, V> value) {
+  public void write(final ByteBuffer buffer, final int position, final Map<K, V> value) {
     buffer.putInt(position, size(value));
-    position += Integer.BYTES;
+    var p = position + Integer.BYTES;
     for (Map.Entry<K, V> entry : value.entrySet()) {
-      keyType.write(buffer, position, entry.getKey());
-      position += keyType.size(entry.getKey());
-      valueType.write(buffer, position, entry.getValue());
-      position += valueType.size(entry.getValue());
+      keyType.write(buffer, p, entry.getKey());
+      p += keyType.size(entry.getKey());
+      valueType.write(buffer, p, entry.getValue());
+      p += valueType.size(entry.getValue());
     }
   }
 
   @Override
-  public Map<K, V> read(ByteBuffer buffer, int position) {
+  public Map<K, V> read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
     Map<K, V> map = new HashMap<>(size);
     for (int p = position + Integer.BYTES; p < position + size;) {

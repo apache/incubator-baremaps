@@ -32,7 +32,7 @@ public class LonLatDataType extends MemoryAlignedDataType<Coordinate> {
     super(Long.BYTES);
   }
 
-  public static long encodeLonLat(double lon, double lat) {
+  public static long encodeLonLat(final double lon, final double lat) {
     long x = (long) (((lon + 180) / 360) * BITS);
     long y = (long) (((lat + 90) / 180) * BITS);
     long l = (x << SHIFT);
@@ -40,25 +40,25 @@ public class LonLatDataType extends MemoryAlignedDataType<Coordinate> {
     return l | r;
   }
 
-  public static double decodeLon(long value) {
+  public static double decodeLon(final long value) {
     double l = (value >>> 32);
     return (l / BITS) * 360 - 180;
   }
 
-  public static double decodeLat(long value) {
+  public static double decodeLat(final long value) {
     long r = (value & MASK);
     return (r / BITS) * 180 - 90;
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Coordinate value) {
+  public void write(final ByteBuffer buffer, final int position, final Coordinate value) {
     buffer.putLong(position, encodeLonLat(value.x, value.y));
   }
 
   /** {@inheritDoc} */
   @Override
-  public Coordinate read(ByteBuffer buffer, int position) {
+  public Coordinate read(final ByteBuffer buffer, final int position) {
     var value = buffer.getLong(position);
     return new Coordinate(decodeLon(value), decodeLat(value));
   }

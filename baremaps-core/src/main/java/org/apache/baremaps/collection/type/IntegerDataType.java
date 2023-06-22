@@ -28,13 +28,13 @@ public class IntegerDataType extends MemoryAlignedDataType<Integer> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Integer value) {
+  public void write(final ByteBuffer buffer, final int position, final Integer value) {
     buffer.putInt(position, value);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Integer read(ByteBuffer buffer, int position) {
+  public Integer read(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 }

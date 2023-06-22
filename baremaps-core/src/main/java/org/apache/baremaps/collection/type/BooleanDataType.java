@@ -26,13 +26,13 @@ public class BooleanDataType extends MemoryAlignedDataType<Boolean> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Boolean value) {
+  public void write(final ByteBuffer buffer, final int position, final Boolean value) {
     buffer.put(position, value ? (byte) 1 : (byte) 0);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Boolean read(ByteBuffer buffer, int position) {
+  public Boolean read(final ByteBuffer buffer, final int position) {
     return buffer.get(position) == 1;
   }
 }

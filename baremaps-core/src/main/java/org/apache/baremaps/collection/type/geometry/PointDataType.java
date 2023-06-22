@@ -45,7 +45,7 @@ public class PointDataType implements DataType<Point> {
    * {@inheritDoc}
    */
   @Override
-  public int size(Point value) {
+  public int size(final Point value) {
     return Double.BYTES * 2;
   }
 
@@ -53,7 +53,7 @@ public class PointDataType implements DataType<Point> {
    * {@inheritDoc}
    */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return Double.BYTES * 2;
   }
 
@@ -61,7 +61,7 @@ public class PointDataType implements DataType<Point> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, Point value) {
+  public void write(final ByteBuffer buffer, final int position, final Point value) {
     if (value.isEmpty()) {
       buffer.putDouble(position, Double.NaN);
       buffer.putDouble(position + Double.BYTES, Double.NaN);
@@ -75,7 +75,7 @@ public class PointDataType implements DataType<Point> {
    * {@inheritDoc}
    */
   @Override
-  public Point read(ByteBuffer buffer, int position) {
+  public Point read(final ByteBuffer buffer, final int position) {
     double x = buffer.getDouble(position);
     double y = buffer.getDouble(position + Double.BYTES);
     if (Double.isNaN(x) || Double.isNaN(y)) {

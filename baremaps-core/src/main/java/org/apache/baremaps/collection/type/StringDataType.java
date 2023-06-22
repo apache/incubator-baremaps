@@ -24,19 +24,19 @@ public class StringDataType implements DataType<String> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(String value) {
+  public int size(final String value) {
     return Integer.BYTES + value.getBytes(StandardCharsets.UTF_8).length;
   }
 
   /** {@inheritDoc} */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, String value) {
+  public void write(final ByteBuffer buffer, final int position, final String value) {
     var bytes = value.getBytes(StandardCharsets.UTF_8);
     buffer.putInt(position, size(value));
     buffer.put(position + Integer.BYTES, bytes, 0, bytes.length);
@@ -44,7 +44,7 @@ public class StringDataType implements DataType<String> {
 
   /** {@inheritDoc} */
   @Override
-  public String read(ByteBuffer buffer, int position) {
+  public String read(final ByteBuffer buffer, final int position) {
     var size = size(buffer, position);
     var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
     buffer.get(position + Integer.BYTES, bytes);

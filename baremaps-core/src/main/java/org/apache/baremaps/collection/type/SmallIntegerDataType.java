@@ -37,7 +37,7 @@ public class SmallIntegerDataType extends FixedSizeDataType<Integer> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Integer value) {
+  public void write(final ByteBuffer buffer, final int position, final Integer value) {
     for (int i = 0; i < n; i++) {
       buffer.put(position + i, (byte) (value >> (i << 3)));
     }
@@ -45,7 +45,7 @@ public class SmallIntegerDataType extends FixedSizeDataType<Integer> {
 
   /** {@inheritDoc} */
   @Override
-  public Integer read(ByteBuffer buffer, int position) {
+  public Integer read(final ByteBuffer buffer, final int position) {
     byte s = (byte) (buffer.get(position + n - 1) >= 0 ? 0 : -1);
     int l = 0;
     for (int i = 3; i > n - 1; i--) {

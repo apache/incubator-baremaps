@@ -127,38 +127,32 @@ public class GeometryDataType implements DataType<Geometry> {
    * {@inheritDoc}
    */
   @Override
-  public void write(ByteBuffer buffer, int position, Geometry value) {
+  public void write(final ByteBuffer buffer, final int position, final Geometry value) {
+
     // Write the geometry
     if (value == null) {
       buffer.put(position, (byte) 0);
     } else if (value instanceof Point point) {
       buffer.put(position, (byte) 1);
-      position += Byte.BYTES;
-      pointDataType.write(buffer, position, point);
+      pointDataType.write(buffer, position + Byte.BYTES, point);
     } else if (value instanceof LineString lineString) {
       buffer.put(position, (byte) 2);
-      position += Byte.BYTES;
-      lineStringDataType.write(buffer, position, lineString);
+      lineStringDataType.write(buffer, position + Byte.BYTES, lineString);
     } else if (value instanceof Polygon polygon) {
       buffer.put(position, (byte) 3);
-      position += Byte.BYTES;
-      polygonDataType.write(buffer, position, polygon);
+      polygonDataType.write(buffer, position + Byte.BYTES, polygon);
     } else if (value instanceof MultiPoint multiPoint) {
       buffer.put(position, (byte) 4);
-      position += Byte.BYTES;
-      multiPointDataType.write(buffer, position, multiPoint);
+      multiPointDataType.write(buffer, position + Byte.BYTES, multiPoint);
     } else if (value instanceof MultiLineString multiLineString) {
       buffer.put(position, (byte) 5);
-      position += Byte.BYTES;
-      multiLineStringDataType.write(buffer, position, multiLineString);
+      multiLineStringDataType.write(buffer, position + Byte.BYTES, multiLineString);
     } else if (value instanceof MultiPolygon multiPolygon) {
       buffer.put(position, (byte) 6);
-      position += Byte.BYTES;
-      multiPolygonDataType.write(buffer, position, multiPolygon);
+      multiPolygonDataType.write(buffer, position + Byte.BYTES, multiPolygon);
     } else if (value instanceof GeometryCollection geometryCollection) {
       buffer.put(position, (byte) 7);
-      position += Byte.BYTES;
-      geometryCollectionDataType.write(buffer, position, geometryCollection);
+      geometryCollectionDataType.write(buffer, position + Byte.BYTES, geometryCollection);
     } else {
       throw new IllegalArgumentException("Unsupported geometry type: " + value.getClass());
     }
@@ -168,28 +162,30 @@ public class GeometryDataType implements DataType<Geometry> {
    * {@inheritDoc}
    */
   @Override
-  public Geometry read(ByteBuffer buffer, int position) {
+  public Geometry read(final ByteBuffer buffer, final int position) {
+    var p = position;
+
     // Read the geometry type
-    var type = buffer.get(position);
-    position += Byte.BYTES;
+    var type = buffer.get(p);
+    p += Byte.BYTES;
 
     // Read the geometry
     if (type == 0) {
       return null;
     } else if (type == 1) {
-      return pointDataType.read(buffer, position);
+      return pointDataType.read(buffer, p);
     } else if (type == 2) {
-      return lineStringDataType.read(buffer, position);
+      return lineStringDataType.read(buffer, p);
     } else if (type == 3) {
-      return polygonDataType.read(buffer, position);
+      return polygonDataType.read(buffer, p);
     } else if (type == 4) {
-      return multiPointDataType.read(buffer, position);
+      return multiPointDataType.read(buffer, p);
     } else if (type == 5) {
-      return multiLineStringDataType.read(buffer, position);
+      return multiLineStringDataType.read(buffer, p);
     } else if (type == 6) {
-      return multiPolygonDataType.read(buffer, position);
+      return multiPolygonDataType.read(buffer, p);
     } else if (type == 7) {
-      return geometryCollectionDataType.read(buffer, position);
+      return geometryCollectionDataType.read(buffer, p);
     } else {
       throw new IllegalArgumentException("Unsupported geometry type: " + type);
     }

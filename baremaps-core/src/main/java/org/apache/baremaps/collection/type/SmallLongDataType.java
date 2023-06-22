@@ -37,13 +37,13 @@ public class SmallLongDataType extends FixedSizeDataType<Long> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(Long value) {
+  public int size(final Long value) {
     return n;
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Long value) {
+  public void write(final ByteBuffer buffer, final int position, final Long value) {
     for (int i = 0; i < n; i++) {
       buffer.put(position + i, (byte) (value >> (i << 3)));
     }
@@ -51,7 +51,7 @@ public class SmallLongDataType extends FixedSizeDataType<Long> {
 
   /** {@inheritDoc} */
   @Override
-  public Long read(ByteBuffer buffer, int position) {
+  public Long read(final ByteBuffer buffer, final int position) {
     byte s = (byte) (buffer.get(position + n - 1) >= 0 ? 0 : -1);
     long l = 0;
     for (int i = 7; i > n - 1; i--) {

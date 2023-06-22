@@ -26,13 +26,13 @@ public class ShortDataType extends FixedSizeDataType<Short> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(ByteBuffer buffer, int position, Short value) {
+  public void write(final ByteBuffer buffer, final int position, final Short value) {
     buffer.putShort(position, value);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Short read(ByteBuffer buffer, int position) {
+  public Short read(final ByteBuffer buffer, final int position) {
     return buffer.getShort(position);
   }
 }

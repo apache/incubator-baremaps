@@ -30,19 +30,19 @@ public abstract class FixedSizeDataType<T> implements DataType<T> {
    *
    * @param size the size of the value
    */
-  public FixedSizeDataType(int size) {
+  public FixedSizeDataType(final int size) {
     this.size = size;
   }
 
   /** {@inheritDoc} */
   @Override
-  public int size(T value) {
+  public int size(final T value) {
     return size;
   }
 
   /** {@inheritDoc} */
   @Override
-  public int size(ByteBuffer buffer, int position) {
+  public int size(final ByteBuffer buffer, final int position) {
     return size;
   }
 

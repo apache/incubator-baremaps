@@ -92,6 +92,8 @@ public class DataTypeProvider {
         Arguments.of(new ByteDataType(), (byte) -0b1),
         Arguments.of(new ByteListDataType(), List.of()),
         Arguments.of(new ByteListDataType(), List.of((byte) 1, (byte) 2, (byte) 3)),
+        Arguments.of(new ByteArrayDataType(), new byte[] {}),
+        Arguments.of(new ByteArrayDataType(), new byte[] {(byte) 1, (byte) 2, (byte) 3}),
 
         // Double
         Arguments.of(new DoubleDataType(), Double.MIN_VALUE),
@@ -102,6 +104,9 @@ public class DataTypeProvider {
         Arguments.of(new DoubleDataType(), 0d),
         Arguments.of(new DoubleDataType(), 1d),
         Arguments.of(new DoubleDataType(), -1d),
+
+        Arguments.of(new DoubleArrayDataType(), new double[] {}),
+        Arguments.of(new DoubleArrayDataType(), new double[] {(double) 1, (double) 2, (double) 3}),
         Arguments.of(new DoubleListDataType(), List.of()),
         Arguments.of(new DoubleListDataType(), List.of((double) 1, (double) 2, (double) 3)),
 
