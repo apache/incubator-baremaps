@@ -15,18 +15,17 @@ package org.apache.baremaps.collection.type;
 
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of integers in {@link ByteBuffer}s. */
-public class IntegerListDataType implements DataType<List<Integer>> {
+/** A {@link DataType} for reading and writing lists of shorts in {@link ByteBuffer}s. */
+public class ShortArrayDataType implements DataType<short[]> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(final List<Integer> values) {
-    return Integer.BYTES + values.size() * Integer.BYTES;
+  public int size(final short[] values) {
+    return Integer.BYTES + values.length * Short.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
@@ -34,23 +33,23 @@ public class IntegerListDataType implements DataType<List<Integer>> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(final ByteBuffer buffer, final int position, final List<Integer> values) {
+  public void write(final ByteBuffer buffer, final int position, final short[] values) {
     buffer.putInt(position, size(values));
-    var p = position + Integer.BYTES;
-    for (int value : values) {
-      buffer.putInt(p, value);
-      p += Integer.BYTES;
+    int p = position + Integer.BYTES;
+    for (short value : values) {
+      buffer.putShort(p, value);
+      p += Short.BYTES;
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Integer> read(final ByteBuffer buffer, final int position) {
+  public short[] read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
-    int length = (size - Integer.BYTES) / Integer.BYTES;
-    var values = new ArrayList<Integer>(length);
+    int length = (size - Integer.BYTES) / Short.BYTES;
+    short[] values = new short[length];
     for (int index = 0; index < length; index++) {
-      values.add(buffer.getInt(position + Integer.BYTES + index * Integer.BYTES));
+      values[index] = buffer.getShort(position + Integer.BYTES + index * Short.BYTES);
     }
     return values;
   }

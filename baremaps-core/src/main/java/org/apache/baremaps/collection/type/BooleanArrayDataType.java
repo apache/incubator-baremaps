@@ -15,18 +15,17 @@ package org.apache.baremaps.collection.type;
 
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of integers in {@link ByteBuffer}s. */
-public class IntegerListDataType implements DataType<List<Integer>> {
+/** A {@link DataType} for reading and writing lists of floats in {@link ByteBuffer}s. */
+public class BooleanArrayDataType implements DataType<boolean[]> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(final List<Integer> values) {
-    return Integer.BYTES + values.size() * Integer.BYTES;
+  public int size(final boolean[] values) {
+    return Integer.BYTES + values.length * Byte.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
@@ -34,23 +33,23 @@ public class IntegerListDataType implements DataType<List<Integer>> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(final ByteBuffer buffer, final int position, final List<Integer> values) {
+  public void write(final ByteBuffer buffer, final int position, final boolean[] values) {
     buffer.putInt(position, size(values));
     var p = position + Integer.BYTES;
-    for (int value : values) {
-      buffer.putInt(p, value);
-      p += Integer.BYTES;
+    for (boolean value : values) {
+      buffer.put(p, (byte) (value ? 1 : 0));
+      p += Byte.BYTES;
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Integer> read(final ByteBuffer buffer, final int position) {
+  public boolean[] read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
-    int length = (size - Integer.BYTES) / Integer.BYTES;
-    var values = new ArrayList<Integer>(length);
+    int length = (size - Integer.BYTES) / Byte.BYTES;
+    boolean[] values = new boolean[length];
     for (int index = 0; index < length; index++) {
-      values.add(buffer.getInt(position + Integer.BYTES + index * Integer.BYTES));
+      values[index] = buffer.get(position + Integer.BYTES + index * Byte.BYTES) == 1;
     }
     return values;
   }

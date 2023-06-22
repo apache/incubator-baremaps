@@ -37,8 +37,8 @@ public class ShortListDataType implements DataType<List<Short>> {
   @Override
   public void write(final ByteBuffer buffer, final int position, final List<Short> values) {
     buffer.putInt(position, size(values));
-    var p = position + Integer.BYTES;
-    for (Short value : values) {
+    int p = position + Integer.BYTES;
+    for (short value : values) {
       buffer.putShort(p, value);
       p += Short.BYTES;
     }
@@ -47,11 +47,12 @@ public class ShortListDataType implements DataType<List<Short>> {
   /** {@inheritDoc} */
   @Override
   public List<Short> read(final ByteBuffer buffer, final int position) {
-    var size = buffer.getInt(position);
-    var list = new ArrayList<Short>(size);
-    for (var p = position + Integer.BYTES; p < position + size; p += Short.BYTES) {
-      list.add(buffer.getShort(p));
+    int size = buffer.getInt(position);
+    int length = (size - Integer.BYTES) / Short.BYTES;
+    var values = new ArrayList<Short>(length);
+    for (int index = 0; index < length; index++) {
+      values.add(buffer.getShort(position + Integer.BYTES + index * Short.BYTES));
     }
-    return list;
+    return values;
   }
 }

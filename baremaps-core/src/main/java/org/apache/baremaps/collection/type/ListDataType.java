@@ -53,7 +53,7 @@ public class ListDataType<T> implements DataType<List<T>> {
   @Override
   public void write(final ByteBuffer buffer, final int position, final List<T> values) {
     buffer.putInt(position, size(values));
-    var p = position + Integer.BYTES;
+    int p = position + Integer.BYTES;
     for (T value : values) {
       dataType.write(buffer, p, value);
       p += dataType.size(value);
@@ -63,7 +63,7 @@ public class ListDataType<T> implements DataType<List<T>> {
   /** {@inheritDoc} */
   @Override
   public List<T> read(final ByteBuffer buffer, final int position) {
-    var size = buffer.getInt(position);
+    int size = buffer.getInt(position);
     var list = new ArrayList<T>(size);
     for (var p = position + Integer.BYTES; p < position + size; p += dataType.size(buffer, p)) {
       list.add(dataType.read(buffer, p));

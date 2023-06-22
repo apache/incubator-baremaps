@@ -45,7 +45,7 @@ public class MapDataType<K, V> implements DataType<Map<K, V>> {
   @Override
   public void write(final ByteBuffer buffer, final int position, final Map<K, V> value) {
     buffer.putInt(position, size(value));
-    var p = position + Integer.BYTES;
+    int p = position + Integer.BYTES;
     for (Map.Entry<K, V> entry : value.entrySet()) {
       keyType.write(buffer, p, entry.getKey());
       p += keyType.size(entry.getKey());
@@ -57,7 +57,7 @@ public class MapDataType<K, V> implements DataType<Map<K, V>> {
   @Override
   public Map<K, V> read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
-    Map<K, V> map = new HashMap<>(size);
+    var map = new HashMap<K, V>(size);
     for (int p = position + Integer.BYTES; p < position + size;) {
       K key = keyType.read(buffer, p);
       p += keyType.size(key);

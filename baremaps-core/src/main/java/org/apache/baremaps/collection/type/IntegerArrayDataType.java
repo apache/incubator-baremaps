@@ -15,16 +15,14 @@ package org.apache.baremaps.collection.type;
 
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 /** A {@link DataType} for reading and writing lists of integers in {@link ByteBuffer}s. */
-public class IntegerListDataType implements DataType<List<Integer>> {
+public class IntegerArrayDataType implements DataType<int[]> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(final List<Integer> values) {
-    return Integer.BYTES + values.size() * Integer.BYTES;
+  public int size(final int[] values) {
+    return Integer.BYTES + values.length * Integer.BYTES;
   }
 
   @Override
@@ -34,7 +32,7 @@ public class IntegerListDataType implements DataType<List<Integer>> {
 
   /** {@inheritDoc} */
   @Override
-  public void write(final ByteBuffer buffer, final int position, final List<Integer> values) {
+  public void write(final ByteBuffer buffer, final int position, final int[] values) {
     buffer.putInt(position, size(values));
     var p = position + Integer.BYTES;
     for (int value : values) {
@@ -45,12 +43,12 @@ public class IntegerListDataType implements DataType<List<Integer>> {
 
   /** {@inheritDoc} */
   @Override
-  public List<Integer> read(final ByteBuffer buffer, final int position) {
+  public int[] read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
     int length = (size - Integer.BYTES) / Integer.BYTES;
-    var values = new ArrayList<Integer>(length);
+    int[] values = new int[length];
     for (int index = 0; index < length; index++) {
-      values.add(buffer.getInt(position + Integer.BYTES + index * Integer.BYTES));
+      values[index] = buffer.getInt(position + Integer.BYTES + index * Integer.BYTES);
     }
     return values;
   }

@@ -70,11 +70,9 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
       if (this == o) {
         return true;
       }
-      if (!(o instanceof PairDataType.Pair)) {
+      if (!(o instanceof Pair<?, ?>pair)) {
         return false;
       }
-
-      Pair<?, ?> pair = (Pair<?, ?>) o;
 
       if (!Objects.equals(left, pair.left)) {
         return false;

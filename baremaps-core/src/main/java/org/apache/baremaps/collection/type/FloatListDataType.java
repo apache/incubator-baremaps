@@ -38,7 +38,7 @@ public class FloatListDataType implements DataType<List<Float>> {
   public void write(final ByteBuffer buffer, final int position, final List<Float> values) {
     buffer.putInt(position, size(values));
     var p = position + Integer.BYTES;
-    for (Float value : values) {
+    for (float value : values) {
       buffer.putFloat(p, value);
       p += Float.BYTES;
     }
@@ -48,10 +48,11 @@ public class FloatListDataType implements DataType<List<Float>> {
   @Override
   public List<Float> read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
-    List<Float> list = new ArrayList<>(size);
-    for (var p = position + Integer.BYTES; p < position + size; p += Float.BYTES) {
-      list.add(buffer.getFloat(p));
+    int length = (size - Integer.BYTES) / Float.BYTES;
+    var values = new ArrayList<Float>(length);
+    for (int index = 0; index < length; index++) {
+      values.add(buffer.getFloat(position + Integer.BYTES + index * Float.BYTES));
     }
-    return list;
+    return values;
   }
 }

@@ -17,9 +17,8 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A utility class for computing the Hilbert curve index of geometries.
- *
- * Based on the implementation of the Hilbert curve in the flatgeobuf project (BSD 2-Clause).
+ * A utility class for computing the Hilbert curve index of geometries. Based on the implementation
+ * of the Hilbert curve in the flatgeobuf project (BSD 2-Clause).
  */
 public class Hilbert {
 

@@ -45,14 +45,12 @@ public class DoubleArrayDataType implements DataType<double[]> {
   /** {@inheritDoc} */
   @Override
   public double[] read(final ByteBuffer buffer, final int position) {
-    var size = buffer.getInt(position);
-    var length = (size - Integer.BYTES) / Double.BYTES;
-    var list = new double[length];
-    var index = 0;
-    for (var p = position + Integer.BYTES; p < position + size; p += Double.BYTES) {
-      list[index] = buffer.getDouble(p);
-      index++;
+    int size = buffer.getInt(position);
+    int length = (size - Integer.BYTES) / Double.BYTES;
+    double[] values = new double[length];
+    for (int index = 0; index < length; index++) {
+      values[index] = buffer.getDouble(position + Integer.BYTES + index * Double.BYTES);
     }
-    return list;
+    return values;
   }
 }

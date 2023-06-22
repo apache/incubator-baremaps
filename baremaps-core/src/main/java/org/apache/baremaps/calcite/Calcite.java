@@ -85,8 +85,7 @@ public class Calcite {
     info.setProperty("lex", "MYSQL");
 
     Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
-    CalciteConnection calciteConnection =
-        connection.unwrap(CalciteConnection.class);
+    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
 
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
@@ -113,7 +112,6 @@ public class Calcite {
       System.out.println(
           resultSet.getString(1) + ", " + resultSet.getObject(2) + ", " + resultSet.getInt(3));
     }
-
     resultSet.close();
   }
 

@@ -37,7 +37,7 @@ public class StringDataType implements DataType<String> {
   /** {@inheritDoc} */
   @Override
   public void write(final ByteBuffer buffer, final int position, final String value) {
-    var bytes = value.getBytes(StandardCharsets.UTF_8);
+    byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
     buffer.putInt(position, size(value));
     buffer.put(position + Integer.BYTES, bytes, 0, bytes.length);
   }
@@ -45,8 +45,8 @@ public class StringDataType implements DataType<String> {
   /** {@inheritDoc} */
   @Override
   public String read(final ByteBuffer buffer, final int position) {
-    var size = size(buffer, position);
-    var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
+    int size = size(buffer, position);
+    byte[] bytes = new byte[Math.max(size - Integer.BYTES, 0)];
     buffer.get(position + Integer.BYTES, bytes);
     return new String(bytes, StandardCharsets.UTF_8);
   }

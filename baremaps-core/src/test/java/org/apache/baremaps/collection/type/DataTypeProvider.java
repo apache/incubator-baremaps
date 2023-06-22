@@ -84,6 +84,14 @@ public class DataTypeProvider {
         Arguments.of(new StringDataType(), ""),
         Arguments.of(new StringDataType(), "Hello, World!"),
 
+        // Boolean
+        Arguments.of(new BooleanDataType(), true),
+        Arguments.of(new BooleanDataType(), false),
+        Arguments.of(new BooleanArrayDataType(), new boolean[] {}),
+        Arguments.of(new BooleanArrayDataType(), new boolean[] {true, false}),
+        Arguments.of(new BooleanListDataType(), List.of()),
+        Arguments.of(new BooleanListDataType(), List.of(true, false)),
+
         // Byte
         Arguments.of(new ByteDataType(), Byte.MIN_VALUE),
         Arguments.of(new ByteDataType(), Byte.MAX_VALUE),
@@ -119,6 +127,8 @@ public class DataTypeProvider {
         Arguments.of(new FloatDataType(), 0f),
         Arguments.of(new FloatDataType(), 1f),
         Arguments.of(new FloatDataType(), -1f),
+        Arguments.of(new FloatArrayDataType(), new float[] {}),
+        Arguments.of(new FloatArrayDataType(), new float[] {(float) 1, (float) 2, (float) 3}),
         Arguments.of(new FloatListDataType(), List.of()),
         Arguments.of(new FloatListDataType(), List.of((float) 1, (float) 2, (float) 3)),
 
@@ -128,6 +138,8 @@ public class DataTypeProvider {
         Arguments.of(new IntegerDataType(), 0),
         Arguments.of(new IntegerDataType(), 1),
         Arguments.of(new IntegerDataType(), -1),
+        Arguments.of(new IntegerArrayDataType(), new int[] {}),
+        Arguments.of(new IntegerArrayDataType(), new int[] {1, 2, 3}),
         Arguments.of(new IntegerListDataType(), List.of()),
         Arguments.of(new IntegerListDataType(), List.of(1, 2, 3)),
 
@@ -137,6 +149,8 @@ public class DataTypeProvider {
         Arguments.of(new LongDataType(), 0l),
         Arguments.of(new LongDataType(), 1l),
         Arguments.of(new LongDataType(), -1l),
+        Arguments.of(new LongArrayDataType(), new long[] {}),
+        Arguments.of(new LongArrayDataType(), new long[] {1l, 2l, 3l}),
         Arguments.of(new LongListDataType(), List.of()),
         Arguments.of(new LongListDataType(), List.of(1l, 2l, 3l)),
 
@@ -146,6 +160,8 @@ public class DataTypeProvider {
         Arguments.of(new ShortDataType(), (short) 0),
         Arguments.of(new ShortDataType(), (short) 1),
         Arguments.of(new ShortDataType(), (short) -1),
+        Arguments.of(new ShortArrayDataType(), new short[] {}),
+        Arguments.of(new ShortArrayDataType(), new short[] {(short) 1, (short) 2, (short) 3}),
         Arguments.of(new ShortListDataType(), List.of()),
         Arguments.of(new ShortListDataType(), List.of((short) 1, (short) 2, (short) 3)),
 

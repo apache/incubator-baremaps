@@ -37,8 +37,8 @@ public class DoubleListDataType implements DataType<List<Double>> {
   @Override
   public void write(final ByteBuffer buffer, final int position, final List<Double> values) {
     buffer.putInt(position, size(values));
-    var p = position + Integer.BYTES;
-    for (Double value : values) {
+    int p = position + Integer.BYTES;
+    for (double value : values) {
       buffer.putDouble(p, value);
       p += Double.BYTES;
     }
@@ -47,11 +47,12 @@ public class DoubleListDataType implements DataType<List<Double>> {
   /** {@inheritDoc} */
   @Override
   public List<Double> read(final ByteBuffer buffer, final int position) {
-    var size = buffer.getInt(position);
-    var list = new ArrayList<Double>(size);
-    for (var p = position + Integer.BYTES; p < position + size; p += Double.BYTES) {
-      list.add(buffer.getDouble(p));
+    int size = buffer.getInt(position);
+    int length = (size - Integer.BYTES) / Double.BYTES;
+    var values = new ArrayList<Double>(length);
+    for (int index = 0; index < length; index++) {
+      values.add(buffer.getDouble(position + Integer.BYTES + index * Double.BYTES));
     }
-    return list;
+    return values;
   }
 }

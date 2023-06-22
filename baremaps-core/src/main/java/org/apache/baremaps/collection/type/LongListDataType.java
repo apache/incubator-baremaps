@@ -38,7 +38,7 @@ public class LongListDataType implements DataType<List<Long>> {
   public void write(final ByteBuffer buffer, final int position, final List<Long> values) {
     buffer.putInt(position, size(values));
     var p = position + Integer.BYTES;
-    for (Long value : values) {
+    for (long value : values) {
       buffer.putLong(p, value);
       p += Long.BYTES;
     }
@@ -47,11 +47,12 @@ public class LongListDataType implements DataType<List<Long>> {
   /** {@inheritDoc} */
   @Override
   public List<Long> read(final ByteBuffer buffer, final int position) {
-    var size = buffer.getInt(position);
-    var list = new ArrayList<Long>(size);
-    for (var p = position + Integer.BYTES; p < position + size; p += Long.BYTES) {
-      list.add(buffer.getLong(p));
+    int size = buffer.getInt(position);
+    int length = (size - Integer.BYTES) / Long.BYTES;
+    var values = new ArrayList<Long>(length);
+    for (int index = 0; index < length; index++) {
+      values.add(buffer.getLong(position + Integer.BYTES + index * Long.BYTES));
     }
-    return list;
+    return values;
   }
 }

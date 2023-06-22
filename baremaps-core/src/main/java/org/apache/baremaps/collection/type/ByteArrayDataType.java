@@ -51,7 +51,7 @@ public class ByteArrayDataType implements DataType<byte[]> {
   @Override
   public byte[] read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
-    var values = new byte[Math.max(size - Integer.BYTES, 0)];
+    byte[] values = new byte[Math.max(size - Integer.BYTES, 0)];
     buffer.get(position + Integer.BYTES, values);
     return values;
   }

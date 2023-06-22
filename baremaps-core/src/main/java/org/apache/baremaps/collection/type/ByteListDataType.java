@@ -55,7 +55,7 @@ public class ByteListDataType implements DataType<List<Byte>> {
   @Override
   public List<Byte> read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);
-    var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
+    byte[] bytes = new byte[Math.max(size - Integer.BYTES, 0)];
     buffer.get(position + Integer.BYTES, bytes);
     return Bytes.asList(bytes);
   }

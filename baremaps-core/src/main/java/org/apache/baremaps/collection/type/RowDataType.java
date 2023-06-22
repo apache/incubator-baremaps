@@ -56,7 +56,7 @@ public class RowDataType implements DataType<DataRow> {
 
   @Override
   public int size(final DataRow dataRow) {
-    var size = Integer.BYTES;
+    int size = Integer.BYTES;
     var columns = dataSchema.columns();
     for (int i = 0; i < columns.size(); i++) {
       var columnType = columns.get(i).type();
@@ -74,7 +74,7 @@ public class RowDataType implements DataType<DataRow> {
 
   @Override
   public void write(final ByteBuffer buffer, final int position, final DataRow dataRow) {
-    var p = position + Integer.BYTES;
+    int p = position + Integer.BYTES;
     var columns = dataSchema.columns();
     for (int i = 0; i < columns.size(); i++) {
       var column = columns.get(i);
@@ -89,7 +89,7 @@ public class RowDataType implements DataType<DataRow> {
 
   @Override
   public DataRow read(final ByteBuffer buffer, final int position) {
-    var p = position + Integer.BYTES;
+    int p = position + Integer.BYTES;
     var columns = dataSchema.columns();
     var values = new ArrayList();
     for (DataColumn column : columns) {
