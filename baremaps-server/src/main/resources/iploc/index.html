@@ -25,7 +25,7 @@
             border: 1px solid black;
         }
 
-        dataTable {
+        table {
             border-collapse: collapse;
         }
     </style>
@@ -37,8 +37,8 @@
         <input type="text" id="ip" name="ip" value=""/>
         <input type="submit" value="Submit"/>
     </form>
-    <!-- The dataTable of retrieved locations -->
-    <dataTable id="results"></dataTable>
+    <!-- The table of retrieved locations -->
+    <table id="results"></table>
     <script>
         function searchByIp(event) {
             event.preventDefault();
@@ -59,28 +59,28 @@
                     // Success!
                     const geoLocations = JSON.parse(request.responseText);
 
-                    // Fill the dataTable of geo locations from the resulting geoLocations
+                    // Fill the table of geo locations from the resulting geoLocations
                     // Geo locations contain an address, an ipv4Range, a location, a network and a country
-                    const dataTable = document.getElementById('results');
-                    dataTable.innerHTML = '';
-                    // Insert header dataRow
-                    dataTable.insertRow().innerHTML = '<th>#</th><th>Address</th><th>IP Range</th><th>Longitude</th><th>Latitude</th><th>Network</th><th>Country</th>';
+                    const table = document.getElementById('results');
+                    table.innerHTML = '';
+                    // Insert header row
+                    table.insertRow().innerHTML = '<th>#</th><th>Address</th><th>IP Range</th><th>Longitude</th><th>Latitude</th><th>Network</th><th>Country</th>';
                     for (let i = 0; i < geoLocations.length; i++) {
-                        const dataRow = dataTable.insertRow(i + 1);
+                        const row = table.insertRow(i + 1);
                         let pos = 0;
-                        let cell = dataRow.insertCell(pos++);
+                        let cell = row.insertCell(pos++);
                         cell.innerHTML = i + 1;
-                        cell = dataRow.insertCell(pos++);
+                        cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].address;
-                        cell = dataRow.insertCell(pos++);
+                        cell = row.insertCell(pos++);
                         cell.innerHTML = `${geoLocations[i].inetStart} - ${geoLocations[i].inetEnd}`;
-                        cell = dataRow.insertCell(pos++);
+                        cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].longitude;
-                        cell = dataRow.insertCell(pos++);
+                        cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].latitude;
-                        cell = dataRow.insertCell(pos++);
+                        cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].network;
-                        cell = dataRow.insertCell(pos++);
+                        cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].country;
                     }
                 } else {

@@ -47,7 +47,7 @@ public class ShapefileInputStream extends InputStream {
   private boolean hasShapefileIndex;
 
   /** Schema of the features contained in this shapefile. */
-  private DataSchema dataSchema;
+  private DataSchema schema;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -74,7 +74,7 @@ public class ShapefileInputStream extends InputStream {
 
     this.shapefileReader =
         new ShapefileByteReader(this.shapefile, this.databaseFile, this.shapefileIndex);
-    this.dataSchema = this.shapefileReader.getSchema();
+    this.schema = this.shapefileReader.getSchema();
   }
 
   /**
@@ -117,11 +117,11 @@ public class ShapefileInputStream extends InputStream {
     if (!this.dbaseReader.nextRowAvailable()) {
       return null;
     }
-    DataRow dataRow = this.dataSchema.createRow();
-    this.dbaseReader.loadRow(dataRow);
+    DataRow row = this.schema.createRow();
+    this.dbaseReader.loadRow(row);
     this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
-    this.shapefileReader.completeRow(dataRow);
-    return dataRow;
+    this.shapefileReader.completeRow(row);
+    return row;
   }
 
   /**
@@ -130,7 +130,7 @@ public class ShapefileInputStream extends InputStream {
    * @return the schema.
    */
   public DataSchema getSchema() {
-    return dataSchema;
+    return schema;
   }
 
   /**

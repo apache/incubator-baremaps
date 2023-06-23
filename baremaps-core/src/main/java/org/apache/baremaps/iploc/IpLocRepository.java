@@ -80,26 +80,26 @@ public final class IpLocRepository {
   }
 
   /**
-   * Drops the dataTable.
+   * Drops the table.
    */
   public void dropTable() {
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(DROP_TABLE)) {
       statement.execute();
     } catch (SQLException e) {
-      logger.error("Unable to drop inetnum locations dataTable", e);
+      logger.error("Unable to drop inetnum locations table", e);
     }
   }
 
   /**
-   * Creates the dataTable.
+   * Creates the table.
    */
   public void createTable() {
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(CREATE_TABLE)) {
       statement.execute();
     } catch (SQLException e) {
-      logger.error("Unable to create inetnum locations dataTable", e);
+      logger.error("Unable to create inetnum locations table", e);
     }
   }
 

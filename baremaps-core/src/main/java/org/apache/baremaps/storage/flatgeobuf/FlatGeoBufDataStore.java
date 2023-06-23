@@ -59,15 +59,15 @@ public class FlatGeoBufDataStore implements DataStore {
    * {@inheritDoc}
    */
   @Override
-  public void add(DataTable dataTable) throws DataTableException {
-    var filename = dataTable.schema().name();
+  public void add(DataTable table) throws DataTableException {
+    var filename = table.schema().name();
     filename = filename.endsWith(".fgb") ? filename : filename + ".fgb";
     var path = directory.resolve(filename);
     try {
       Files.deleteIfExists(path);
       Files.createFile(path);
-      var flatGeoBufTable = new FlatGeoBufDataTable(path, dataTable.schema());
-      flatGeoBufTable.write(dataTable);
+      var flatGeoBufTable = new FlatGeoBufDataTable(path, table.schema());
+      flatGeoBufTable.write(table);
     } catch (IOException e) {
       throw new DataTableException(e);
     }

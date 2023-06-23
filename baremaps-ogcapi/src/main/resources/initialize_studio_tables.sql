@@ -1,6 +1,6 @@
-create dataSchema studio;
+create schema studio;
 
-create dataTable if not exists studio.entities (
+create table if not exists studio.entities (
     id uuid primary key,
     entity jsonb,
     kind text

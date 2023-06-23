@@ -80,11 +80,11 @@ public class CollectionsResource implements CollectionsApi {
   /**
    * Returns the collection info for the specified table.
    *
-   * @param dataTable the table
+   * @param table the table
    * @return the collection info
    */
-  private Collection getCollection(DataTable dataTable) {
-    var name = dataTable.schema().name();
+  private Collection getCollection(DataTable table) {
+    var name = table.schema().name();
     var collection = new Collection();
     collection.setId(name);
     collection.setTitle(name);

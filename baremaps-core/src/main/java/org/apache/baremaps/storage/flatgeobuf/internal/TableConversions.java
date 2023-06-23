@@ -189,20 +189,20 @@ public class TableConversions {
       Double.class, ColumnType.Double,
       String.class, ColumnType.String);
 
-  public static List<ColumnMeta> asColumns(List<DataColumn> dataColumns) {
-    return dataColumns.stream()
+  public static List<ColumnMeta> asColumns(List<DataColumn> columns) {
+    return columns.stream()
         .map(TableConversions::asColumn)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
-  public static ColumnMeta asColumn(DataColumn dataColumn) {
-    var type = types.get(dataColumn.type());
+  public static ColumnMeta asColumn(DataColumn column) {
+    var type = types.get(column.type());
     if (type == null) {
       return null;
     }
     var columnMeta = new ColumnMeta();
-    columnMeta.name = dataColumn.name();
+    columnMeta.name = column.name();
     columnMeta.type = type.byteValue();
     return columnMeta;
   }

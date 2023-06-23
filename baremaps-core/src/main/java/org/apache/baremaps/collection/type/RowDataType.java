@@ -48,20 +48,20 @@ public class RowDataType implements DataType<DataRow> {
     types.put(Coordinate.class, new CoordinateDataType());
   }
 
-  private final DataSchema dataSchema;
+  private final DataSchema schema;
 
-  public RowDataType(DataSchema dataSchema) {
-    this.dataSchema = dataSchema;
+  public RowDataType(DataSchema schema) {
+    this.schema = schema;
   }
 
   @Override
-  public int size(final DataRow dataRow) {
+  public int size(final DataRow row) {
     int size = Integer.BYTES;
-    var columns = dataSchema.columns();
+    var columns = schema.columns();
     for (int i = 0; i < columns.size(); i++) {
       var columnType = columns.get(i).type();
       var dataType = types.get(columnType);
-      var value = dataRow.get(i);
+      var value = row.get(i);
       size += dataType.size(value);
     }
     return size;
@@ -73,14 +73,14 @@ public class RowDataType implements DataType<DataRow> {
   }
 
   @Override
-  public void write(final ByteBuffer buffer, final int position, final DataRow dataRow) {
+  public void write(final ByteBuffer buffer, final int position, final DataRow row) {
     int p = position + Integer.BYTES;
-    var columns = dataSchema.columns();
+    var columns = schema.columns();
     for (int i = 0; i < columns.size(); i++) {
       var column = columns.get(i);
       var columnType = column.type();
       var dataType = types.get(columnType);
-      var value = dataRow.get(i);
+      var value = row.get(i);
       dataType.write(buffer, p, value);
       p += dataType.size(buffer, p);
     }
@@ -90,7 +90,7 @@ public class RowDataType implements DataType<DataRow> {
   @Override
   public DataRow read(final ByteBuffer buffer, final int position) {
     int p = position + Integer.BYTES;
-    var columns = dataSchema.columns();
+    var columns = schema.columns();
     var values = new ArrayList();
     for (DataColumn column : columns) {
       var columnType = column.type();
@@ -98,6 +98,6 @@ public class RowDataType implements DataType<DataRow> {
       values.add(dataType.read(buffer, p));
       p += dataType.size(buffer, p);
     }
-    return new DataRowImpl(dataSchema, values);
+    return new DataRowImpl(schema, values);
   }
 }

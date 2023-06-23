@@ -22,19 +22,18 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  */
 public class DataTableGeometryTransformer implements Function<DataRow, DataRow> {
 
-  private final DataTable dataTable;
+  private final DataTable table;
 
   private final GeometryTransformer geometryTransformer;
 
   /**
    * Constructs a new table transformer.
    *
-   * @param dataTable the table to transform
+   * @param table the table to transform
    * @param geometryTransformer the geometry transformer
    */
-  public DataTableGeometryTransformer(DataTable dataTable,
-      GeometryTransformer geometryTransformer) {
-    this.dataTable = dataTable;
+  public DataTableGeometryTransformer(DataTable table, GeometryTransformer geometryTransformer) {
+    this.table = table;
     this.geometryTransformer = geometryTransformer;
   }
 
@@ -42,18 +41,18 @@ public class DataTableGeometryTransformer implements Function<DataRow, DataRow> 
    * {@inheritDoc}
    */
   @Override
-  public DataRow apply(DataRow dataRow) {
-    var columns = dataTable.schema()
+  public DataRow apply(DataRow row) {
+    var columns = table.schema()
         .columns().stream()
         .filter(column -> column.type().isAssignableFrom(Geometry.class))
         .toList();
-    for (DataColumn dataColumn : columns) {
-      var name = dataColumn.name();
-      var geometry = (Geometry) dataRow.get(name);
+    for (DataColumn column : columns) {
+      var name = column.name();
+      var geometry = (Geometry) row.get(name);
       if (geometry != null) {
-        dataRow.set(name, geometryTransformer.transform(geometry));
+        row.set(name, geometryTransformer.transform(geometry));
       }
     }
-    return dataRow;
+    return row;
   }
 }

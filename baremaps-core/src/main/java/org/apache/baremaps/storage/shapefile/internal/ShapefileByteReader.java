@@ -45,7 +45,7 @@ public class ShapefileByteReader extends CommonByteReader {
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
   /** Schema of the rows contained in this shapefile. */
-  private DataSchema dataSchema;
+  private DataSchema schema;
 
   /** Shapefile index. */
   private File shapeFileIndex;
@@ -80,7 +80,7 @@ public class ShapefileByteReader extends CommonByteReader {
       loadShapefileIndexes();
     }
 
-    this.dataSchema = getSchema(shapefile.getName());
+    this.schema = getSchema(shapefile.getName());
   }
 
   /**
@@ -107,7 +107,7 @@ public class ShapefileByteReader extends CommonByteReader {
    * @return the schema
    */
   public DataSchema getSchema() {
-    return this.dataSchema;
+    return this.schema;
   }
 
   /**
@@ -254,9 +254,9 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Complete a row with shapefile content.
    *
-   * @param dataRow the row to complete
+   * @param row the row to complete
    */
-  public void completeRow(DataRow dataRow) throws ShapefileException {
+  public void completeRow(DataRow row) throws ShapefileException {
     // insert points into some type of list
     int RecordNumber = getByteBuffer().getInt();
     int ContentLength = getByteBuffer().getInt();
@@ -273,15 +273,15 @@ public class ShapefileByteReader extends CommonByteReader {
 
     switch (shapefileGeometryType) {
       case Point:
-        loadPointRow(dataRow);
+        loadPointRow(row);
         break;
 
       case Polygon:
-        loadPolygonRow(dataRow);
+        loadPolygonRow(row);
         break;
 
       case PolyLine:
-        loadPolylineRow(dataRow);
+        loadPolylineRow(row);
         break;
 
       default:
@@ -294,21 +294,21 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Load point row.
    *
-   * @param dataRow the row to fill.
+   * @param row the row to fill.
    */
-  private void loadPointRow(DataRow dataRow) {
+  private void loadPointRow(DataRow row) {
     double x = getByteBuffer().getDouble();
     double y = getByteBuffer().getDouble();
     Point pnt = geometryFactory.createPoint(new Coordinate(x, y));
-    dataRow.set(GEOMETRY_NAME, pnt);
+    row.set(GEOMETRY_NAME, pnt);
   }
 
   /**
    * Load polygon row.
    *
-   * @param dataRow the row to fill.
+   * @param row the row to fill.
    */
-  private void loadPolygonRow(DataRow dataRow) {
+  private void loadPolygonRow(DataRow row) {
     double xmin = getByteBuffer().getDouble();
     double ymin = getByteBuffer().getDouble();
     double xmax = getByteBuffer().getDouble();
@@ -319,7 +319,7 @@ public class ShapefileByteReader extends CommonByteReader {
 
     Geometry multiPolygon = readMultiplePolygon(numParts, numPoints);
 
-    dataRow.set(GEOMETRY_NAME, multiPolygon);
+    row.set(GEOMETRY_NAME, multiPolygon);
   }
 
   /**
@@ -382,9 +382,9 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Load polyline row.
    *
-   * @param dataRow the row to fill.
+   * @param row the row to fill.
    */
-  private void loadPolylineRow(DataRow dataRow) {
+  private void loadPolylineRow(DataRow row) {
     /* double xmin = */ getByteBuffer().getDouble();
     /* double ymin = */ getByteBuffer().getDouble();
     /* double xmax = */ getByteBuffer().getDouble();
@@ -416,7 +416,7 @@ public class ShapefileByteReader extends CommonByteReader {
       }
     }
 
-    dataRow.set(GEOMETRY_NAME,
+    row.set(GEOMETRY_NAME,
         geometryFactory.createLineString(coordinates.toCoordinateArray()));
   }
 }

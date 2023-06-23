@@ -32,7 +32,7 @@ import org.apache.baremaps.postgres.copy.CopyWriter;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** Provides an implementation of the {@code HeaderRepository} baked by a PostgreSQL dataTable. */
+/** Provides an implementation of the {@code HeaderRepository} baked by a PostgreSQL table. */
 public class PostgresHeaderRepository implements HeaderRepository {
 
   private final DataSource dataSource;

@@ -122,9 +122,9 @@ public class PostgresDataStore implements DataStore {
    * {@inheritDoc}
    */
   @Override
-  public void add(DataTable dataTable) {
+  public void add(DataTable table) {
     try (var connection = dataSource.getConnection()) {
-      var schema = adaptDataType(dataTable.schema());
+      var schema = adaptDataType(table.schema());
 
       // Drop the table if it exists
       var dropQuery = dropTable(schema.name());
@@ -148,12 +148,12 @@ public class PostgresDataStore implements DataStore {
         writer.writeHeader();
         var columns = getColumns(schema);
         var handlers = getHandlers(schema);
-        for (DataRow dataRow : dataTable) {
+        for (DataRow row : table) {
           writer.startRow(columns.size());
           for (int i = 0; i < columns.size(); i++) {
             var column = columns.get(i);
             var handler = handlers.get(i);
-            var value = dataRow.get(column.name());
+            var value = row.get(column.name());
             if (value == null) {
               writer.writeNull();
             } else {
@@ -198,12 +198,12 @@ public class PostgresDataStore implements DataStore {
   /**
    * Adapt the data type to postgres (e.g. use compatible names).
    *
-   * @param dataSchema the schema to adapt
+   * @param schema the schema to adapt
    * @return the adapted schema
    */
-  protected DataSchema adaptDataType(DataSchema dataSchema) {
-    var name = dataSchema.name().replaceAll("[^a-zA-Z0-9]", "_");
-    var properties = dataSchema.columns().stream()
+  protected DataSchema adaptDataType(DataSchema schema) {
+    var name = schema.name().replaceAll("[^a-zA-Z0-9]", "_");
+    var properties = schema.columns().stream()
         .filter(column -> typeToName.containsKey(column.type()))
         .map(column -> (DataColumn) new DataColumnImpl(column.name(), column.type()))
         .toList();
@@ -223,15 +223,15 @@ public class PostgresDataStore implements DataStore {
   /**
    * Generate a create table query.
    *
-   * @param dataSchema the schema
+   * @param schema the schema
    * @return the query
    */
-  protected String createTable(DataSchema dataSchema) {
+  protected String createTable(DataSchema schema) {
     StringBuilder builder = new StringBuilder();
     builder.append("CREATE TABLE \"");
-    builder.append(dataSchema.name());
+    builder.append(schema.name());
     builder.append("\" (");
-    builder.append(dataSchema.columns().stream()
+    builder.append(schema.columns().stream()
         .map(column -> "\"" + column.name()
             + "\" " + typeToName.get(column.type()))
         .collect(Collectors.joining(", ")));
@@ -242,15 +242,15 @@ public class PostgresDataStore implements DataStore {
   /**
    * Generate a copy query.
    *
-   * @param dataSchema the schema
+   * @param schema the schema
    * @return the query
    */
-  protected String copy(DataSchema dataSchema) {
+  protected String copy(DataSchema schema) {
     var builder = new StringBuilder();
     builder.append("COPY \"");
-    builder.append(dataSchema.name());
+    builder.append(schema.name());
     builder.append("\" (");
-    builder.append(dataSchema.columns().stream()
+    builder.append(schema.columns().stream()
         .map(column -> "\"" + column.name() + "\"")
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
@@ -260,11 +260,11 @@ public class PostgresDataStore implements DataStore {
   /**
    * Get the columns of the schema.
    *
-   * @param dataSchema the schema
+   * @param schema the schema
    * @return the columns
    */
-  protected List<DataColumn> getColumns(DataSchema dataSchema) {
-    return dataSchema.columns().stream()
+  protected List<DataColumn> getColumns(DataSchema schema) {
+    return schema.columns().stream()
         .filter(this::isSupported)
         .collect(Collectors.toList());
   }
@@ -272,11 +272,11 @@ public class PostgresDataStore implements DataStore {
   /**
    * Get the handlers for the columns of the schema.
    *
-   * @param dataSchema the schema
+   * @param schema the schema
    * @return the handlers
    */
-  protected List<BaseValueHandler> getHandlers(DataSchema dataSchema) {
-    return getColumns(dataSchema).stream()
+  protected List<BaseValueHandler> getHandlers(DataSchema schema) {
+    return getColumns(schema).stream()
         .map(column -> getHandler(column.type()))
         .collect(Collectors.toList());
   }
@@ -337,10 +337,10 @@ public class PostgresDataStore implements DataStore {
   /**
    * Check if the column type is supported by postgres.
    *
-   * @param dataColumn the column
+   * @param column the column
    * @return true if the column type is supported
    */
-  protected boolean isSupported(DataColumn dataColumn) {
-    return typeToName.containsKey(dataColumn.type());
+  protected boolean isSupported(DataColumn column) {
+    return typeToName.containsKey(column.type());
   }
 }

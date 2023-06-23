@@ -29,7 +29,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Fork(1)
 public class DataMapBenchmark {
 
-  private static final long N = 1 << 22;
+  private static final long N = 1 << 25;
 
   private static void benchmark(DataMap<Long> store, long n) {
     for (long i = 0; i < n; i++) {

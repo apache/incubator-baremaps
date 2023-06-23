@@ -22,18 +22,18 @@ import org.apache.baremaps.collection.AbstractDataCollection;
  */
 public class DataTableAdapter extends AbstractDataCollection<DataRow> implements DataTable {
 
-  private final DataTable dataTable;
+  private final DataTable table;
 
   private final Function<DataRow, DataRow> transformer;
 
   /**
    * Constructs a new table decorator.
    *
-   * @param dataTable the table to decorate
+   * @param table the table to decorate
    * @param transformer the row transformer
    */
-  public DataTableAdapter(DataTable dataTable, Function<DataRow, DataRow> transformer) {
-    this.dataTable = dataTable;
+  public DataTableAdapter(DataTable table, Function<DataRow, DataRow> transformer) {
+    this.table = table;
     this.transformer = transformer;
   }
 
@@ -42,7 +42,7 @@ public class DataTableAdapter extends AbstractDataCollection<DataRow> implements
    */
   @Override
   public DataSchema schema() {
-    return dataTable.schema();
+    return table.schema();
   }
 
   /**
@@ -50,7 +50,7 @@ public class DataTableAdapter extends AbstractDataCollection<DataRow> implements
    */
   @Override
   public Iterator iterator() {
-    return dataTable.stream().map(this.transformer).iterator();
+    return table.stream().map(this.transformer).iterator();
   }
 
   /**
@@ -58,8 +58,6 @@ public class DataTableAdapter extends AbstractDataCollection<DataRow> implements
    */
   @Override
   public long sizeAsLong() {
-    return dataTable.sizeAsLong();
+    return table.sizeAsLong();
   }
-
-
 }

@@ -39,10 +39,10 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
       for (var name : geoPackageDataStore.list()) {
         var geoPackageTable = geoPackageDataStore.get(name);
         var projectionTransformer = new ProjectionTransformer(sourceSRID, targetSRID);
-        var dataRowTransformer =
+        var rowTransformer =
             new DataTableGeometryTransformer(geoPackageTable, projectionTransformer);
         var transformedDataTable =
-            new DataTableAdapter(geoPackageDataStore.get(name), dataRowTransformer);
+            new DataTableAdapter(geoPackageDataStore.get(name), rowTransformer);
         postgresDataStore.add(transformedDataTable);
       }
     } catch (Exception e) {

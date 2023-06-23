@@ -22,19 +22,19 @@ import org.apache.baremaps.collection.DataCollection;
  */
 public class DataTableImpl extends AbstractDataCollection<DataRow> implements DataTable {
 
-  private final DataSchema dataSchema;
+  private final DataSchema schema;
 
-  private final Collection<DataRow> dataRows;
+  private final Collection<DataRow> rows;
 
   /**
    * Constructs a table with the specified schema.
    *
-   * @param dataSchema the schema of the table
-   * @param dataRows the collection of rows
+   * @param schema the schema of the table
+   * @param rows the collection of rows
    */
-  public DataTableImpl(DataSchema dataSchema, Collection<DataRow> dataRows) {
-    this.dataSchema = dataSchema;
-    this.dataRows = dataRows;
+  public DataTableImpl(DataSchema schema, Collection<DataRow> rows) {
+    this.schema = schema;
+    this.rows = rows;
   }
 
   /**
@@ -42,7 +42,7 @@ public class DataTableImpl extends AbstractDataCollection<DataRow> implements Da
    */
   @Override
   public DataSchema schema() {
-    return dataSchema;
+    return schema;
   }
 
   /**
@@ -50,7 +50,7 @@ public class DataTableImpl extends AbstractDataCollection<DataRow> implements Da
    */
   @Override
   public boolean add(DataRow e) {
-    return dataRows.add(e);
+    return rows.add(e);
   }
 
   /**
@@ -58,7 +58,7 @@ public class DataTableImpl extends AbstractDataCollection<DataRow> implements Da
    */
   @Override
   public Iterator<DataRow> iterator() {
-    return dataRows.iterator();
+    return rows.iterator();
   }
 
   /**
@@ -66,10 +66,10 @@ public class DataTableImpl extends AbstractDataCollection<DataRow> implements Da
    */
   @Override
   public long sizeAsLong() {
-    if (dataRows instanceof DataCollection dataCollection) {
-      return dataCollection.sizeAsLong();
+    if (rows instanceof DataCollection collection) {
+      return collection.sizeAsLong();
     } else {
-      return dataRows.size();
+      return rows.size();
     }
   }
 }

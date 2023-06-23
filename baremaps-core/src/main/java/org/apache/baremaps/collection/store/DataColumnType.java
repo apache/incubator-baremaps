@@ -15,12 +15,23 @@ package org.apache.baremaps.collection.store;
 import org.locationtech.jts.geom.*;
 
 public enum DataColumnType {
-  BOOLEAN(Boolean.class), BYTE(Byte.class), SHORT(Short.class), INTEGER(Integer.class), LONG(
-      Long.class), FLOAT(Float.class), DOUBLE(Double.class), STRING(
-          String.class), BYTES(byte[].class), GEOMETRY(Geometry.class), POINT(
-              Point.class), LINESTRING(LineString.class), POLYGON(Polygon.class), MULTIPOINT(
-                  MultiPoint.class), MULTILINESTRING(MultiLineString.class), MULTIPOLYGON(
-                      MultiPolygon.class), GEOMETRYCOLLECTION(GeometryCollection.class);
+  BOOLEAN(Boolean.class),
+  BYTE(Byte.class),
+  SHORT(Short.class),
+  INTEGER(Integer.class),
+  LONG(Long.class),
+  FLOAT(Float.class),
+  DOUBLE(Double.class),
+  STRING(String.class),
+  BYTES(byte[].class),
+  GEOMETRY(Geometry.class),
+  POINT(Point.class),
+  LINESTRING(LineString.class),
+  POLYGON(Polygon.class),
+  MULTIPOINT(MultiPoint.class),
+  MULTILINESTRING(MultiLineString.class),
+  MULTIPOLYGON(MultiPolygon.class),
+  GEOMETRYCOLLECTION(GeometryCollection.class);
 
   private Class<?> type;
 
@@ -33,9 +44,9 @@ public enum DataColumnType {
   }
 
   public DataColumnType valueOf(Class<?> type) {
-    for (DataColumnType dataColumnType : DataColumnType.values()) {
-      if (dataColumnType.getType().equals(type)) {
-        return dataColumnType;
+    for (DataColumnType columnType : DataColumnType.values()) {
+      if (columnType.getType().equals(type)) {
+        return columnType;
       }
     }
     throw new IllegalArgumentException("Unsupported type " + type);

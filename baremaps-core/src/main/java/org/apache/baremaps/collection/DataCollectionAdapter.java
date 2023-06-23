@@ -21,18 +21,18 @@ import java.util.function.Function;
  */
 public class DataCollectionAdapter<S, T> extends AbstractDataCollection<T> {
 
-  private final DataCollection<S> dataCollection;
+  private final DataCollection<S> collection;
 
   private final Function<S, T> transformer;
 
   /**
    * Constructs a new table decorator.
    *
-   * @param dataCollection the table to decorate
+   * @param collection the table to decorate
    * @param transformer the row transformer
    */
-  public DataCollectionAdapter(DataCollection<S> dataCollection, Function<S, T> transformer) {
-    this.dataCollection = dataCollection;
+  public DataCollectionAdapter(DataCollection<S> collection, Function<S, T> transformer) {
+    this.collection = collection;
     this.transformer = transformer;
   }
 
@@ -41,7 +41,7 @@ public class DataCollectionAdapter<S, T> extends AbstractDataCollection<T> {
    */
   @Override
   public Iterator iterator() {
-    return dataCollection.stream().map(this.transformer).iterator();
+    return collection.stream().map(this.transformer).iterator();
   }
 
   /**
@@ -49,6 +49,6 @@ public class DataCollectionAdapter<S, T> extends AbstractDataCollection<T> {
    */
   @Override
   public long sizeAsLong() {
-    return dataCollection.sizeAsLong();
+    return collection.sizeAsLong();
   }
 }

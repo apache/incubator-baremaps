@@ -29,7 +29,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
 
   private final FeatureDao featureDao;
 
-  private final DataSchema dataSchema;
+  private final DataSchema schema;
 
   private final GeometryFactory geometryFactory;
 
@@ -47,7 +47,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
       var propertyType = classType(column);
       columns.add(new DataColumnImpl(propertyName, propertyType));
     }
-    dataSchema = new DataSchemaImpl(name, columns);
+    schema = new DataSchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
@@ -64,7 +64,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
    */
   @Override
   public Iterator<DataRow> iterator() {
-    return new GeopackageIterator(featureDao.queryForAll(), dataSchema);
+    return new GeopackageIterator(featureDao.queryForAll(), schema);
   }
 
   /**
@@ -80,7 +80,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
    */
   @Override
   public DataSchema schema() {
-    return dataSchema;
+    return schema;
   }
 
   /**
@@ -217,7 +217,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
 
     private final FeatureResultSet featureResultSet;
 
-    private final DataSchema dataSchema;
+    private final DataSchema schema;
 
     private boolean hasNext;
 
@@ -225,11 +225,11 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
      * Constructs an iterator from a feature result set.
      *
      * @param featureResultSet the feature result set
-     * @param dataSchema the schema of the table
+     * @param schema the schema of the table
      */
-    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema dataSchema) {
+    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema schema) {
       this.featureResultSet = featureResultSet;
-      this.dataSchema = dataSchema;
+      this.schema = schema;
       this.hasNext = featureResultSet.moveToFirst();
     }
 
@@ -249,15 +249,15 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
       if (!hasNext) {
         throw new NoSuchElementException();
       }
-      DataRow dataRow = dataSchema.createRow();
+      DataRow row = schema.createRow();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {
-          dataRow.set(featureColumn.getName(), asJavaValue(value));
+          row.set(featureColumn.getName(), asJavaValue(value));
         }
       }
       hasNext = featureResultSet.moveToNext();
-      return dataRow;
+      return row;
     }
   }
 

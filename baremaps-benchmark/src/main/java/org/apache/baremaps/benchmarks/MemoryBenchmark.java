@@ -39,12 +39,11 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 @State(Scope.Benchmark)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
-@Warmup(iterations = 1)
-@Measurement(iterations = 1)
 public class MemoryBenchmark {
 
-  private static final long N = 1 << 28;
+  private static final long N = 1 << 25;
 
   private void benchmark(DataMap<Long> store, long n) {
     for (long i = 0; i < n; i++) {
@@ -60,21 +59,24 @@ public class MemoryBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
   public void onHeap() {
     benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new OnHeapMemory()), N);
   }
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
   public void offHeap() {
     benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new OffHeapMemory()), N);
   }
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
-  @OutputTimeUnit(TimeUnit.MILLISECONDS)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
   public void onDisk() throws IOException {
     Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
     benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new MemoryMappedFile(file)),

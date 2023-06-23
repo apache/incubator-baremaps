@@ -44,7 +44,7 @@ public class ShapefileReader {
   private File shapeFileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private DataSchema dataSchema;
+  private DataSchema schema;
 
   /** Shapefile descriptor. */
   private ShapefileDescriptor shapefileDescriptor;
@@ -118,7 +118,7 @@ public class ShapefileReader {
    * @return the schema.
    */
   public DataSchema getSchema() {
-    return this.dataSchema;
+    return this.schema;
   }
 
   /**
@@ -174,7 +174,7 @@ public class ShapefileReader {
   public ShapefileInputStream read() throws IOException {
     ShapefileInputStream is =
         new ShapefileInputStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
-    this.dataSchema = is.getSchema();
+    this.schema = is.getSchema();
     this.shapefileDescriptor = is.getShapefileDescriptor();
     this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
     return is;

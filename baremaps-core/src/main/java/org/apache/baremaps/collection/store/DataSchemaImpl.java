@@ -13,9 +13,7 @@
 package org.apache.baremaps.collection.store;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A schema defines the structure of a table.
@@ -24,23 +22,17 @@ public class DataSchemaImpl implements DataSchema {
 
   private final String name;
 
-  private final List<DataColumn> dataColumns;
-
-  private final Map<String, Integer> index;
+  private final List<DataColumn> columns;
 
   /**
    * Constructs a schema.
    *
    * @param name the name of the schema
-   * @param dataColumns the columns of the schema
+   * @param columns the columns of the schema
    */
-  public DataSchemaImpl(String name, List<DataColumn> dataColumns) {
+  public DataSchemaImpl(String name, List<DataColumn> columns) {
     this.name = name;
-    this.dataColumns = dataColumns;
-    this.index = new HashMap<>();
-    for (int i = 0; i < dataColumns.size(); i++) {
-      index.put(dataColumns.get(i).name(), i);
-    }
+    this.columns = columns;
   }
 
   /**
@@ -56,7 +48,7 @@ public class DataSchemaImpl implements DataSchema {
    */
   @Override
   public List<DataColumn> columns() {
-    return dataColumns;
+    return columns;
   }
 
   /**
@@ -64,8 +56,8 @@ public class DataSchemaImpl implements DataSchema {
    */
   @Override
   public DataRow createRow() {
-    var values = new ArrayList<>(dataColumns.size());
-    for (int i = 0; i < dataColumns.size(); i++) {
+    var values = new ArrayList<>(columns.size());
+    for (int i = 0; i < columns.size(); i++) {
       values.add(null);
     }
     return new DataRowImpl(this, values);

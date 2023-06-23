@@ -22,42 +22,42 @@ import org.locationtech.jts.geom.Geometry;
 
 public class MockDataTable extends AbstractDataTable {
 
-  private final DataSchema dataSchema;
+  private final DataSchema schema;
 
-  private final List<DataRow> dataRows;
+  private final List<DataRow> rows;
 
   public MockDataTable() {
-    this.dataSchema = new DataSchemaImpl("mock", List.of(
+    this.schema = new DataSchemaImpl("mock", List.of(
         new DataColumnImpl("string", String.class),
         new DataColumnImpl("integer", Integer.class),
         new DataColumnImpl("double", Double.class),
         new DataColumnImpl("float", Float.class),
         new DataColumnImpl("geometry", Geometry.class)));
-    this.dataRows = List.of(
-        new DataRowImpl(dataSchema,
+    this.rows = List.of(
+        new DataRowImpl(schema,
             List.of("string", 1, 1.0, 1.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)))),
-        new DataRowImpl(dataSchema,
+        new DataRowImpl(schema,
             List.of("string", 2, 2.0, 2.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(2, 2)))),
-        new DataRowImpl(dataSchema,
+        new DataRowImpl(schema,
             List.of("string", 3, 3.0, 3.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(3, 3)))),
-        new DataRowImpl(dataSchema,
+        new DataRowImpl(schema,
             List.of("string", 4, 4.0, 4.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(4, 4)))),
-        new DataRowImpl(dataSchema,
+        new DataRowImpl(schema,
             List.of("string", 5, 5.0, 5.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(5, 5)))));
   }
 
   @Override
   public Iterator<DataRow> iterator() {
-    return dataRows.iterator();
+    return rows.iterator();
   }
 
   @Override
   public long sizeAsLong() {
-    return dataRows.size();
+    return rows.size();
   }
 
   @Override
   public DataSchema schema() {
-    return dataSchema;
+    return schema;
   }
 }

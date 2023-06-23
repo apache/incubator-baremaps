@@ -13,10 +13,7 @@
 package org.apache.baremaps.calcite;
 
 import com.google.common.collect.ImmutableList;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -84,35 +81,42 @@ public class Calcite {
     Properties info = new Properties();
     info.setProperty("lex", "MYSQL");
 
-    Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
-    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
+      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+      SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-    SchemaPlus rootSchema = calciteConnection.getRootSchema();
+      final ImmutableList<String> emptyPath = ImmutableList.of();
+      ModelHandler.addFunctions(rootSchema, null, emptyPath,
+          SpatialTypeFunctions.class.getName(), "*", true);
+      ModelHandler.addFunctions(rootSchema, null, emptyPath,
+          SqlSpatialTypeFunctions.class.getName(), "*", true);
 
-    final ImmutableList<String> emptyPath = ImmutableList.of();
-    ModelHandler.addFunctions(rootSchema, null, emptyPath,
-        SpatialTypeFunctions.class.getName(), "*", true);
-    ModelHandler.addFunctions(rootSchema, null, emptyPath,
-        SqlSpatialTypeFunctions.class.getName(), "*", true);
+      rootSchema.add("ST_UNION", AggregateFunctionImpl.create(Union.class));
+      rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(Accum.class));
+      rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
 
-    rootSchema.add("ST_UNION", AggregateFunctionImpl.create(Union.class));
-    rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(Accum.class));
-    rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
+      ListTable cityTable = new ListTable(CITY_TABLE);
+      rootSchema.add("country", cityTable);
 
-    ListTable cityTable = new ListTable(CITY_TABLE);
-    rootSchema.add("country", cityTable);
+      ListTable populationTable = new ListTable(POPULATION_TABLE);
+      rootSchema.add("population", populationTable);
 
-    ListTable populationTable = new ListTable(POPULATION_TABLE);
-    rootSchema.add("population", populationTable);
+      String sql = """
+          SELECT name, ST_Buffer(geometry, 10), population
+          FROM country
+          INNER JOIN population
+          ON country.id = population.country_id""";
 
-    String sql =
-        "SELECT name, ST_Buffer(geometry, 10), population FROM country INNER JOIN population ON country.id = population.country_id";
-    ResultSet resultSet = connection.createStatement().executeQuery(sql);
-    while (resultSet.next()) {
-      System.out.println(
-          resultSet.getString(1) + ", " + resultSet.getObject(2) + ", " + resultSet.getInt(3));
+      try (Statement statement = connection.createStatement();
+          ResultSet resultSet = statement.executeQuery(sql)) {
+        while (resultSet.next()) {
+          System.out.println(resultSet.getString(1)
+              + ", " + resultSet.getObject(2)
+              + ", " + resultSet.getInt(3));
+        }
+      }
     }
-    resultSet.close();
+
   }
 
   /**
@@ -120,23 +124,23 @@ public class Calcite {
    */
   private static class ListTable extends AbstractTable implements ScannableTable {
 
-    private final DataTable dataTable;
+    private final DataTable table;
 
-    ListTable(DataTable dataTable) {
-      this.dataTable = dataTable;
+    ListTable(DataTable table) {
+      this.table = table;
     }
 
     @Override
     public Enumerable<Object[]> scan(final DataContext root) {
       Collection<Object[]> collection =
-          new DataCollectionAdapter<>(dataTable, row -> row.values().toArray());
+          new DataCollectionAdapter<>(table, row -> row.values().toArray());
       return Linq4j.asEnumerable(collection);
     }
 
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
       var rowType = new RelDataTypeFactory.Builder(typeFactory);
-      for (DataColumn column : dataTable.schema().columns()) {
+      for (DataColumn column : table.schema().columns()) {
         rowType.add(column.name(), toSqlType(column.type()));
       }
       return rowType.build();

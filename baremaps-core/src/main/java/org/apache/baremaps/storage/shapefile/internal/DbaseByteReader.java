@@ -99,9 +99,9 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   /**
    * Load a row into a feature.
    *
-   * @param dataRow Feature to fill.
+   * @param row Feature to fill.
    */
-  public void loadRow(DataRow dataRow) {
+  public void loadRow(DataRow row) {
     // TODO: ignore deleted records
     getByteBuffer().get(); // denotes whether deleted or current
     // read first part of record
@@ -138,7 +138,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
         case DateTime -> value;
       };
 
-      dataRow.set(fieldDescriptor.getName(), object);
+      row.set(fieldDescriptor.getName(), object);
     }
   }
 
