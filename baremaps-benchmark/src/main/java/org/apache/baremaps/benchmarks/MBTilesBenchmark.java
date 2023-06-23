@@ -93,6 +93,4 @@ public class MBTilesBenchmark {
         new OptionsBuilder().include(MBTilesBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
-
-
 }
