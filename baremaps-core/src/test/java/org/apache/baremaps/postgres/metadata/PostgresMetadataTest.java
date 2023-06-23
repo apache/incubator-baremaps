@@ -20,8 +20,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.testing.PostgresContainerTest;
+import org.apache.baremaps.utils.PostgresUtils;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
