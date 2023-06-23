@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.apache.baremaps.collection.store.DataSchema;
+import org.apache.baremaps.database.table.DataSchema;
 
 /**
  * Provides a ShapeFile Reader.

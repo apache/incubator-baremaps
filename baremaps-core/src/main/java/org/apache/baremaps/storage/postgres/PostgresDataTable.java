@@ -21,10 +21,10 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.store.AbstractDataTable;
-import org.apache.baremaps.collection.store.DataRow;
-import org.apache.baremaps.collection.store.DataRowImpl;
-import org.apache.baremaps.collection.store.DataSchema;
+import org.apache.baremaps.database.table.AbstractDataTable;
+import org.apache.baremaps.database.table.DataRow;
+import org.apache.baremaps.database.table.DataRowImpl;
+import org.apache.baremaps.database.table.DataSchema;
 import org.apache.baremaps.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 
@@ -147,7 +147,7 @@ public class PostgresDataTable extends AbstractDataTable {
   protected static String select(DataSchema schema) {
     var columns = schema.columns().stream()
         .map(column -> {
-          if (column.type().isAssignableFrom(Geometry.class)) {
+          if (column.type().binding().isAssignableFrom(Geometry.class)) {
             return String.format("st_asbinary(\"%s\") AS \"%s\"", column.name(), column.name());
           } else {
             return String.format("\"%s\"", column.name());
@@ -233,7 +233,7 @@ public class PostgresDataTable extends AbstractDataTable {
         List<Object> values = new ArrayList<>();
         for (int i = 0; i < schema.columns().size(); i++) {
           var column = schema.columns().get(i);
-          if (column.type().isAssignableFrom(Geometry.class)) {
+          if (column.type().binding().isAssignableFrom(Geometry.class)) {
             values.add(GeometryUtils.deserialize(resultSet.getBytes(i + 1)));
           } else {
             values.add(resultSet.getObject(i + 1));

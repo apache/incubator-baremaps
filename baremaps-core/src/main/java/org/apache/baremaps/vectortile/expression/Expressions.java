@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import org.apache.baremaps.collection.store.DataRow;
+import org.apache.baremaps.database.table.DataRow;
 import org.locationtech.jts.geom.*;
 
 public interface Expressions {

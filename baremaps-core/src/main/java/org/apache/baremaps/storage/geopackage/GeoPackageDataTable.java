@@ -18,8 +18,9 @@ import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.collection.store.*;
+import org.apache.baremaps.database.collection.AbstractDataCollection;
+import org.apache.baremaps.database.table.*;
+import org.apache.baremaps.database.table.DataColumn.Type;
 import org.locationtech.jts.geom.*;
 
 /**
@@ -51,11 +52,11 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
-  protected Class<?> classType(FeatureColumn column) {
+  protected Type classType(FeatureColumn column) {
     if (column.isGeometry()) {
-      return Geometry.class;
+      return Type.fromBinding(Geometry.class);
     } else {
-      return column.getDataType().getClassType();
+      return Type.fromBinding(column.getDataType().getClassType());
     }
   }
 

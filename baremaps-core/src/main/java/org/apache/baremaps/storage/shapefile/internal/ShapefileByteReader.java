@@ -19,7 +19,8 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
-import org.apache.baremaps.collection.store.*;
+import org.apache.baremaps.database.table.*;
+import org.apache.baremaps.database.table.DataColumn.Type;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -124,30 +125,29 @@ public class ShapefileByteReader extends CommonByteReader {
       var fieldDescriptor = this.databaseFieldsDescriptors.get(i);
       var columnName = fieldDescriptor.getName();
       var columnType = switch (fieldDescriptor.getType()) {
-        case Character -> String.class;
-        case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class : Double.class;
-        case Currency -> Double.class;
-        case Integer -> Integer.class;
-        case Double -> Double.class;
-        case AutoIncrement -> Integer.class;
+        case Character -> Type.STRING;
+        case Number -> fieldDescriptor.getDecimalCount() == 0 ? Type.LONG : Type.DOUBLE;
+        case Currency -> Type.DOUBLE;
+        case Double -> Type.DOUBLE;
+        case Integer -> Type.INTEGER;
+        case AutoIncrement -> Type.INTEGER;
 
         // TODO: Implement the following types
-        case Logical -> String.class;
-        case Date -> String.class;
-        case Memo -> String.class;
-        case FloatingPoint -> String.class;
-        case Picture -> String.class;
-        case VariField -> String.class;
-        case Variant -> String.class;
-        case TimeStamp -> String.class;
-        case DateTime -> String.class;
+        case Logical -> Type.STRING;
+        case Date -> Type.STRING;
+        case Memo -> Type.STRING;
+        case FloatingPoint -> Type.STRING;
+        case Picture -> Type.STRING;
+        case VariField -> Type.STRING;
+        case Variant -> Type.STRING;
+        case TimeStamp -> Type.STRING;
+        case DateTime -> Type.STRING;
       };
-
       columns.add(new DataColumnImpl(columnName, columnType));
     }
 
     // Add geometry column.
-    columns.add(new DataColumnImpl(GEOMETRY_NAME, Geometry.class));
+    columns.add(new DataColumnImpl(GEOMETRY_NAME, Type.GEOMETRY));
 
     return new DataSchemaImpl(name, columns);
   }

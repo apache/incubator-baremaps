@@ -16,9 +16,9 @@ import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FA
 
 import java.util.Iterator;
 import java.util.List;
-import org.apache.baremaps.collection.store.*;
+import org.apache.baremaps.database.table.*;
+import org.apache.baremaps.database.table.DataColumn.Type;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
 
 public class MockDataTable extends AbstractDataTable {
 
@@ -28,11 +28,11 @@ public class MockDataTable extends AbstractDataTable {
 
   public MockDataTable() {
     this.schema = new DataSchemaImpl("mock", List.of(
-        new DataColumnImpl("string", String.class),
-        new DataColumnImpl("integer", Integer.class),
-        new DataColumnImpl("double", Double.class),
-        new DataColumnImpl("float", Float.class),
-        new DataColumnImpl("geometry", Geometry.class)));
+        new DataColumnImpl("string", Type.STRING),
+        new DataColumnImpl("integer", Type.INTEGER),
+        new DataColumnImpl("double", Type.DOUBLE),
+        new DataColumnImpl("float", Type.FLOAT),
+        new DataColumnImpl("geometry", Type.GEOMETRY)));
     this.rows = List.of(
         new DataRowImpl(schema,
             List.of("string", 1, 1.0, 1.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)))),

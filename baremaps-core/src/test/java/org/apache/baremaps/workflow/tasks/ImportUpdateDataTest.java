@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.apache.baremaps.collection.AppendOnlyBuffer;
-import org.apache.baremaps.collection.DataMap;
-import org.apache.baremaps.collection.IndexedDataMap;
-import org.apache.baremaps.collection.memory.OnHeapMemory;
-import org.apache.baremaps.collection.type.LongListDataType;
-import org.apache.baremaps.collection.type.geometry.CoordinateDataType;
+import org.apache.baremaps.database.collection.AppendOnlyBuffer;
+import org.apache.baremaps.database.collection.DataMap;
+import org.apache.baremaps.database.collection.IndexedDataMap;
+import org.apache.baremaps.database.memory.OnHeapMemory;
+import org.apache.baremaps.database.type.LongListDataType;
+import org.apache.baremaps.database.type.geometry.CoordinateDataType;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Way;

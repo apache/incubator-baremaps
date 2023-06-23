@@ -15,10 +15,10 @@ package org.apache.baremaps.benchmarks;
 
 
 import java.util.concurrent.TimeUnit;
-import org.apache.baremaps.collection.*;
-import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.type.LongDataType;
-import org.apache.baremaps.collection.type.PairDataType;
+import org.apache.baremaps.database.collection.*;
+import org.apache.baremaps.database.memory.OffHeapMemory;
+import org.apache.baremaps.database.type.LongDataType;
+import org.apache.baremaps.database.type.PairDataType;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;

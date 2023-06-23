@@ -16,7 +16,6 @@ package org.apache.baremaps.storage.postgres;
 import de.bytefish.pgbulkinsert.pgsql.handlers.*;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.store.*;
+import org.apache.baremaps.database.table.*;
+import org.apache.baremaps.database.table.DataColumn.Type;
 import org.apache.baremaps.postgres.copy.CopyWriter;
 import org.apache.baremaps.postgres.copy.GeometryValueHandler;
 import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
@@ -68,18 +68,18 @@ public class PostgresDataStore implements DataStore {
       Map.entry(LocalTime.class, "time"),
       Map.entry(LocalDateTime.class, "timestamp"));
 
-  protected static final Map<String, Class> nameToType = Map.ofEntries(
-      Map.entry("varchar", String.class),
-      Map.entry("int2", Short.class),
-      Map.entry("int4", Integer.class),
-      Map.entry("int8", Long.class),
-      Map.entry("float4", Float.class),
-      Map.entry("float8", Double.class),
-      Map.entry("geometry", Geometry.class),
-      Map.entry("inet", InetAddress.class),
-      Map.entry("date", LocalDate.class),
-      Map.entry("time", LocalTime.class),
-      Map.entry("timestamp", LocalDateTime.class));
+  protected static final Map<String, Type> nameToType = Map.ofEntries(
+      Map.entry("varchar", Type.STRING),
+      Map.entry("int2", Type.SHORT),
+      Map.entry("int4", Type.INTEGER),
+      Map.entry("int8", Type.LONG),
+      Map.entry("float4", Type.FLOAT),
+      Map.entry("float8", Type.DOUBLE),
+      Map.entry("geometry", Type.GEOMETRY),
+      Map.entry("inet", Type.INET6_ADDRESS),
+      Map.entry("date", Type.LOCAL_DATE),
+      Map.entry("time", Type.LOCAL_TIME),
+      Map.entry("timestamp", Type.LOCAL_DATE_TIME));
 
   private final DataSource dataSource;
 
@@ -288,50 +288,29 @@ public class PostgresDataStore implements DataStore {
    * @param type the type
    * @return the handler
    */
-  protected BaseValueHandler getHandler(Class type) {
-    if (type == String.class) {
-      return new StringValueHandler();
-    } else if (type == Short.class) {
-      return new ShortValueHandler<Short>();
-    } else if (type == Integer.class) {
-      return new IntegerValueHandler<Integer>();
-    } else if (type == Long.class) {
-      return new LongValueHandler<Long>();
-    } else if (type == Float.class) {
-      return new FloatValueHandler<Float>();
-    } else if (type == Double.class) {
-      return new DoubleValueHandler<Double>();
-    } else if (type == Geometry.class) {
-      return new GeometryValueHandler();
-    } else if (type == MultiPoint.class) {
-      return new GeometryValueHandler();
-    } else if (type == Point.class) {
-      return new GeometryValueHandler();
-    } else if (type == LineString.class) {
-      return new GeometryValueHandler();
-    } else if (type == MultiLineString.class) {
-      return new GeometryValueHandler();
-    } else if (type == Polygon.class) {
-      return new GeometryValueHandler();
-    } else if (type == MultiPolygon.class) {
-      return new GeometryValueHandler();
-    } else if (type == LinearRing.class) {
-      return new GeometryValueHandler();
-    } else if (type == GeometryCollection.class) {
-      return new GeometryValueHandler();
-    } else if (type == Inet4Address.class) {
-      return new Inet4AddressValueHandler();
-    } else if (type == Inet6Address.class) {
-      return new Inet6AddressValueHandler();
-    } else if (type == LocalDate.class) {
-      return new LocalDateValueHandler();
-    } else if (type == LocalTime.class) {
-      return new LocalTimeValueHandler();
-    } else if (type == LocalDateTime.class) {
-      return new LocalDateTimeValueHandler();
-    } else {
-      throw new IllegalArgumentException("Unsupported type " + type);
-    }
+  protected BaseValueHandler getHandler(Type type) {
+    return switch (type) {
+      case STRING -> new StringValueHandler();
+      case SHORT -> new ShortValueHandler<Short>();
+      case INTEGER -> new IntegerValueHandler<Integer>();
+      case LONG -> new LongValueHandler<Long>();
+      case FLOAT -> new FloatValueHandler<Float>();
+      case DOUBLE -> new DoubleValueHandler<Double>();
+      case GEOMETRY -> new GeometryValueHandler();
+      case POINT -> new GeometryValueHandler();
+      case MULTIPOINT -> new GeometryValueHandler();
+      case LINESTRING -> new GeometryValueHandler();
+      case MULTILINESTRING -> new GeometryValueHandler();
+      case POLYGON -> new GeometryValueHandler();
+      case MULTIPOLYGON -> new GeometryValueHandler();
+      case GEOMETRYCOLLECTION -> new GeometryValueHandler();
+      case INET4_ADDRESS -> new Inet4AddressValueHandler();
+      case INET6_ADDRESS -> new Inet6AddressValueHandler();
+      case LOCAL_DATE -> new LocalDateValueHandler();
+      case LOCAL_TIME -> new LocalTimeValueHandler();
+      case LOCAL_DATE_TIME -> new LocalDateTimeValueHandler();
+      default -> throw new IllegalArgumentException("Unsupported type: " + type);
+    };
   }
 
   /**

@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.apache.baremaps.collection.store.DataTable;
+import org.apache.baremaps.database.table.DataTable;
 import org.apache.baremaps.ogcapi.api.CollectionsApi;
 import org.apache.baremaps.ogcapi.model.Collection;
 import org.apache.baremaps.ogcapi.model.Collections;

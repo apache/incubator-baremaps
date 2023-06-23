@@ -18,12 +18,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.baremaps.collection.store.*;
+import org.apache.baremaps.database.table.*;
+import org.apache.baremaps.database.table.DataColumn.Type;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.GeometryConversions;
 import org.wololo.flatgeobuf.HeaderMeta;
@@ -34,10 +32,23 @@ import org.wololo.flatgeobuf.generated.Header;
 
 public class TableConversions {
 
+  public static final EnumMap<Type, Integer> types = new EnumMap<>(Type.class);
+
+  static {
+    types.put(Type.BYTE, ColumnType.Byte);
+    types.put(Type.BOOLEAN, ColumnType.Bool);
+    types.put(Type.SHORT, ColumnType.Short);
+    types.put(Type.INTEGER, ColumnType.Int);
+    types.put(Type.LONG, ColumnType.Long);
+    types.put(Type.FLOAT, ColumnType.Float);
+    types.put(Type.DOUBLE, ColumnType.Double);
+    types.put(Type.STRING, ColumnType.String);
+  }
+
   public static DataSchema asFeatureType(HeaderMeta headerMeta) {
     var name = headerMeta.name;
     var columns = headerMeta.columns.stream()
-        .map(column -> new DataColumnImpl(column.name, column.getBinding()))
+        .map(column -> new DataColumnImpl(column.name, Type.fromBinding(column.getBinding())))
         .map(DataColumn.class::cast)
         .toList();
     return new DataSchemaImpl(name, columns);
@@ -179,15 +190,7 @@ public class TableConversions {
     throw new UnsupportedOperationException();
   }
 
-  public static final Map<Class, Integer> types = Map.of(
-      Byte.class, ColumnType.Byte,
-      Boolean.class, ColumnType.Bool,
-      Short.class, ColumnType.Short,
-      Integer.class, ColumnType.Int,
-      Long.class, ColumnType.Long,
-      Float.class, ColumnType.Float,
-      Double.class, ColumnType.Double,
-      String.class, ColumnType.String);
+
 
   public static List<ColumnMeta> asColumns(List<DataColumn> columns) {
     return columns.stream()

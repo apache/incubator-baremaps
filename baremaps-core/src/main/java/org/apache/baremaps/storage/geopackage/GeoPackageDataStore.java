@@ -17,9 +17,9 @@ import java.nio.file.Path;
 import java.util.Collection;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.collection.store.DataStore;
-import org.apache.baremaps.collection.store.DataTable;
-import org.apache.baremaps.collection.store.DataTableException;
+import org.apache.baremaps.database.table.DataStore;
+import org.apache.baremaps.database.table.DataTable;
+import org.apache.baremaps.database.table.DataTableException;
 
 /**
  * A store corresponding to a GeoPackage database.
