@@ -18,8 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import org.apache.baremaps.database.table.DataRow;
-import org.apache.baremaps.database.table.DataRowType;
+import org.apache.baremaps.database.schema.DataRow;
+import org.apache.baremaps.database.schema.DataRowType;
 
 /**
  * Input Stream of features.

@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.database.table.AbstractDataTable;
-import org.apache.baremaps.database.table.DataRow;
-import org.apache.baremaps.database.table.DataRowType;
-import org.apache.baremaps.database.table.DataTableException;
+import org.apache.baremaps.database.schema.AbstractDataTable;
+import org.apache.baremaps.database.schema.DataRow;
+import org.apache.baremaps.database.schema.DataRowType;
+import org.apache.baremaps.database.schema.DataTableException;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 

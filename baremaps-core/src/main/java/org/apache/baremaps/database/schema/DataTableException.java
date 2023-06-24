@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.table;
+package org.apache.baremaps.database.schema;
 
 /** Signals that an exception occurred in a table. */
 public class DataTableException extends RuntimeException {

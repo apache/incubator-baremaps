@@ -10,34 +10,20 @@
  * the License.
  */
 
-package org.apache.baremaps.database.table;
+package org.apache.baremaps.database.schema;
 
-import java.util.List;
+import org.apache.baremaps.database.collection.DataCollection;
 
 /**
- * A row type defines the structure of a table.
+ * A table is a collection of rows respecting a row type.
  */
-public interface DataRowType {
+public interface DataTable extends DataCollection<DataRow> {
 
   /**
-   * Returns the name of the row type.
-   * 
-   * @return the name of the row type
+   * Returns the type of the row.
+   *
+   * @return the type of the row
    */
-  String name();
-
-  /**
-   * Returns the columns of the row type.
-   * 
-   * @return the columns of the row type
-   */
-  List<DataColumn> columns();
-
-  /**
-   * Creates a new row of the row type.
-   * 
-   * @return a new row of the row type
-   */
-  DataRow createRow();
+  DataRowType rowType();
 
 }

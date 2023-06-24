@@ -13,8 +13,8 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
-import org.apache.baremaps.database.table.DataTableAdapter;
-import org.apache.baremaps.database.table.DataTableGeometryTransformer;
+import org.apache.baremaps.database.schema.DataTableAdapter;
+import org.apache.baremaps.database.schema.DataTableGeometryTransformer;
 import org.apache.baremaps.storage.geopackage.GeoPackageDataSchema;
 import org.apache.baremaps.storage.postgres.PostgresDataSchema;
 import org.apache.baremaps.utils.ProjectionTransformer;

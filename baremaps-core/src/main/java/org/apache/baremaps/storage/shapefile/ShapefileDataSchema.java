@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.database.table.DataSchema;
-import org.apache.baremaps.database.table.DataTable;
-import org.apache.baremaps.database.table.DataTableException;
+import org.apache.baremaps.database.schema.DataSchema;
+import org.apache.baremaps.database.schema.DataTable;
+import org.apache.baremaps.database.schema.DataTableException;
 
 /**
  * A schema corresponding to the shapefiles of a directory.

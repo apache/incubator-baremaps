@@ -15,11 +15,11 @@ package org.apache.baremaps.database.type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import org.apache.baremaps.database.table.DataColumn;
-import org.apache.baremaps.database.table.DataColumn.Type;
-import org.apache.baremaps.database.table.DataRow;
-import org.apache.baremaps.database.table.DataRowImpl;
-import org.apache.baremaps.database.table.DataRowType;
+import org.apache.baremaps.database.schema.DataColumn;
+import org.apache.baremaps.database.schema.DataColumn.Type;
+import org.apache.baremaps.database.schema.DataRow;
+import org.apache.baremaps.database.schema.DataRowImpl;
+import org.apache.baremaps.database.schema.DataRowType;
 import org.apache.baremaps.database.type.geometry.*;
 
 public class RowDataType implements DataType<DataRow> {

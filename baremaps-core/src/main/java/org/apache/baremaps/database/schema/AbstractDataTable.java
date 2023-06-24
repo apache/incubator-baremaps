@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.table;
+package org.apache.baremaps.database.schema;
 
 import org.apache.baremaps.database.collection.AbstractDataCollection;
 

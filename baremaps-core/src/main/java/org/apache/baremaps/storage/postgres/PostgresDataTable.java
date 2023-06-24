@@ -21,10 +21,10 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.table.AbstractDataTable;
-import org.apache.baremaps.database.table.DataRow;
-import org.apache.baremaps.database.table.DataRowImpl;
-import org.apache.baremaps.database.table.DataRowType;
+import org.apache.baremaps.database.schema.AbstractDataTable;
+import org.apache.baremaps.database.schema.DataRow;
+import org.apache.baremaps.database.schema.DataRowImpl;
+import org.apache.baremaps.database.schema.DataRowType;
 import org.apache.baremaps.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 

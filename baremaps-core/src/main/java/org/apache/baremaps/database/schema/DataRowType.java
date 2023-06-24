@@ -10,11 +10,34 @@
  * the License.
  */
 
-package org.apache.baremaps.database.table;
+package org.apache.baremaps.database.schema;
+
+import java.util.List;
 
 /**
- * A column in a table.
+ * A row type defines the structure of a table.
  */
-public record DataColumnImpl(String name, Type type) implements DataColumn {
+public interface DataRowType {
+
+  /**
+   * Returns the name of the row type.
+   * 
+   * @return the name of the row type
+   */
+  String name();
+
+  /**
+   * Returns the columns of the row type.
+   * 
+   * @return the columns of the row type
+   */
+  List<DataColumn> columns();
+
+  /**
+   * Creates a new row of the row type.
+   * 
+   * @return a new row of the row type
+   */
+  DataRow createRow();
 
 }

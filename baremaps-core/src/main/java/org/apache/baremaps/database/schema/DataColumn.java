@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.table;
+package org.apache.baremaps.database.schema;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
