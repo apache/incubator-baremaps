@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.storage.flatgeobuf.internal;
+package org.apache.baremaps.storage.flatgeobuf;
 
 
 import com.google.flatbuffers.FlatBufferBuilder;
@@ -30,7 +30,7 @@ import org.wololo.flatgeobuf.generated.Crs;
 import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.Header;
 
-public class TableConversions {
+public class FlatGeoBufTypeConversion {
 
   public static final EnumMap<Type, Integer> types = new EnumMap<>(Type.class);
 
@@ -194,7 +194,7 @@ public class TableConversions {
 
   public static List<ColumnMeta> asColumns(List<DataColumn> columns) {
     return columns.stream()
-        .map(TableConversions::asColumn)
+        .map(FlatGeoBufTypeConversion::asColumn)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }

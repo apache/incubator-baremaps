@@ -26,7 +26,6 @@ import org.apache.baremaps.database.collection.AbstractDataCollection;
 import org.apache.baremaps.database.schema.AbstractDataTable;
 import org.apache.baremaps.database.schema.DataRow;
 import org.apache.baremaps.database.schema.DataRowType;
-import org.apache.baremaps.storage.flatgeobuf.internal.TableConversions;
 import org.locationtech.jts.geom.*;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -81,7 +80,7 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
       // try to read the row type from the file
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
       HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
-      return TableConversions.asRowType(headerMeta);
+      return FlatGeoBufTypeConversion.asRowType(headerMeta);
     } catch (IOException e) {
       return null;
     }
@@ -164,7 +163,7 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
       headerMeta.featuresCount =
           features instanceof AbstractDataCollection<DataRow>c ? c.sizeAsLong() : features.size();
       headerMeta.name = rowType.name();
-      headerMeta.columns = TableConversions.asColumns(rowType.columns());
+      headerMeta.columns = FlatGeoBufTypeConversion.asColumns(rowType.columns());
       HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
 
       var indexSize =
@@ -188,7 +187,7 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
           var column = headerMeta.columns.get(i);
           var value = properties.get(i);
           propertiesBuffer.putShort((short) i);
-          TableConversions.writeValue(propertiesBuffer, column, value);
+          FlatGeoBufTypeConversion.writeValue(propertiesBuffer, column, value);
         }
         if (propertiesBuffer.position() > 0) {
           propertiesBuffer.flip();
@@ -268,7 +267,7 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
 
         var featureSize = buffer.getInt();
         var row =
-            TableConversions.asRow(headerMeta, rowType, Feature.getRootAsFeature(buffer));
+            FlatGeoBufTypeConversion.asRow(headerMeta, rowType, Feature.getRootAsFeature(buffer));
 
         buffer.position(Integer.BYTES + featureSize);
         buffer.compact();

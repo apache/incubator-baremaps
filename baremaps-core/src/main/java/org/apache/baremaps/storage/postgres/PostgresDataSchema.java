@@ -14,15 +14,9 @@ package org.apache.baremaps.storage.postgres;
 
 
 import de.bytefish.pgbulkinsert.pgsql.handlers.*;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.schema.*;
@@ -31,7 +25,6 @@ import org.apache.baremaps.postgres.copy.CopyWriter;
 import org.apache.baremaps.postgres.copy.GeometryValueHandler;
 import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
 import org.apache.baremaps.postgres.metadata.TableMetadata;
-import org.locationtech.jts.geom.*;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 import org.slf4j.Logger;
@@ -45,41 +38,6 @@ public class PostgresDataSchema implements DataSchema {
   private static final Logger logger = LoggerFactory.getLogger(PostgresDataSchema.class);
 
   private static final String[] TYPES = new String[] {"TABLE", "VIEW"};
-
-  protected static final Map<Class, String> typeToName = Map.ofEntries(
-      Map.entry(String.class, "varchar"),
-      Map.entry(Short.class, "int2"),
-      Map.entry(Integer.class, "int4"),
-      Map.entry(Long.class, "int8"),
-      Map.entry(Float.class, "float4"),
-      Map.entry(Double.class, "float8"),
-      Map.entry(Geometry.class, "geometry"),
-      Map.entry(MultiPoint.class, "geometry"),
-      Map.entry(Point.class, "geometry"),
-      Map.entry(LineString.class, "geometry"),
-      Map.entry(MultiLineString.class, "geometry"),
-      Map.entry(Polygon.class, "geometry"),
-      Map.entry(MultiPolygon.class, "geometry"),
-      Map.entry(LinearRing.class, "geometry"),
-      Map.entry(GeometryCollection.class, "geometry"),
-      Map.entry(Inet4Address.class, "inet"),
-      Map.entry(Inet6Address.class, "inet"),
-      Map.entry(LocalDate.class, "date"),
-      Map.entry(LocalTime.class, "time"),
-      Map.entry(LocalDateTime.class, "timestamp"));
-
-  protected static final Map<String, Type> nameToType = Map.ofEntries(
-      Map.entry("varchar", Type.STRING),
-      Map.entry("int2", Type.SHORT),
-      Map.entry("int4", Type.INTEGER),
-      Map.entry("int8", Type.LONG),
-      Map.entry("float4", Type.FLOAT),
-      Map.entry("float8", Type.DOUBLE),
-      Map.entry("geometry", Type.GEOMETRY),
-      Map.entry("inet", Type.INET6_ADDRESS),
-      Map.entry("date", Type.LOCAL_DATE),
-      Map.entry("time", Type.LOCAL_TIME),
-      Map.entry("timestamp", Type.LOCAL_DATE_TIME));
 
   private final DataSource dataSource;
 
@@ -189,7 +147,8 @@ public class PostgresDataSchema implements DataSchema {
   protected static DataRowType createRowType(TableMetadata tableMetadata) {
     var name = tableMetadata.table().tableName();
     var columns = tableMetadata.columns().stream()
-        .map(column -> new DataColumnImpl(column.columnName(), nameToType.get(column.typeName())))
+        .map(column -> new DataColumnImpl(column.columnName(),
+            PostgresTypeConversion.nameToType.get(column.typeName())))
         .map(DataColumn.class::cast)
         .toList();
     return new DataRowTypeImpl(name, columns);
@@ -204,7 +163,7 @@ public class PostgresDataSchema implements DataSchema {
   protected DataRowType adaptDataType(DataRowType rowType) {
     var name = rowType.name().replaceAll("[^a-zA-Z0-9]", "_");
     var properties = rowType.columns().stream()
-        .filter(column -> typeToName.containsKey(column.type()))
+        .filter(column -> PostgresTypeConversion.typeToName.containsKey(column.type()))
         .map(column -> (DataColumn) new DataColumnImpl(column.name(), column.type()))
         .toList();
     return new DataRowTypeImpl(name, properties);
@@ -233,7 +192,7 @@ public class PostgresDataSchema implements DataSchema {
     builder.append("\" (");
     builder.append(rowType.columns().stream()
         .map(column -> "\"" + column.name()
-            + "\" " + typeToName.get(column.type()))
+            + "\" " + PostgresTypeConversion.typeToName.get(column.type()))
         .collect(Collectors.joining(", ")));
     builder.append(")");
     return builder.toString();
@@ -254,6 +213,7 @@ public class PostgresDataSchema implements DataSchema {
         .map(column -> "\"" + column.name() + "\"")
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
+    System.out.println(builder.toString());
     return builder.toString();
   }
 
@@ -320,6 +280,6 @@ public class PostgresDataSchema implements DataSchema {
    * @return true if the column type is supported
    */
   protected boolean isSupported(DataColumn column) {
-    return typeToName.containsKey(column.type());
+    return PostgresTypeConversion.typeToName.containsKey(column.type());
   }
 }
