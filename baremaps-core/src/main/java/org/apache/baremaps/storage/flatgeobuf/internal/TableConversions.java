@@ -45,16 +45,16 @@ public class TableConversions {
     types.put(Type.STRING, ColumnType.String);
   }
 
-  public static DataSchema asFeatureType(HeaderMeta headerMeta) {
+  public static DataRowType asRowType(HeaderMeta headerMeta) {
     var name = headerMeta.name;
     var columns = headerMeta.columns.stream()
         .map(column -> new DataColumnImpl(column.name, Type.fromBinding(column.getBinding())))
         .map(DataColumn.class::cast)
         .toList();
-    return new DataSchemaImpl(name, columns);
+    return new DataRowTypeImpl(name, columns);
   }
 
-  public static DataRow asRow(HeaderMeta headerMeta, DataSchema dataType, Feature feature) {
+  public static DataRow asRow(HeaderMeta headerMeta, DataRowType dataType, Feature feature) {
     var values = new ArrayList();
 
     var geometryBuffer = feature.geometry();

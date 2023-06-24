@@ -22,11 +22,11 @@ import org.junit.jupiter.api.Test;
 class FlatGeoBufDataTableTest {
 
   @Test
-  void schema() throws IOException {
+  void rowType() throws IOException {
     var table = new FlatGeoBufDataTable(TestFiles.resolve("countries.fgb"));
-    var schema = table.schema();
-    assertEquals(schema.name(), null);
-    assertEquals(schema.columns().size(), 2);
+    var rowType = table.rowType();
+    assertEquals(rowType.name(), null);
+    assertEquals(rowType.columns().size(), 2);
   }
 
   @Test
@@ -42,7 +42,7 @@ class FlatGeoBufDataTableTest {
     file.toFile().deleteOnExit();
     var table1 = new FlatGeoBufDataTable(TestFiles.resolve("countries.fgb"));
     var rows = table1.stream().toList();
-    var table2 = new FlatGeoBufDataTable(file, table1.schema());
+    var table2 = new FlatGeoBufDataTable(file, table1.rowType());
     table2.write(rows);
 
     var featureSet = new FlatGeoBufDataTable(file);

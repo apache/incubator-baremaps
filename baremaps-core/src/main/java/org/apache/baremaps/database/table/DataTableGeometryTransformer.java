@@ -42,7 +42,7 @@ public class DataTableGeometryTransformer implements Function<DataRow, DataRow> 
    */
   @Override
   public DataRow apply(DataRow row) {
-    var columns = table.schema()
+    var columns = table.rowType()
         .columns().stream()
         .filter(column -> column.type().binding().isAssignableFrom(Geometry.class))
         .toList();

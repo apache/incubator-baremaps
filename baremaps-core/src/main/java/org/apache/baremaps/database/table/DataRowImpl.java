@@ -17,15 +17,16 @@ import java.util.List;
 /**
  * A row in a table.
  */
-public record DataRowImpl(DataSchema schema, List values) implements DataRow {
+public record DataRowImpl(DataRowType rowType, List values) implements DataRow {
 
   /**
    * {@inheritDoc}
    */
   @Override
   public Object get(String column) {
-    for (int i = 0; i < schema().columns().size(); i++) {
-      if (schema.columns().get(i).name().equals(column)) {
+    var columns = rowType.columns();
+    for (int i = 0; i < columns.size(); i++) {
+      if (columns.get(i).name().equals(column)) {
         return values.get(i);
       }
     }
@@ -45,8 +46,8 @@ public record DataRowImpl(DataSchema schema, List values) implements DataRow {
    */
   @Override
   public void set(String column, Object value) {
-    for (int i = 0; i < schema.columns().size(); i++) {
-      if (schema.columns().get(i).name().equals(column)) {
+    for (int i = 0; i < rowType.columns().size(); i++) {
+      if (rowType.columns().get(i).name().equals(column)) {
         values.set(i, value);
         return;
       }

@@ -46,7 +46,7 @@ public class ShapefileByteReader extends CommonByteReader {
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
   /** Schema of the rows contained in this shapefile. */
-  private DataSchema schema;
+  private DataRowType rowType;
 
   /** Shapefile index. */
   private File shapeFileIndex;
@@ -81,7 +81,7 @@ public class ShapefileByteReader extends CommonByteReader {
       loadShapefileIndexes();
     }
 
-    this.schema = getSchema(shapefile.getName());
+    this.rowType = getSchema(shapefile.getName());
   }
 
   /**
@@ -103,12 +103,12 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Returns the schema of the data contained in this shapefile.
+   * Returns the row type of the data contained in this shapefile.
    *
-   * @return the schema
+   * @return the row type
    */
-  public DataSchema getSchema() {
-    return this.schema;
+  public DataRowType getRowType() {
+    return this.rowType;
   }
 
   /**
@@ -117,7 +117,7 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param name Name of the field.
    * @return The row type.
    */
-  private DataSchema getSchema(final String name) {
+  private DataRowType getSchema(final String name) {
     Objects.requireNonNull(name, "The row name cannot be null.");
 
     var columns = new ArrayList<DataColumn>();
@@ -149,7 +149,7 @@ public class ShapefileByteReader extends CommonByteReader {
     // Add geometry column.
     columns.add(new DataColumnImpl(GEOMETRY_NAME, Type.GEOMETRY));
 
-    return new DataSchemaImpl(name, columns);
+    return new DataRowTypeImpl(name, columns);
   }
 
   /** Load shapefile descriptor. */

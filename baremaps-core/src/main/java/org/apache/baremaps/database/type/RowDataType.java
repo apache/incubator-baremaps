@@ -19,7 +19,7 @@ import org.apache.baremaps.database.table.DataColumn;
 import org.apache.baremaps.database.table.DataColumn.Type;
 import org.apache.baremaps.database.table.DataRow;
 import org.apache.baremaps.database.table.DataRowImpl;
-import org.apache.baremaps.database.table.DataSchema;
+import org.apache.baremaps.database.table.DataRowType;
 import org.apache.baremaps.database.type.geometry.*;
 
 public class RowDataType implements DataType<DataRow> {
@@ -46,16 +46,16 @@ public class RowDataType implements DataType<DataRow> {
     types.put(Type.COORDINATE, new CoordinateDataType());
   }
 
-  private final DataSchema schema;
+  private final DataRowType rowType;
 
-  public RowDataType(DataSchema schema) {
-    this.schema = schema;
+  public RowDataType(DataRowType rowType) {
+    this.rowType = rowType;
   }
 
   @Override
   public int size(final DataRow row) {
     int size = Integer.BYTES;
-    var columns = schema.columns();
+    var columns = rowType.columns();
     for (int i = 0; i < columns.size(); i++) {
       var columnType = columns.get(i).type();
       var dataType = types.get(columnType);
@@ -73,7 +73,7 @@ public class RowDataType implements DataType<DataRow> {
   @Override
   public void write(final ByteBuffer buffer, final int position, final DataRow row) {
     int p = position + Integer.BYTES;
-    var columns = schema.columns();
+    var columns = rowType.columns();
     for (int i = 0; i < columns.size(); i++) {
       var column = columns.get(i);
       var columnType = column.type();
@@ -88,7 +88,7 @@ public class RowDataType implements DataType<DataRow> {
   @Override
   public DataRow read(final ByteBuffer buffer, final int position) {
     int p = position + Integer.BYTES;
-    var columns = schema.columns();
+    var columns = rowType.columns();
     var values = new ArrayList();
     for (DataColumn column : columns) {
       var columnType = column.type();
@@ -96,6 +96,6 @@ public class RowDataType implements DataType<DataRow> {
       values.add(dataType.read(buffer, p));
       p += dataType.size(buffer, p);
     }
-    return new DataRowImpl(schema, values);
+    return new DataRowImpl(rowType, values);
   }
 }

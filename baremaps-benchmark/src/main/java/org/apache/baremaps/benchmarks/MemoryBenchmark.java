@@ -45,12 +45,12 @@ public class MemoryBenchmark {
 
   private static final long N = 1 << 25;
 
-  private void benchmark(DataMap<Long> store, long n) {
+  private void benchmark(DataMap<Long> map, long n) {
     for (long i = 0; i < n; i++) {
-      store.put(i, i);
+      map.put(i, i);
     }
     for (long i = 0; i < n; i++) {
-      long v = store.get(i);
+      long v = map.get(i);
       if (v != i) {
         throw new RuntimeException("Invalid value");
       }

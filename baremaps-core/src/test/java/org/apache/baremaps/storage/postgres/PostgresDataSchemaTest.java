@@ -21,34 +21,34 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresDataStoreTest extends PostgresContainerTest {
+class PostgresDataSchemaTest extends PostgresContainerTest {
 
-  private PostgresDataStore store;
+  private PostgresDataSchema schema;
 
   @BeforeEach
   void init() {
-    store = new PostgresDataStore(dataSource());
-    store.add(new MockDataTable());
+    schema = new PostgresDataSchema(dataSource());
+    schema.add(new MockDataTable());
   }
 
   @Test
   @Tag("integration")
   void list() {
-    var tables = store.list();
+    var tables = schema.list();
     assertEquals(4, tables.size());
   }
 
   @Test
   @Tag("integration")
   void addAndGet() {
-    var table = store.get("mock");
+    var table = schema.get("mock");
     assertNotNull(table);
   }
 
   @Test
   @Tag("integration")
   void remove() {
-    store.remove("mock");
-    assertThrows(DataTableException.class, () -> store.get("mock"));
+    schema.remove("mock");
+    assertThrows(DataTableException.class, () -> schema.get("mock"));
   }
 }

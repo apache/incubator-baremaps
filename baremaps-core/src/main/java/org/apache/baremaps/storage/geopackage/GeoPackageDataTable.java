@@ -30,7 +30,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
 
   private final FeatureDao featureDao;
 
-  private final DataSchema schema;
+  private final DataRowType rowType;
 
   private final GeometryFactory geometryFactory;
 
@@ -48,7 +48,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
       var propertyType = classType(column);
       columns.add(new DataColumnImpl(propertyName, propertyType));
     }
-    schema = new DataSchemaImpl(name, columns);
+    rowType = new DataRowTypeImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
@@ -65,7 +65,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
    */
   @Override
   public Iterator<DataRow> iterator() {
-    return new GeopackageIterator(featureDao.queryForAll(), schema);
+    return new GeopackageIterator(featureDao.queryForAll(), rowType);
   }
 
   /**
@@ -80,8 +80,8 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
    * {@inheritDoc}
    */
   @Override
-  public DataSchema schema() {
-    return schema;
+  public DataRowType rowType() {
+    return rowType;
   }
 
   /**
@@ -218,7 +218,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
 
     private final FeatureResultSet featureResultSet;
 
-    private final DataSchema schema;
+    private final DataRowType rowType;
 
     private boolean hasNext;
 
@@ -226,11 +226,11 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
      * Constructs an iterator from a feature result set.
      *
      * @param featureResultSet the feature result set
-     * @param schema the schema of the table
+     * @param rowType the row type of the table
      */
-    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema schema) {
+    public GeopackageIterator(FeatureResultSet featureResultSet, DataRowType rowType) {
       this.featureResultSet = featureResultSet;
-      this.schema = schema;
+      this.rowType = rowType;
       this.hasNext = featureResultSet.moveToFirst();
     }
 
@@ -250,7 +250,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
       if (!hasNext) {
         throw new NoSuchElementException();
       }
-      DataRow row = schema.createRow();
+      DataRow row = rowType.createRow();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {

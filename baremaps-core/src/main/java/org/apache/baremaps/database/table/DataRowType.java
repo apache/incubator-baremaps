@@ -12,40 +12,32 @@
 
 package org.apache.baremaps.database.table;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
- * A store is a collection of tables.
+ * A row type defines the structure of a table.
  */
-public interface DataStore {
+public interface DataRowType {
 
   /**
-   * Lists the names of the tables.
+   * Returns the name of the row type.
    * 
-   * @return the names of the tables
+   * @return the name of the row type
    */
-  Collection<String> list() throws DataTableException;
+  String name();
 
   /**
-   * Gets a table by its name.
+   * Returns the columns of the row type.
    * 
-   * @param name the name of the table
-   * @return the table
+   * @return the columns of the row type
    */
-  DataTable get(String name) throws DataTableException;
+  List<DataColumn> columns();
 
   /**
-   * Adds a table to the store.
+   * Creates a new row of the row type.
    * 
-   * @param value the table
+   * @return a new row of the row type
    */
-  void add(DataTable value) throws DataTableException;
-
-  /**
-   * Removes a table from the store.
-   * 
-   * @param name the name of the table
-   */
-  void remove(String name) throws DataTableException;
+  DataRow createRow();
 
 }

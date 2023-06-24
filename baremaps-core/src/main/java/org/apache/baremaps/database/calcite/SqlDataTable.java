@@ -32,9 +32,7 @@ import org.locationtech.jts.geom.*;
 /**
  * A simple table based on a list.
  */
-class CalciteTable extends AbstractTable implements ScannableTable {
-
-  private final DataTable table;
+class SqlDataTable extends AbstractTable implements ScannableTable {
 
   private static final EnumMap<Type, RelDataType> types = new EnumMap<>(Type.class);
 
@@ -87,7 +85,9 @@ class CalciteTable extends AbstractTable implements ScannableTable {
         .createJavaType(GeometryCollection.class));
   }
 
-  CalciteTable(DataTable table) {
+  private final DataTable table;
+
+  SqlDataTable(DataTable table) {
     this.table = table;
   }
 
@@ -101,7 +101,7 @@ class CalciteTable extends AbstractTable implements ScannableTable {
   @Override
   public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
     var rowType = new RelDataTypeFactory.Builder(typeFactory);
-    for (DataColumn column : table.schema().columns()) {
+    for (DataColumn column : table.rowType().columns()) {
       rowType.add(column.name(), types.get(column.type()));
     }
     return rowType.build();

@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.database.table.AbstractDataTable;
 import org.apache.baremaps.database.table.DataRow;
-import org.apache.baremaps.database.table.DataSchema;
+import org.apache.baremaps.database.table.DataRowType;
 import org.apache.baremaps.database.table.DataTableException;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
@@ -44,9 +44,9 @@ public class ShapefileDataTable extends AbstractDataTable {
    * {@inheritDoc}
    */
   @Override
-  public DataSchema schema() throws DataTableException {
+  public DataRowType rowType() throws DataTableException {
     try (var input = shapeFile.read()) {
-      return input.getSchema();
+      return input.rowType();
     } catch (IOException e) {
       throw new DataTableException(e);
     }

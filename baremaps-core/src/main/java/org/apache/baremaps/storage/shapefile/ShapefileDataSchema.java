@@ -10,62 +10,62 @@
  * the License.
  */
 
-package org.apache.baremaps.storage.geopackage;
+package org.apache.baremaps.storage.shapefile;
 
 
+
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import mil.nga.geopackage.GeoPackage;
-import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.database.table.DataStore;
+import org.apache.baremaps.database.table.DataSchema;
 import org.apache.baremaps.database.table.DataTable;
 import org.apache.baremaps.database.table.DataTableException;
 
 /**
- * A store corresponding to a GeoPackage database.
+ * A schema corresponding to the shapefiles of a directory.
  */
-public class GeoPackageDataStore implements DataStore, AutoCloseable {
+public class ShapefileDataSchema implements DataSchema {
 
-  private final GeoPackage geoPackage;
+  private final Path directory;
 
   /**
-   * Constructs a store from a GeoPackage database.
+   * Constructs a schema from a directory.
    *
-   * @param file the path to the GeoPackage database
+   * @param directory the directory
    */
-  public GeoPackageDataStore(Path file) {
-    this.geoPackage = GeoPackageManager.open(file.toFile());
+  public ShapefileDataSchema(Path directory) {
+    this.directory = directory;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void close() throws Exception {
-    geoPackage.close();
+  public Collection<String> list() {
+    try (var files = Files.list(directory)) {
+      return files
+          .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
+          .map(file -> file.getFileName().toString())
+          .toList();
+    } catch (IOException e) {
+      throw new DataTableException(e);
+    }
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Collection<String> list() throws DataTableException {
-    return geoPackage.getFeatureTables();
+  public DataTable get(String name) {
+    return new ShapefileDataTable(directory.resolve(name));
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public DataTable get(String name) throws DataTableException {
-    return new GeoPackageDataTable(geoPackage.getFeatureDao(name));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void add(DataTable value) throws DataTableException {
+  public void add(DataTable value) {
     throw new UnsupportedOperationException();
   }
 
@@ -73,7 +73,7 @@ public class GeoPackageDataStore implements DataStore, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public void remove(String name) throws DataTableException {
+  public void remove(String name) {
     throw new UnsupportedOperationException();
   }
 }

@@ -20,11 +20,11 @@ import java.util.List;
 public interface DataRow {
 
   /**
-   * Returns the schema of the row.
+   * Returns the type of the row.
    * 
-   * @return the schema of the row
+   * @return the type of the row
    */
-  DataSchema schema();
+  DataRowType rowType();
 
   /**
    * Returns the values of the columns in the row.

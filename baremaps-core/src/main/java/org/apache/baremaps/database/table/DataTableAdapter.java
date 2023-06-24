@@ -41,8 +41,8 @@ public class DataTableAdapter extends AbstractDataCollection<DataRow> implements
    * {@inheritDoc}
    */
   @Override
-  public DataSchema schema() {
-    return table.schema();
+  public DataRowType rowType() {
+    return table.rowType();
   }
 
   /**

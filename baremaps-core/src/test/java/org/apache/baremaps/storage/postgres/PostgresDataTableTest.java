@@ -26,18 +26,18 @@ import org.locationtech.jts.geom.Coordinate;
 
 class PostgresDataTableTest extends PostgresContainerTest {
 
-  private PostgresDataStore store;
+  private PostgresDataSchema schema;
 
   @BeforeEach
   void init() {
-    store = new PostgresDataStore(dataSource());
-    store.add(new MockDataTable());
+    schema = new PostgresDataSchema(dataSource());
+    schema.add(new MockDataTable());
   }
 
   @Test
   @Tag("integration")
   void iterator() {
-    var table = store.get("mock");
+    var table = schema.get("mock");
     var rows = table.stream().toList();
     assertEquals(5, rows.size());
   }
@@ -45,26 +45,26 @@ class PostgresDataTableTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void sizeAsLong() {
-    var table = store.get("mock");
+    var table = schema.get("mock");
     assertEquals(5, table.sizeAsLong());
   }
 
   @Test
   @Tag("integration")
   void schema() {
-    var table = store.get("mock");
-    var schema = table.schema();
-    assertNotNull(schema);
-    assertEquals("mock", schema.name());
-    assertEquals(5, schema.columns().size());
+    var table = schema.get("mock");
+    var rowType = table.rowType();
+    assertNotNull(rowType);
+    assertEquals("mock", rowType.name());
+    assertEquals(5, rowType.columns().size());
   }
 
   @Test
   @Tag("integration")
   void add() {
-    var table = store.get("mock");
-    var schema = table.schema();
-    var added = table.add(new DataRowImpl(schema,
+    var table = schema.get("mock");
+    var rowType = table.rowType();
+    var added = table.add(new DataRowImpl(rowType,
         List.of("string", 6, 6.0, 6.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(6, 6)))));
     assertTrue(added);
     assertEquals(6, table.size());
@@ -73,12 +73,12 @@ class PostgresDataTableTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void addAll() {
-    var table = store.get("mock");
-    var schema = table.schema();
+    var table = schema.get("mock");
+    var rowType = table.rowType();
     var added = table.addAll(List.of(
-        new DataRowImpl(schema,
+        new DataRowImpl(rowType,
             List.of("string", 6, 6.0, 6.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(6, 6)))),
-        new DataRowImpl(schema,
+        new DataRowImpl(rowType,
             List.of("string", 7, 7.0, 7.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(7, 7))))));
     assertTrue(added);
     assertEquals(7, table.size());

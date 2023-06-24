@@ -15,7 +15,7 @@ package org.apache.baremaps.database.table;
 import org.apache.baremaps.database.collection.AbstractDataCollection;
 
 /**
- * A table is a collection of rows respecting a schema.
+ * A table is a collection of rows respecting a row type.
  */
 public abstract class AbstractDataTable extends AbstractDataCollection<DataRow>
     implements DataTable {

@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.apache.baremaps.database.table.DataRow;
-import org.apache.baremaps.database.table.DataSchema;
+import org.apache.baremaps.database.table.DataRowType;
 
 /**
  * Input Stream of features.
@@ -46,8 +46,8 @@ public class ShapefileInputStream extends InputStream {
   /** Indicates that the shape file has a valid index provided with it. */
   private boolean hasShapefileIndex;
 
-  /** Schema of the features contained in this shapefile. */
-  private DataSchema schema;
+  /** Row type of the features contained in this shapefile. */
+  private DataRowType rowType;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -74,7 +74,7 @@ public class ShapefileInputStream extends InputStream {
 
     this.shapefileReader =
         new ShapefileByteReader(this.shapefile, this.databaseFile, this.shapefileIndex);
-    this.schema = this.shapefileReader.getSchema();
+    this.rowType = this.shapefileReader.getRowType();
   }
 
   /**
@@ -117,7 +117,7 @@ public class ShapefileInputStream extends InputStream {
     if (!this.dbaseReader.nextRowAvailable()) {
       return null;
     }
-    DataRow row = this.schema.createRow();
+    DataRow row = this.rowType.createRow();
     this.dbaseReader.loadRow(row);
     this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
     this.shapefileReader.completeRow(row);
@@ -125,12 +125,12 @@ public class ShapefileInputStream extends InputStream {
   }
 
   /**
-   * Returns the schema.
+   * Returns the row type.
    *
-   * @return the schema.
+   * @return the row type.
    */
-  public DataSchema getSchema() {
-    return schema;
+  public DataRowType rowType() {
+    return rowType;
   }
 
   /**

@@ -16,18 +16,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.database.table.DataStore;
+import org.apache.baremaps.database.table.DataSchema;
 import org.apache.baremaps.database.table.DataTable;
 import org.apache.baremaps.database.table.DataTableException;
 
 /**
- * A store corresponding to the flatgeobuf files of a directory.
+ * A schema corresponding to the flatgeobuf files of a directory.
  */
-public class FlatGeoBufDataStore implements DataStore {
+public class FlatGeoBufDataSchema implements DataSchema {
 
   private final Path directory;
 
-  public FlatGeoBufDataStore(Path directory) {
+  public FlatGeoBufDataSchema(Path directory) {
     this.directory = directory;
   }
 
@@ -60,13 +60,13 @@ public class FlatGeoBufDataStore implements DataStore {
    */
   @Override
   public void add(DataTable table) throws DataTableException {
-    var filename = table.schema().name();
+    var filename = table.rowType().name();
     filename = filename.endsWith(".fgb") ? filename : filename + ".fgb";
     var path = directory.resolve(filename);
     try {
       Files.deleteIfExists(path);
       Files.createFile(path);
-      var flatGeoBufTable = new FlatGeoBufDataTable(path, table.schema());
+      var flatGeoBufTable = new FlatGeoBufDataTable(path, table.rowType());
       flatGeoBufTable.write(table);
     } catch (IOException e) {
       throw new DataTableException(e);

@@ -25,7 +25,7 @@ import org.apache.baremaps.ogcapi.api.CollectionsApi;
 import org.apache.baremaps.ogcapi.model.Collection;
 import org.apache.baremaps.ogcapi.model.Collections;
 import org.apache.baremaps.ogcapi.model.Link;
-import org.apache.baremaps.storage.postgres.PostgresDataStore;
+import org.apache.baremaps.storage.postgres.PostgresDataSchema;
 
 /**
  * A resource that provides access to collections.
@@ -36,7 +36,7 @@ public class CollectionsResource implements CollectionsApi {
   @Context
   UriInfo uriInfo;
 
-  private final PostgresDataStore store;
+  private final PostgresDataSchema schema;
 
   /**
    * Constructs a {@code CollectionsResource}.
@@ -45,7 +45,7 @@ public class CollectionsResource implements CollectionsApi {
    */
   @Inject
   public CollectionsResource(DataSource dataSource) {
-    this.store = new PostgresDataStore(dataSource);
+    this.schema = new PostgresDataSchema(dataSource);
   }
 
   /**
@@ -57,8 +57,8 @@ public class CollectionsResource implements CollectionsApi {
   public Response getCollections() {
     Collections collections = new Collections();
     collections.setTimeStamp(new Date());
-    collections.setCollections(store.list().stream()
-        .map(store::get)
+    collections.setCollections(schema.list().stream()
+        .map(schema::get)
         .map(this::getCollection)
         .toList());
     return Response.ok().entity(collections).build();
@@ -72,7 +72,7 @@ public class CollectionsResource implements CollectionsApi {
    */
   @Override
   public Response getCollection(String collectionId) {
-    var table = store.get(collectionId);
+    var table = schema.get(collectionId);
     var collectionInfo = getCollection(table);
     return Response.ok().entity(collectionInfo).build();
   }
@@ -84,7 +84,7 @@ public class CollectionsResource implements CollectionsApi {
    * @return the collection info
    */
   private Collection getCollection(DataTable table) {
-    var name = table.schema().name();
+    var name = table.rowType().name();
     var collection = new Collection();
     collection.setId(name);
     collection.setTitle(name);

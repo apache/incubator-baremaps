@@ -15,15 +15,15 @@ package org.apache.baremaps.database.table;
 import org.apache.baremaps.database.collection.DataCollection;
 
 /**
- * A table is a collection of rows respecting a schema.
+ * A table is a collection of rows respecting a row type.
  */
 public interface DataTable extends DataCollection<DataRow> {
 
   /**
-   * Returns the schema of the table.
+   * Returns the type of the row.
    *
-   * @return the schema of the table
+   * @return the type of the row
    */
-  DataSchema schema();
+  DataRowType rowType();
 
 }

@@ -36,35 +36,35 @@ public class Calcite {
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
-  private static final DataSchema CITY_SCHEMA = new DataSchemaImpl("country", List.of(
+  private static final DataRowType CITY_ROW_TYPE = new DataRowTypeImpl("country", List.of(
       new DataColumnImpl("id", Type.INTEGER),
       new DataColumnImpl("name", Type.STRING),
       new DataColumnImpl("geometry", Type.GEOMETRY)));
 
   private static final DataTable CITY_TABLE = new DataTableImpl(
-      CITY_SCHEMA,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(CITY_SCHEMA))));
+      CITY_ROW_TYPE,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(CITY_ROW_TYPE))));
 
   static {
-    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.schema(),
+    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.rowType(),
         List.of(1, "Paris", GEOMETRY_FACTORY.createPoint(new Coordinate(2.3522, 48.8566)))));
-    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.schema(),
+    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.rowType(),
         List.of(2, "New York", GEOMETRY_FACTORY.createPoint(new Coordinate(-74.0060, 40.7128)))));
   }
 
-  private static final DataSchema POPULATION_SCHEMA = new DataSchemaImpl("population", List.of(
+  private static final DataRowType POPULATION_ROW_TYPE = new DataRowTypeImpl("population", List.of(
       new DataColumnImpl("country_id", Type.INTEGER),
       new DataColumnImpl("population", Type.INTEGER)));
 
   private static final DataTable POPULATION_TABLE = new DataTableImpl(
-      POPULATION_SCHEMA,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(POPULATION_SCHEMA))));
+      POPULATION_ROW_TYPE,
+      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(POPULATION_ROW_TYPE))));
 
   static {
     POPULATION_TABLE
-        .add(new DataRowImpl(POPULATION_TABLE.schema(), List.of(1, 2_161_000)));
+        .add(new DataRowImpl(POPULATION_TABLE.rowType(), List.of(1, 2_161_000)));
     POPULATION_TABLE
-        .add(new DataRowImpl(POPULATION_TABLE.schema(), List.of(2, 8_336_000)));
+        .add(new DataRowImpl(POPULATION_TABLE.rowType(), List.of(2, 8_336_000)));
   }
 
   public static void main(String[] args) throws SQLException {
@@ -85,10 +85,10 @@ public class Calcite {
       rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(Accum.class));
       rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
 
-      CalciteTable cityTable = new CalciteTable(CITY_TABLE);
+      SqlDataTable cityTable = new SqlDataTable(CITY_TABLE);
       rootSchema.add("country", cityTable);
 
-      CalciteTable populationTable = new CalciteTable(POPULATION_TABLE);
+      SqlDataTable populationTable = new SqlDataTable(POPULATION_TABLE);
       rootSchema.add("population", populationTable);
 
       String sql = """

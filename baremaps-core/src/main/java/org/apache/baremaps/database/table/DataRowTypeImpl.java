@@ -16,21 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A schema defines the structure of a table.
+ * A row type defines the structure of a table.
  */
-public class DataSchemaImpl implements DataSchema {
+public class DataRowTypeImpl implements DataRowType {
 
   private final String name;
 
   private final List<DataColumn> columns;
 
   /**
-   * Constructs a schema.
+   * Constructs a row type.
    *
-   * @param name the name of the schema
-   * @param columns the columns of the schema
+   * @param name the name of the row type
+   * @param columns the columns of the row type
    */
-  public DataSchemaImpl(String name, List<DataColumn> columns) {
+  public DataRowTypeImpl(String name, List<DataColumn> columns) {
     this.name = name;
     this.columns = columns;
   }

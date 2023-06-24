@@ -12,27 +12,28 @@
 
 package org.apache.baremaps.database.table;
 
+import java.util.Collection;
 import java.util.Iterator;
 import org.apache.baremaps.database.collection.AbstractDataCollection;
 import org.apache.baremaps.database.collection.DataCollection;
 
 /**
- * A table is a collection of rows respecting a schema.
+ * A table is a collection of rows respecting a row type.
  */
 public class DataTableImpl extends AbstractDataCollection<DataRow> implements DataTable {
 
-  private final DataSchema schema;
+  private final DataRowType rowType;
 
-  private final DataCollection<DataRow> rows;
+  private final Collection<DataRow> rows;
 
   /**
-   * Constructs a table with the specified schema.
+   * Constructs a table with the specified row type.
    *
-   * @param schema the schema of the table
+   * @param rowType the row type of the table
    * @param rows the collection of rows
    */
-  public DataTableImpl(DataSchema schema, DataCollection<DataRow> rows) {
-    this.schema = schema;
+  public DataTableImpl(DataRowType rowType, Collection<DataRow> rows) {
+    this.rowType = rowType;
     this.rows = rows;
   }
 
@@ -40,8 +41,8 @@ public class DataTableImpl extends AbstractDataCollection<DataRow> implements Da
    * {@inheritDoc}
    */
   @Override
-  public DataSchema schema() {
-    return schema;
+  public DataRowType rowType() {
+    return rowType;
   }
 
   /**
@@ -65,6 +66,10 @@ public class DataTableImpl extends AbstractDataCollection<DataRow> implements Da
    */
   @Override
   public long sizeAsLong() {
-    return rows.sizeAsLong();
+    if (rows instanceof DataCollection<DataRow>dataCollection) {
+      return dataCollection.sizeAsLong();
+    } else {
+      return rows.size();
+    }
   }
 }

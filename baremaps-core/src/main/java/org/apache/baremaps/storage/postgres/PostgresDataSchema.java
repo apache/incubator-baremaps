@@ -38,11 +38,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A store that stores tables in a Postgres database.
+ * A schema that stores tables in a Postgres database.
  */
-public class PostgresDataStore implements DataStore {
+public class PostgresDataSchema implements DataSchema {
 
-  private static final Logger logger = LoggerFactory.getLogger(PostgresDataStore.class);
+  private static final Logger logger = LoggerFactory.getLogger(PostgresDataSchema.class);
 
   private static final String[] TYPES = new String[] {"TABLE", "VIEW"};
 
@@ -84,11 +84,11 @@ public class PostgresDataStore implements DataStore {
   private final DataSource dataSource;
 
   /**
-   * Creates a postgres store.
+   * Creates a postgres schema.
    *
    * @param dataSource the data source
    */
-  public PostgresDataStore(DataSource dataSource) {
+  public PostgresDataSchema(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -114,8 +114,8 @@ public class PostgresDataStore implements DataStore {
     if (tableMetadata.isEmpty()) {
       throw new DataTableException("Table " + name + " does not exist.");
     }
-    var schema = createSchema(tableMetadata.get());
-    return new PostgresDataTable(dataSource, schema);
+    var rowType = createRowType(tableMetadata.get());
+    return new PostgresDataTable(dataSource, rowType);
   }
 
   /**
@@ -124,17 +124,17 @@ public class PostgresDataStore implements DataStore {
   @Override
   public void add(DataTable table) {
     try (var connection = dataSource.getConnection()) {
-      var schema = adaptDataType(table.schema());
+      var rowType = adaptDataType(table.rowType());
 
       // Drop the table if it exists
-      var dropQuery = dropTable(schema.name());
+      var dropQuery = dropTable(rowType.name());
       logger.debug(dropQuery);
       try (var dropStatement = connection.prepareStatement(dropQuery)) {
         dropStatement.execute();
       }
 
       // Create the table
-      var createQuery = createTable(schema);
+      var createQuery = createTable(rowType);
       logger.debug(createQuery);
       try (var createStatement = connection.prepareStatement(createQuery)) {
         createStatement.execute();
@@ -142,12 +142,12 @@ public class PostgresDataStore implements DataStore {
 
       // Copy the data
       var pgConnection = connection.unwrap(PGConnection.class);
-      var copyQuery = copy(schema);
+      var copyQuery = copy(rowType);
       logger.debug(copyQuery);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
-        var columns = getColumns(schema);
-        var handlers = getHandlers(schema);
+        var columns = getColumns(rowType);
+        var handlers = getHandlers(rowType);
         for (DataRow row : table) {
           writer.startRow(columns.size());
           for (int i = 0; i < columns.size(); i++) {
@@ -181,33 +181,33 @@ public class PostgresDataStore implements DataStore {
   }
 
   /**
-   * Creates a schema from the metadata of a postgres table.
+   * Creates a row type from the metadata of a postgres table.
    *
    * @param tableMetadata the table metadata
-   * @return the schema
+   * @return the rowType
    */
-  protected static DataSchema createSchema(TableMetadata tableMetadata) {
+  protected static DataRowType createRowType(TableMetadata tableMetadata) {
     var name = tableMetadata.table().tableName();
     var columns = tableMetadata.columns().stream()
         .map(column -> new DataColumnImpl(column.columnName(), nameToType.get(column.typeName())))
         .map(DataColumn.class::cast)
         .toList();
-    return new DataSchemaImpl(name, columns);
+    return new DataRowTypeImpl(name, columns);
   }
 
   /**
    * Adapt the data type to postgres (e.g. use compatible names).
    *
-   * @param schema the schema to adapt
-   * @return the adapted schema
+   * @param rowType the row type to adapt
+   * @return the adapted row type
    */
-  protected DataSchema adaptDataType(DataSchema schema) {
-    var name = schema.name().replaceAll("[^a-zA-Z0-9]", "_");
-    var properties = schema.columns().stream()
+  protected DataRowType adaptDataType(DataRowType rowType) {
+    var name = rowType.name().replaceAll("[^a-zA-Z0-9]", "_");
+    var properties = rowType.columns().stream()
         .filter(column -> typeToName.containsKey(column.type()))
         .map(column -> (DataColumn) new DataColumnImpl(column.name(), column.type()))
         .toList();
-    return new DataSchemaImpl(name, properties);
+    return new DataRowTypeImpl(name, properties);
   }
 
   /**
@@ -223,15 +223,15 @@ public class PostgresDataStore implements DataStore {
   /**
    * Generate a create table query.
    *
-   * @param schema the schema
+   * @param rowType the row type
    * @return the query
    */
-  protected String createTable(DataSchema schema) {
+  protected String createTable(DataRowType rowType) {
     StringBuilder builder = new StringBuilder();
     builder.append("CREATE TABLE \"");
-    builder.append(schema.name());
+    builder.append(rowType.name());
     builder.append("\" (");
-    builder.append(schema.columns().stream()
+    builder.append(rowType.columns().stream()
         .map(column -> "\"" + column.name()
             + "\" " + typeToName.get(column.type()))
         .collect(Collectors.joining(", ")));
@@ -242,15 +242,15 @@ public class PostgresDataStore implements DataStore {
   /**
    * Generate a copy query.
    *
-   * @param schema the schema
+   * @param rowType the row type
    * @return the query
    */
-  protected String copy(DataSchema schema) {
+  protected String copy(DataRowType rowType) {
     var builder = new StringBuilder();
     builder.append("COPY \"");
-    builder.append(schema.name());
+    builder.append(rowType.name());
     builder.append("\" (");
-    builder.append(schema.columns().stream()
+    builder.append(rowType.columns().stream()
         .map(column -> "\"" + column.name() + "\"")
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
@@ -258,25 +258,25 @@ public class PostgresDataStore implements DataStore {
   }
 
   /**
-   * Get the columns of the schema.
+   * Get the columns of the row type.
    *
-   * @param schema the schema
+   * @param rowType the row type
    * @return the columns
    */
-  protected List<DataColumn> getColumns(DataSchema schema) {
-    return schema.columns().stream()
+  protected List<DataColumn> getColumns(DataRowType rowType) {
+    return rowType.columns().stream()
         .filter(this::isSupported)
         .collect(Collectors.toList());
   }
 
   /**
-   * Get the handlers for the columns of the schema.
+   * Get the handlers for the columns of the row type.
    *
-   * @param schema the schema
+   * @param rowType the row type
    * @return the handlers
    */
-  protected List<BaseValueHandler> getHandlers(DataSchema schema) {
-    return getColumns(schema).stream()
+  protected List<BaseValueHandler> getHandlers(DataRowType rowType) {
+    return getColumns(rowType).stream()
         .map(column -> getHandler(column.type()))
         .collect(Collectors.toList());
   }
