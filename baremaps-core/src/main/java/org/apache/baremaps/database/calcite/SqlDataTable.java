@@ -31,7 +31,9 @@ class SqlDataTable extends AbstractTable implements ScannableTable {
 
   private final DataTable table;
 
-  SqlDataTable(DataTable table) {
+  private RelDataType rowType;
+
+  public SqlDataTable(DataTable table) {
     this.table = table;
   }
 
@@ -44,6 +46,13 @@ class SqlDataTable extends AbstractTable implements ScannableTable {
 
   @Override
   public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
+    if (rowType == null) {
+      rowType = createRowType(typeFactory);
+    }
+    return rowType;
+  }
+
+  private RelDataType createRowType(RelDataTypeFactory typeFactory) {
     var rowType = new RelDataTypeFactory.Builder(typeFactory);
     for (DataColumn column : table.rowType().columns()) {
       rowType.add(column.name(), SqlTypeConversion.types.get(column.type()));

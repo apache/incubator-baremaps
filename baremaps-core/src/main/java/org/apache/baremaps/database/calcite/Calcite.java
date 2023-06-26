@@ -36,7 +36,7 @@ public class Calcite {
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
-  private static final DataRowType CITY_ROW_TYPE = new DataRowTypeImpl("country", List.of(
+  private static final DataRowType CITY_ROW_TYPE = new DataRowTypeImpl("city", List.of(
       new DataColumnImpl("id", Type.INTEGER),
       new DataColumnImpl("name", Type.STRING),
       new DataColumnImpl("geometry", Type.GEOMETRY)));
@@ -53,7 +53,7 @@ public class Calcite {
   }
 
   private static final DataRowType POPULATION_ROW_TYPE = new DataRowTypeImpl("population", List.of(
-      new DataColumnImpl("country_id", Type.INTEGER),
+      new DataColumnImpl("city_id", Type.INTEGER),
       new DataColumnImpl("population", Type.INTEGER)));
 
   private static final DataTable POPULATION_TABLE = new DataTableImpl(
@@ -86,16 +86,15 @@ public class Calcite {
       rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
 
       SqlDataTable cityTable = new SqlDataTable(CITY_TABLE);
-      rootSchema.add("country", cityTable);
-
+      rootSchema.add("city", cityTable);
       SqlDataTable populationTable = new SqlDataTable(POPULATION_TABLE);
       rootSchema.add("population", populationTable);
 
       String sql = """
           SELECT name, ST_Buffer(geometry, 10), population
-          FROM country
+          FROM city
           INNER JOIN population
-          ON country.id = population.country_id""";
+          ON city.id = population.city_id""";
 
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery(sql)) {
