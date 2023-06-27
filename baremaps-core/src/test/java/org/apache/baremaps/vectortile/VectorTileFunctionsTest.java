@@ -14,12 +14,12 @@ package org.apache.baremaps.vectortile;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.*;
+import org.apache.baremaps.utils.GeometryUtils;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Polygon;
 
-class VectorTileUtilsTest {
+class VectorTileFunctionsTest {
 
   @Test
   void vectorTileGeom() {
@@ -34,14 +34,14 @@ class VectorTileUtilsTest {
     var inputGeom = geometryFactory.createPolygon(coordinates);
 
     // Define the tile envelope, extent, buffer, and clipping flag
-    var envelope = new Envelope(0, 10, 0, 10);
+    var envelope = geometryFactory.toGeometry(new Envelope(0, 10, 0, 10));
     var extent = 100;
     var buffer = 10;
     var clipGeom = true;
 
     // Transform the input geometry into a vector tile geometry
     var outputGeom =
-        VectorTileUtils.asVectorTileGeom(inputGeom, envelope, extent, buffer, clipGeom);
+        VectorTileFunctions.asVectorTileGeom(inputGeom, envelope, extent, buffer, clipGeom);
 
     // Check if the output geometry is not null
     assertNotNull(outputGeom);
@@ -63,7 +63,7 @@ class VectorTileUtilsTest {
     assertTrue(outputGeom.equalsTopo(expectedGeom));
 
     // Transform back the vector tile geometry into the original geometry
-    var backToInputGeom = VectorTileUtils.fromVectorTileGeom(outputGeom, envelope, extent);
+    var backToInputGeom = VectorTileFunctions.fromVectorTileGeom(outputGeom, envelope, extent);
     assertTrue(backToInputGeom.equalsTopo(inputGeom));
   }
 }

@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.vectortile;
 
-import static org.apache.baremaps.vectortile.VectorTileUtils.*;
+import static org.apache.baremaps.vectortile.VectorTileFunctions.*;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;

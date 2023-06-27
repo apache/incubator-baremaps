@@ -21,6 +21,7 @@ import org.apache.baremaps.database.collection.IndexedDataList;
 import org.apache.baremaps.database.schema.*;
 import org.apache.baremaps.database.schema.DataColumn.Type;
 import org.apache.baremaps.database.type.RowDataType;
+import org.apache.baremaps.vectortile.VectorTileFunctions;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.model.ModelHandler;
 import org.apache.calcite.runtime.SpatialTypeFunctions;
@@ -85,23 +86,25 @@ public class Calcite {
       rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(Accum.class));
       rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
 
+      ModelHandler.addFunctions(rootSchema, "ST_AsMVTGeom", emptyPath, VectorTileFunctions.class.getName(), "asVectorTileGeom", true);
+      ModelHandler.addFunctions(rootSchema, "ST_AsMVT", emptyPath, VectorTileFunctions.class.getName(), "asVectorTile", true);
+
       SqlDataTable cityTable = new SqlDataTable(CITY_TABLE);
       rootSchema.add("city", cityTable);
       SqlDataTable populationTable = new SqlDataTable(POPULATION_TABLE);
       rootSchema.add("population", populationTable);
 
       String sql = """
-          SELECT name, ST_Buffer(geometry, 10), population
-          FROM city
-          INNER JOIN population
-          ON city.id = population.city_id""";
+         SELECT ST_AsText(ST_AsMVTGeom(
+         	ST_GeomFromText('POLYGON ((0 0, 10 1, 10 10, 1 10, 0 0))'),
+         	ST_MakeEnvelope(0, 0, 4096, 4096),
+         	4096, 0, true))
+         	""";
 
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery(sql)) {
         while (resultSet.next()) {
-          System.out.println(resultSet.getString(1)
-              + ", " + resultSet.getObject(2)
-              + ", " + resultSet.getInt(3));
+          System.out.println(resultSet.getString(1));
         }
       }
     }

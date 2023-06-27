@@ -13,6 +13,8 @@
 package org.apache.baremaps.vectortile;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -22,7 +24,7 @@ import org.locationtech.jts.geom.util.AffineTransformation;
 /**
  * Utility class for vector tiles.
  */
-public class VectorTileUtils {
+public class VectorTileFunctions {
 
   public static final int MOVE_TO = 1;
 
@@ -40,13 +42,14 @@ public class VectorTileUtils {
    * @param clipGeom A flag to clip the geometry
    * @return The transformed geometry
    */
-  public static Geometry asVectorTileGeom(Geometry geometry, Envelope envelope, int extent,
+  public static Geometry asVectorTileGeom(Geometry geometry, Geometry envelope, int extent,
       int buffer, boolean clipGeom) {
     // Scale the geometry to the extent of the tile
-    double scaleX = extent / envelope.getWidth();
-    double scaleY = extent / envelope.getHeight();
+    var envelopeInternal = envelope.getEnvelopeInternal();
+    double scaleX = extent / envelopeInternal.getWidth();
+    double scaleY = extent / envelopeInternal.getHeight();
     AffineTransformation affineTransformation = new AffineTransformation();
-    affineTransformation.translate(-envelope.getMinX(), -envelope.getMinY());
+    affineTransformation.translate(-envelopeInternal.getMinX(), -envelopeInternal.getMinY());
     affineTransformation.scale(scaleX, -scaleY);
     affineTransformation.translate(0, extent);
     Geometry scaledGeometry = affineTransformation.transform(geometry);
@@ -67,18 +70,18 @@ public class VectorTileUtils {
    * @param extent The extent of the tile
    * @return The transformed geometry
    */
-  public static Geometry fromVectorTileGeom(Geometry geometry, Envelope envelope, int extent) {
+  public static Geometry fromVectorTileGeom(Geometry geometry, Geometry envelope, int extent) {
     // Scale the geometry to the extent of the tile
-    double scaleX = extent / envelope.getWidth();
-    double scaleY = extent / envelope.getHeight();
+    var envelopeInternal = envelope.getEnvelopeInternal();
+    double scaleX = extent / envelopeInternal.getWidth();
+    double scaleY = extent / envelopeInternal.getHeight();
     AffineTransformation affineTransformation = new AffineTransformation();
     affineTransformation.translate(0, -extent);
     affineTransformation.scale(1 / scaleX, -1 / scaleY);
-    affineTransformation.translate(envelope.getMinX(), envelope.getMinY());
-    Geometry scaledGeometry = affineTransformation.transform(geometry);
+    affineTransformation.translate(envelopeInternal.getMinX(), envelopeInternal.getMinY());
 
     // Build the final geometry
-    return scaledGeometry;
+    return affineTransformation.transform(geometry);
   }
 
   /**
@@ -118,7 +121,7 @@ public class VectorTileUtils {
    */
   private static Geometry clipToTile(Geometry geometry, int extent, int buffer) {
     Envelope envelope =
-        new Envelope((0 - buffer), (extent + buffer), (0 - buffer), (extent + buffer));
+        new Envelope(-buffer, extent + buffer, -buffer, extent + buffer);
     GeometryFactory geometryFactory = new GeometryFactory();
     Geometry tile = geometryFactory.toGeometry(envelope);
     return geometry.intersection(tile);
