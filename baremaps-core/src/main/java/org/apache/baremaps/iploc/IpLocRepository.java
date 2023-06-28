@@ -45,9 +45,7 @@ public final class IpLocRepository {
           longitude real,
           latitude real,
           network text,
-          country text,
-          source text,
-          precision text
+          country text
       )""";
 
   private static final String CREATE_INDEX = """
@@ -55,15 +53,15 @@ public final class IpLocRepository {
 
   private static final String INSERT_SQL =
       """
-          INSERT INTO inetnum_locations(address, ip_start, ip_end, longitude, latitude, network, country, source, precision)
-          VALUES(?,?,?,?,?,?,?,?,?)""";
+          INSERT INTO inetnum_locations(address, ip_start, ip_end, longitude, latitude, network, country)
+          VALUES(?,?,?,?,?,?,?)""";
 
   private static final String SELECT_ALL_SQL = """
-      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country, source, precision
+      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country
       FROM inetnum_locations;""";
 
   private static final String SELECT_ALL_BY_IP_SQL = """
-      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country, source, precision
+      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country
       FROM inetnum_locations
       WHERE ip_start <= ? AND ip_end >= ?
       ORDER BY ip_start DESC, ip_end ASC;""";
@@ -138,9 +136,7 @@ public final class IpLocRepository {
                 resultSet.getDouble("longitude"),
                 resultSet.getDouble("latitude")),
             resultSet.getString("network"),
-            resultSet.getString("country"),
-            resultSet.getString("source"),
-            resultSet.getString("precision")));
+            resultSet.getString("country")));
       }
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
@@ -171,15 +167,34 @@ public final class IpLocRepository {
                   resultSet.getDouble("longitude"),
                   resultSet.getDouble("latitude")),
               resultSet.getString("network"),
-              resultSet.getString("country"),
-              resultSet.getString("source"),
-              resultSet.getString("precision")));
+              resultSet.getString("country")));
         }
       }
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
     }
     return ipLocObjects;
+  }
+
+  /**
+   * Saves the {@code IpLocObject} object in the repository.
+   *
+   * @param ipLocObject the {@code IpLocObject} object
+   */
+  public void save(IpLocObject ipLocObject) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(INSERT_SQL)) {
+      statement.setString(1, ipLocObject.address());
+      statement.setBytes(2, ipLocObject.inetRange().start().getAddress());
+      statement.setBytes(3, ipLocObject.inetRange().end().getAddress());
+      statement.setDouble(4, ipLocObject.coordinate().getX());
+      statement.setDouble(5, ipLocObject.coordinate().getY());
+      statement.setString(6, ipLocObject.network());
+      statement.setString(7, ipLocObject.country());
+      statement.executeUpdate();
+    } catch (SQLException e) {
+      logger.error("Unable to save data", e);
+    }
   }
 
   /**
@@ -199,8 +214,6 @@ public final class IpLocRepository {
         statement.setDouble(5, ipLocObject.coordinate().getY());
         statement.setString(6, ipLocObject.network());
         statement.setString(7, ipLocObject.country());
-        statement.setString(8, ipLocObject.source());
-        statement.setString(9, ipLocObject.precision());
         statement.addBatch();
       }
       statement.executeBatch();

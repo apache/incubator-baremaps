@@ -85,8 +85,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              "geoloc", "high"));
+              attributes.get("country")));
         }
       }
 
@@ -99,8 +98,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              "address", "high"));
+              attributes.get("country")));
         }
       }
 
@@ -113,8 +111,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              "descr", "low"));
+              attributes.get("country")));
         }
       }
 
@@ -122,12 +119,10 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
       if (attributes.containsKey("name")) {
         var location = findLocation(attributes.get("name"), attributes.get("country"));
         if (location.isPresent()) {
-          return Optional.of(new IpLocObject(
-              attributes.get("name"),
+          return Optional.of(new IpLocObject(attributes.get("name"),
               inetRange,
               location.get(),
-              network, attributes.get("country"),
-              "name", "low"));
+              network, attributes.get("country")));
         }
       }
 
@@ -144,8 +139,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               inetRange,
               location.get(),
               network,
-              countryUppercase,
-              "countryCode", "low"));
+              countryUppercase));
         }
       }
 
@@ -159,8 +153,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              "country", "low"));
+              attributes.get("country")));
         }
       }
 
