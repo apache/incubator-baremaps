@@ -29,19 +29,21 @@ public class GeonamesDocumentMapper implements Function<GeonamesRecord, Document
     document.add(new TextField("name", record.getName(), Field.Store.YES));
     document.add(new TextField("country", IsoCountriesUtils.getCountry(record.getCountryCode()),
         Field.Store.YES));
+    // countryCode is not analyzed and thus must be queried using uppercase
     document.add(new StringField("countryCode", record.getCountryCode(), Field.Store.YES));
     document.add(new LatLonPoint("point", record.getLatitude(), record.getLongitude()));
     document.add(new StoredField("longitude", record.getLongitude()));
     document.add(new StoredField("latitude", record.getLatitude()));
-    document.add(new StoredField("asciiname", record.getAsciiname()));
+    document.add(new TextField("asciiname", record.getAsciiname(), Field.Store.YES));
     document.add(new StoredField("alternatenames", record.getAlternatenames()));
-    document.add(new StoredField("featureClass", record.getFeatureClass()));
+    document.add(new StringField("featureClass", record.getFeatureClass(), Field.Store.YES));
     document.add(new StoredField("featureCode", record.getFeatureCode()));
     document.add(new StoredField("cc2", record.getCc2()));
     document.add(new StoredField("admin1Code", record.getAdmin1Code()));
     document.add(new StoredField("admin2Code", record.getAdmin2Code()));
     document.add(new StoredField("admin3Code", record.getAdmin3Code()));
     document.add(new StoredField("admin4Code", record.getAdmin4Code()));
+    document.add(new NumericDocValuesField("population", record.getPopulation()));
     document.add(new StoredField("population", record.getPopulation()));
     if (record.getElevation() != null) {
       document.add(new StoredField("elevation", record.getElevation()));

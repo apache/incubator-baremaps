@@ -14,13 +14,19 @@ package org.apache.baremaps.geocoder;
 
 
 
+import java.text.ParseException;
 import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.expressions.Expression;
+import org.apache.lucene.expressions.SimpleBindings;
+import org.apache.lucene.expressions.js.JavascriptCompiler;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.function.FunctionScoreQuery;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.DoubleValuesSource;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
@@ -34,6 +40,11 @@ public class GeonamesQueryBuilder {
   private String queryText;
 
   private String countryCode = "";
+
+  private boolean scoringByPopulation;
+
+  private boolean andOperator;
+
 
   public GeonamesQueryBuilder() {
     this(GeocoderConstants.ANALYZER);
@@ -53,15 +64,37 @@ public class GeonamesQueryBuilder {
     return this;
   }
 
-  public Query build() {
+  /**
+   * The scoring will take into account the population
+   */
+  public GeonamesQueryBuilder withScoringByPopulation() {
+    this.scoringByPopulation = true;
+    return this;
+  }
+
+  /**
+   * The queryText will be parsed with AND operator between terms instead of OR.
+   */
+  public GeonamesQueryBuilder withAndOperator() {
+    this.andOperator = true;
+    return this;
+  }
+
+  public Query build() throws ParseException {
     var builder = new BooleanQuery.Builder();
 
     if (queryText != null) {
       var queryTextEsc = QueryParser.escape(queryText);
       if (!queryTextEsc.isBlank()) {
-        var fieldWeights = Map.of("name", 1f, "country", 1f);
-        var termsQuery = new SimpleQueryParser(analyzer, fieldWeights).parse(queryTextEsc);
-        builder.add(termsQuery, BooleanClause.Occur.SHOULD);
+        var fieldWeights = Map.of("name", 1f, "asciiname", 1f, "country", 1f, "countryCode", 1f);
+        var parser = new SimpleQueryParser(analyzer, fieldWeights);
+        if (andOperator) {
+          // AND operator between query terms parsed instead of default OR
+          parser.setDefaultOperator(BooleanClause.Occur.MUST);
+        }
+        var termsQuery = parser.parse(queryTextEsc);
+        // at least one terms of the queryText must be present
+        builder.add(termsQuery, BooleanClause.Occur.MUST);
       }
     }
 
@@ -73,6 +106,19 @@ public class GeonamesQueryBuilder {
       }
     }
 
+    if (scoringByPopulation) {
+      var query = builder.build();
+      // ln(1+population) to tolerate entries with population=0
+      Expression expr = JavascriptCompiler.compile("_score + ln(1+population)");
+
+      var bindings = new SimpleBindings();
+      bindings.add("_score", DoubleValuesSource.SCORES);
+      bindings.add("population", DoubleValuesSource.fromIntField("population"));
+
+      return new FunctionScoreQuery(
+          query,
+          expr.getDoubleValuesSource(bindings));
+    }
     return builder.build();
   }
 }
