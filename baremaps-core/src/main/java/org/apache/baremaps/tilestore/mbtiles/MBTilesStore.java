@@ -22,7 +22,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -32,7 +34,7 @@ import org.apache.baremaps.tilestore.TileStoreException;
  * <a href="https://docs.mapbox.com/help/glossary/mbtiles/">MBTiles</a> file format for storing
  * tiles.
  */
-public class MBTiles implements TileStore {
+public class MBTilesStore implements TileStore {
 
   private static final String CREATE_TABLE_METADATA =
       "CREATE TABLE IF NOT EXISTS metadata (name TEXT, value TEXT, PRIMARY KEY (name))";
@@ -58,14 +60,14 @@ public class MBTiles implements TileStore {
 
   private static final String DELETE_METADATA = "DELETE FROM metadata";
 
-  private final org.sqlite.SQLiteDataSource dataSource;
+  private final DataSource dataSource;
 
   /**
    * Constructs an {@code MBTiles} with the provided SQLite datasource.
    *
    * @param dataSource the SQLite datasource
    */
-  public MBTiles(org.sqlite.SQLiteDataSource dataSource) {
+  public MBTilesStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -99,6 +101,26 @@ public class MBTiles implements TileStore {
       statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
       statement.setBytes(4, blob.array());
       statement.executeUpdate();
+    } catch (SQLException e) {
+      throw new TileStoreException(e);
+    }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void write(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
+      for (int i = 0; i < tileCoords.size(); i++) {
+        TileCoord tileCoord = tileCoords.get(i);
+        ByteBuffer blob = blobs.get(i);
+        statement.setInt(1, tileCoord.z());
+        statement.setInt(2, tileCoord.x());
+        statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
+        statement.setBytes(4, blob.array());
+        statement.addBatch();
+      }
+      statement.executeBatch();
     } catch (SQLException e) {
       throw new TileStoreException(e);
     }

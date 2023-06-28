@@ -17,6 +17,7 @@ import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +28,9 @@ import org.apache.baremaps.stream.ProgressLogger;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.tilestore.*;
 import org.apache.baremaps.tilestore.file.FileTileStore;
-import org.apache.baremaps.tilestore.mbtiles.MBTiles;
+import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.apache.baremaps.vectortile.tileset.TilesetQuery;
 import org.apache.baremaps.workflow.Task;
@@ -36,12 +38,6 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sqlite.SQLiteConfig;
-import org.sqlite.SQLiteConfig.JournalMode;
-import org.sqlite.SQLiteConfig.LockingMode;
-import org.sqlite.SQLiteConfig.SynchronousMode;
-import org.sqlite.SQLiteConfig.TempStore;
-import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
     Path tileset,
@@ -61,10 +57,11 @@ public record ExportVectorTiles(
     var sourceTileStore = sourceTileStore(tileset, datasource);
     var targetTileStore = targetTileStore(tileset);
 
-    var envelope =
-        new Envelope(
+    var envelope = tileset.getBounds().size() == 4
+        ? new Envelope(
             tileset.getBounds().get(0), tileset.getBounds().get(2),
-            tileset.getBounds().get(1), tileset.getBounds().get(3));
+            tileset.getBounds().get(1), tileset.getBounds().get(3))
+        : new Envelope(-180, 180, -85.0511, 85.0511);
 
     var count = TileCoord.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
 
@@ -81,21 +78,11 @@ public record ExportVectorTiles(
 
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
     if (mbtiles) {
-      var sqliteConfig = new SQLiteConfig();
-      sqliteConfig.setCacheSize(1000000);
-      sqliteConfig.setJournalMode(JournalMode.OFF);
-      sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
-      sqliteConfig.setSynchronous(SynchronousMode.OFF);
-      sqliteConfig.setTempStore(TempStore.MEMORY);
-
-      var dataSource = new SQLiteDataSource();
-      dataSource.setConfig(sqliteConfig);
-      dataSource.setUrl("jdbc:sqlite:" + repository);
-
-      var tilesStore = new MBTiles(dataSource);
+      Files.deleteIfExists(repository);
+      var dataSource = SqliteUtils.createDataSource(repository);
+      var tilesStore = new MBTilesStore(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));
-
       return tilesStore;
     } else {
       return new FileTileStore(repository);
@@ -143,4 +130,5 @@ public record ExportVectorTiles(
 
     return metadata;
   }
+
 }

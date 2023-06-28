@@ -27,11 +27,11 @@ import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.ogcapi.*;
-import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -78,7 +78,7 @@ public class OgcApi implements Callable<Integer> {
     var configReader = new ConfigReader();
     var config = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var caffeineSpec = CaffeineSpec.parse(cache);
-    var dataSource = PostgresUtils.dataSource(database);
+    var dataSource = PostgresUtils.createDataSource(database);
 
     var tileStore = new PostgresTileStore(dataSource, config);
     var tileCache = new TileCache(tileStore, caffeineSpec);

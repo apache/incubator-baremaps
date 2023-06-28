@@ -53,7 +53,7 @@ export default {
     leisure,
     man_made,
     natural,
-    //ocean,
+    ocean,
     point,
     power,
     railway,
