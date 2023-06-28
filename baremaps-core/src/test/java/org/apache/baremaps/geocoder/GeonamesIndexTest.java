@@ -1,3 +1,15 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.apache.baremaps.geocoder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,6 +50,7 @@ public class GeonamesIndexTest {
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
     searcher = searcherManager.acquire();
   }
+
   @AfterAll
   public static void afterAll() throws IOException {
     FileUtils.deleteRecursively(directory);
@@ -51,6 +64,7 @@ public class GeonamesIndexTest {
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
     assertEquals("Vaduz", doc.getField("name").stringValue());
   }
+
   @Test
   void testOrQuery() throws Exception {
     var geonamesQuery =
@@ -59,10 +73,12 @@ public class GeonamesIndexTest {
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
     assertEquals("Vaduz", doc.getField("name").stringValue());
   }
+
   @Test
   void testAndQueryNoHits() throws Exception {
     var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz berlin").withAndOperator().countryCode("LI").build();
+        new GeonamesQueryBuilder().queryText("vaduz berlin").withAndOperator().countryCode("LI")
+            .build();
     var topDocs = searcher.search(geonamesQuery, 1);
     assertEquals(0, topDocs.totalHits.value);
   }
@@ -70,7 +86,8 @@ public class GeonamesIndexTest {
   @Test
   void testAndQuery() throws Exception {
     var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz liechtenstein").withAndOperator().countryCode("LI").build();
+        new GeonamesQueryBuilder().queryText("vaduz liechtenstein").withAndOperator()
+            .countryCode("LI").build();
     var topDocs = searcher.search(geonamesQuery, 1);
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
     assertEquals("Vaduz", doc.getField("name").stringValue());

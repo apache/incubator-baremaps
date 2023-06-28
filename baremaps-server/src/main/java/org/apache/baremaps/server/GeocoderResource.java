@@ -71,8 +71,9 @@ public class GeocoderResource {
       try {
         // Querying to search location uses AND operator between terms such as every term "adds up"
         // Examples of queryText:
-        //  - "paris", returns paris in france in first results (i.e because of scoring with population)
-        //  - "paris brazil", returns paris in brazil and not paris in france.
+        // - "paris", returns paris in france in first results (i.e because of scoring with
+        // population)
+        // - "paris brazil", returns paris in brazil and not paris in france.
         var query = new GeonamesQueryBuilder()
             .queryText(queryText).countryCode(countryCode).withScoringByPopulation()
             .withAndOperator()
