@@ -29,11 +29,12 @@ public class GeonamesDocumentMapper implements Function<GeonamesRecord, Document
     document.add(new TextField("name", record.getName(), Field.Store.YES));
     document.add(new TextField("country", IsoCountriesUtils.getCountry(record.getCountryCode()),
         Field.Store.YES));
+    // countryCode is not analyzed and thus must be queried using uppercase
     document.add(new StringField("countryCode", record.getCountryCode(), Field.Store.YES));
     document.add(new LatLonPoint("point", record.getLatitude(), record.getLongitude()));
     document.add(new StoredField("longitude", record.getLongitude()));
     document.add(new StoredField("latitude", record.getLatitude()));
-    document.add(new StoredField("asciiname", record.getAsciiname()));
+    document.add(new TextField("asciiname", record.getAsciiname(), Field.Store.YES));
     document.add(new StoredField("alternatenames", record.getAlternatenames()));
     document.add(new StringField("featureClass", record.getFeatureClass(), Field.Store.YES));
     document.add(new StoredField("featureCode", record.getFeatureCode()));

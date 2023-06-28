@@ -17,13 +17,17 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.lucene.search.IndexSearcher;
@@ -57,26 +61,39 @@ public class GeocoderResource {
   public Response searchLocations(
       @QueryParam("queryText") String queryText,
       @QueryParam("countryCode") @DefaultValue("") String countryCode,
-      @QueryParam("limit") @DefaultValue("10") int limit) throws IOException {
+      @QueryParam("limit") @DefaultValue("10") int limit) {
     if (queryText == null) {
       throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
           .entity("The queryText parameter is mandatory").build());
     }
-    var query = new GeonamesQueryBuilder()
-        .queryText(queryText).countryCode(countryCode).withScoringByPopulation().build();
-    var searcher = searcherManager.acquire();
     try {
-      var result = searcher.search(query, limit);
-      var results =
-          Arrays.stream(result.scoreDocs).map(scoreDoc -> asResult(searcher, scoreDoc)).toList();
-      return Response.status(200).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-          .header(CONTENT_TYPE, APPLICATION_JSON).entity(new GeocoderResponse(results)).build();
-    } catch (IllegalArgumentException e) {
-      return Response.status(400).entity(e.getMessage()).build();
+      IndexSearcher searcher = searcherManager.acquire();
+      try {
+        // Querying to search location uses AND operator between terms such as every term "adds up"
+        // Examples of queryText:
+        //  - "paris", returns paris in france in first results (i.e because of scoring with population)
+        //  - "paris brazil", returns paris in brazil and not paris in france.
+        var query = new GeonamesQueryBuilder()
+            .queryText(queryText).countryCode(countryCode).withScoringByPopulation()
+            .withAndOperator()
+            .build();
+
+        var result = searcher.search(query, limit);
+        var results =
+            Arrays.stream(result.scoreDocs).map(scoreDoc -> asResult(searcher, scoreDoc)).toList();
+        return Response.status(Response.Status.OK).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            .header(CONTENT_TYPE, APPLICATION_JSON).entity(new GeocoderResponse(results)).build();
+      } catch (IllegalArgumentException e) {
+        return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+      } catch (IOException | ParseException e) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage())
+            .build();
+      } finally {
+        searcherManager.release(searcher);
+      }
     } catch (IOException e) {
-      return Response.status(500).entity(e.getMessage()).build();
-    } finally {
-      searcherManager.release(searcher);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage())
+          .build();
     }
   }
 

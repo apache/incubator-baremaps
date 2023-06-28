@@ -15,6 +15,7 @@ package org.apache.baremaps.iploc;
 
 import com.google.common.net.InetAddresses;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -144,7 +145,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               location.get(),
               network,
               countryUppercase,
-              "country with code", "low"));
+              "countryCode", "low"));
         }
       }
 
@@ -189,7 +190,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
    * @throws IOException if an I/O error occurs
    */
   private Optional<Coordinate> findLocation(String searchTerms, String countryCode)
-      throws IOException {
+      throws IOException, ParseException {
     var indexSearcher = searcherManager.acquire();
     var geonamesQuery =
         new GeonamesQueryBuilder().queryText(searchTerms).countryCode(countryCode).build();
