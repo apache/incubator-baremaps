@@ -58,10 +58,10 @@ public class GeocoderResource {
 
   @GET
   @javax.ws.rs.Path("/api/geocoder")
-  public Response getIpToLocation(
+  public Response searchLocations(
       @QueryParam("queryText") String queryText,
       @QueryParam("countryCode") @DefaultValue("") String countryCode,
-      @QueryParam("limit") @DefaultValue("10") int limit) throws IOException {
+      @QueryParam("limit") @DefaultValue("10") int limit) {
     if (queryText == null) {
       throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
           .entity("The queryText parameter is mandatory").build());
