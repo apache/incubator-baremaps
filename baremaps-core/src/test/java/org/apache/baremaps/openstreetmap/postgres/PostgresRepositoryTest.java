@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.testing.PostgresContainerTest;
+import org.apache.baremaps.utils.PostgresUtils;
 import org.junit.jupiter.api.BeforeEach;
 
 public abstract class PostgresRepositoryTest extends PostgresContainerTest {

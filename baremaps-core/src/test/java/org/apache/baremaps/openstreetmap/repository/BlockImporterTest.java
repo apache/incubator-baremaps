@@ -27,9 +27,9 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
-import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.utils.PostgresUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class BlockImporterTest extends PostgresContainerTest {
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    dataSource = PostgresUtils.dataSource(jdbcUrl(), 1);
+    dataSource = PostgresUtils.createDataSource(jdbcUrl(), 1);
     headerRepository = new PostgresHeaderRepository(dataSource);
     nodeRepository = new PostgresNodeRepository(dataSource);
     tableRepository = new PostgresWayRepository(dataSource);

@@ -24,14 +24,12 @@ import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.server.*;
-import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
-import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
-import org.apache.baremaps.utils.PostgresUtils;
+import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
+import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
-import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -41,10 +39,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Start a tile server with caching capabilities.")
-public class Serve implements Callable<Integer> {
+@Command(name = "mbtiles", description = "Start a mbtiles server with caching capabilities.")
+public class MBTiles implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Serve.class);
+  private static final Logger logger = LoggerFactory.getLogger(MBTiles.class);
 
   @Mixin
   private Options options;
@@ -52,16 +50,17 @@ public class Serve implements Callable<Integer> {
   @Option(names = {"--cache"}, paramLabel = "CACHE", description = "The caffeine cache directive.")
   private String cache = "";
 
-  @Option(names = {"--tileset"}, paramLabel = "TILESET", description = "The tileset file.",
+  @Option(names = {"--mbtiles"}, paramLabel = "MBTILES", description = "The mbtiles file.",
       required = true)
-  private Path tilesetPath;
+  private Path mbtilesPath;
+
+  @Option(names = {"--tilejson"}, paramLabel = "TILEJSON", description = "The tileJSON file.",
+      required = true)
+  private Path tileJSONPath;
 
   @Option(names = {"--style"}, paramLabel = "STYLE", description = "The style file.",
       required = true)
   private Path stylePath;
-
-  @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
-  private String host = "localhost";
 
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
@@ -72,10 +71,9 @@ public class Serve implements Callable<Integer> {
     var configReader = new ConfigReader();
     var caffeineSpec = CaffeineSpec.parse(cache);
 
-    var tileset = objectMapper.readValue(configReader.read(tilesetPath), Tileset.class);
-    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
+    var datasource = SqliteUtils.createDataSource(mbtilesPath);
     var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
-    var tileStore = new PostgresTileStore(datasource, tileset);
+    var tileStore = new MBTilesStore(datasource);
     var tileCache = new TileCache(tileStore, caffeineSpec);
     var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
 
@@ -84,9 +82,10 @@ public class Serve implements Callable<Integer> {
     var styleSupplier = (Supplier<Style>) () -> style;
 
     var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
-    var tileJSON = objectMapper.readValue(configReader.read(tilesetPath), TileJSON.class);
+    var tileJSON = objectMapper.readValue(configReader.read(tileJSONPath), TileJSON.class);
     var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
 
+    // Configure the application
     var application =
         new ResourceConfig()
             .register(CorsFilter.class)

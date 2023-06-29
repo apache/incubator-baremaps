@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.sql.DataSource;
-import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
@@ -40,7 +40,7 @@ public abstract class OgcApiTest extends JerseyTest {
   @Override
   protected ResourceConfig configure() {
     // Create a datasource to a throwaway postgis database
-    dataSource = PostgresUtils.dataSource("jdbc:tc:postgis:13-3.1:///baremaps");
+    dataSource = PostgresUtils.createDataSource("jdbc:tc:postgis:13-3.1:///baremaps");
 
     // Initialize the database
     try (var connection = dataSource.getConnection()) {
