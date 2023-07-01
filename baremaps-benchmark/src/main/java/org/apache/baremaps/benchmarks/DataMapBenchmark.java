@@ -15,10 +15,13 @@ package org.apache.baremaps.benchmarks;
 
 
 import java.util.concurrent.TimeUnit;
-import org.apache.baremaps.database.collection.*;
+
+import org.apache.baremaps.database.collection.AppendOnlyBuffer;
+import org.apache.baremaps.database.collection.DataMap;
+import org.apache.baremaps.database.collection.MemoryAlignedDataMap;
+import org.apache.baremaps.database.collection.MonotonicDataMap;
 import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.LongDataType;
-import org.apache.baremaps.database.type.PairDataType;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -57,29 +60,6 @@ public class DataMapBenchmark {
   @Measurement(iterations = 5)
   public void monotonicDataMap() {
     benchmark(new MonotonicDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 2)
-  @Measurement(iterations = 5)
-  public void monotonicPairedDataMap() {
-    benchmark(new MonotonicPairedDataMap<>(
-        new MemoryAlignedDataList<>(
-            new PairDataType<>(new LongDataType(), new LongDataType()),
-            new OffHeapMemory())),
-        N);
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 2)
-  @Measurement(iterations = 5)
-  public void monotonicFixedSizeDataMap() {
-    benchmark(new MonotonicFixedSizeDataMap<>(
-        new MemoryAlignedDataList<>(new LongDataType()),
-        new MemoryAlignedDataList<>(new LongDataType()),
-        new MemoryAlignedDataList<>(new LongDataType())), N);
   }
 
   public static void main(String[] args) throws RunnerException {

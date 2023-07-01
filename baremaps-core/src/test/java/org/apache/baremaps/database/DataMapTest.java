@@ -161,14 +161,10 @@ class DataMapTest {
             Arguments.of(
                 new IndexedDataMap<>(
                     new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new MonotonicFixedSizeDataMap<>(
-                new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new MonotonicDataMap<>(
                 new MemoryAlignedDataList<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
                     new OffHeapMemory()),
-                new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new MonotonicPairedDataMap<>(new MemoryAlignedDataList<>(
-                new PairDataType<>(new LongDataType(), new LongDataType())))));
+                new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))));
   }
 }
