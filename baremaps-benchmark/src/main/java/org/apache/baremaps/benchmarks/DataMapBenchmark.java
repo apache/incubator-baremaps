@@ -15,11 +15,8 @@ package org.apache.baremaps.benchmarks;
 
 
 import java.util.concurrent.TimeUnit;
-
-import org.apache.baremaps.database.collection.AppendOnlyBuffer;
-import org.apache.baremaps.database.collection.DataMap;
-import org.apache.baremaps.database.collection.MemoryAlignedDataMap;
-import org.apache.baremaps.database.collection.MonotonicDataMap;
+import org.apache.baremaps.database.collection.*;
+import org.apache.baremaps.database.collection.JaggedDataMap;
 import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.LongDataType;
 import org.openjdk.jmh.annotations.*;
@@ -32,7 +29,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Fork(1)
 public class DataMapBenchmark {
 
-  private static final long N = 1 << 25;
+  private static final long N = 1 << 24;
 
   private static void benchmark(DataMap<Long> map, long n) {
     for (long i = 0; i < n; i++) {
@@ -44,6 +41,22 @@ public class DataMapBenchmark {
         throw new RuntimeException("Invalid value");
       }
     }
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void simpleDataMap() {
+    benchmark(new JaggedDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void indexedDataMap() {
+    benchmark(new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
   }
 
   @Benchmark

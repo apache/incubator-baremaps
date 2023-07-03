@@ -146,7 +146,6 @@ class DataMapTest {
     assertFalse(map.isEmpty());
 
     assertEquals(3l, map.size());
-
     assertEquals(10l, map.get(10l));
     assertEquals(15l, map.get(15l));
     assertEquals(20l, map.get(20l));
@@ -158,6 +157,9 @@ class DataMapTest {
   static Stream<Arguments> mapProvider() {
     return Stream
         .of(
+            Arguments.of(
+                new JaggedDataMap<>(
+                    new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(
                 new IndexedDataMap<>(
                     new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
