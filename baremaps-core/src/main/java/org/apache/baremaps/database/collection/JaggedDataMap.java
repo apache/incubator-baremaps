@@ -15,14 +15,39 @@ package org.apache.baremaps.database.collection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import org.apache.baremaps.stream.StreamUtils;
 
 public class JaggedDataMap<E> extends DataMap<E> {
 
+  private static final int L_BYTES = 8;
+  private static final int L_SIZE = 1 << L_BYTES;
+  private static final int L_MASK = L_SIZE - 1;
+  private static final int L_SHIFT = 0;
+
+  private static final int K_BYTES = 8;
+  private static final int K_SIZE = 1 << K_BYTES;
+  private static final int K_MASK = K_SIZE - 1;
+  private static final int K_SHIFT = L_SHIFT + L_BYTES;
+
+  private static final int J_BYTES = 12;
+  private static final int J_SIZE = 1 << J_BYTES;
+  private static final int J_MASK = J_SIZE - 1;
+  private static final int J_SHIFT = K_SHIFT + K_BYTES;
+
+  private static final int I_BYTES = 12;
+  private static final int I_SIZE = 1 << I_BYTES;
+  private static final int I_MASK = I_SIZE - 1;
+  private static final int I_SHIFT = J_SHIFT + J_BYTES;
+
+  private static final long CAPACITY = 1L << (I_BYTES + J_BYTES + K_BYTES + L_BYTES);
+
   private long[][][][] index;
 
   private final AppendOnlyBuffer<E> values;
+
+  private final AtomicLong size = new AtomicLong();
 
   /**
    * Constructs a map.
@@ -30,7 +55,7 @@ public class JaggedDataMap<E> extends DataMap<E> {
    * @param values the values
    */
   public JaggedDataMap(AppendOnlyBuffer<E> values) {
-    this.index = new long[1 << 12][][][];
+    this.index = new long[I_SIZE][][][];
     this.values = values;
   }
 
@@ -40,21 +65,27 @@ public class JaggedDataMap<E> extends DataMap<E> {
   @Override
   public E put(Long key, E value) {
     long v = key;
-    int i = (int) (v >>> 28) & 0xFFF;
-    int j = (int) (v >>> 16) & 0xFFF;
-    int k = (int) (v >>> 8) & 0xFF;
-    int l = (int) (v & 0xFF);
+    if (v < 0 || v >= CAPACITY) {
+      throw new IllegalArgumentException();
+    }
+    int i = (int) (v >>> I_SHIFT) & I_MASK;
+    int j = (int) (v >>> J_SHIFT) & J_MASK;
+    int k = (int) (v >>> K_SHIFT) & K_MASK;
+    int l = (int) (v >>> L_SHIFT) & L_MASK;
     if (index[i] == null) {
-      index[i] = new long[1 << 12][][];
+      index[i] = new long[J_SIZE][][];
     }
     if (index[i][j] == null) {
-      index[i][j] = new long[1 << 12][];
+      index[i][j] = new long[K_SIZE][];
     }
     if (index[i][j][k] == null) {
-      index[i][j][k] = new long[1 << 8];
+      index[i][j][k] = new long[L_SIZE];
       Arrays.fill(index[i][j][k], -1);
     }
     long position = values.addPositioned(value);
+    if (index[i][j][k][l] == -1) {
+      size.incrementAndGet();
+    }
     index[i][j][k][l] = position;
     return value;
   }
@@ -65,10 +96,13 @@ public class JaggedDataMap<E> extends DataMap<E> {
   @Override
   public E get(Object key) {
     long v = (Long) key;
-    int i = (int) (v >>> 28) & 0xFFF;
-    int j = (int) (v >>> 16) & 0xFFF;
-    int k = (int) (v >>> 8) & 0xFF;
-    int l = (int) (v & 0xFF);
+    if (v < 0 || v >= CAPACITY) {
+      throw new IllegalArgumentException();
+    }
+    int i = (int) (v >>> I_SHIFT) & I_MASK;
+    int j = (int) (v >>> J_SHIFT) & J_MASK;
+    int k = (int) (v >>> K_SHIFT) & K_MASK;
+    int l = (int) (v >>> L_SHIFT) & L_MASK;
     if (index[i] == null) {
       return null;
     }
@@ -98,7 +132,8 @@ public class JaggedDataMap<E> extends DataMap<E> {
                 .filter(k -> index[i][j][k] != null)
                 .mapToObj(k -> IntStream.range(0, index[i][j][k].length)
                     .filter(l -> index[i][j][k][l] != -1)
-                    .mapToObj(l -> (long) ((i << 28) | (j << 16) | (k << 8) | l)))
+                    .mapToObj(l -> (long) ((i << I_SHIFT) | (j << J_SHIFT) | (k << K_SHIFT)
+                        | (l << L_SHIFT))))
                 .flatMap(x -> x))
             .flatMap(x -> x))
         .flatMap(x -> x)
@@ -134,7 +169,7 @@ public class JaggedDataMap<E> extends DataMap<E> {
    */
   @Override
   public long sizeAsLong() {
-    return StreamUtils.stream(keyIterator()).count();
+    return size.get();
   }
 
   /**
@@ -159,10 +194,10 @@ public class JaggedDataMap<E> extends DataMap<E> {
   @Override
   public E remove(Object key) {
     long v = (Long) key;
-    int i = (int) (v >>> 28) & 0xFFF;
-    int j = (int) (v >>> 16) & 0xFFF;
-    int k = (int) (v >>> 8) & 0xFF;
-    int l = (int) (v & 0xFF);
+    int i = (int) (v >>> I_SHIFT) & I_MASK;
+    int j = (int) (v >>> J_SHIFT) & J_MASK;
+    int k = (int) (v >>> K_SHIFT) & K_MASK;
+    int l = (int) (v >>> L_SHIFT) & L_MASK;
     if (index[i] == null) {
       return null;
     }
@@ -176,6 +211,7 @@ public class JaggedDataMap<E> extends DataMap<E> {
     if (position == -1) {
       return null;
     }
+    size.decrementAndGet();
     index[i][j][k][l] = -1;
     return values.read(position);
   }
@@ -185,6 +221,6 @@ public class JaggedDataMap<E> extends DataMap<E> {
    */
   @Override
   public void clear() {
-    index = new long[1 << 12][][][];
+    index = new long[I_SIZE][][][];
   }
 }
