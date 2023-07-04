@@ -19,6 +19,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import org.apache.baremaps.stream.StreamUtils;
 
+/**
+ * A map that stores data in a jagged array, using the 40 leas significant bits of the key to index
+ * the array. The capacity of the map is 2^40, which is sufficient to store 1 trillion entries.
+ *
+ * @param <E>
+ */
 public class JaggedDataMap<E> extends DataMap<E> {
 
   private static final int L_BYTES = 8;
@@ -50,7 +56,7 @@ public class JaggedDataMap<E> extends DataMap<E> {
   private final AtomicLong size = new AtomicLong();
 
   /**
-   * Constructs a map.
+   * Constructs a jagged data map.
    *
    * @param values the values
    */
