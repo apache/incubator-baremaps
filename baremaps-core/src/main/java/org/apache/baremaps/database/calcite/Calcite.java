@@ -86,8 +86,10 @@ public class Calcite {
       rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(Accum.class));
       rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
 
-      ModelHandler.addFunctions(rootSchema, "ST_AsMVTGeom", emptyPath, VectorTileFunctions.class.getName(), "asVectorTileGeom", true);
-      ModelHandler.addFunctions(rootSchema, "ST_AsMVT", emptyPath, VectorTileFunctions.class.getName(), "asVectorTile", true);
+      ModelHandler.addFunctions(rootSchema, "ST_AsMVTGeom", emptyPath,
+          VectorTileFunctions.class.getName(), "asVectorTileGeom", true);
+      ModelHandler.addFunctions(rootSchema, "ST_AsMVT", emptyPath,
+          VectorTileFunctions.class.getName(), "asVectorTile", true);
 
       SqlDataTable cityTable = new SqlDataTable(CITY_TABLE);
       rootSchema.add("city", cityTable);
@@ -95,11 +97,11 @@ public class Calcite {
       rootSchema.add("population", populationTable);
 
       String sql = """
-         SELECT ST_AsText(ST_AsMVTGeom(
-         	ST_GeomFromText('POLYGON ((0 0, 10 1, 10 10, 1 10, 0 0))'),
-         	ST_MakeEnvelope(0, 0, 4096, 4096),
-         	4096, 0, true))
-         	""";
+          SELECT ST_AsText(ST_AsMVTGeom(
+          	ST_GeomFromText('POLYGON ((0 0, 10 1, 10 10, 1 10, 0 0))'),
+          	ST_MakeEnvelope(0, 0, 4096, 4096),
+          	4096, 0, true))
+          	""";
 
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery(sql)) {

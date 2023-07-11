@@ -13,8 +13,6 @@
 package org.apache.baremaps.vectortile;
 
 import java.nio.ByteBuffer;
-import java.util.Map;
-
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;

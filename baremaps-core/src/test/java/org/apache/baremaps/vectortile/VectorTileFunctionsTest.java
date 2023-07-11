@@ -14,7 +14,6 @@ package org.apache.baremaps.vectortile;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.baremaps.utils.GeometryUtils;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Polygon;
