@@ -16,7 +16,7 @@ import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
 import java.util.List;
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;

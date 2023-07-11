@@ -18,8 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import org.apache.baremaps.storage.Row;
-import org.apache.baremaps.storage.Schema;
+import org.apache.baremaps.database.schema.DataRow;
+import org.apache.baremaps.database.schema.DataRowType;
 
 /**
  * Input Stream of features.
@@ -46,8 +46,8 @@ public class ShapefileInputStream extends InputStream {
   /** Indicates that the shape file has a valid index provided with it. */
   private boolean hasShapefileIndex;
 
-  /** Schema of the features contained in this shapefile. */
-  private Schema schema;
+  /** Row type of the features contained in this shapefile. */
+  private DataRowType rowType;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -74,7 +74,7 @@ public class ShapefileInputStream extends InputStream {
 
     this.shapefileReader =
         new ShapefileByteReader(this.shapefile, this.databaseFile, this.shapefileIndex);
-    this.schema = this.shapefileReader.getSchema();
+    this.rowType = this.shapefileReader.getRowType();
   }
 
   /**
@@ -113,11 +113,11 @@ public class ShapefileInputStream extends InputStream {
    * @throws ShapefileException if the current connection used to query the shapefile has been
    *         closed.
    */
-  public Row readRow() throws ShapefileException {
+  public DataRow readRow() throws ShapefileException {
     if (!this.dbaseReader.nextRowAvailable()) {
       return null;
     }
-    Row row = this.schema.createRow();
+    DataRow row = this.rowType.createRow();
     this.dbaseReader.loadRow(row);
     this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
     this.shapefileReader.completeRow(row);
@@ -125,12 +125,12 @@ public class ShapefileInputStream extends InputStream {
   }
 
   /**
-   * Returns the schema.
+   * Returns the row type.
    *
-   * @return the schema.
+   * @return the row type.
    */
-  public Schema getSchema() {
-    return schema;
+  public DataRowType rowType() {
+    return rowType;
   }
 
   /**

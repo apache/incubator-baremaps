@@ -21,8 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.DataCollectionException;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataCollectionException;
+import org.apache.baremaps.database.collection.DataMap;
 
 /**
  * A read-only {@code LongDataMap} for references baked by OpenStreetMap ways stored in Postgres.

@@ -15,7 +15,7 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.locationtech.jts.geom.Coordinate;

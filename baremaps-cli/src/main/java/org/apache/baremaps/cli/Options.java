@@ -19,7 +19,10 @@ import picocli.CommandLine.Option;
 public class Options {
 
   public enum LogLevel {
-    DEBUG, INFO, TRACE, ERROR
+    DEBUG,
+    INFO,
+    TRACE,
+    ERROR
   }
 
   @Option(names = {"--log-level"}, paramLabel = "LOG_LEVEL", description = {"The log level."})

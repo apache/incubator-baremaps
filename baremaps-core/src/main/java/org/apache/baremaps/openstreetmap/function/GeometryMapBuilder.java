@@ -16,7 +16,7 @@ package org.apache.baremaps.openstreetmap.function;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.locationtech.jts.geom.Geometry;

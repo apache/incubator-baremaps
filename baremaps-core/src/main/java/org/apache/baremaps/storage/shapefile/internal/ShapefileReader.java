@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.apache.baremaps.storage.Schema;
+import org.apache.baremaps.database.schema.DataRowType;
 
 /**
  * Provides a ShapeFile Reader.
@@ -44,7 +44,7 @@ public class ShapefileReader {
   private File shapeFileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private Schema schema;
+  private DataRowType rowType;
 
   /** Shapefile descriptor. */
   private ShapefileDescriptor shapefileDescriptor;
@@ -113,12 +113,12 @@ public class ShapefileReader {
   }
 
   /**
-   * Return the schema.
+   * Return the row type.
    *
-   * @return the schema.
+   * @return the row type.
    */
-  public Schema getSchema() {
-    return this.schema;
+  public DataRowType rowType() {
+    return this.rowType;
   }
 
   /**
@@ -174,7 +174,7 @@ public class ShapefileReader {
   public ShapefileInputStream read() throws IOException {
     ShapefileInputStream is =
         new ShapefileInputStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
-    this.schema = is.getSchema();
+    this.rowType = is.rowType();
     this.shapefileDescriptor = is.getShapefileDescriptor();
     this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
     return is;
