@@ -12,6 +12,9 @@
 
 package org.apache.baremaps.database.calcite;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.google.common.collect.ImmutableList;
 import java.sql.*;
 import java.util.List;
@@ -31,44 +34,16 @@ import org.apache.calcite.runtime.SpatialTypeFunctions.Union;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.AggregateFunctionImpl;
 import org.apache.calcite.sql.fun.SqlSpatialTypeFunctions;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 
-public class Calcite {
+public class CalciteTest {
 
-  private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
-  private static final DataRowType CITY_ROW_TYPE = new DataRowTypeImpl("city", List.of(
-      new DataColumnImpl("id", Type.INTEGER),
-      new DataColumnImpl("name", Type.STRING),
-      new DataColumnImpl("geometry", Type.GEOMETRY)));
+  @Test
+  public void test() throws SQLException {
+    GeometryFactory geometryFactory = new GeometryFactory();
 
-  private static final DataTable CITY_TABLE = new DataTableImpl(
-      CITY_ROW_TYPE,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(CITY_ROW_TYPE))));
-
-  static {
-    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.rowType(),
-        List.of(1, "Paris", GEOMETRY_FACTORY.createPoint(new Coordinate(2.3522, 48.8566)))));
-    CITY_TABLE.add(new DataRowImpl(CITY_TABLE.rowType(),
-        List.of(2, "New York", GEOMETRY_FACTORY.createPoint(new Coordinate(-74.0060, 40.7128)))));
-  }
-
-  private static final DataRowType POPULATION_ROW_TYPE = new DataRowTypeImpl("population", List.of(
-      new DataColumnImpl("city_id", Type.INTEGER),
-      new DataColumnImpl("population", Type.INTEGER)));
-
-  private static final DataTable POPULATION_TABLE = new DataTableImpl(
-      POPULATION_ROW_TYPE,
-      new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(POPULATION_ROW_TYPE))));
-
-  static {
-    POPULATION_TABLE
-        .add(new DataRowImpl(POPULATION_TABLE.rowType(), List.of(1, 2_161_000)));
-    POPULATION_TABLE
-        .add(new DataRowImpl(POPULATION_TABLE.rowType(), List.of(2, 8_336_000)));
-  }
-
-  public static void main(String[] args) throws SQLException {
     Properties info = new Properties();
     info.setProperty("lex", "MYSQL");
 
@@ -76,7 +51,8 @@ public class Calcite {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      final ImmutableList<String> emptyPath = ImmutableList.of();
+      // Add the spatial functions to the root schema
+      ImmutableList<String> emptyPath = ImmutableList.of();
       ModelHandler.addFunctions(rootSchema, null, emptyPath,
           SpatialTypeFunctions.class.getName(), "*", true);
       ModelHandler.addFunctions(rootSchema, null, emptyPath,
@@ -91,25 +67,48 @@ public class Calcite {
       ModelHandler.addFunctions(rootSchema, "ST_AsMVT", emptyPath,
           VectorTileFunctions.class.getName(), "asVectorTile", true);
 
-      SqlDataTable cityTable = new SqlDataTable(CITY_TABLE);
-      rootSchema.add("city", cityTable);
-      SqlDataTable populationTable = new SqlDataTable(POPULATION_TABLE);
-      rootSchema.add("population", populationTable);
+      // Create the city table
+      DataRowType cityRowType = new DataRowTypeImpl("city", List.of(
+          new DataColumnImpl("id", Type.INTEGER),
+          new DataColumnImpl("name", Type.STRING),
+          new DataColumnImpl("geometry", Type.GEOMETRY)));
+      DataTable cityDataTable = new DataTableImpl(
+          cityRowType,
+          new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(cityRowType))));
+      cityDataTable.add(new DataRowImpl(cityDataTable.rowType(),
+          List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
+      cityDataTable.add(new DataRowImpl(cityDataTable.rowType(),
+          List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
+      SqlDataTable citySqlDataTable = new SqlDataTable(cityDataTable);
+      rootSchema.add("city", citySqlDataTable);
 
+      // Create the population table
+      DataRowType populationRowType = new DataRowTypeImpl("population", List.of(
+          new DataColumnImpl("city_id", Type.INTEGER),
+          new DataColumnImpl("population", Type.INTEGER)));
+      DataTable populationDataTable = new DataTableImpl(
+          populationRowType,
+          new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(populationRowType))));
+      populationDataTable
+          .add(new DataRowImpl(populationDataTable.rowType(), List.of(1, 2_161_000)));
+      populationDataTable
+          .add(new DataRowImpl(populationDataTable.rowType(), List.of(2, 8_336_000)));
+      SqlDataTable populationSqlDataTable = new SqlDataTable(populationDataTable);
+      rootSchema.add("population", populationSqlDataTable);
+
+      // Query the database
       String sql = """
           SELECT ST_AsText(ST_AsMVTGeom(
           	ST_GeomFromText('POLYGON ((0 0, 10 1, 10 10, 1 10, 0 0))'),
           	ST_MakeEnvelope(0, 0, 4096, 4096),
           	4096, 0, true))
           	""";
-
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery(sql)) {
-        while (resultSet.next()) {
-          System.out.println(resultSet.getString(1));
-        }
+        assertTrue(resultSet.next());
+        assertEquals("POLYGON ((0 4096, 10 4095, 10 4086, 1 4086, 0 4096))",
+            resultSet.getString(1));
       }
     }
   }
-
 }

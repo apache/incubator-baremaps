@@ -15,6 +15,7 @@ package org.apache.baremaps.database.algorithm;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -22,7 +23,7 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
 
 class UnionStreamTest {
 
-  @org.junit.jupiter.api.Test
+  @Test
   void union() {
     var factory = new GeometryFactory();
     var polygon1 = factory.createPolygon(new Coordinate[] {
