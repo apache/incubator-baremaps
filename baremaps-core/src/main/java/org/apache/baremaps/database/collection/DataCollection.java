@@ -21,11 +21,11 @@ public interface DataCollection<E> extends Collection<E> {
    *
    * @return the number of values
    */
-  long sizeAsLong();
+  long size64();
 
   /** {@inheritDoc} */
   default int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+    return (int) Math.min(size64(), Integer.MAX_VALUE);
   }
 
 }

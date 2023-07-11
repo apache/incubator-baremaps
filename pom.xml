@@ -82,7 +82,7 @@
     <version.lib.caffeine>3.1.1</version.lib.caffeine>
     <version.lib.calcite>1.34.0</version.lib.calcite>
     <version.lib.commons-compress>1.21</version.lib.commons-compress>
-    <version.lib.fastutil>8.5.9</version.lib.fastutil>
+    <version.lib.fastutil>8.5.12</version.lib.fastutil>
     <version.lib.flatgeobuf>3.24.0</version.lib.flatgeobuf>
     <version.lib.geopackage>6.5.0</version.lib.geopackage>
     <version.lib.graalvm>22.2.0</version.lib.graalvm>

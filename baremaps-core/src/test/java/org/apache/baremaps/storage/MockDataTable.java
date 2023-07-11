@@ -52,7 +52,7 @@ public class MockDataTable extends AbstractDataTable {
   }
 
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return rows.size();
   }
 

@@ -29,12 +29,12 @@ public class MemoryMappedFile extends Memory<MappedByteBuffer> {
   private final Path file;
 
   /**
-   * Constructs an {@link MemoryMappedFile} with a custom file and a default segment size of 1gb.
+   * Constructs an {@link MemoryMappedFile} with a custom file and a default segment size of 256mb.
    *
    * @param file the file that stores the data
    */
   public MemoryMappedFile(Path file) {
-    this(file, 1 << 30);
+    this(file, 1 << 28);
   }
 
   /**

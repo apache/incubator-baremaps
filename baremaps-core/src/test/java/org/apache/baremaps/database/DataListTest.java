@@ -25,7 +25,7 @@ class DataListTest {
 
   @ParameterizedTest
   @MethodSource("listProvider")
-  void addSetGet(DataList<Long> list) {
+  void addSetGet(AbstractDataList<Long> list) {
     for (long i = 0; i < 1000; i++) {
       list.add(i);
     }
@@ -42,7 +42,7 @@ class DataListTest {
 
   @ParameterizedTest
   @MethodSource("listProvider")
-  void containsValue(DataList<Long> list) {
+  void containsValue(AbstractDataList<Long> list) {
     for (long i = 0; i < 1000; i++) {
       assertFalse(list.contains(i));
     }
@@ -56,7 +56,7 @@ class DataListTest {
 
   @ParameterizedTest
   @MethodSource("listProvider")
-  void clear(DataList<Long> list) {
+  void clear(AbstractDataList<Long> list) {
     for (long i = 0; i < 1000; i++) {
       list.add(i);
     }
@@ -71,8 +71,9 @@ class DataListTest {
   static Stream<Arguments> listProvider() {
     return Stream.of(
         Arguments.of(new FixedSizeDataList<>(new LongDataType())),
-        Arguments.of(new IndexedDataList<>(new MemoryAlignedDataList<>(new LongDataType()),
-            new AppendOnlyBuffer<>(new LongDataType()))),
+        Arguments
+            .of(new IndexedDataList<>(new MemoryAlignedDataList<>(new LongDataType()),
+                new AppendOnlyBuffer<>(new LongDataType()))),
         Arguments.of(new MemoryAlignedDataList<>(new LongDataType())));
   }
 }

@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.apache.baremaps.database.collection.DataList;
+import org.apache.baremaps.database.collection.AbstractDataList;
 
 /**
  * An external merge sort algorithm adapted from
@@ -41,10 +41,10 @@ public class ExternalMergeSort {
    * @throws IOException
    */
   public static <T> void sort(
-      DataList<T> input,
-      DataList<T> output,
+      AbstractDataList<T> input,
+      AbstractDataList<T> output,
       final Comparator<T> comparator,
-      Supplier<DataList<T>> tempLists,
+      Supplier<AbstractDataList<T>> tempLists,
       long batchSize,
       boolean distinct,
       boolean parallel) throws IOException {
@@ -64,16 +64,16 @@ public class ExternalMergeSort {
    * @throws IOException
    */
   private static <T> long mergeSortedBatches(
-      List<DataList<T>> batches,
-      DataList<T> output,
+      List<AbstractDataList<T>> batches,
+      AbstractDataList<T> output,
       Comparator<T> comparator,
       boolean distinct) throws IOException {
 
     PriorityQueue<DataStack<T>> queue =
         new PriorityQueue<>(batches.size(), (i, j) -> comparator.compare(i.peek(), j.peek()));
 
-    for (DataList<T> input : batches) {
-      if (input.sizeAsLong() == 0) {
+    for (AbstractDataList<T> input : batches) {
+      if (input.size64() == 0) {
         continue;
       }
       DataStack stack = new DataStack(input);
@@ -125,7 +125,7 @@ public class ExternalMergeSort {
       }
     }
 
-    for (DataList<T> batch : batches) {
+    for (AbstractDataList<T> batch : batches) {
       batch.clear();
     }
 
@@ -144,14 +144,14 @@ public class ExternalMergeSort {
    * @param <T>
    * @return the sorted batches
    */
-  public static <T> List<DataList<T>> sortInBatch(
-      final DataList<T> input,
+  public static <T> List<AbstractDataList<T>> sortInBatch(
+      final AbstractDataList<T> input,
       final Comparator<T> comparator,
-      Supplier<DataList<T>> supplier,
+      Supplier<AbstractDataList<T>> supplier,
       long batchSize,
       final boolean distinct,
       final boolean parallel) {
-    List<DataList<T>> batches = new ArrayList<>();
+    List<AbstractDataList<T>> batches = new ArrayList<>();
     List<T> batch = new ArrayList<>();
 
     var iterator = input.iterator();
@@ -179,13 +179,13 @@ public class ExternalMergeSort {
    * @param <T>
    * @return the sorted batch
    */
-  public static <T> DataList<T> sortBatch(
+  public static <T> AbstractDataList<T> sortBatch(
       List<T> batch,
       Comparator<T> comparator,
-      Supplier<DataList<T>> supplier,
+      Supplier<AbstractDataList<T>> supplier,
       boolean distinct,
       boolean parallel) {
-    DataList<T> output = supplier.get();
+    AbstractDataList<T> output = supplier.get();
     Stream<T> tmpStream = batch.stream().sorted(comparator);
     if (parallel) {
       tmpStream = tmpStream.parallel();
@@ -198,25 +198,25 @@ public class ExternalMergeSort {
   }
 
   /**
-   * A wrapper on top of a {@link DataList} which keeps the last data record in memory.
+   * A wrapper on top of a {@link AbstractDataList} which keeps the last data record in memory.
    *
    * @param <T>
    */
   static final class DataStack<T> implements AutoCloseable {
 
-    private DataList<T> list;
+    private AbstractDataList<T> list;
 
     private Long index = 0l;
 
     private T cache;
 
-    public DataStack(DataList<T> list) {
+    public DataStack(AbstractDataList<T> list) {
       this.list = list;
       reload();
     }
 
     public boolean empty() {
-      return this.index > list.sizeAsLong();
+      return this.index > list.size64();
     }
 
     public T peek() {

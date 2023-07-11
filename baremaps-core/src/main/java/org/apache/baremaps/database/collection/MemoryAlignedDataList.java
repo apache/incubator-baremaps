@@ -22,13 +22,13 @@ import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.FixedSizeDataType;
 
 /**
- * A list that can hold a large number of fixed-size memory-aligned data elements.
+ * A collection that can hold a large number of fixed-size memory-aligned data elements.
  *
- * This list is backed by a memory that can be either heap, off-heap, or memory mapped.
+ * This collection is backed by a memory that can be either heap, off-heap, or memory mapped.
  *
  * @param <E> The type of the elements.
  */
-public class MemoryAlignedDataList<E> extends DataList<E> {
+public class MemoryAlignedDataList<E> extends AbstractDataList<E> {
 
   private final FixedSizeDataType<E> dataType;
 
@@ -43,7 +43,7 @@ public class MemoryAlignedDataList<E> extends DataList<E> {
   private AtomicLong size;
 
   /**
-   * Constructs a list.
+   * Constructs a collection.
    *
    * @param dataType the data type
    */
@@ -52,7 +52,7 @@ public class MemoryAlignedDataList<E> extends DataList<E> {
   }
 
   /**
-   * Constructs a list.
+   * Constructs a collection.
    *
    * @param dataType the data type
    * @param memory the memory
@@ -109,7 +109,7 @@ public class MemoryAlignedDataList<E> extends DataList<E> {
 
   /** {@inheritDoc} */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return size.get();
   }
 

@@ -31,10 +31,10 @@ import org.apache.baremaps.database.type.PairDataType.Pair;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class MonotonicDataMap<E> extends DataMap<E> {
+public class Long2ObjectMonotonicDataMap<E> extends AbstractDataMap<E> {
 
-  private final DataList<Long> offsets;
-  private final DataList<Pair<Long, Long>> keys;
+  private final AbstractDataList<Long> offsets;
+  private final AbstractDataList<Pair<Long, Long>> keys;
   private final AppendOnlyBuffer<E> values;
 
   private long lastChunk = -1;
@@ -44,10 +44,11 @@ public class MonotonicDataMap<E> extends DataMap<E> {
    *
    * @param values the buffer of values
    */
-  public MonotonicDataMap(AppendOnlyBuffer<E> values) {
+  public Long2ObjectMonotonicDataMap(AppendOnlyBuffer<E> values) {
     this(
         new MemoryAlignedDataList<>(new LongDataType()),
-        new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType())),
+        new MemoryAlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType())),
         values);
   }
 
@@ -57,7 +58,8 @@ public class MonotonicDataMap<E> extends DataMap<E> {
    * @param keys the list of keys
    * @param values the buffer of values
    */
-  public MonotonicDataMap(DataList<Pair<Long, Long>> keys, AppendOnlyBuffer<E> values) {
+  public Long2ObjectMonotonicDataMap(AbstractDataList<Pair<Long, Long>> keys,
+      AppendOnlyBuffer<E> values) {
     this(
         new MemoryAlignedDataList<>(new LongDataType()),
         keys,
@@ -71,7 +73,8 @@ public class MonotonicDataMap<E> extends DataMap<E> {
    * @param keys the list of keys
    * @param values the buffer of values
    */
-  public MonotonicDataMap(DataList<Long> offsets, DataList<Pair<Long, Long>> keys,
+  public Long2ObjectMonotonicDataMap(AbstractDataList<Long> offsets,
+      AbstractDataList<Pair<Long, Long>> keys,
       AppendOnlyBuffer<E> values) {
     this.offsets = offsets;
     this.keys = keys;
@@ -80,10 +83,10 @@ public class MonotonicDataMap<E> extends DataMap<E> {
 
   /** {@inheritDoc} */
   public E put(Long key, E value) {
-    long index = keys.sizeAsLong();
+    long index = keys.size64();
     long chunk = key >>> 8;
     if (chunk != lastChunk) {
-      while (offsets.sizeAsLong() <= chunk) {
+      while (offsets.size64() <= chunk) {
         offsets.add(index);
       }
       lastChunk = chunk;
@@ -97,15 +100,15 @@ public class MonotonicDataMap<E> extends DataMap<E> {
   public E get(Object keyObject) {
     long key = (long) keyObject;
     long chunk = key >>> 8;
-    if (chunk >= offsets.sizeAsLong()) {
+    if (chunk >= offsets.size64()) {
       return null;
     }
     long lo = offsets.get(chunk);
     long hi =
         Math.min(
-            keys.sizeAsLong(),
-            chunk >= offsets.sizeAsLong() - 1
-                ? keys.sizeAsLong()
+            keys.size64(),
+            chunk >= offsets.size64() - 1
+                ? keys.size64()
                 : offsets.get(chunk + 1))
             - 1;
     while (lo <= hi) {
@@ -147,7 +150,7 @@ public class MonotonicDataMap<E> extends DataMap<E> {
   /** {@inheritDoc} */
   @Override
   public long sizeAsLong() {
-    return keys.sizeAsLong();
+    return keys.size64();
   }
 
   /** {@inheritDoc} */

@@ -31,7 +31,8 @@ class SizedDataListTest {
   void segmentsTooSmall() {
     var dataType = new LongDataType();
     var memory = new OffHeapMemory(4);
-    assertThrows(DataCollectionException.class, () -> new FixedSizeDataList<>(dataType, memory));
+    assertThrows(DataCollectionException.class,
+        () -> new FixedSizeDataList<>(dataType, memory));
   }
 
   @ParameterizedTest

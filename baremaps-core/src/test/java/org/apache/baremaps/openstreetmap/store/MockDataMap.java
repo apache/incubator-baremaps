@@ -16,10 +16,10 @@ package org.apache.baremaps.openstreetmap.store;
 
 import java.util.Iterator;
 import java.util.Map;
-import org.apache.baremaps.database.collection.DataMap;
+import org.apache.baremaps.database.collection.AbstractDataMap;
 import org.jetbrains.annotations.Nullable;
 
-public class MockDataMap<T> extends DataMap<T> {
+public class MockDataMap<T> extends AbstractDataMap<T> {
 
   private final Map<Long, T> values;
 

@@ -68,7 +68,7 @@ public class ShapefileDataTable extends AbstractDataTable {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return Long.MAX_VALUE;
   }
 

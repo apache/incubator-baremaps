@@ -24,13 +24,12 @@ import java.util.AbstractCollection;
 public abstract class AbstractDataCollection<E> extends AbstractCollection<E>
     implements DataCollection<E> {
 
-
   /**
    * {@inheritDoc}
    */
   @Override
   public int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+    return (int) Math.min(size64(), Integer.MAX_VALUE);
   }
 
 }

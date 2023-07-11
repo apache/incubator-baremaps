@@ -21,12 +21,12 @@ import org.apache.baremaps.database.type.LongDataType;
 /**
  * A list of longs.
  */
-public class LongDataMap extends MemoryAlignedDataMap<Long> {
+public class Long2LongMemoryAlignedDataMap extends Long2ObjectMemoryAlignedDataMap<Long> {
 
   /**
    * Constructs a list.
    */
-  public LongDataMap() {
+  public Long2LongMemoryAlignedDataMap() {
     this(new OffHeapMemory());
   }
 
@@ -35,7 +35,7 @@ public class LongDataMap extends MemoryAlignedDataMap<Long> {
    *
    * @param memory the memory
    */
-  public LongDataMap(Memory memory) {
+  public Long2LongMemoryAlignedDataMap(Memory memory) {
     super(new LongDataType(), memory);
   }
 }

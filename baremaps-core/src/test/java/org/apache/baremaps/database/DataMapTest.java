@@ -158,12 +158,35 @@ class DataMapTest {
     return Stream
         .of(
             Arguments.of(
-                new JaggedDataMap<>(
+                new Long2LongOpenHashDataMap(10000, 0.75f,
+                    () -> new MemoryAlignedDataList<>(
+                        new LongDataType(),
+                        new OffHeapMemory()),
+                    () -> new MemoryAlignedDataList<>(
+                        new LongDataType(),
+                        new OffHeapMemory()))),
+            Arguments.of(
+                new Long2ObjectOpenHashDataMap<>(10000, 0.75f,
+                    () -> new Long2ObjectMemoryAlignedDataMap<>(
+                        new LongDataType(),
+                        new OffHeapMemory()),
+                    () -> new Long2ObjectMemoryAlignedDataMap<>(
+                        new LongDataType(),
+                        new OffHeapMemory()))),
+            Arguments.of(
+                new Long2LongPackedOpenHashDataMap(10000, 0.75f,
+                    () -> new Long2ObjectMemoryAlignedDataMap<>(
+                        new PairDataType<>(
+                            new LongDataType(),
+                            new LongDataType()),
+                        new OffHeapMemory()))),
+            Arguments.of(
+                new Long2ObjectJaggedDataMap<>(
                     new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(
-                new IndexedDataMap<>(
+                new Long2ObjectIndexedDataMap<>(
                     new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new MonotonicDataMap<>(
+            Arguments.of(new Long2ObjectMonotonicDataMap<>(
                 new MemoryAlignedDataList<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
                     new OffHeapMemory()),

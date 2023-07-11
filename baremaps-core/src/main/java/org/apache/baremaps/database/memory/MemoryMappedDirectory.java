@@ -35,7 +35,7 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
    * @param directory the directory that stores the data
    */
   public MemoryMappedDirectory(Path directory) {
-    this(directory, 1 << 30);
+    this(directory, 1 << 28);
   }
 
   /**

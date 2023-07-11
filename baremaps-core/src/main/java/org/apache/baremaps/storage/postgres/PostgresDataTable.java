@@ -71,7 +71,7 @@ public class PostgresDataTable extends AbstractDataTable {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     var countQuery = count(rowType);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(countQuery);

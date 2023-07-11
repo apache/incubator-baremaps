@@ -16,7 +16,7 @@ package org.apache.baremaps.database.algorithm;
 
 import java.util.Comparator;
 import java.util.function.Function;
-import org.apache.baremaps.database.collection.DataList;
+import org.apache.baremaps.database.collection.AbstractDataList;
 
 /**
  * A binary search algorithm.
@@ -32,8 +32,9 @@ public class BinarySearch {
    * @return the index of the search key
    * @param <E> the type of the elements in the list
    */
-  public static <E> Long binarySearch(DataList<E> list, E value, Comparator<E> comparator) {
-    return binarySearch(list, value, comparator, 0, list.sizeAsLong() - 1l);
+  public static <E> Long binarySearch(AbstractDataList<E> list, E value,
+      Comparator<E> comparator) {
+    return binarySearch(list, value, comparator, 0, list.size64() - 1l);
   }
 
   /**
@@ -47,7 +48,8 @@ public class BinarySearch {
    * @return the index of the search key
    * @param <E> the type of the elements in the list
    */
-  public static <E> Long binarySearch(DataList<E> list, E value, Comparator<E> comparator,
+  public static <E> Long binarySearch(AbstractDataList<E> list, E value,
+      Comparator<E> comparator,
       long fromIndex, long toIndex) {
     long lo = fromIndex;
     long hi = toIndex;
@@ -77,12 +79,12 @@ public class BinarySearch {
    * @param <E> the type of the elements in the list
    */
   public static <E, A> E binarySearchAttribute(
-      DataList<E> list,
+      AbstractDataList<E> list,
       Function<E, A> extractor,
       A value,
       Comparator<A> comparator) {
     long lo = 0;
-    long hi = list.sizeAsLong() - 1l;
+    long hi = list.size64() - 1l;
     while (lo <= hi) {
       long mi = (lo + hi) >>> 1;
       E e = list.get(mi);
@@ -112,7 +114,7 @@ public class BinarySearch {
    * @param <E> the type of the elements in the list
    */
   public static <E, A> E binarySearchAttribute(
-      DataList<E> list,
+      AbstractDataList<E> list,
       Function<E, A> extractor,
       A value,
       Comparator<A> comparator,

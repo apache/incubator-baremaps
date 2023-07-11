@@ -12,22 +12,29 @@
 
 package org.apache.baremaps.database.collection;
 
-
-
 import com.google.common.collect.Streams;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
- * An abstract map of data elements that can hold a large number of elements.
+ * A map of longs to values that can be stored in memory or on disk and has a size that can exceed
+ * the maximum value of an integer.
  *
- * @param <E> The type of the elements.
+ * @param <E>
  */
-public abstract class DataMap<E> implements Map<Long, E> {
+public interface DataMap<E> extends Map<Long, E> {
+
+  /**
+   * Returns the size of the map as a long.
+   *
+   * @return the size of the map
+   */
+  long sizeAsLong();
 
   /** {@inheritDoc} */
   @Override
-  public void putAll(Map<? extends Long, ? extends E> m) {
-    m.forEach(this::put);
+  default int size() {
+    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
   }
 
   /**
@@ -36,100 +43,8 @@ public abstract class DataMap<E> implements Map<Long, E> {
    * @param keys the keys
    * @return the values
    */
-  public List<E> getAll(List<Long> keys) {
+  default List<E> getAll(List<Long> keys) {
     return Streams.stream(keys).map(this::get).toList();
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean isEmpty() {
-    return size() == 0;
-  }
-
-  /**
-   * Returns the size of the map as a long.
-   *
-   * @return the size of the map
-   */
-  public abstract long sizeAsLong();
-
-  /** {@inheritDoc} */
-  public int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
-  }
-
-  /**
-   * Returns an iterator over the keys of the map.
-   *
-   * @return an iterator
-   */
-  protected abstract Iterator<Long> keyIterator();
-
-  /** {@inheritDoc} */
-  @Override
-  public Set<Long> keySet() {
-    return new KeySet();
-  }
-
-  private class KeySet extends AbstractSet<Long> {
-    @Override
-    public Iterator<Long> iterator() {
-      return keyIterator();
-    }
-
-    @Override
-    public int size() {
-      return DataMap.this.size();
-    }
-  }
-
-  /**
-   * Returns an iterator over the values of the map.
-   *
-   * @return an iterator
-   */
-  protected abstract Iterator<E> valueIterator();
-
-  /** {@inheritDoc} */
-  @Override
-  public Collection<E> values() {
-    return new ValueCollection();
-  }
-
-  private class ValueCollection extends AbstractCollection<E> {
-    @Override
-    public Iterator<E> iterator() {
-      return valueIterator();
-    }
-
-    @Override
-    public int size() {
-      return DataMap.this.size();
-    }
-  }
-
-  /**
-   * Returns an iterator over the entries of the map.
-   *
-   * @return an iterator
-   */
-  protected abstract Iterator<Entry<Long, E>> entryIterator();
-
-  /** {@inheritDoc} */
-  @Override
-  public Set<Entry<Long, E>> entrySet() {
-    return new EntrySet();
-  }
-
-  private class EntrySet extends AbstractSet<Entry<Long, E>> {
-    @Override
-    public Iterator<Entry<Long, E>> iterator() {
-      return entryIterator();
-    }
-
-    @Override
-    public int size() {
-      return DataMap.this.size();
-    }
-  }
 }

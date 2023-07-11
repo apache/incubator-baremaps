@@ -20,12 +20,12 @@ import java.util.stream.IntStream;
 import org.apache.baremaps.stream.StreamUtils;
 
 /**
- * A map that stores data in a jagged array, using the 40 leas significant bits of the key to index
+ * A map that stores data in a jagged array, using the 40 least significant bits of the key to index
  * the array. The capacity of the map is 2^40, which is sufficient to store 1 trillion entries.
  *
  * @param <E>
  */
-public class JaggedDataMap<E> extends DataMap<E> {
+public class Long2ObjectJaggedDataMap<E> extends AbstractDataMap<E> {
 
   private static final int L_BYTES = 8;
   private static final int L_SIZE = 1 << L_BYTES;
@@ -60,7 +60,7 @@ public class JaggedDataMap<E> extends DataMap<E> {
    *
    * @param values the values
    */
-  public JaggedDataMap(AppendOnlyBuffer<E> values) {
+  public Long2ObjectJaggedDataMap(AppendOnlyBuffer<E> values) {
     this.index = new long[I_SIZE][][][];
     this.values = values;
   }

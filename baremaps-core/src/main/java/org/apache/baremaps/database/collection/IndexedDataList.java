@@ -17,21 +17,22 @@ package org.apache.baremaps.database.collection;
 import org.apache.baremaps.database.type.LongDataType;
 
 /**
- * A list that can hold a large number of variable size data elements.
+ * A collection that can hold a large number of variable size data elements.
  *
- * This list is backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ * This collection is backed by an index and a buffer that can be either heap, off-heap, or memory
+ * mapped.
  *
  * @param <E> The type of the elements.
  */
-public class IndexedDataList<E> extends DataList<E> {
+public class IndexedDataList<E> extends AbstractDataList<E> {
 
-  private final DataList<Long> index;
+  private final AbstractDataList<Long> index;
 
   private final AppendOnlyBuffer<E> values;
 
 
   /**
-   * Constructs a list.
+   * Constructs a collection.
    *
    * @param values the values
    */
@@ -40,12 +41,12 @@ public class IndexedDataList<E> extends DataList<E> {
   }
 
   /**
-   * Constructs a list.
+   * Constructs a collection.
    *
    * @param index the index
    * @param values the values
    */
-  public IndexedDataList(DataList<Long> index, AppendOnlyBuffer<E> values) {
+  public IndexedDataList(AbstractDataList<Long> index, AppendOnlyBuffer<E> values) {
     this.index = index;
     this.values = values;
   }
@@ -81,8 +82,8 @@ public class IndexedDataList<E> extends DataList<E> {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
-    return index.sizeAsLong();
+  public long size64() {
+    return index.size64();
   }
 
   /**

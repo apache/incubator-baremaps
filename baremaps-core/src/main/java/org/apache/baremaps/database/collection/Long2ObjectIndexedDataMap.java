@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @param <E> The type of the elements.
  */
-public class IndexedDataMap<E> extends DataMap<E> {
+public class Long2ObjectIndexedDataMap<E> extends AbstractDataMap<E> {
 
   private final Map<Long, Long> index;
 
@@ -37,7 +37,7 @@ public class IndexedDataMap<E> extends DataMap<E> {
    *
    * @param values the values
    */
-  public IndexedDataMap(AppendOnlyBuffer<E> values) {
+  public Long2ObjectIndexedDataMap(AppendOnlyBuffer<E> values) {
     this(new Long2LongOpenHashMap(), values);
   }
 
@@ -47,7 +47,7 @@ public class IndexedDataMap<E> extends DataMap<E> {
    * @param index the index
    * @param values the values
    */
-  public IndexedDataMap(Map<Long, Long> index, AppendOnlyBuffer<E> values) {
+  public Long2ObjectIndexedDataMap(Map<Long, Long> index, AppendOnlyBuffer<E> values) {
     this.index = index;
     this.values = values;
   }

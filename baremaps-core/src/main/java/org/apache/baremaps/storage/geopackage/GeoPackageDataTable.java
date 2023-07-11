@@ -72,7 +72,7 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return featureDao.count();
   }
 

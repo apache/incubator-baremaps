@@ -22,13 +22,13 @@ import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.FixedSizeDataType;
 
 /**
- * A list that can hold a large number of fixed size data elements.
+ * A collection that can hold a large number of fixed size data elements.
  *
- * This list is backed by a memory that can be either heap, off-heap, or memory mapped.
+ * This collection is backed by a memory that can be either heap, off-heap, or memory mapped.
  *
  * @param <E> The type of the elements.
  */
-public class FixedSizeDataList<E> extends DataList<E> {
+public class FixedSizeDataList<E> extends AbstractDataList<E> {
 
   private final FixedSizeDataType<E> dataType;
 
@@ -37,7 +37,7 @@ public class FixedSizeDataList<E> extends DataList<E> {
   private AtomicLong size;
 
   /**
-   * Constructs a list.
+   * Constructs a collection.
    *
    * @param dataType the data type
    */
@@ -46,7 +46,7 @@ public class FixedSizeDataList<E> extends DataList<E> {
   }
 
   /**
-   * Constructs a list.
+   * Constructs a collection.
    *
    * @param dataType the data type
    * @param memory the memory
@@ -62,8 +62,8 @@ public class FixedSizeDataList<E> extends DataList<E> {
 
   private void write(long index, E value) {
     long position = index * dataType.size();
-    int segmentIndex = (int) (position / dataType.size());
-    int segmentOffset = (int) (position % dataType.size());
+    int segmentIndex = (int) (position / memory.segmentSize());
+    int segmentOffset = (int) (position % memory.segmentSize());
     ByteBuffer segment = memory.segment(segmentIndex);
     dataType.write(segment, segmentOffset, value);
   }
@@ -83,7 +83,7 @@ public class FixedSizeDataList<E> extends DataList<E> {
    */
   @Override
   public void set(long index, E value) {
-    if (index >= sizeAsLong()) {
+    if (index >= size64()) {
       throw new IndexOutOfBoundsException();
     }
     write(index, value);
@@ -95,8 +95,8 @@ public class FixedSizeDataList<E> extends DataList<E> {
   @Override
   public E get(long index) {
     long position = index * dataType.size();
-    int segmentIndex = (int) (position / dataType.size());
-    int segmentOffset = (int) (position % dataType.size());
+    int segmentIndex = (int) (position / memory.segmentSize());
+    int segmentOffset = (int) (position % memory.segmentSize());
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
   }
@@ -105,7 +105,7 @@ public class FixedSizeDataList<E> extends DataList<E> {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return size.get();
   }
 

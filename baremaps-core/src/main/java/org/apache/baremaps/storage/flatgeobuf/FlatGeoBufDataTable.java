@@ -117,7 +117,7 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
       HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
@@ -161,9 +161,10 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
       headerMeta.indexNodeSize = 16;
       headerMeta.srid = 3857;
       headerMeta.featuresCount =
-          features instanceof AbstractDataCollection<DataRow>c ? c.sizeAsLong() : features.size();
+          features instanceof AbstractDataCollection<DataRow>c ? c.size64() : features.size();
       headerMeta.name = rowType.name();
       headerMeta.columns = FlatGeoBufTypeConversion.asColumns(rowType.columns());
+
       HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
 
       var indexSize =

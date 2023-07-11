@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.apache.baremaps.database.collection.AppendOnlyBuffer;
 import org.apache.baremaps.database.collection.DataMap;
-import org.apache.baremaps.database.collection.IndexedDataMap;
+import org.apache.baremaps.database.collection.Long2ObjectIndexedDataMap;
 import org.apache.baremaps.database.memory.OnHeapMemory;
 import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.geometry.CoordinateDataType;
@@ -47,9 +47,11 @@ class ImportMonacoTest extends PostgresRepositoryTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     DataMap<Coordinate> coordinateMap =
-        new IndexedDataMap<>(new AppendOnlyBuffer<>(new CoordinateDataType(), new OnHeapMemory()));
+        new Long2ObjectIndexedDataMap<>(
+            new AppendOnlyBuffer<>(new CoordinateDataType(), new OnHeapMemory()));
     DataMap<List<Long>> referenceMap =
-        new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
+        new Long2ObjectIndexedDataMap<>(
+            new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     ImportOpenStreetMap.execute(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,

@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.apache.baremaps.database.algorithm.ExternalMergeSort;
+import org.apache.baremaps.database.collection.AbstractDataList;
 import org.apache.baremaps.database.collection.AppendOnlyBuffer;
-import org.apache.baremaps.database.collection.DataList;
 import org.apache.baremaps.database.collection.IndexedDataList;
 import org.apache.baremaps.database.collection.MemoryAlignedDataList;
 import org.apache.baremaps.database.memory.OnHeapMemory;
@@ -38,9 +38,9 @@ class ExternalMergeSortTest {
   List<String> stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).toList();
   List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();;
   List<String> stringsDistinct = stringsAsc.stream().distinct().toList();
-  Supplier<DataList<String>> supplier;
-  DataList<String> input;
-  DataList<String> output;
+  Supplier<AbstractDataList<String>> supplier;
+  AbstractDataList<String> input;
+  AbstractDataList<String> output;
 
   @BeforeEach
   void before() {
@@ -54,9 +54,9 @@ class ExternalMergeSortTest {
     }
   }
 
-  public List<String> stringList(DataList<String> list) {
+  public List<String> stringList(AbstractDataList<String> list) {
     var l = new ArrayList<String>();
-    for (long i = 0; i < list.sizeAsLong(); i++) {
+    for (long i = 0; i < list.size64(); i++) {
       l.add(list.get(i));
     }
     return l;

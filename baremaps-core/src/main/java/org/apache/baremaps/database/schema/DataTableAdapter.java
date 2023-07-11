@@ -57,7 +57,7 @@ public class DataTableAdapter extends AbstractDataCollection<DataRow> implements
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
-    return table.sizeAsLong();
+  public long size64() {
+    return table.size64();
   }
 }

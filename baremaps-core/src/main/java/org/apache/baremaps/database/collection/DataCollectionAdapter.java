@@ -48,7 +48,7 @@ public class DataCollectionAdapter<S, T> extends AbstractDataCollection<T> {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
-    return collection.sizeAsLong();
+  public long size64() {
+    return collection.size64();
   }
 }

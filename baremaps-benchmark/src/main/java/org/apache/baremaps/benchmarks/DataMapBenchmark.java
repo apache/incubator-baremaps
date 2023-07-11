@@ -16,9 +16,9 @@ package org.apache.baremaps.benchmarks;
 
 import java.util.concurrent.TimeUnit;
 import org.apache.baremaps.database.collection.*;
-import org.apache.baremaps.database.collection.JaggedDataMap;
 import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.LongDataType;
+import org.apache.baremaps.database.type.PairDataType;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -48,7 +48,7 @@ public class DataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void simpleDataMap() {
-    benchmark(new JaggedDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
+    benchmark(new Long2ObjectJaggedDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
   }
 
   @Benchmark
@@ -56,7 +56,7 @@ public class DataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void indexedDataMap() {
-    benchmark(new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
+    benchmark(new Long2ObjectIndexedDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
   }
 
   @Benchmark
@@ -64,7 +64,7 @@ public class DataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void memoryAlignedDataMap() {
-    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new OffHeapMemory()), N);
+    benchmark(new Long2ObjectMemoryAlignedDataMap<>(new LongDataType(), new OffHeapMemory()), N);
   }
 
   @Benchmark
@@ -72,7 +72,34 @@ public class DataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void monotonicDataMap() {
-    benchmark(new MonotonicDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
+    benchmark(new Long2ObjectMonotonicDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void openHashDataMap() {
+    benchmark(new Long2ObjectOpenHashDataMap<>(10_000_000L, 0.75f,
+        () -> new Long2ObjectMemoryAlignedDataMap<>(
+            new LongDataType(),
+            new OffHeapMemory()),
+        () -> new Long2ObjectMemoryAlignedDataMap<>(
+            new LongDataType(),
+            new OffHeapMemory())),
+        N);
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void packedHashDataMap() {
+    benchmark(new Long2LongPackedOpenHashDataMap(100_000_000L, 0.75f,
+        () -> new Long2ObjectMemoryAlignedDataMap<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new OffHeapMemory())),
+        N);
   }
 
   public static void main(String[] args) throws RunnerException {

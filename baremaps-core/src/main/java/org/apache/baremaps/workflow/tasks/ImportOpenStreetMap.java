@@ -18,7 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import org.apache.baremaps.database.collection.*;
-import org.apache.baremaps.database.memory.MemoryMappedFile;
+import org.apache.baremaps.database.memory.MemoryMappedDirectory;
 import org.apache.baremaps.database.type.LongDataType;
 import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.PairDataType;
@@ -34,7 +34,6 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.repository.*;
 import org.apache.baremaps.openstreetmap.repository.BlockImporter;
 import org.apache.baremaps.stream.StreamUtils;
-import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
@@ -69,35 +68,40 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
 
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-    DataMap<Coordinate> coordinateMap;
-    if (Files.size(path) > 1 << 30) {
-      var coordinatesFile = Files.createFile(cacheDir.resolve("coordinates"));
-      coordinateMap = new MemoryAlignedDataMap<>(
-          new LonLatDataType(),
-          new MemoryMappedFile(coordinatesFile));
-    } else {
-      var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
-      var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
-      coordinateMap =
-          new MonotonicDataMap<>(
-              new MemoryAlignedDataList<>(
-                  new PairDataType<>(new LongDataType(), new LongDataType()),
-                  new MemoryMappedFile(coordinatesKeysFile)),
-              new AppendOnlyBuffer<>(
-                  new LonLatDataType(),
-                  new MemoryMappedFile(coordinatesValsFile)));
-    }
+    var coordinatesKeysFile = Files.createDirectory(cacheDir.resolve("coordinates_keys"));
+    var coordinatesValsFile = Files.createDirectory(cacheDir.resolve("coordinates_vals"));
+    var coordinateMap =
+        new Long2ObjectOpenHashDataMap<>(100_000_000L, 0.9f,
+            () -> new Long2ObjectMemoryAlignedDataMap<>(
+                new LongDataType(),
+                new MemoryMappedDirectory(coordinatesKeysFile)),
+            () -> new Long2ObjectMemoryAlignedDataMap<>(
+                new LonLatDataType(),
+                new MemoryMappedDirectory(coordinatesValsFile)));
 
-    var referencesKeysDir = Files.createFile(cacheDir.resolve("references_keys"));
-    var referencesValuesDir = Files.createFile(cacheDir.resolve("references_vals"));
+    var referencesKeysDir = Files.createDirectory(cacheDir.resolve("references_keys"));
+    var referencesValuesDir = Files.createDirectory(cacheDir.resolve("references_vals"));
+
     var referenceMap =
-        new MonotonicDataMap<>(
-            new MemoryAlignedDataList<>(
-                new PairDataType<>(new LongDataType(), new LongDataType()),
-                new MemoryMappedFile(referencesKeysDir)),
+        new Long2ObjectIndexedDataMap<>(
+            new Long2LongPackedOpenHashDataMap(
+                10_000_000L,
+                0.9f,
+                () -> new Long2ObjectMemoryAlignedDataMap<>(
+                    new PairDataType<>(new LongDataType(), new LongDataType()),
+                    new MemoryMappedDirectory(referencesKeysDir))),
             new AppendOnlyBuffer<>(
                 new LongListDataType(),
-                new MemoryMappedFile(referencesValuesDir)));
+                new MemoryMappedDirectory(referencesValuesDir)));
+
+    // var referenceMap =
+    // new MonotonicDataMap<>(
+    // new MemoryAlignedDataList<>(
+    // new PairDataType<>(new LongDataType(), new LongDataType()),
+    // new MemoryMappedDirectory(referencesKeysDir)),
+    // new AppendOnlyBuffer<>(
+    // new LongListDataType(),
+    // new MemoryMappedDirectory(referencesValuesDir)));
 
     execute(
         path,
@@ -109,7 +113,7 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
         relationRepository,
         databaseSrid);
 
-    FileUtils.deleteRecursively(cacheDir);
+    // FileUtils.deleteRecursively(cacheDir);
   }
 
   public static void execute(

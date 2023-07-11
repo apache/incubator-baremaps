@@ -20,9 +20,9 @@ import java.nio.ByteBuffer;
 /** A memory that stores segments off-heap using direct byte buffers. */
 public class OffHeapMemory extends Memory<ByteBuffer> {
 
-  /** Constructs an {@link OffHeapMemory} with a default segment size of 1mb. */
+  /** Constructs an {@link OffHeapMemory} with a default segment size of 16mb. */
   public OffHeapMemory() {
-    this(1 << 20);
+    this(1 << 24);
   }
 
   /**

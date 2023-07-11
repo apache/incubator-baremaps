@@ -27,7 +27,7 @@ import org.apache.baremaps.database.type.FixedSizeDataType;
  * <p>
  * This code has been adapted from Planetiler (Apache license).
  */
-public class MemoryAlignedDataMap<E> extends DataMap<E> {
+public class Long2ObjectMemoryAlignedDataMap<E> extends AbstractDataMap<E> {
 
   private final FixedSizeDataType<E> dataType;
 
@@ -45,7 +45,7 @@ public class MemoryAlignedDataMap<E> extends DataMap<E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedDataMap(FixedSizeDataType<E> dataType, Memory memory) {
+  public Long2ObjectMemoryAlignedDataMap(FixedSizeDataType<E> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }

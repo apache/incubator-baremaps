@@ -44,9 +44,9 @@ class PostgresDataTableTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void sizeAsLong() {
+  void size64() {
     var table = schema.get("mock");
-    assertEquals(5, table.sizeAsLong());
+    assertEquals(5, table.size64());
   }
 
   @Test

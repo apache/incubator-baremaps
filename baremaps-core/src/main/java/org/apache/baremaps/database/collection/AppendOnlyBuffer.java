@@ -26,8 +26,9 @@ import org.apache.baremaps.database.type.DataType;
 
 /**
  * A buffer of elements backed by a {@link DataType} and a {@link Memory}. Elements are appended to
- * the buffer and can be accessed by their position in the {@link Memory}. Appending elements to the
- * buffer is thread-safe.
+ * the buffer and can be accessed by their position in the {@link Memory}. In other words, it
+ * implements the Collection interface but is not intended to be used as such. Appending elements to
+ * the buffer is thread-safe.
  *
  * @param <E> The type of the data.
  */
@@ -119,7 +120,7 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
   }
 
   /** {@inheritDoc} */
-  public long sizeAsLong() {
+  public long size64() {
     return size;
   }
 
@@ -142,7 +143,7 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
    */
   @Override
   public BufferIterator iterator() {
-    final long size = sizeAsLong();
+    final long size = size64();
     return new BufferIterator(size);
   }
 

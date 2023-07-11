@@ -65,9 +65,9 @@ public class DataTableImpl extends AbstractDataCollection<DataRow> implements Da
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     if (rows instanceof DataCollection<DataRow>dataCollection) {
-      return dataCollection.sizeAsLong();
+      return dataCollection.size64();
     } else {
       return rows.size();
     }

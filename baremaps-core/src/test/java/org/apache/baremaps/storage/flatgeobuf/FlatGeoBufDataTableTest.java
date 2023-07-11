@@ -32,7 +32,7 @@ class FlatGeoBufDataTableTest {
   @Test
   void read() throws IOException {
     var table = new FlatGeoBufDataTable(TestFiles.resolve("countries.fgb"));
-    assertEquals(179, table.sizeAsLong());
+    assertEquals(179, table.size64());
     assertEquals(179, table.stream().count());
   }
 
