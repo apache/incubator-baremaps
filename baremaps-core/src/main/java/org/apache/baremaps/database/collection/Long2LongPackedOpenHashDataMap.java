@@ -27,6 +27,11 @@ import java.util.function.LongConsumer;
 import java.util.function.Supplier;
 import org.apache.baremaps.database.type.PairDataType.Pair;
 
+/**
+ * An open addressed hash map of long keys and long values derived from fastutil's
+ * {@link Long2LongOpenHashMap}. This implementation allows for the use of on-heap, off-heap, or
+ * memory mapped memory. The keys and values are packed in the same memory.
+ */
 public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     implements DataMap<Long>, Hash {
 
@@ -717,7 +722,6 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
       return setValue(v);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object o) {
       if (!(o instanceof Map.Entry)) {
@@ -772,7 +776,6 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
      */
     LongArrayList wrapped;
 
-    @SuppressWarnings("unused")
     abstract void acceptOnIndex(final ConsumerType action, final long index);
 
     public boolean hasNext() {
@@ -1548,34 +1551,5 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     this.mask = mask;
     this.maxFill = maxFill(n, f);
     this.index = newIndex;
-  }
-
-  /**
-   * Returns a hash code for this map.
-   * <p>
-   * This method overrides the generic method provided by the superclass. Since {@code equals()} is
-   * not overriden, it is important that the value returned by this method is the same value as the
-   * one returned by the overriden method.
-   *
-   * @return a hash code for this map.
-   */
-  @Override
-  public int hashCode() {
-    int h = 0;
-    for (long j = realSize(), i = 0, t = 0; j-- != 0;) {
-      Pair<Long, Long> pair;
-      while (((pair = index.get(i)).left() == 0)) {
-        i++;
-      }
-      t = HashCommon.long2int(pair.left());
-      t ^= HashCommon.long2int(pair.right());
-      h += t;
-      i++;
-    }
-    // Zero / null keys have hash zero.
-    if (containsNullKey) {
-      h += HashCommon.long2int(index.get(n).right());
-    }
-    return h;
   }
 }

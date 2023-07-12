@@ -25,6 +25,11 @@ import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.function.Supplier;
 
+/**
+ * An open addressed hash map of long keys and long values derived from fastutil's
+ * {@link Long2LongOpenHashMap}. This implementation allows for the use of on-heap, off-heap, or
+ * memory mapped memory.
+ */
 public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     implements DataMap<Long>, Hash {
 
@@ -728,7 +733,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       return setValue((v).longValue());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object o) {
       if (!(o instanceof Map.Entry)) {
@@ -780,7 +784,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
      */
     LongArrayList wrapped;
 
-    @SuppressWarnings("unused")
     abstract void acceptOnIndex(final ConsumerType action, final long index);
 
     public boolean hasNext() {
@@ -1546,33 +1549,5 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     this.maxFill = maxFill(n, f);
     this.key = newKey;
     this.value = newValue;
-  }
-
-  /**
-   * Returns a hash code for this map.
-   * <p>
-   * This method overrides the generic method provided by the superclass. Since {@code equals()} is
-   * not overriden, it is important that the value returned by this method is the same value as the
-   * one returned by the overriden method.
-   *
-   * @return a hash code for this map.
-   */
-  @Override
-  public int hashCode() {
-    int h = 0;
-    for (long j = realSize(), i = 0, t = 0; j-- != 0;) {
-      while (((key.get(i)) == 0)) {
-        i++;
-      }
-      t = HashCommon.long2int(key.get(i));
-      t ^= HashCommon.long2int(value.get(i));
-      h += t;
-      i++;
-    }
-    // Zero / null keys have hash zero.
-    if (containsNullKey) {
-      h += HashCommon.long2int(value.get(n));
-    }
-    return h;
   }
 }

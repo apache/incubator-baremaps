@@ -30,28 +30,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * A type-specific hash map with a fast, small-footprint implementation.
- *
- * <p>
- * Instances of this class use a hash table to represent a map. The table is filled up to a
- * specified <em>load factor</em>, and then doubled in size to accommodate new entries. If the table
- * is emptied below <em>one fourth</em> of the load factor, it is halved in size; however, the table
- * is never reduced to a size smaller than that at creation time: this approach makes it possible to
- * create maps with a large capacity in which insertions and deletions do not cause immediately
- * rehashing. Moreover, halving is not performed when deleting entries from an iterator, as it would
- * interfere with the iteration process.
- *
- * <p>
- * Note that {@link #clear()} does not modify the hash table size. Rather, a family of
- * {@linkplain #trim() trimming methods} lets you control the size of the table; this is
- * particularly useful if you reuse instances of this class.
- *
- * <p>
- * Entries returned by the type-specific {@link #entrySet()} method implement the suitable
- * type-specific {@link it.unimi.dsi.fastutil.Pair Pair} interface; only values are mutable.
- *
- * @see Hash
- * @see HashCommon
+ * An open addressed hash map of long keys and long values derived from fastutil's
+ * {@link Long2ObjectOpenHashMap}. This implementation allows for the use of on-heap, off-heap, or
+ * memory mapped memory.
  */
 public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     implements DataMap<V>, Hash {
@@ -118,7 +99,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
    * @param expected the expected number of elements in the hash map.
    * @param f the load factor.
    */
-  @SuppressWarnings("unchecked")
   public Long2ObjectOpenHashDataMap(
       final long expected,
       final float f,
@@ -675,7 +655,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
       return Long.valueOf(key.get(index));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object o) {
       if (!(o instanceof Map.Entry)) {
@@ -728,7 +707,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
      */
     LongArrayList wrapped;
 
-    @SuppressWarnings("unused")
     abstract void acceptOnIndex(final ConsumerType action, final long index);
 
     public boolean hasNext() {
@@ -1065,7 +1043,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
 
     //
     @Override
-    @SuppressWarnings("unchecked")
     public boolean contains(final Object o) {
       if (!(o instanceof Map.Entry)) {
         return false;
@@ -1101,7 +1078,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean remove(final Object o) {
       if (!(o instanceof Map.Entry)) {
         return false;
@@ -1469,7 +1445,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
    *
    * @param newN the new size
    */
-  @SuppressWarnings("unchecked")
   protected void rehash(final long newN) {
     final long mask = newN - 1; // Note that this is used by the hashing macro
     final DataMap<Long> newKey = keySupplier.get();
@@ -1489,35 +1464,5 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     this.maxFill = maxFill(n, f);
     this.key = newKey;
     this.value = newValue;
-  }
-
-  /**
-   * Returns a hash code for this map.
-   * <p>
-   * This method overrides the generic method provided by the superclass. Since {@code equals()} is
-   * not overriden, it is important that the value returned by this method is the same value as the
-   * one returned by the overriden method.
-   *
-   * @return a hash code for this map.
-   */
-  @Override
-  public int hashCode() {
-    int h = 0;
-    for (long j = realSize(), i = 0, t = 0; j-- != 0;) {
-      while (((key.get(i)) == 0)) {
-        i++;
-      }
-      t = HashCommon.long2int(key.get(i));
-      if (this != value.get(i)) {
-        t ^= ((value.get(i)) == null ? 0 : (value.get(i)).hashCode());
-      }
-      h += t;
-      i++;
-    }
-    // Zero / null keys have hash zero.
-    if (containsNullKey) {
-      h += ((value.get(n)) == null ? 0 : (value.get(n)).hashCode());
-    }
-    return h;
   }
 }
