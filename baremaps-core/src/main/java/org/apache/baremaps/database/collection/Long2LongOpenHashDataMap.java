@@ -35,31 +35,31 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   /**
    * The array of keys.
    */
-  protected transient AbstractDataList<Long> key;
+  protected AbstractDataList<Long> key;
   /**
    * The array of values.
    */
-  protected transient AbstractDataList<Long> value;
+  protected AbstractDataList<Long> value;
   /**
    * The mask for wrapping a position counter.
    */
-  protected transient long mask;
+  protected long mask;
   /**
    * Whether this map contains the key zero.
    */
-  protected transient boolean containsNullKey;
+  protected boolean containsNullKey;
   /**
    * The current table size.
    */
-  protected transient long n;
+  protected long n;
   /**
    * Threshold after which we rehash. It must be the table size times {@link #f}.
    */
-  protected transient long maxFill;
+  protected long maxFill;
   /**
    * We never resize below this threshold, which is the construction-time {#n}.
    */
-  protected final transient long minN;
+  protected final long minN;
   /**
    * Number of entries in the set (including the key zero, if present).
    */
@@ -71,18 +71,16 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   /**
    * Cached set of entries.
    */
-  protected transient FastEntrySet entries;
+  protected FastEntrySet entries;
 
   /**
    * Cached set of keys.
    */
-  protected transient LongSet keys;
+  protected LongSet keys;
   /**
    * Cached collection of values.
    */
-  protected transient LongCollection values;
-
-  private Supplier<AbstractDataList<Long>> listSupplier;
+  protected LongCollection values;
 
   /**
    * Creates a new hash map.
@@ -98,10 +96,12 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       float f,
       Supplier<AbstractDataList<Long>> keySupplier,
       Supplier<AbstractDataList<Long>> valueSupplier) {
-    if (f <= 0 || f >= 1)
+    if (f <= 0 || f >= 1) {
       throw new IllegalArgumentException("Load factor must be greater than 0 and smaller than 1");
-    if (expected < 0)
-      throw new IllegalArgumentException("The expected number of elements must be nonnegative");
+    }
+    if (expected < 0) {
+      throw new IllegalArgumentException("The expected number of elements must be non-negative");
+    }
     this.f = f;
     this.minN = n = bigArraySize(expected, f);
     this.mask = n - 1;
@@ -118,23 +118,26 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
   private void ensureCapacity(final long capacity) {
     final long needed = bigArraySize(capacity, f);
-    if (needed > n)
+    if (needed > n) {
       rehash(needed);
+    }
   }
 
   private void tryCapacity(final long capacity) {
     final long needed =
         Math.min(1 << 30, Math.max(2, HashCommon.nextPowerOfTwo((long) Math.ceil(capacity / f))));
-    if (needed > n)
+    if (needed > n) {
       rehash(needed);
+    }
   }
 
   private long removeEntry(final long pos) {
     final long oldValue = value.get(pos);
     size.decrementAndGet();
     shiftKeys(pos);
-    if (n > minN && size.get() < maxFill / 4 && n > DEFAULT_INITIAL_SIZE)
+    if (n > minN && size.get() < maxFill / 4 && n > DEFAULT_INITIAL_SIZE) {
       rehash(n / 2);
+    }
     return oldValue;
   }
 
@@ -142,48 +145,55 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     containsNullKey = false;
     final long oldValue = value.get(n);
     size.decrementAndGet();
-    if (n > minN && size.get() < maxFill / 4 && n > DEFAULT_INITIAL_SIZE)
+    if (n > minN && size.get() < maxFill / 4 && n > DEFAULT_INITIAL_SIZE) {
       rehash(n / 2);
+    }
     return oldValue;
   }
 
   @Override
   public void putAll(Map<? extends Long, ? extends Long> m) {
-    if (f <= .5)
-      ensureCapacity(m.size()); // The resulting map will be sized for m.size() elements
-    else
-      tryCapacity(size() + m.size()); // The resulting map will be tentatively sized for size() +
-                                      // m.size()
-    // elements
+    if (f <= .5) {
+      ensureCapacity(m.size());
+    } else {
+      tryCapacity(sizeAsLong() + m.size());
+    }
     super.putAll(m);
   }
 
   private long find(final long k) {
-    if (((k) == (0)))
+    if (((k) == 0)) {
       return containsNullKey ? n : -(n + 1);
+    }
     long curr;
     long pos;
     // The starting point.
-    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == (0)))
+    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == 0)) {
       return -(pos + 1);
-    if (((k) == (curr)))
+    }
+    if (((k) == (curr))) {
       return pos;
+    }
     // There's always an unused entry.
     while (true) {
-      if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+      if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
         return -(pos + 1);
-      if (((k) == (curr)))
+      }
+      if (((k) == (curr))) {
         return pos;
+      }
     }
   }
 
   private void insert(final long pos, final long k, final long v) {
-    if (pos == n)
+    if (pos == n) {
       containsNullKey = true;
+    }
     key.set(pos, k);
     value.set(pos, v);
-    if (size.getAndIncrement() >= maxFill)
+    if (size.getAndIncrement() >= maxFill) {
       rehash(bigArraySize(size.get() + 1, f));
+    }
   }
 
   @Override
@@ -219,20 +229,24 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    */
   public long addTo(final long k, final long incr) {
     long pos;
-    if (((k) == (0))) {
-      if (containsNullKey)
+    if (((k) == 0)) {
+      if (containsNullKey) {
         return addToValue(n, incr);
+      }
       pos = n;
       containsNullKey = true;
     } else {
       long curr;
       // The starting point.
-      if (!((curr = key.get(pos = HashCommon.mix((k)) & mask)) == (0))) {
-        if (((curr) == (k)))
+      if (!((curr = key.get(pos = HashCommon.mix((k)) & mask)) == 0)) {
+        if (((curr) == (k))) {
           return addToValue(pos, incr);
-        while (!((curr = key.get(pos = (pos + 1) & mask)) == (0)))
-          if (((curr) == (k)))
+        }
+        while (!((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
+          if (((curr) == (k))) {
             return addToValue(pos, incr);
+          }
+        }
       }
     }
     key.set(pos, k);
@@ -255,13 +269,14 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     for (;;) {
       pos = ((last = pos) + 1) & mask;
       for (;;) {
-        if (((curr = key.get(pos)) == (0))) {
+        if (((curr = key.get(pos)) == 0)) {
           key.set(last, 0L);
           return;
         }
         slot = HashCommon.mix((curr)) & mask;
-        if (last <= pos ? last >= slot || slot > pos : last >= slot && slot > pos)
+        if (last <= pos ? last >= slot || slot > pos : last >= slot && slot > pos) {
           break;
+        }
         pos = (pos + 1) & mask;
       }
       key.set(last, curr);
@@ -272,75 +287,93 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   @Override
 
   public long remove(final long k) {
-    if (((k) == (0))) {
-      if (containsNullKey)
+    if (((k) == 0)) {
+      if (containsNullKey) {
         return removeNullEntry();
+      }
       return defRetValue;
     }
     long curr;
     long pos;
     // The starting point.
-    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == (0)))
+    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == 0)) {
       return defRetValue;
-    if (((k) == (curr)))
+    }
+    if (((k) == (curr))) {
       return removeEntry(pos);
+    }
     while (true) {
-      if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+      if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
         return defRetValue;
-      if (((k) == (curr)))
+      }
+      if (((k) == (curr))) {
         return removeEntry(pos);
+      }
     }
   }
 
   @Override
 
   public long get(final long k) {
-    if (((k) == (0)))
+    if (((k) == 0)) {
       return containsNullKey ? value.get(n) : defRetValue;
+    }
     long curr;
     long pos;
     // The starting point.
-    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == (0)))
+    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == 0)) {
       return defRetValue;
-    if (((k) == (curr)))
+    }
+    if (((k) == (curr))) {
       return value.get(pos);
+    }
     // There's always an unused entry.
     while (true) {
-      if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+      if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
         return defRetValue;
-      if (((k) == (curr)))
+      }
+      if (((k) == (curr))) {
         return value.get(pos);
+      }
     }
   }
 
   @Override
 
   public boolean containsKey(final long k) {
-    if (((k) == (0)))
+    if (((k) == 0)) {
       return containsNullKey;
+    }
     long curr;
     long pos;
     // The starting point.
-    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == (0)))
+    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == 0)) {
       return false;
-    if (((k) == (curr)))
+    }
+    if (((k) == (curr))) {
       return true;
+    }
     // There's always an unused entry.
     while (true) {
-      if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+      if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
         return false;
-      if (((k) == (curr)))
+      }
+      if (((k) == (curr))) {
         return true;
+      }
     }
   }
 
   @Override
   public boolean containsValue(final long v) {
-    if (containsNullKey && ((value.get(n)) == (v)))
+    if (containsNullKey && ((value.get(n)) == (v))) {
       return true;
-    for (long i = n; i-- != 0;)
-      if (!((key.get(i)) == (0)) && ((value.get(i)) == (v)))
+    }
+    for (long i = n; i-- != 0;) {
+      if (!((key.get(i)) == 0) && ((value.get(i)) == (v))) {
         return true;
+      }
+    }
     return false;
   }
 
@@ -350,21 +383,26 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   @Override
 
   public long getOrDefault(final long k, final long defaultValue) {
-    if (((k) == (0)))
+    if (((k) == 0)) {
       return containsNullKey ? value.get(n) : defaultValue;
+    }
     long curr;
     long pos;
     // The starting point.
-    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == (0)))
+    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == 0)) {
       return defaultValue;
-    if (((k) == (curr)))
+    }
+    if (((k) == (curr))) {
       return value.get(pos);
+    }
     // There's always an unused entry.
     while (true) {
-      if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+      if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
         return defaultValue;
-      if (((k) == (curr)))
+      }
+      if (((k) == (curr))) {
         return value.get(pos);
+      }
     }
   }
 
@@ -374,8 +412,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   @Override
   public long putIfAbsent(final long k, final long v) {
     final long pos = find(k);
-    if (pos >= 0)
+    if (pos >= 0) {
       return value.get(pos);
+    }
     insert(-pos - 1, k, v);
     return defRetValue;
   }
@@ -386,7 +425,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   @Override
 
   public boolean remove(final long k, final long v) {
-    if (((k) == (0))) {
+    if (((k) == 0)) {
       if (containsNullKey && ((v) == (value.get(n)))) {
         removeNullEntry();
         return true;
@@ -396,15 +435,17 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     long curr;
     long pos;
     // The starting point.
-    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == (0)))
+    if (((curr = key.get(pos = HashCommon.mix((k)) & mask)) == 0)) {
       return false;
+    }
     if (((k) == (curr)) && ((v) == (value.get(pos)))) {
       removeEntry(pos);
       return true;
     }
     while (true) {
-      if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+      if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
         return false;
+      }
       if (((k) == (curr)) && ((v) == (value.get(pos)))) {
         removeEntry(pos);
         return true;
@@ -418,8 +459,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   @Override
   public boolean replace(final long k, final long oldValue, final long v) {
     final long pos = find(k);
-    if (pos < 0 || !((oldValue) == (value.get(pos))))
+    if (pos < 0 || !(oldValue == (value.get(pos)))) {
       return false;
+    }
     value.set(pos, v);
     return true;
   }
@@ -430,8 +472,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   @Override
   public long replace(final long k, final long v) {
     final long pos = find(k);
-    if (pos < 0)
+    if (pos < 0) {
       return defRetValue;
+    }
     final long oldValue = value.get(pos);
     value.set(pos, v);
     return oldValue;
@@ -445,8 +488,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       final java.util.function.LongUnaryOperator mappingFunction) {
     java.util.Objects.requireNonNull(mappingFunction);
     final long pos = find(k);
-    if (pos >= 0)
+    if (pos >= 0) {
       return value.get(pos);
+    }
     final long newValue = mappingFunction.applyAsLong(k);
     insert(-pos - 1, k, newValue);
     return newValue;
@@ -459,10 +503,12 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   public long computeIfAbsent(final long key, final Long2LongFunction mappingFunction) {
     java.util.Objects.requireNonNull(mappingFunction);
     final long pos = find(key);
-    if (pos >= 0)
+    if (pos >= 0) {
       return value.get(pos);
-    if (!mappingFunction.containsKey(key))
+    }
+    if (!mappingFunction.containsKey(key)) {
       return defRetValue;
+    }
     final long newValue = mappingFunction.get(key);
     insert(-pos - 1, key, newValue);
     return newValue;
@@ -476,12 +522,14 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       final java.util.function.LongFunction<? extends Long> mappingFunction) {
     java.util.Objects.requireNonNull(mappingFunction);
     final long pos = find(k);
-    if (pos >= 0)
+    if (pos >= 0) {
       return value.get(pos);
+    }
     final Long newValue = mappingFunction.apply(k);
-    if (newValue == null)
+    if (newValue == null) {
       return defRetValue;
-    final long v = (newValue).longValue();
+    }
+    final long v = newValue;
     insert(-pos - 1, k, v);
     return v;
   }
@@ -490,21 +538,24 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    * {@inheritDoc}
    */
   @Override
-  public long computeIfPresent(final long k,
+  public long computeIfPresent(
+      final long k,
       final java.util.function.BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction) {
     java.util.Objects.requireNonNull(remappingFunction);
     final long pos = find(k);
-    if (pos < 0)
-      return defRetValue;
-    final Long newValue = remappingFunction.apply(Long.valueOf(k), Long.valueOf(value.get(pos)));
-    if (newValue == null) {
-      if (((k) == (0)))
-        removeNullEntry();
-      else
-        removeEntry(pos);
+    if (pos < 0) {
       return defRetValue;
     }
-    long newVal = (newValue).longValue();
+    final Long newValue = remappingFunction.apply(k, value.get(pos));
+    if (newValue == null) {
+      if (((k) == 0)) {
+        removeNullEntry();
+      } else {
+        removeEntry(pos);
+      }
+      return defRetValue;
+    }
+    long newVal = newValue;
     value.set(pos, newVal);
     return newVal;
   }
@@ -513,22 +564,24 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    * {@inheritDoc}
    */
   @Override
-  public long compute(final long k,
+  public long compute(
+      final long k,
       final java.util.function.BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction) {
     java.util.Objects.requireNonNull(remappingFunction);
     final long pos = find(k);
     final Long newValue =
-        remappingFunction.apply(Long.valueOf(k), pos >= 0 ? Long.valueOf(value.get(pos)) : null);
+        remappingFunction.apply(k, pos >= 0 ? value.get(pos) : null);
     if (newValue == null) {
       if (pos >= 0) {
-        if (((k) == (0)))
+        if (((k) == 0)) {
           removeNullEntry();
-        else
+        } else {
           removeEntry(pos);
+        }
       }
       return defRetValue;
     }
-    long newVal = (newValue).longValue();
+    long newVal = newValue;
     if (pos < 0) {
       insert(-pos - 1, k, newVal);
       return newVal;
@@ -544,24 +597,21 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   public long merge(final long k, final long v,
       final java.util.function.BiFunction<? super Long, ? super Long, ? extends Long> remappingFunction) {
     java.util.Objects.requireNonNull(remappingFunction);
-
     final long pos = find(k);
     if (pos < 0) {
-      if (pos < 0)
-        insert(-pos - 1, k, v);
-      else
-        value.set(pos, v);
+      insert(-pos - 1, k, v);
       return v;
     }
-    final Long newValue = remappingFunction.apply(Long.valueOf(value.get(pos)), Long.valueOf(v));
+    final Long newValue = remappingFunction.apply(value.get(pos), v);
     if (newValue == null) {
-      if (((k) == (0)))
+      if (((k) == 0)) {
         removeNullEntry();
-      else
+      } else {
         removeEntry(pos);
+      }
       return defRetValue;
     }
-    long newVal = (newValue).longValue();
+    long newVal = newValue;
     value.set(pos, newVal);
     return newVal;
   }
@@ -575,11 +625,11 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    */
   @Override
   public void clear() {
-    if (size.get() == 0)
+    if (size.get() == 0) {
       return;
+    }
     size.set(0);
     containsNullKey = false;
-    // TODO: Arrays.fill(key, (0));
   }
 
   @Override
@@ -653,7 +703,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     @Deprecated
     @Override
     public Long getKey() {
-      return Long.valueOf(key.get(index));
+      return key.get(index);
     }
 
     /**
@@ -664,7 +714,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     @Deprecated
     @Override
     public Long getValue() {
-      return Long.valueOf(value.get(index));
+      return value.get(index);
     }
 
     /**
@@ -675,14 +725,15 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     @Deprecated
     @Override
     public Long setValue(final Long v) {
-      return Long.valueOf(setValue((v).longValue()));
+      return setValue((v).longValue());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object o) {
-      if (!(o instanceof Map.Entry))
+      if (!(o instanceof Map.Entry)) {
         return false;
+      }
       Map.Entry<Long, Long> e = (Map.Entry<Long, Long>) o;
       return ((key.get(index)) == ((e.getKey()).longValue()))
           && ((value.get(index)) == ((e.getValue()).longValue()));
@@ -737,8 +788,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
 
     public long nextEntry() {
-      if (!hasNext())
+      if (!hasNext()) {
         throw new NoSuchElementException();
+      }
       c--;
       if (mustReturnNullKey) {
         mustReturnNullKey = false;
@@ -748,14 +800,16 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
         if (--pos < 0) {
           // We are just enumerating elements from the wrapped list.
           last = Integer.MIN_VALUE;
-          final long k = wrapped.getLong((int) -pos - 1); // TODO: check if -pos - 1 is correct
+          final long k = wrapped.getLong((int) -pos - 1);
           long p = (int) HashCommon.mix((k)) & mask;
-          while (!((k) == (key.get(p))))
+          while (!(k == (key.get(p)))) {
             p = (p + 1) & mask;
+          }
           return p;
         }
-        if (!((key.get(pos)) == (0)))
+        if (!(key.get(pos) == 0)) {
           return last = pos;
+        }
       }
     }
 
@@ -771,11 +825,12 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
           last = Integer.MIN_VALUE;
           final long k = wrapped.getLong((int) -pos - 1); // TODO: check if -pos - 1 is correct
           long p = (int) HashCommon.mix((k)) & mask;
-          while (!((k) == (key.get(p))))
+          while (!(k == (key.get(p)))) {
             p = (p + 1) & mask;
+          }
           acceptOnIndex(action, p);
           c--;
-        } else if (!((key.get(pos)) == (0))) {
+        } else if (!(key.get(pos) == 0)) {
           acceptOnIndex(action, last = pos);
           c--;
         }
@@ -795,18 +850,20 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       for (;;) {
         pos = ((last = pos) + 1) & mask;
         for (;;) {
-          if (((curr = key.get(pos)) == (0))) {
+          if (((curr = key.get(pos)) == 0)) {
             key.set(last, 0L);
             return;
           }
           slot = (int) HashCommon.mix((curr)) & mask;
-          if (last <= pos ? last >= slot || slot > pos : last >= slot && slot > pos)
+          if (last <= pos ? last >= slot || slot > pos : last >= slot && slot > pos) {
             break;
+          }
           pos = (pos + 1) & mask;
         }
         if (pos < last) { // Wrapped entry.
-          if (wrapped == null)
+          if (wrapped == null) {
             wrapped = new LongArrayList(2);
+          }
           wrapped.add(key.get(pos));
         }
         key.set(last, curr);
@@ -815,17 +872,16 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
 
     public void remove() {
-      if (last == -1)
+      if (last == -1) {
         throw new IllegalStateException();
+      }
       if (last == n) {
         containsNullKey = false;
-      } else if (pos >= 0)
+      } else if (pos >= 0) {
         shiftKeys(last);
-      else {
+      } else {
         // We're removing wrapped entries.
-        Long2LongOpenHashDataMap.this.remove(wrapped.getLong((int) -pos - 1)); // TODO: check if
-                                                                               // -pos - 1
-        // is correct
+        Long2LongOpenHashDataMap.this.remove(wrapped.getLong((int) -pos - 1));
         last = -1; // Note that we must not decrement size
         return;
       }
@@ -835,8 +891,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
     public int skip(final int n) {
       int i = n;
-      while (i-- != 0 && hasNext())
+      while (i-- != 0 && hasNext()) {
         nextEntry();
+      }
       return n - i - 1;
     }
   }
@@ -853,7 +910,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
     // forEachRemaining inherited from MapIterator superclass.
     @Override
-    final void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
+    void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
       action.accept(entry = new Long2LongOpenHashDataMap.MapEntry(index));
     }
 
@@ -877,7 +934,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
     // forEachRemaining inherited from MapIterator superclass.
     @Override
-    final void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
+    void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
       entry.index = index;
       action.accept(entry);
     }
@@ -924,7 +981,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
         return true;
       }
       while (pos < max) {
-        if (!((key.get(pos)) == (0))) {
+        if (!(key.get(pos) == 0)) {
           ++c;
           acceptOnIndex(action, pos++);
           return true;
@@ -941,7 +998,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
         acceptOnIndex(action, n);
       }
       while (pos < max) {
-        if (!((key.get(pos)) == (0))) {
+        if (!(key.get(pos) == 0)) {
           acceptOnIndex(action, pos);
           ++c;
         }
@@ -964,11 +1021,13 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
 
     public SplitType trySplit() {
-      if (pos >= max - 1)
+      if (pos >= max - 1) {
         return null;
+      }
       long retLen = (max - pos) >> 1;
-      if (retLen <= 1)
+      if (retLen <= 1) {
         return null;
+      }
       long myNewPos = pos + retLen;
       long retPos = pos;
       long retMax = myNewPos;
@@ -984,10 +1043,12 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
 
     public long skip(long n) {
-      if (n < 0)
+      if (n < 0) {
         throw new IllegalArgumentException("Argument must be nonnegative: " + n);
-      if (n == 0)
+      }
+      if (n == 0) {
         return 0;
+      }
       long skipped = 0;
       if (mustReturnNull) {
         mustReturnNull = false;
@@ -995,7 +1056,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
         --n;
       }
       while (pos < max && n > 0) {
-        if (!((key.get(pos++)) == (0))) {
+        if (!(key.get(pos++) == 0)) {
           ++skipped;
           --n;
         }
@@ -1023,12 +1084,12 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
 
     @Override
-    final void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
+    void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
       action.accept(new Long2LongOpenHashDataMap.MapEntry(index));
     }
 
     @Override
-    final Long2LongOpenHashDataMap.EntrySpliterator makeForSplit(long pos, long max,
+    Long2LongOpenHashDataMap.EntrySpliterator makeForSplit(long pos, long max,
         boolean mustReturnNull) {
       return new Long2LongOpenHashDataMap.EntrySpliterator(pos, max, mustReturnNull, true);
     }
@@ -1060,46 +1121,56 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     @Override
 
     public boolean contains(final Object o) {
-      if (!(o instanceof Map.Entry))
+      if (!(o instanceof Map.Entry)) {
         return false;
+      }
       final Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-      if (e.getKey() == null || !(e.getKey() instanceof Long))
+      if (e.getKey() == null || !(e.getKey() instanceof Long)) {
         return false;
-      if (e.getValue() == null || !(e.getValue() instanceof Long))
+      }
+      if (e.getValue() == null || !(e.getValue() instanceof Long)) {
         return false;
-      final long k = ((Long) (e.getKey())).longValue();
-      final long v = ((Long) (e.getValue())).longValue();
-      if (((k) == (0)))
+      }
+      final long k = (Long) (e.getKey());
+      final long v = (Long) (e.getValue());
+      if (((k) == 0)) {
         return Long2LongOpenHashDataMap.this.containsNullKey && ((value.get(n)) == (v));
+      }
       long curr;
       long pos;
       // The starting point.
-      if (((curr = key.get(pos = (int) HashCommon.mix((k)) & mask)) == (0)))
+      if (((curr = key.get(pos = (int) HashCommon.mix((k)) & mask)) == 0)) {
         return false;
-      if (((k) == (curr)))
+      }
+      if (((k) == (curr))) {
         return ((value.get(pos)) == (v));
+      }
       // There's always an unused entry.
       while (true) {
-        if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+        if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
           return false;
-        if (((k) == (curr)))
+        }
+        if (((k) == (curr))) {
           return ((value.get(pos)) == (v));
+        }
       }
     }
 
     @Override
-
     public boolean remove(final Object o) {
-      if (!(o instanceof Map.Entry))
+      if (!(o instanceof Map.Entry)) {
         return false;
+      }
       final Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-      if (e.getKey() == null || !(e.getKey() instanceof Long))
+      if (e.getKey() == null || !(e.getKey() instanceof Long)) {
         return false;
-      if (e.getValue() == null || !(e.getValue() instanceof Long))
+      }
+      if (e.getValue() == null || !(e.getValue() instanceof Long)) {
         return false;
-      final long k = ((Long) (e.getKey())).longValue();
-      final long v = ((Long) (e.getValue())).longValue();
-      if (((k) == (0))) {
+      }
+      final long k = (Long) e.getKey();
+      final long v = (Long) e.getValue();
+      if (((k) == 0)) {
         if (containsNullKey && ((value.get(n)) == (v))) {
           removeNullEntry();
           return true;
@@ -1109,8 +1180,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       long curr;
       long pos;
       // The starting point.
-      if (((curr = key.get(pos = (int) HashCommon.mix((k)) & mask)) == (0)))
+      if (((curr = key.get(pos = (int) HashCommon.mix((k)) & mask)) == 0)) {
         return false;
+      }
       if (((curr) == (k))) {
         if (((value.get(pos)) == (v))) {
           removeEntry(pos);
@@ -1119,8 +1191,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
         return false;
       }
       while (true) {
-        if (((curr = key.get(pos = (pos + 1) & mask)) == (0)))
+        if (((curr = key.get(pos = (pos + 1) & mask)) == 0)) {
           return false;
+        }
         if (((curr) == (k))) {
           if (((value.get(pos)) == (v))) {
             removeEntry(pos);
@@ -1140,11 +1213,14 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
      */
     @Override
     public void forEach(final Consumer<? super Long2LongMap.Entry> consumer) {
-      if (containsNullKey)
+      if (containsNullKey) {
         consumer.accept(new AbstractLong2LongMap.BasicEntry(key.get(n), value.get(n)));
-      for (long pos = n; pos-- != 0;)
-        if (!((key.get(pos)) == (0)))
+      }
+      for (long pos = n; pos-- != 0;) {
+        if (!(key.get(pos) == 0)) {
           consumer.accept(new AbstractLong2LongMap.BasicEntry(key.get(pos), value.get(pos)));
+        }
+      }
     }
 
     /**
@@ -1155,17 +1231,19 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       if (containsNullKey) {
         consumer.accept(new AbstractLong2LongMap.BasicEntry(key.get(n), value.get(n)));
       }
-      for (long pos = n; pos-- != 0;)
-        if (!((key.get(pos)) == (0))) {
+      for (long pos = n; pos-- != 0;) {
+        if (!(key.get(pos) == 0)) {
           consumer.accept(new AbstractLong2LongMap.BasicEntry(key.get(pos), value.get(pos)));
         }
+      }
     }
   }
 
   @Override
   public FastEntrySet long2LongEntrySet() {
-    if (entries == null)
+    if (entries == null) {
       entries = new Long2LongOpenHashDataMap.MapEntrySet();
+    }
     return entries;
   }
 
@@ -1188,7 +1266,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     // methods
     // avoids the boxing/unboxing
     @Override
-    final void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
+    void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
       action.accept(key.get(index));
     }
 
@@ -1218,12 +1296,13 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
 
     @Override
-    final void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
+    void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
       action.accept(key.get(index));
     }
 
     @Override
-    final Long2LongOpenHashDataMap.KeySpliterator makeForSplit(long pos, long max,
+    Long2LongOpenHashDataMap.KeySpliterator makeForSplit(
+        long pos, long max,
         boolean mustReturnNull) {
       return new Long2LongOpenHashDataMap.KeySpliterator(pos, max, mustReturnNull, true);
     }
@@ -1245,12 +1324,14 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
      */
     @Override
     public void forEach(final java.util.function.LongConsumer consumer) {
-      if (containsNullKey)
+      if (containsNullKey) {
         consumer.accept(key.get(n));
+      }
       for (long pos = n; pos-- != 0;) {
         final long k = key.get(pos);
-        if (!((k) == (0)))
+        if (!(k == 0)) {
           consumer.accept(k);
+        }
       }
     }
 
@@ -1279,8 +1360,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
   @Override
   public LongSet keySet() {
-    if (keys == null)
+    if (keys == null) {
       keys = new Long2LongOpenHashDataMap.KeySet();
+    }
     return keys;
   }
 
@@ -1303,7 +1385,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     // methods
     // avoids the boxing/unboxing
     @Override
-    final void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
+    void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
       action.accept(value.get(index));
     }
 
@@ -1333,12 +1415,12 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
 
     @Override
-    final void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
+    void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
       action.accept(value.get(index));
     }
 
     @Override
-    final Long2LongOpenHashDataMap.ValueSpliterator makeForSplit(long pos, long max,
+    Long2LongOpenHashDataMap.ValueSpliterator makeForSplit(long pos, long max,
         boolean mustReturnNull) {
       return new Long2LongOpenHashDataMap.ValueSpliterator(pos, max, mustReturnNull, true);
     }
@@ -1361,11 +1443,14 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
         /** {@inheritDoc} */
         @Override
         public void forEach(final java.util.function.LongConsumer consumer) {
-          if (containsNullKey)
+          if (containsNullKey) {
             consumer.accept(value.get(n));
-          for (long pos = n; pos-- != 0;)
-            if (!((key.get(pos)) == (0)))
+          }
+          for (long pos = n; pos-- != 0;) {
+            if (!(key.get(pos) == 0)) {
               consumer.accept(value.get(pos));
+            }
+          }
         }
 
         @Override
@@ -1414,7 +1499,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    * <p>
    * This method is useful when reusing maps. {@linkplain #clear() Clearing a map} leaves the table
    * size untouched. If you are reusing a map many times, you can call this method with a typical
-   * size to avoid keeping around a very large table just because of a few large transient maps.
+   * size to avoid keeping around a very large table just because of a few large maps.
    *
    * @param n the threshold for the trimming.
    * @return true if there was enough memory to trim the map.
@@ -1448,10 +1533,10 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     final AbstractDataList<Long> newValue = valueSupplier.get();
     long i = n, pos;
     for (long j = realSize(); j-- != 0;) {
-      while (((key.get(--i)) == (0)));
-      if (!((newKey
-          .get(pos = (int) mix((key.get(i))) & mask)) == (0)))
-        while (!((newKey.get(pos = (pos + 1) & mask)) == (0)));
+      while ((key.get(--i) == 0));
+      if (!(newKey.get(pos = (int) mix(key.get(i)) & mask) == 0)) {
+        while (!(newKey.get(pos = (pos + 1) & mask) == 0));
+      }
       newKey.set(pos, key.get(i));
       newValue.set(pos, value.get(i));
     }
@@ -1476,16 +1561,18 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   public int hashCode() {
     int h = 0;
     for (long j = realSize(), i = 0, t = 0; j-- != 0;) {
-      while (((key.get(i)) == (0)))
+      while (((key.get(i)) == 0)) {
         i++;
+      }
       t = HashCommon.long2int(key.get(i));
       t ^= HashCommon.long2int(value.get(i));
       h += t;
       i++;
     }
     // Zero / null keys have hash zero.
-    if (containsNullKey)
+    if (containsNullKey) {
       h += HashCommon.long2int(value.get(n));
+    }
     return h;
   }
 }
