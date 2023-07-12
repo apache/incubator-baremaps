@@ -161,7 +161,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     if (f <= .5) {
       ensureCapacity(m.size());
     } else {
-      tryCapacity(sizeAsLong() + m.size());
+      tryCapacity(size64() + m.size());
     }
     super.putAll(m);
   }
@@ -643,13 +643,13 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   }
 
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return size.get();
   }
 
   @Override
   public int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+    return (int) Math.min(size64(), Integer.MAX_VALUE);
   }
 
   /**
@@ -1107,7 +1107,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
     @Override
     public int size() {
-      return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+      return (int) Math.min(size64(), Integer.MAX_VALUE);
     }
 
     @Override
@@ -1340,7 +1340,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
     @Override
     public int size() {
-      return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+      return (int) Math.min(size64(), Integer.MAX_VALUE);
     }
 
     @Override
@@ -1458,7 +1458,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
 
         @Override
         public int size() {
-          return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+          return (int) Math.min(size64(), Integer.MAX_VALUE);
         }
 
         @Override

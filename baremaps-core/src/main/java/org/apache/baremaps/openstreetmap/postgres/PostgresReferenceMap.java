@@ -80,7 +80,7 @@ public class PostgresReferenceMap extends AbstractDataMap<List<Long>> {
   }
 
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_SIZE)) {
       try (ResultSet result = statement.executeQuery()) {

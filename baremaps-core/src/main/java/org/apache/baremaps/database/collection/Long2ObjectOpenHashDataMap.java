@@ -166,7 +166,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     if (f <= .5) {
       ensureCapacity(m.size()); // The resulting map will be sized for m.size() elements
     } else {
-      tryCapacity(size() + m.size()); // The resulting map will be tentatively sized for size() +
+      tryCapacity(size64() + m.size()); // The resulting map will be tentatively sized for size() +
     }
     // m.size()
     // elements
@@ -582,18 +582,18 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
   }
 
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return size.get();
   }
 
   @Override
   public int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+    return (int) Math.min(size64(), Integer.MAX_VALUE);
   }
 
   @Override
   public boolean isEmpty() {
-    return sizeAsLong() == 0;
+    return size64() == 0;
   }
 
   /**
@@ -652,7 +652,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     @Deprecated
     @Override
     public Long getKey() {
-      return Long.valueOf(key.get(index));
+      return key.get(index);
     }
 
     @Override

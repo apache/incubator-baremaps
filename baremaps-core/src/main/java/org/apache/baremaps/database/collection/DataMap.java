@@ -29,12 +29,12 @@ public interface DataMap<E> extends Map<Long, E> {
    *
    * @return the size of the map
    */
-  long sizeAsLong();
+  long size64();
 
   /** {@inheritDoc} */
   @Override
   default int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+    return (int) Math.min(size64(), Integer.MAX_VALUE);
   }
 
   /**

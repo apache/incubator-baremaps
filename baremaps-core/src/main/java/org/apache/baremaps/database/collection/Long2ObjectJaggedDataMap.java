@@ -174,7 +174,7 @@ public class Long2ObjectJaggedDataMap<E> extends AbstractDataMap<E> {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return size.get();
   }
 

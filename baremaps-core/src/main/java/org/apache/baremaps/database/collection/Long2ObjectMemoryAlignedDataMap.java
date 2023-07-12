@@ -108,7 +108,7 @@ public class Long2ObjectMemoryAlignedDataMap<E> extends AbstractDataMap<E> {
 
   /** {@inheritDoc} */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return memory.size() / dataType.size();
   }
 
@@ -125,7 +125,7 @@ public class Long2ObjectMemoryAlignedDataMap<E> extends AbstractDataMap<E> {
 
       private long index = 0;
 
-      private long size = sizeAsLong();
+      private long size = size64();
 
       @Override
       public boolean hasNext() {
@@ -149,7 +149,7 @@ public class Long2ObjectMemoryAlignedDataMap<E> extends AbstractDataMap<E> {
 
       private long index = 0;
 
-      private long size = sizeAsLong();
+      private long size = size64();
 
       @Override
       public boolean hasNext() {
@@ -173,7 +173,7 @@ public class Long2ObjectMemoryAlignedDataMap<E> extends AbstractDataMap<E> {
 
       private long index = 0;
 
-      private long size = sizeAsLong();
+      private long size = size64();
 
       @Override
       public boolean hasNext() {

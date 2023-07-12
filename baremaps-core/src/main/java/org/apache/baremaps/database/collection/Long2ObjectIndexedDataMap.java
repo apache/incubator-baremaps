@@ -108,9 +108,9 @@ public class Long2ObjectIndexedDataMap<E> extends AbstractDataMap<E> {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     if (index instanceof DataMap<Long>dataMap) {
-      return dataMap.sizeAsLong();
+      return dataMap.size64();
     } else {
       return index.size();
     }

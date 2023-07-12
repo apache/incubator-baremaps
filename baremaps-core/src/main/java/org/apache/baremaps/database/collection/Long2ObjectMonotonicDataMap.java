@@ -149,7 +149,7 @@ public class Long2ObjectMonotonicDataMap<E> extends AbstractDataMap<E> {
 
   /** {@inheritDoc} */
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return keys.size64();
   }
 

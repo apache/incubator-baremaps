@@ -43,7 +43,7 @@ public class MockDataMap<T> extends AbstractDataMap<T> {
   }
 
   @Override
-  public long sizeAsLong() {
+  public long size64() {
     return values.size();
   }
 
