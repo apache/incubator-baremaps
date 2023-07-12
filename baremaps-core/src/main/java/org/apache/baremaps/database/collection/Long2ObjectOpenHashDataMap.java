@@ -37,58 +37,64 @@ import java.util.function.Supplier;
 public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     implements DataMap<V>, Hash {
 
-  private final Supplier<DataMap<Long>> keySupplier;
+  /**
+   * The array of keys supplier.
+   */
+  private transient final Supplier<DataMap<Long>> keySupplier;
 
-  private final Supplier<DataMap<V>> valueSupplier;
+  /**
+   * The array of values supplier.
+   */
+  private transient final Supplier<DataMap<V>> valueSupplier;
 
   /**
    * The array of keys.
    */
-  protected DataMap<Long> key;
+  private transient DataMap<Long> key;
   /**
    * The array of values.
    */
-  protected DataMap<V> value;
+  private transient DataMap<V> value;
   /**
    * The mask for wrapping a position counter.
    */
-  protected long mask;
+  private transient long mask;
   /**
    * Whether this map contains the key zero.
    */
-  protected boolean containsNullKey;
+  private transient boolean containsNullKey;
   /**
    * The current table size.
    */
-  protected long n;
+  private transient long n;
   /**
    * Threshold after which we rehash. It must be the table size times {@link #f}.
    */
-  protected long maxFill;
+  private transient long maxFill;
   /**
    * We never resize below this threshold, which is the construction-time {#n}.
    */
-  protected final long minN;
+  private transient final long minN;
   /**
    * Number of entries in the set (including the key zero, if present).
    */
-  protected AtomicLong size = new AtomicLong();;
+  private transient AtomicLong size = new AtomicLong();;
   /**
    * The acceptable load factor.
    */
-  protected final float f;
+  private transient final float f;
   /**
    * Cached set of entries.
    */
-  protected FastEntrySet<V> entries;
+  private transient FastEntrySet<V> entries;
   /**
    * Cached set of keys.
    */
-  protected LongSet keys;
+  private transient LongSet keys;
   /**
    * Cached collection of values.
    */
-  protected ObjectCollection<V> values;
+  private transient ObjectCollection<V> values;
 
   /**
    * Creates a new hash map.
@@ -226,7 +232,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
    *
    * @param pos a starting position.
    */
-  protected final void shiftKeys(long pos) {
+  private void shiftKeys(long pos) {
     // Shift entries with the same hash.
     long last, slot;
     long curr;
@@ -1445,7 +1451,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
    *
    * @param newN the new size
    */
-  protected void rehash(final long newN) {
+  private void rehash(final long newN) {
     final long mask = newN - 1; // Note that this is used by the hashing macro
     final DataMap<Long> newKey = keySupplier.get();
     final DataMap<V> newValue = valueSupplier.get();

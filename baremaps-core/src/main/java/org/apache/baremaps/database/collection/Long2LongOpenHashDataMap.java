@@ -33,59 +33,65 @@ import java.util.function.Supplier;
 public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     implements DataMap<Long>, Hash {
 
-  protected Supplier<AbstractDataList<Long>> keySupplier;
+  /**
+   * The array of keys supplier.
+   */
+  private transient final Supplier<AbstractDataList<Long>> keySupplier;
 
-  protected Supplier<AbstractDataList<Long>> valueSupplier;
+  /**
+   * The array of values supplier.
+   */
+  private transient final Supplier<AbstractDataList<Long>> valueSupplier;
 
   /**
    * The array of keys.
    */
-  protected AbstractDataList<Long> key;
+  private transient AbstractDataList<Long> key;
   /**
    * The array of values.
    */
-  protected AbstractDataList<Long> value;
+  private transient AbstractDataList<Long> value;
   /**
    * The mask for wrapping a position counter.
    */
-  protected long mask;
+  private transient long mask;
   /**
    * Whether this map contains the key zero.
    */
-  protected boolean containsNullKey;
+  private transient boolean containsNullKey;
   /**
    * The current table size.
    */
-  protected long n;
+  private transient long n;
   /**
    * Threshold after which we rehash. It must be the table size times {@link #f}.
    */
-  protected long maxFill;
+  private transient long maxFill;
   /**
    * We never resize below this threshold, which is the construction-time {#n}.
    */
-  protected final long minN;
+  private transient final long minN;
   /**
    * Number of entries in the set (including the key zero, if present).
    */
-  protected AtomicLong size = new AtomicLong();
+  private transient AtomicLong size = new AtomicLong();
   /**
    * The acceptable load factor.
    */
-  protected final float f;
+  private transient final float f;
   /**
    * Cached set of entries.
    */
-  protected FastEntrySet entries;
+  private transient FastEntrySet entries;
 
   /**
    * Cached set of keys.
    */
-  protected LongSet keys;
+  private transient LongSet keys;
   /**
    * Cached collection of values.
    */
-  protected LongCollection values;
+  private transient LongCollection values;
 
   /**
    * Creates a new hash map.
@@ -267,7 +273,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    *
    * @param pos a starting position.
    */
-  protected final void shiftKeys(long pos) {
+  private final void shiftKeys(long pos) {
     // Shift entries with the same hash.
     long last, slot;
     long curr;
@@ -1530,7 +1536,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    *
    * @param newN the new size
    */
-  protected void rehash(final long newN) {
+  private void rehash(final long newN) {
     final long mask = newN - 1; // Note that this is used by the hashing macro
     final AbstractDataList<Long> newKey = keySupplier.get();
     final AbstractDataList<Long> newValue = valueSupplier.get();
