@@ -34,6 +34,7 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.repository.*;
 import org.apache.baremaps.openstreetmap.repository.BlockImporter;
 import org.apache.baremaps.stream.StreamUtils;
+import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
@@ -71,7 +72,9 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
     var coordinatesKeysFile = Files.createDirectory(cacheDir.resolve("coordinates_keys"));
     var coordinatesValsFile = Files.createDirectory(cacheDir.resolve("coordinates_vals"));
     var coordinateMap =
-        new Long2ObjectOpenHashDataMap<>(100_000_000L, 0.9f,
+        new Long2ObjectOpenHashDataMap<>(
+            estimateNumberOfNodes(path),
+            0.99f,
             () -> new Long2ObjectMemoryAlignedDataMap<>(
                 new LongDataType(),
                 new MemoryMappedDirectory(coordinatesKeysFile)),
@@ -85,23 +88,14 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
     var referenceMap =
         new Long2ObjectIndexedDataMap<>(
             new Long2LongPackedOpenHashDataMap(
-                10_000_000L,
-                0.9f,
+                estimateNumberOfWays(path),
+                0.99f,
                 () -> new Long2ObjectMemoryAlignedDataMap<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
                     new MemoryMappedDirectory(referencesKeysDir))),
             new AppendOnlyBuffer<>(
                 new LongListDataType(),
                 new MemoryMappedDirectory(referencesValuesDir)));
-
-    // var referenceMap =
-    // new MonotonicDataMap<>(
-    // new MemoryAlignedDataList<>(
-    // new PairDataType<>(new LongDataType(), new LongDataType()),
-    // new MemoryMappedDirectory(referencesKeysDir)),
-    // new AppendOnlyBuffer<>(
-    // new LongListDataType(),
-    // new MemoryMappedDirectory(referencesValuesDir)));
 
     execute(
         path,
@@ -113,7 +107,17 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
         relationRepository,
         databaseSrid);
 
-    // FileUtils.deleteRecursively(cacheDir);
+    FileUtils.deleteRecursively(cacheDir);
+  }
+
+  private long estimateNumberOfNodes(Path path) throws IOException {
+    var size = Files.size(path);
+    return (long) (size * 0.2);
+  }
+
+  private long estimateNumberOfWays(Path path) throws IOException {
+    var size = Files.size(path);
+    return (long) (size * 0.02);
   }
 
   public static void execute(

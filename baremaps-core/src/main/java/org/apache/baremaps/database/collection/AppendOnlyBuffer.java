@@ -120,6 +120,7 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
   }
 
   /** {@inheritDoc} */
+  @Override
   public long size64() {
     return size;
   }
