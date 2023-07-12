@@ -76,7 +76,7 @@ public class ExternalMergeSort {
       if (input.size64() == 0) {
         continue;
       }
-      DataStack stack = new DataStack(input);
+      DataStack<T> stack = new DataStack<>(input);
       if (!stack.empty()) {
         queue.add(stack);
       }
