@@ -109,7 +109,7 @@ public class IpLocResource {
       String country) {
 
     public InetnumLocationDto(IpLocObject ipLocObject) {
-      this(ipLocObject.address(),
+      this(ipLocObject.geocoderInput(),
           ipLocObject.inetRange().start().toString().substring(1),
           ipLocObject.inetRange().end().toString().substring(1),
           ipLocObject.coordinate().getX(),

@@ -7,19 +7,24 @@ country: CH
 note: The most simple entry
 
 inetnum: 0.0.0.0 - 0.0.0.255
-netname: Route de Cheseaux 1
-descr: Route de Cheseaux 1
-descr: Vaud
-descr: Suisse
-country: LI
-note: Test with wrong country code should not be indexed
+netname: anetwork in Yverdon
+country: CH
+note: Object with country and netname should be searched by fields
 
 inetnum: 0.0.0.0 - 0.0.0.255
 netname: Route de Cheseaux 1
 descr: Route de Cheseaux 1
 descr: Vaud
 descr: Suisse
-note: Entry without the country code should not filter on country
+country: LI
+note: Test with wrong country code should not be indexed, test data geocoder do no contain LI entries
+
+inetnum: 0.0.0.0 - 0.0.0.255
+netname: Route de Cheseaux 1
+descr: Route de Cheseaux 1
+descr: Vaud
+descr: Suisse
+note: Entry without the country code are indexed with WORLD precision
 
 inetnum: 0.0.0.0/24
 netname: Route de Cheseaux 1
@@ -36,12 +41,6 @@ descr: Vaud
 descr: Suisse
 country: CH
 note: Test with values that have the maximum byte value
-
-inetnum: 0.0.0.1 - 0.0.0.2
-netname: Yverdon-les-bains
-address: Yverdon-les-bains, Vaud
-country: CH
-note: Test with an address instead of descr
 
 inetnum: 0.0.0.3 - 0.0.0.10
 netname: Geoloc

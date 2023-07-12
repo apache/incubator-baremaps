@@ -30,7 +30,7 @@ class GeonamesReaderTest {
       var stream = reader.stream(inputStream);
 
       var list = stream.collect(Collectors.toList());
-      assertEquals(4, list.size());
+      assertEquals(5, list.size());
 
       var record = list.get(0);
       assertEquals(1, record.getGeonameid());

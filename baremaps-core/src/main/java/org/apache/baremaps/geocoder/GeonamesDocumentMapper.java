@@ -37,7 +37,7 @@ public class GeonamesDocumentMapper implements Function<GeonamesRecord, Document
     document.add(new TextField("asciiname", record.getAsciiname(), Field.Store.YES));
     document.add(new StoredField("alternatenames", record.getAlternatenames()));
     document.add(new StringField("featureClass", record.getFeatureClass(), Field.Store.YES));
-    document.add(new StoredField("featureCode", record.getFeatureCode()));
+    document.add(new StringField("featureCode", record.getFeatureCode(), Field.Store.YES));
     document.add(new StoredField("cc2", record.getCc2()));
     document.add(new StoredField("admin1Code", record.getAdmin1Code()));
     document.add(new StoredField("admin2Code", record.getAdmin2Code()));

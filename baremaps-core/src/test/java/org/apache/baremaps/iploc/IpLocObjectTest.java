@@ -98,7 +98,7 @@ class IpLocObjectTest {
   void findAll() {
     iplocRepository.save(ipLocObjects);
     List<IpLocObject> inetnumLocations = iplocRepository.findAll();
-    assertEquals(7, inetnumLocations.size());
+    assertEquals(9, inetnumLocations.size());
   }
 
   @Test
@@ -106,7 +106,7 @@ class IpLocObjectTest {
     iplocRepository.save(ipLocObjects);
     List<IpLocObject> inetnumLocations =
         iplocRepository.findByInetAddress(InetAddresses.forString("0.0.0.5"));
-    assertEquals(4, inetnumLocations.size());
+    assertEquals(6, inetnumLocations.size());
   }
 
   @Test
@@ -127,7 +127,7 @@ class IpLocObjectTest {
             InetAddresses.forString(range.getEnd().toString())),
         new Coordinate(1, 1),
         "Test",
-        null, "test", "low")));
+        null, "test", IpLocPrecision.COUNTRY, "test")));
     List<IpLocObject> getAllInetnumLocations = iplocRepository.findAll();
     assertEquals(1, getAllInetnumLocations.size());
   }
@@ -144,7 +144,7 @@ class IpLocObjectTest {
               InetAddresses.forString(range.getEnd().toString())),
           new Coordinate(1, 1),
           "Test",
-          null, "test", "low"));
+          null, "test", IpLocPrecision.COUNTRY, "test"));
     }
     iplocRepository.save(inetnumLocations);
     List<IpLocObject> getAllInetnumLocations = iplocRepository.findAll();
