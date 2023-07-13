@@ -100,13 +100,16 @@ public class IpLocResource {
   }
 
   public record InetnumLocationDto(
-      String address,
+      String geocoderInput,
       String inetStart,
       String inetEnd,
       double longitude,
       double latitude,
       String network,
-      String country) {
+      String country,
+      String source,
+      String precision,
+      String locationSource) {
 
     public InetnumLocationDto(IpLocObject ipLocObject) {
       this(ipLocObject.geocoderInput(),
@@ -115,7 +118,10 @@ public class IpLocResource {
           ipLocObject.coordinate().getX(),
           ipLocObject.coordinate().getY(),
           ipLocObject.network(),
-          ipLocObject.country());
+          ipLocObject.country(),
+          ipLocObject.source(),
+          ipLocObject.precision().toString(),
+          ipLocObject.locationSource());
     }
   }
 }
