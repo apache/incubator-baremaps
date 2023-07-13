@@ -149,8 +149,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
           null,
           attributes.get("source"),
           IpLocPrecision.WORLD,
-          "fallback-world"
-      ));
+          "fallback-world"));
     } catch (Exception e) {
       logger.warn("Error while mapping nic object to ip loc object", e);
       logger.warn("Nic object attributes:");

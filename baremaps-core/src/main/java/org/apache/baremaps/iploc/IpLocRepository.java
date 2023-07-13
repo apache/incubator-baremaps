@@ -59,15 +59,17 @@ public final class IpLocRepository {
           INSERT INTO inetnum_locations(geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source)
           VALUES(?,?,?,?,?,?,?,?,?,?)""";
 
-  private static final String SELECT_ALL_SQL = """
-      SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source
-      FROM inetnum_locations;""";
+  private static final String SELECT_ALL_SQL =
+      """
+          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source
+          FROM inetnum_locations;""";
 
-  private static final String SELECT_ALL_BY_IP_SQL = """
-      SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source
-      FROM inetnum_locations
-      WHERE ip_start <= ? AND ip_end >= ?
-      ORDER BY ip_start DESC, ip_end ASC;""";
+  private static final String SELECT_ALL_BY_IP_SQL =
+      """
+          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source
+          FROM inetnum_locations
+          WHERE ip_start <= ? AND ip_end >= ?
+          ORDER BY ip_start DESC, ip_end ASC;""";
 
   private static final Logger logger = LoggerFactory.getLogger(IpLocRepository.class);
 

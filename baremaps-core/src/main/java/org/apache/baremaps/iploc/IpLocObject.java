@@ -15,14 +15,7 @@ package org.apache.baremaps.iploc;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- *
- * @param address
- * @param inetRange
- * @param coordinate
- * @param network
- * @param country
- * @param source
- * @param precision express the certainty even when <code>Coordinate</code> are present.
+ * A record representing an IP associated with a location.
  */
 public record IpLocObject(
     String geocoderInput,
