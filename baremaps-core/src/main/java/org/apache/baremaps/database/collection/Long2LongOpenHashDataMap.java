@@ -262,8 +262,9 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
     key.set(pos, k);
     value.set(pos, defRetValue + incr);
-    if (size.incrementAndGet() >= maxFill)
+    if (size.incrementAndGet() >= maxFill) {
       rehash(bigArraySize(size.get() + 1, f));
+    }
     return defRetValue;
   }
 
@@ -296,7 +297,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   }
 
   @Override
-
   public long remove(final long k) {
     if (((k) == 0)) {
       if (containsNullKey) {
@@ -324,7 +324,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   }
 
   @Override
-
   public long get(final long k) {
     if (((k) == 0)) {
       return containsNullKey ? value.get(n) : defRetValue;
@@ -350,7 +349,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
   }
 
   @Override
-
   public boolean containsKey(final long k) {
     if (((k) == 0)) {
       return containsNullKey;
@@ -392,7 +390,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    * {@inheritDoc}
    */
   @Override
-
   public long getOrDefault(final long k, final long defaultValue) {
     if (((k) == 0)) {
       return containsNullKey ? value.get(n) : defaultValue;
@@ -434,7 +431,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    * {@inheritDoc}
    */
   @Override
-
   public boolean remove(final long k, final long v) {
     if (((k) == 0)) {
       if (containsNullKey && ((v) == (value.get(n)))) {
@@ -641,6 +637,8 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
     size.set(0);
     containsNullKey = false;
+    key.clear();
+    value.clear();
   }
 
   @Override
@@ -722,7 +720,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
      *
      * @deprecated Please use the corresponding type-specific method instead.
      */
-    @Deprecated
     @Override
     public Long getValue() {
       return value.get(index);
@@ -733,7 +730,6 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
      *
      * @deprecated Please use the corresponding type-specific method instead.
      */
-    @Deprecated
     @Override
     public Long setValue(final Long v) {
       return setValue((v).longValue());
@@ -832,7 +828,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
         if (--pos < 0) {
           // We are just enumerating elements from the wrapped list.
           last = Integer.MIN_VALUE;
-          final long k = wrapped.getLong((int) -pos - 1); // TODO: check if -pos - 1 is correct
+          final long k = wrapped.getLong((int) -pos - 1);
           long p = (int) HashCommon.mix((k)) & mask;
           while (!(k == (key.get(p)))) {
             p = (p + 1) & mask;
@@ -1074,7 +1070,8 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
   }
 
-  private final class EntrySpliterator extends
+  private final class EntrySpliterator
+      extends
       Long2LongOpenHashDataMap.MapSpliterator<Consumer<? super Long2LongMap.Entry>, Long2LongOpenHashDataMap.EntrySpliterator>
       implements ObjectSpliterator<Long2LongMap.Entry> {
     private static final int POST_SPLIT_CHARACTERISTICS =
@@ -1104,7 +1101,8 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
     }
   }
 
-  private final class MapEntrySet extends AbstractObjectSet<Long2LongMap.Entry>
+  private final class MapEntrySet
+      extends AbstractObjectSet<Long2LongMap.Entry>
       implements FastEntrySet {
     @Override
     public ObjectIterator<Long2LongMap.Entry> iterator() {
@@ -1126,9 +1124,7 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
       return new Long2LongOpenHashDataMap.EntrySpliterator();
     }
 
-    //
     @Override
-
     public boolean contains(final Object o) {
       if (!(o instanceof Map.Entry)) {
         return false;
@@ -1383,7 +1379,8 @@ public class Long2LongOpenHashDataMap extends AbstractLong2LongMap
    * {@link java.util.ListIterator#next()}/{@link java.util.ListIterator#previous()} methods (and
    * possibly their type-specific counterparts) so that they return values instead of entries.
    */
-  private final class ValueIterator extends Long2LongOpenHashDataMap.MapIterator<LongConsumer>
+  private final class ValueIterator
+      extends Long2LongOpenHashDataMap.MapIterator<LongConsumer>
       implements LongIterator {
     public ValueIterator() {
       super();

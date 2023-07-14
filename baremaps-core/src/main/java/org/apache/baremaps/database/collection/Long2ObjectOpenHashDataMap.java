@@ -256,7 +256,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
   }
 
   @Override
-
   public V remove(final long k) {
     if (((k) == 0)) {
       if (containsNullKey) {
@@ -284,7 +283,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
   }
 
   @Override
-
   public V get(final long k) {
     if (((k) == 0)) {
       return containsNullKey ? value.get(n) : defRetValue;
@@ -310,7 +308,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
   }
 
   @Override
-
   public boolean containsKey(final long k) {
     if (((k) == 0)) {
       return containsNullKey;
@@ -352,7 +349,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
    * {@inheritDoc}
    */
   @Override
-
   public V getOrDefault(final long k, final V defaultValue) {
     if (((k) == 0)) {
       return containsNullKey ? value.get(n) : defaultValue;
@@ -394,7 +390,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
    * {@inheritDoc}
    */
   @Override
-
   public boolean remove(final long k, final Object v) {
     if (((k) == 0)) {
       if (containsNullKey && java.util.Objects.equals(v, value.get(n))) {
@@ -583,8 +578,8 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     }
     size.set(0);
     containsNullKey = false;
-    // TODO: Arrays.fill(key, 0);
-    // TODO: Arrays.fill(value, null);
+    key.clear();
+    value.clear();
   }
 
   @Override
@@ -732,7 +727,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
         if (--pos < 0) {
           // We are just enumerating elements from the wrapped list.
           last = Integer.MIN_VALUE;
-          final long k = wrapped.getLong((int) -pos - 1); // TODO: check if -pos - 1 is correct
+          final long k = wrapped.getLong((int) -pos - 1);
           long p = HashCommon.mix((k)) & mask;
           while (!((k) == (key.get(p)))) {
             p = (p + 1) & mask;
@@ -755,7 +750,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
         if (--pos < 0) {
           // We are just enumerating elements from the wrapped list.
           last = Integer.MIN_VALUE;
-          final long k = wrapped.getLong((int) -pos - 1); // TODO: check if -pos - 1 is correct
+          final long k = wrapped.getLong((int) -pos - 1);
           long p = HashCommon.mix((k)) & mask;
           while (!((k) == (key.get(p)))) {
             p = (p + 1) & mask;
@@ -1047,7 +1042,6 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
       return new EntrySpliterator();
     }
 
-    //
     @Override
     public boolean contains(final Object o) {
       if (!(o instanceof Map.Entry)) {
@@ -1195,7 +1189,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     // methods
     // avoids the boxing/unboxing
     @Override
-    final void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
+    void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
       action.accept(key.get(index));
     }
 
@@ -1223,12 +1217,12 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     }
 
     @Override
-    final void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
+    void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
       action.accept(key.get(index));
     }
 
     @Override
-    final KeySpliterator makeForSplit(long pos, long max, boolean mustReturnNull) {
+    KeySpliterator makeForSplit(long pos, long max, boolean mustReturnNull) {
       return new KeySpliterator(pos, max, mustReturnNull, true);
     }
   }
@@ -1301,6 +1295,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
    */
   private final class ValueIterator extends MapIterator<Consumer<? super V>>
       implements ObjectIterator<V> {
+
     public ValueIterator() {
       super();
     }
@@ -1310,7 +1305,7 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     // methods
     // avoids the boxing/unboxing
     @Override
-    final void acceptOnIndex(final Consumer<? super V> action, final long index) {
+    void acceptOnIndex(final Consumer<? super V> action, final long index) {
       action.accept(value.get(index));
     }
 
@@ -1338,12 +1333,12 @@ public class Long2ObjectOpenHashDataMap<V> extends AbstractLong2ObjectMap<V>
     }
 
     @Override
-    final void acceptOnIndex(final Consumer<? super V> action, final long index) {
+    void acceptOnIndex(final Consumer<? super V> action, final long index) {
       action.accept(value.get(index));
     }
 
     @Override
-    final ValueSpliterator makeForSplit(long pos, long max, boolean mustReturnNull) {
+    ValueSpliterator makeForSplit(long pos, long max, boolean mustReturnNull) {
       return new ValueSpliterator(pos, max, mustReturnNull, true);
     }
   }

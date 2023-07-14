@@ -149,6 +149,9 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     return oldValue;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void putAll(Map<? extends Long, ? extends Long> m) {
     if (f <= .5) {
@@ -191,6 +194,9 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long put(final long k, final long v) {
     final long pos = find(k);
@@ -278,8 +284,10 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-
   public long remove(final long k) {
     if (((k) == 0)) {
       if (containsNullKey) {
@@ -306,8 +314,10 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-
   public long get(final long k) {
     if (((k) == 0)) {
       return containsNullKey ? index.get(n).right() : defRetValue;
@@ -332,8 +342,10 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-
   public boolean containsKey(final long k) {
     if (((k) == 0)) {
       return containsNullKey;
@@ -358,6 +370,9 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean containsValue(final long v) {
     if (containsNullKey && ((index.get(n).right()) == (v))) {
@@ -375,7 +390,6 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
    * {@inheritDoc}
    */
   @Override
-
   public long getOrDefault(final long k, final long defaultValue) {
     if (((k) == 0)) {
       return containsNullKey ? index.get(n).right() : defaultValue;
@@ -610,12 +624,12 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     return newVal;
   }
 
-  /*
+  /**
    * Removes all elements from this map.
    *
-   * <p>To increase object reuse, this method does not change the table size. If you want to reduce
-   * the table size, you must use {@link #trim()}.
-   *
+   * <p>
+   * To increase object reuse, this method does not change the table size. If you want to reduce the
+   * table size, you must use {@link #trim()}.
    */
   @Override
   public void clear() {
@@ -624,19 +638,28 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
     size.set(0);
     containsNullKey = false;
-    // TODO: Arrays.fill(key, 0);
+    index.clear();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isEmpty() {
     return size.get() == 0;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long size64() {
     return size.get();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int size() {
     return (int) Math.min(size64(), Integer.MAX_VALUE);
@@ -697,7 +720,6 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
      *
      * @deprecated Please use the corresponding type-specific method instead.
      */
-    @Deprecated
     @Override
     public Long getKey() {
       return Long2LongPackedOpenHashDataMap.this.index.get(index).left();
@@ -708,7 +730,6 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
      *
      * @deprecated Please use the corresponding type-specific method instead.
      */
-    @Deprecated
     @Override
     public Long getValue() {
       return Long2LongPackedOpenHashDataMap.this.index.get(index).right();
@@ -719,7 +740,6 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
      *
      * @deprecated Please use the corresponding type-specific method instead.
      */
-    @Deprecated
     @Override
     public Long setValue(final Long v) {
       return setValue(v);
@@ -753,26 +773,31 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
    * An iterator over a hash map.
    */
   private abstract class MapIterator<ConsumerType> {
+
     /**
      * The index of the last entry returned, if positive or zero; initially, {@link #n}. If
      * negative, the last entry returned was that of the key of index {@code - pos - 1} from the
      * {@link #wrapped} list.
      */
     long pos = n;
+
     /**
      * The index of the last entry that has been returned (more precisely, the value of {@link #pos}
      * if {@link #pos} is positive, or {@link Integer#MIN_VALUE} if {@link #pos} is negative). It is
      * -1 if either we did not return an entry yet, or the last returned entry has been removed.
      */
     long last = -1;
+
     /**
      * A downward counter measuring how many entries must still be returned.
      */
     long c = size.get();
+
     /**
      * A boolean telling us whether we should return the entry with the null key.
      */
     boolean mustReturnNullKey = Long2LongPackedOpenHashDataMap.this.containsNullKey;
+
     /**
      * A lazily allocated list containing keys of entries that have wrapped around the table because
      * of removals.
@@ -910,7 +935,7 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
 
     // forEachRemaining inherited from MapIterator superclass.
     @Override
-    final void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
+    void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
       action.accept(entry = new Long2LongPackedOpenHashDataMap.MapEntry(index));
     }
 
@@ -935,7 +960,7 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
 
     // forEachRemaining inherited from MapIterator superclass.
     @Override
-    final void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
+    void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
       entry.index = index;
       action.accept(entry);
     }
@@ -1085,12 +1110,12 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
 
     @Override
-    final void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
+    void acceptOnIndex(final Consumer<? super Long2LongMap.Entry> action, final long index) {
       action.accept(new Long2LongPackedOpenHashDataMap.MapEntry(index));
     }
 
     @Override
-    final Long2LongPackedOpenHashDataMap.EntrySpliterator makeForSplit(long pos, long max,
+    Long2LongPackedOpenHashDataMap.EntrySpliterator makeForSplit(long pos, long max,
         boolean mustReturnNull) {
       return new Long2LongPackedOpenHashDataMap.EntrySpliterator(pos, max, mustReturnNull, true);
     }
@@ -1118,9 +1143,7 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
       return new Long2LongPackedOpenHashDataMap.EntrySpliterator();
     }
 
-    //
     @Override
-
     public boolean contains(final Object o) {
       if (!(o instanceof Map.Entry)) {
         return false;
@@ -1159,7 +1182,6 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
 
     @Override
-
     public boolean remove(final Object o) {
       if (!(o instanceof Map.Entry)) {
         return false;
@@ -1273,7 +1295,7 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     // methods
     // avoids the boxing/unboxing
     @Override
-    final void acceptOnIndex(final LongConsumer action, final long index) {
+    void acceptOnIndex(final LongConsumer action, final long index) {
       action.accept(Long2LongPackedOpenHashDataMap.this.index.get(index).left());
     }
 
@@ -1303,12 +1325,12 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
 
     @Override
-    final void acceptOnIndex(final LongConsumer action, final long index) {
+    void acceptOnIndex(final LongConsumer action, final long index) {
       action.accept(Long2LongPackedOpenHashDataMap.this.index.get(index).left());
     }
 
     @Override
-    final Long2LongPackedOpenHashDataMap.KeySpliterator makeForSplit(long pos, long max,
+    Long2LongPackedOpenHashDataMap.KeySpliterator makeForSplit(long pos, long max,
         boolean mustReturnNull) {
       return new Long2LongPackedOpenHashDataMap.KeySpliterator(pos, max, mustReturnNull, true);
     }
@@ -1391,7 +1413,7 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     // methods
     // avoids the boxing/unboxing
     @Override
-    final void acceptOnIndex(final LongConsumer action, final long index) {
+    void acceptOnIndex(final LongConsumer action, final long index) {
       action.accept(Long2LongPackedOpenHashDataMap.this.index.get(index).right());
     }
 
@@ -1421,12 +1443,12 @@ public class Long2LongPackedOpenHashDataMap extends AbstractLong2LongMap
     }
 
     @Override
-    final void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
+    void acceptOnIndex(final java.util.function.LongConsumer action, final long index) {
       action.accept(Long2LongPackedOpenHashDataMap.this.index.get(index).right());
     }
 
     @Override
-    final Long2LongPackedOpenHashDataMap.ValueSpliterator makeForSplit(long pos, long max,
+    Long2LongPackedOpenHashDataMap.ValueSpliterator makeForSplit(long pos, long max,
         boolean mustReturnNull) {
       return new Long2LongPackedOpenHashDataMap.ValueSpliterator(pos, max, mustReturnNull, true);
     }
