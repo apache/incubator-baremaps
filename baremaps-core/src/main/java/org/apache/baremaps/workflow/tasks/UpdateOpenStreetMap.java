@@ -20,7 +20,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.ChangeEntitiesHandler;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;

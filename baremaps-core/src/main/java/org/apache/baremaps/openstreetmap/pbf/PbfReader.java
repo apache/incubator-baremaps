@@ -17,7 +17,7 @@ package org.apache.baremaps.openstreetmap.pbf;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
 import org.locationtech.jts.geom.Coordinate;
 

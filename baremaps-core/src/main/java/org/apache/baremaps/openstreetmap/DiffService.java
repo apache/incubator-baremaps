@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityToGeometryMapper;
 import org.apache.baremaps.openstreetmap.model.*;

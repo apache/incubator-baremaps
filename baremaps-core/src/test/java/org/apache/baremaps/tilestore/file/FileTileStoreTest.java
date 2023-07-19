@@ -18,13 +18,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.apache.baremaps.tilestore.TileDataSchemaTest;
 import org.apache.baremaps.tilestore.TileStore;
-import org.apache.baremaps.tilestore.TileStoreTest;
 import org.apache.baremaps.utils.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-class FileTileStoreTest extends TileStoreTest {
+class FileTileStoreTest extends TileDataSchemaTest {
 
   Path directory;
 

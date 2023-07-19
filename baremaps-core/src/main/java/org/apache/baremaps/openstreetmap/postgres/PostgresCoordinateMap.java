@@ -17,8 +17,8 @@ package org.apache.baremaps.openstreetmap.postgres;
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.DataCollectionException;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataCollectionException;
+import org.apache.baremaps.database.collection.DataMap;
 import org.locationtech.jts.geom.Coordinate;
 
 /**

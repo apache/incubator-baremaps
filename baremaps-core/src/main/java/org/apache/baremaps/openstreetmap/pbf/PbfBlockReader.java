@@ -17,7 +17,7 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.stream.StreamUtils;

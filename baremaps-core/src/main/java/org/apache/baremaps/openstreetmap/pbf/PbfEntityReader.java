@@ -17,7 +17,7 @@ package org.apache.baremaps.openstreetmap.pbf;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
-import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.HeaderBlock;

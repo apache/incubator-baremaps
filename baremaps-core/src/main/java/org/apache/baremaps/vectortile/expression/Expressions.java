@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import org.apache.baremaps.storage.Row;
+import org.apache.baremaps.database.schema.DataRow;
 import org.locationtech.jts.geom.*;
 
 public interface Expressions {
@@ -41,7 +41,7 @@ public interface Expressions {
 
     String name();
 
-    T evaluate(Row feature);
+    T evaluate(DataRow feature);
 
   }
 
@@ -53,7 +53,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return value;
     }
   }
@@ -66,7 +66,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       Object value = expression.evaluate(row);
       if (value instanceof List list && index >= 0 && index < list.size()) {
         return list.get(index);
@@ -83,7 +83,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return row.get(property);
     }
   }
@@ -96,7 +96,7 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
+    public Boolean evaluate(DataRow row) {
       return row.get(property) != null;
     }
   }
@@ -109,7 +109,7 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
+    public Boolean evaluate(DataRow row) {
       var expressionValue = expression.evaluate(row);
       if (expressionValue instanceof List list) {
         return list.contains(value);
@@ -129,7 +129,7 @@ public interface Expressions {
     }
 
     @Override
-    public Integer evaluate(Row row) {
+    public Integer evaluate(DataRow row) {
       var expressionValue = expression.evaluate(row);
       if (expressionValue instanceof List list) {
         return list.indexOf(value);
@@ -149,7 +149,7 @@ public interface Expressions {
     }
 
     @Override
-    public Integer evaluate(Row row) {
+    public Integer evaluate(DataRow row) {
       Object value = expression.evaluate(row);
       if (value instanceof String string) {
         return string.length();
@@ -173,7 +173,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       Object value = expression.evaluate(row);
       var startIndex = (Integer) start.evaluate(row);
       if (value instanceof String string) {
@@ -196,7 +196,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return !(boolean) expression.evaluate(row);
     }
   }
@@ -209,7 +209,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return new Not(new Equal(left, right)).evaluate(row);
     }
   }
@@ -222,7 +222,7 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
+    public Boolean evaluate(DataRow row) {
       return (double) left.evaluate(row) < (double) right.evaluate(row);
     }
   }
@@ -235,7 +235,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return (double) left.evaluate(row) <= (double) right.evaluate(row);
     }
   }
@@ -248,7 +248,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return left.evaluate(row).equals(right.evaluate(row));
     }
   }
@@ -261,7 +261,7 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
+    public Boolean evaluate(DataRow row) {
       return (double) left.evaluate(row) > (double) right.evaluate(row);
     }
   }
@@ -274,7 +274,7 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Row row) {
+    public Boolean evaluate(DataRow row) {
       return (double) left.evaluate(row) >= (double) right.evaluate(row);
     }
   }
@@ -287,7 +287,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return expressions.stream().allMatch(expression -> (boolean) expression.evaluate(row));
     }
   }
@@ -300,7 +300,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       return expressions.stream().anyMatch(expression -> (boolean) expression.evaluate(row));
     }
   }
@@ -313,7 +313,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       if ((boolean) condition.evaluate(row)) {
         return then.evaluate(row);
       } else {
@@ -330,7 +330,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       for (Expression expression : expressions) {
         Object value = expression.evaluate(row);
         if (value != null) {
@@ -350,7 +350,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       if (cases.size() % 2 != 0) {
         throw new IllegalArgumentException(
             "match expression must have an even number of arguments");
@@ -375,7 +375,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Row row) {
+    public Object evaluate(DataRow row) {
       throw new UnsupportedOperationException("within expression is not supported");
     }
   }
@@ -388,7 +388,7 @@ public interface Expressions {
     }
 
     @Override
-    public String evaluate(Row row) {
+    public String evaluate(DataRow row) {
       Object property = row.get("geom");
       if (property instanceof Point) {
         return "Point";
@@ -518,7 +518,7 @@ public interface Expressions {
     return mapper.writeValueAsString(expression);
   }
 
-  static Predicate<Row> asPredicate(Expression expression) {
+  static Predicate<DataRow> asPredicate(Expression expression) {
     return row -> {
       var result = expression.evaluate(row);
       if (result instanceof Boolean booleanResult) {

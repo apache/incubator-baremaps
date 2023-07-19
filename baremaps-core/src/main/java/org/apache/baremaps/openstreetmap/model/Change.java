@@ -21,7 +21,9 @@ import java.util.StringJoiner;
 public final class Change {
 
   public enum ChangeType {
-    DELETE, CREATE, MODIFY
+    DELETE,
+    CREATE,
+    MODIFY
   }
 
   private final ChangeType type;

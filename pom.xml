@@ -80,6 +80,7 @@
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
     <version.lib.awssdk>2.17.284</version.lib.awssdk>
     <version.lib.caffeine>3.1.1</version.lib.caffeine>
+    <version.lib.calcite>1.34.0</version.lib.calcite>
     <version.lib.commons-compress>1.21</version.lib.commons-compress>
     <version.lib.fastutil>8.5.9</version.lib.fastutil>
     <version.lib.flatgeobuf>3.24.0</version.lib.flatgeobuf>
@@ -318,6 +319,11 @@
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-server</artifactId>
         <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.calcite</groupId>
+        <artifactId>calcite-core</artifactId>
+        <version>${version.lib.calcite}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -574,30 +580,6 @@
       <artifactId>flatgeobuf</artifactId>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>geotoolkit.org</id>
-      <name>Geotoolkit.org repository</name>
-      <url>https://maven.geotoolkit.org</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>geomatys</id>
-      <name>Geomatys public repository</name>
-      <url>https://nexus.geomatys.com/repository/maven-public</url>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>

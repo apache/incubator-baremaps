@@ -15,10 +15,10 @@ package org.apache.baremaps.benchmarks;
 
 
 import java.util.concurrent.TimeUnit;
-import org.apache.baremaps.collection.*;
-import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.type.LongDataType;
-import org.apache.baremaps.collection.type.PairDataType;
+import org.apache.baremaps.database.collection.*;
+import org.apache.baremaps.database.memory.OffHeapMemory;
+import org.apache.baremaps.database.type.LongDataType;
+import org.apache.baremaps.database.type.PairDataType;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -31,12 +31,12 @@ public class DataMapBenchmark {
 
   private static final long N = 1 << 25;
 
-  private static void benchmark(DataMap<Long> store, long n) {
+  private static void benchmark(DataMap<Long> map, long n) {
     for (long i = 0; i < n; i++) {
-      store.put(i, i);
+      map.put(i, i);
     }
     for (long i = 0; i < n; i++) {
-      long v = store.get(i);
+      long v = map.get(i);
       if (v != i) {
         throw new RuntimeException("Invalid value");
       }

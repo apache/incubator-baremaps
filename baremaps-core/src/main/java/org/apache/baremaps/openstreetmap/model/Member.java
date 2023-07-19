@@ -21,7 +21,9 @@ import java.util.StringJoiner;
 public final class Member {
 
   public enum MemberType {
-    NODE, WAY, RELATION;
+    NODE,
+    WAY,
+    RELATION;
 
     public static MemberType forNumber(int value) {
       switch (value) {

@@ -13,9 +13,10 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
-import org.apache.baremaps.storage.TableDecorator;
-import org.apache.baremaps.storage.geopackage.GeoPackageStore;
-import org.apache.baremaps.storage.postgres.PostgresStore;
+import org.apache.baremaps.database.schema.DataTableAdapter;
+import org.apache.baremaps.database.schema.DataTableGeometryTransformer;
+import org.apache.baremaps.storage.geopackage.GeoPackageDataSchema;
+import org.apache.baremaps.storage.postgres.PostgresDataSchema;
 import org.apache.baremaps.utils.ProjectionTransformer;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -32,14 +33,17 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
-    try (var geoPackageDatabase = new GeoPackageStore(path)) {
+    try (var geoPackageDataStore = new GeoPackageDataSchema(path)) {
       var dataSource = context.getDataSource(database);
-      var postgresDatabase = new PostgresStore(dataSource);
-      for (var name : geoPackageDatabase.list()) {
-        var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
-        var decoratedTable =
-            new TableDecorator(geoPackageDatabase.get(name), transformer);
-        postgresDatabase.add(decoratedTable);
+      var postgresDataStore = new PostgresDataSchema(dataSource);
+      for (var name : geoPackageDataStore.list()) {
+        var geoPackageTable = geoPackageDataStore.get(name);
+        var projectionTransformer = new ProjectionTransformer(sourceSRID, targetSRID);
+        var rowTransformer =
+            new DataTableGeometryTransformer(geoPackageTable, projectionTransformer);
+        var transformedDataTable =
+            new DataTableAdapter(geoPackageDataStore.get(name), rowTransformer);
+        postgresDataStore.add(transformedDataTable);
       }
     } catch (Exception e) {
       throw new WorkflowException(e);
