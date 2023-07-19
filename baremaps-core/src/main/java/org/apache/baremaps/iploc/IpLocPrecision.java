@@ -13,5 +13,8 @@
 package org.apache.baremaps.iploc;
 
 public enum IpLocPrecision {
-  GEOLOC, GEOCODER, COUNTRY, WORLD
+  GEOLOC,
+  GEOCODER,
+  COUNTRY,
+  WORLD
 }
