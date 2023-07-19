@@ -26,8 +26,6 @@ public record IpLocObject(
 
     String source,
 
-    IpLocPrecision precision,
-
-    String locationSource) {
+    IpLocPrecision precision) {
 
 }

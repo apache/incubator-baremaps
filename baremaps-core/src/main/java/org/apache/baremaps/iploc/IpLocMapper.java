@@ -13,6 +13,7 @@
 package org.apache.baremaps.iploc;
 
 
+import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import java.io.IOException;
 import java.text.ParseException;
@@ -23,7 +24,6 @@ import java.util.regex.Pattern;
 import net.ripe.ipresource.IpResourceRange;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.baremaps.utils.IsoCountriesUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;
 import org.locationtech.jts.geom.Coordinate;
@@ -90,8 +90,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               network,
               attributes.get("country"),
               attributes.get("source"),
-              IpLocPrecision.COORDINATE,
-              "geoloc"));
+              IpLocPrecision.GEOLOC));
         }
       }
 
@@ -105,7 +104,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         // build a query text string out of the cherry-picked fields
         var queryTextBuilder = new StringBuilder();
         for (String field : searchedFields) {
-          if (StringUtils.isNotBlank(attributes.get(field))) {
+          if (!Strings.isNullOrEmpty(attributes.get(field))) {
             queryTextBuilder.append(attributes.get(field)).append(" ");
           }
         }
@@ -120,8 +119,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               network,
               attributes.get("country"),
               attributes.get("source"),
-              IpLocPrecision.COORDINATE,
-              "searchedfields"));
+              IpLocPrecision.GEOCODER));
         }
       }
 
@@ -136,8 +134,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               network,
               attributes.get("country"),
               attributes.get("source"),
-              IpLocPrecision.COUNTRY,
-              "country"));
+              IpLocPrecision.COUNTRY));
         }
       }
 
@@ -148,8 +145,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
           network,
           null,
           attributes.get("source"),
-          IpLocPrecision.WORLD,
-          "fallback-world"));
+          IpLocPrecision.WORLD));
     } catch (Exception e) {
       logger.warn("Error while mapping nic object to ip loc object", e);
       logger.warn("Nic object attributes:");
@@ -167,7 +163,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
 
   private Optional<Coordinate> findCountryLocation(String country)
       throws IOException, ParseException {
-    GeonamesQueryBuilder geonamesQuery = new GeonamesQueryBuilder().withFeatureCode("PCLI");
+    GeonamesQueryBuilder geonamesQuery = new GeonamesQueryBuilder().featureCode("PCLI");
     if (IsoCountriesUtils.containsCountry(country.toUpperCase())) {
       geonamesQuery.countryCode(country.toUpperCase());
     } else {

@@ -75,8 +75,8 @@ public class GeocoderResource {
         // population)
         // - "paris brazil", returns paris in brazil and not paris in france.
         var query = new GeonamesQueryBuilder()
-            .queryText(queryText).countryCode(countryCode).withScoringByPopulation()
-            .withAndOperator()
+            .queryText(queryText).countryCode(countryCode).scoringByPopulation()
+            .andOperator()
             .build();
 
         var result = searcher.search(query, limit);

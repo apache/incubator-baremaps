@@ -64,7 +64,7 @@
                     const table = document.getElementById('results');
                     table.innerHTML = '';
                     // Insert header row
-                    table.insertRow().innerHTML = '<th>#</th><th>GeocoderInput</th><th>IP Range</th><th>Longitude</th><th>Latitude</th><th>Network</th><th>Country</th><th>Source</th><th>Precision</th><th>LocationSource</th>';
+                    table.insertRow().innerHTML = '<th>#</th><th>GeocoderInput</th><th>IP Range</th><th>Longitude</th><th>Latitude</th><th>Network</th><th>Country</th><th>Source</th><th>Precision</th>';
                     for (let i = 0; i < geoLocations.length; i++) {
                         const row = table.insertRow(i + 1);
                         let pos = 0;
@@ -86,8 +86,6 @@
                         cell.innerHTML = geoLocations[i].source;
                         cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].precision;
-                        cell = row.insertCell(pos++);
-                        cell.innerHTML = geoLocations[i].locationSource;
                     }
                 } else {
                     // We reached our target server, but it returned an error

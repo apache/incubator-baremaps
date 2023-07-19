@@ -47,8 +47,7 @@ public final class IpLocRepository {
           network text,
           country text,
           source text,
-          precision text,
-          location_source text
+          precision text
       )""";
 
   private static final String CREATE_INDEX = """
@@ -56,17 +55,17 @@ public final class IpLocRepository {
 
   private static final String INSERT_SQL =
       """
-          INSERT INTO inetnum_locations(geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source)
-          VALUES(?,?,?,?,?,?,?,?,?,?)""";
+          INSERT INTO inetnum_locations(geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision)
+          VALUES(?,?,?,?,?,?,?,?,?)""";
 
   private static final String SELECT_ALL_SQL =
       """
-          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source
+          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision
           FROM inetnum_locations;""";
 
   private static final String SELECT_ALL_BY_IP_SQL =
       """
-          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision, location_source
+          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision
           FROM inetnum_locations
           WHERE ip_start <= ? AND ip_end >= ?
           ORDER BY ip_start DESC, ip_end ASC;""";
@@ -152,8 +151,7 @@ public final class IpLocRepository {
         resultSet.getString("network"),
         resultSet.getString("country"),
         resultSet.getString("source"),
-        IpLocPrecision.valueOf(resultSet.getString("precision")),
-        resultSet.getString("location_source"));
+        IpLocPrecision.valueOf(resultSet.getString("precision")));
   }
 
   /**
@@ -198,7 +196,6 @@ public final class IpLocRepository {
         statement.setString(7, ipLocObject.country());
         statement.setString(8, ipLocObject.source());
         statement.setString(9, ipLocObject.precision().toString());
-        statement.setString(10, ipLocObject.locationSource());
         statement.addBatch();
       }
       statement.executeBatch();

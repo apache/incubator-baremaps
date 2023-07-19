@@ -108,8 +108,7 @@ public class IpLocResource {
       String network,
       String country,
       String source,
-      String precision,
-      String locationSource) {
+      String precision) {
 
     public InetnumLocationDto(IpLocObject ipLocObject) {
       this(ipLocObject.geocoderInput(),
@@ -120,8 +119,7 @@ public class IpLocResource {
           ipLocObject.network(),
           ipLocObject.country(),
           ipLocObject.source(),
-          ipLocObject.precision().toString(),
-          ipLocObject.locationSource());
+          ipLocObject.precision().toString());
     }
   }
 }

@@ -14,9 +14,9 @@ package org.apache.baremaps.geocoder;
 
 
 
+import com.google.common.base.Strings;
 import java.text.ParseException;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.expressions.Expression;
 import org.apache.lucene.expressions.SimpleBindings;
@@ -69,12 +69,12 @@ public class GeonamesQueryBuilder {
   /**
    * The scoring will take into account the population
    */
-  public GeonamesQueryBuilder withScoringByPopulation() {
+  public GeonamesQueryBuilder scoringByPopulation() {
     this.scoringByPopulation = true;
     return this;
   }
 
-  public GeonamesQueryBuilder withFeatureCode(String featureCode) {
+  public GeonamesQueryBuilder featureCode(String featureCode) {
     this.featureCode = featureCode;
     return this;
   }
@@ -82,7 +82,7 @@ public class GeonamesQueryBuilder {
   /**
    * The queryText will be parsed with AND operator between terms instead of OR.
    */
-  public GeonamesQueryBuilder withAndOperator() {
+  public GeonamesQueryBuilder andOperator() {
     this.andOperator = true;
     return this;
   }
@@ -114,7 +114,8 @@ public class GeonamesQueryBuilder {
       }
     }
 
-    if (!StringUtils.isBlank(featureCode)) {
+
+    if (!Strings.isNullOrEmpty(featureCode)) {
       var featureCodeQuery = new TermQuery(new Term("featureCode", featureCode));
       builder.add(featureCodeQuery, BooleanClause.Occur.MUST);
     }
