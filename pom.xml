@@ -670,6 +670,7 @@
             <exclude>LICENSE</exclude>
             <exclude>NOTICE</exclude>
             <exclude>DISCLAIMER-WIP</exclude>
+            <exclude>baremaps-renderer/.prettierignore</exclude>
             <!-- not included in release, tests -->
             <exclude>**/test/**</exclude>
           </excludes>
