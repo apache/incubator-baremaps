@@ -68,6 +68,7 @@
   </distributionManagement>
 
   <properties>
+    <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -134,7 +135,7 @@
     <version.plugin.os-maven-plugin>1.7.0</version.plugin.os-maven-plugin>
     <version.plugin.protobuf-maven-plugin>0.6.1</version.plugin.protobuf-maven-plugin>
     <version.plugin.spotless-maven-plugin>2.33.0</version.plugin.spotless-maven-plugin>
-    <apache-rat-plugin.version>0.15</apache-rat-plugin.version> <!-- overrides parent -->
+    <!-- overrides parent -->
   </properties>
 
   <dependencyManagement>
@@ -655,14 +656,6 @@
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>${apache-rat-plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <!-- This allows to manage exclusions in parent module.
                This messes some default exclusions based on basedir for submodules (e.g target folder),
@@ -681,6 +674,14 @@
             <exclude>**/test/**</exclude>
           </excludes>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
