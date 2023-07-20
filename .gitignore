@@ -14,6 +14,9 @@ log/
 target/
 examples/output/
 
+# Node
+**/node_modules/
+
 # Release
 /baremaps/
 
@@ -21,6 +24,21 @@ examples/output/
 /basemap/data/
 /basemap/cache_*/
 /basemap/local.*
+
+# Examples
+examples/ip-to-location/archives/
+examples/ip-to-location/downloads/
+examples/ip-to-location/geocoder-index/
+examples/ip-to-location/iploc.db
+
+examples/geocoding/archives/
+examples/geocoding/downloads/
+examples/geocoding/geocoder-index/
+
+examples/extrusion/*.pbf
+examples/naturalearth/natural_earth_vector/
+examples/openstreetmap/*.pbf
+examples/transformation/*.pbf
 
 # JMH
 jmh-result.json
