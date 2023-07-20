@@ -41,29 +41,18 @@ public record DownloadUrl(String url, Path path, boolean replaceExisting) implem
     var targetUrl = new URL(url);
     var targetPath = path.toAbsolutePath();
 
-    if (isHttp(targetUrl)) {
-      if (Files.exists(targetPath) && !replaceExisting) {
-        var head = (HttpURLConnection) targetUrl.openConnection();
-        head.setInstanceFollowRedirects(true);
-        head.setRequestMethod("HEAD");
-        var contentLength = head.getContentLengthLong();
-        head.disconnect();
-        if (Files.size(targetPath) == contentLength) {
-          logger.info("Skipping download of {} to {}", url, path);
-          return;
-        }
-      }
+    if (Files.exists(targetPath) && !replaceExisting) {
+      logger.info("Skipping download of {} to {}", url, path);
+      return;
+    }
 
+    if (isHttp(targetUrl)) {
       var get = (HttpURLConnection) targetUrl.openConnection();
       get.setInstanceFollowRedirects(true);
       get.setRequestMethod("GET");
       urlDownloadToFile(get, targetPath);
       get.disconnect();
     } else if (isFtp(targetUrl)) {
-      if (Files.exists(targetPath) && !replaceExisting) {
-        logger.info("Skipping download of {} to {}", url, path);
-        return;
-      }
       urlDownloadToFile(targetUrl.openConnection(), targetPath);
     } else {
       throw new IllegalArgumentException("Unsupported URL protocol (supported: http(s)/ftp)");
