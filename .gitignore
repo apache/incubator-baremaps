@@ -11,7 +11,7 @@
  
 # Maven
 log/
-target/
+**/target/
 examples/output/
 
 # Node
