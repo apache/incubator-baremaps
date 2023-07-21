@@ -44,7 +44,7 @@ public class ConfigReader {
       var script = String.format("""
           import config from '%s';
           export default JSON.stringify(config);
-          """, path.toAbsolutePath());
+          """, path.toUri());
       var source = Source.newBuilder("js", new StringReader(script), "script.js")
           .mimeType("application/javascript+module").build();
       var value = context.eval(source);
