@@ -28,7 +28,7 @@ public class IsoCountriesUtils {
   static {
     for (String iso : Locale.getISOCountries()) {
       Locale l = new Locale("", iso);
-      ISO_COUNTRIES.put(iso, l.getDisplayCountry());
+      ISO_COUNTRIES.put(iso, l.getDisplayCountry(Locale.ENGLISH));
     }
   }
 
