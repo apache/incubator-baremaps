@@ -98,7 +98,7 @@
     <version.lib.jts>1.19.0</version.lib.jts>
     <version.lib.junit>5.7.1</version.lib.junit>
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
-    <version.lib.log4j>2.19.0</version.lib.log4j>
+    <version.lib.log4j>2.20.0</version.lib.log4j>
     <version.lib.pgbulkinsert>8.1.0</version.lib.pgbulkinsert>
     <version.lib.picocli>4.6.3</version.lib.picocli>
     <version.lib.postgresql>42.5.0</version.lib.postgresql>
@@ -107,7 +107,7 @@
     <version.lib.roaringbitmap>0.9.38</version.lib.roaringbitmap>
     <version.lib.servicetalk>0.42.28</version.lib.servicetalk>
     <version.lib.servlet>3.1.0</version.lib.servlet>
-    <version.lib.slf4j>2.0.3</version.lib.slf4j>
+    <version.lib.slf4j>2.0.7</version.lib.slf4j>
     <version.lib.sqlite>3.39.3.0</version.lib.sqlite>
     <version.lib.swagger-parser>2.1.13</version.lib.swagger-parser>
     <version.lib.testcontainers>1.17.3</version.lib.testcontainers>
@@ -342,8 +342,15 @@
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-jul</artifactId>
+        <version>${version.lib.log4j}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j2-impl</artifactId>
         <version>${version.lib.log4j}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -470,11 +477,6 @@
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${version.lib.slf4j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${version.lib.slf4j}</version>
       </dependency>
@@ -531,13 +533,21 @@
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jdk8</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-    </dependency>
+    <!-- Provide logging for any child module during test -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-jul</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.awaitility</groupId>
