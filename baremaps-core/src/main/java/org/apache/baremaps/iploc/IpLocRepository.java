@@ -39,13 +39,15 @@ public final class IpLocRepository {
   private static final String CREATE_TABLE = """
       CREATE TABLE IF NOT EXISTS inetnum_locations (
           id integer PRIMARY KEY,
-          address text NOT NULL,
+          geocoder_input text,
           ip_start blob,
           ip_end blob,
           longitude real,
           latitude real,
           network text,
-          country text
+          country text,
+          source text,
+          precision text
       )""";
 
   private static final String CREATE_INDEX = """
@@ -53,18 +55,20 @@ public final class IpLocRepository {
 
   private static final String INSERT_SQL =
       """
-          INSERT INTO inetnum_locations(address, ip_start, ip_end, longitude, latitude, network, country)
-          VALUES(?,?,?,?,?,?,?)""";
+          INSERT INTO inetnum_locations(geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision)
+          VALUES(?,?,?,?,?,?,?,?,?)""";
 
-  private static final String SELECT_ALL_SQL = """
-      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country
-      FROM inetnum_locations;""";
+  private static final String SELECT_ALL_SQL =
+      """
+          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision
+          FROM inetnum_locations;""";
 
-  private static final String SELECT_ALL_BY_IP_SQL = """
-      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country
-      FROM inetnum_locations
-      WHERE ip_start <= ? AND ip_end >= ?
-      ORDER BY ip_start DESC, ip_end ASC;""";
+  private static final String SELECT_ALL_BY_IP_SQL =
+      """
+          SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision
+          FROM inetnum_locations
+          WHERE ip_start <= ? AND ip_end >= ?
+          ORDER BY ip_start DESC, ip_end ASC;""";
 
   private static final Logger logger = LoggerFactory.getLogger(IpLocRepository.class);
 
@@ -127,21 +131,27 @@ public final class IpLocRepository {
         ResultSet resultSet = statement.executeQuery()) {
       // loop through the result set
       while (resultSet.next()) {
-        results.add(new IpLocObject(
-            resultSet.getString("address"),
-            new InetRange(
-                fromByteArray(resultSet.getBytes("ip_start")),
-                fromByteArray(resultSet.getBytes("ip_end"))),
-            new Coordinate(
-                resultSet.getDouble("longitude"),
-                resultSet.getDouble("latitude")),
-            resultSet.getString("network"),
-            resultSet.getString("country")));
+        results.add(resultSetToPojo(resultSet));
       }
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
     }
     return results;
+  }
+
+  private IpLocObject resultSetToPojo(ResultSet resultSet) throws SQLException {
+    return new IpLocObject(
+        resultSet.getString("geocoder_input"),
+        new InetRange(
+            fromByteArray(resultSet.getBytes("ip_start")),
+            fromByteArray(resultSet.getBytes("ip_end"))),
+        new Coordinate(
+            resultSet.getDouble("longitude"),
+            resultSet.getDouble("latitude")),
+        resultSet.getString("network"),
+        resultSet.getString("country"),
+        resultSet.getString("source"),
+        IpLocPrecision.valueOf(resultSet.getString("precision")));
   }
 
   /**
@@ -158,43 +168,13 @@ public final class IpLocRepository {
       statement.setBytes(2, inetAddress.getAddress());
       try (var resultSet = statement.executeQuery();) {
         while (resultSet.next()) {
-          ipLocObjects.add(new IpLocObject(
-              resultSet.getString("address"),
-              new InetRange(
-                  fromByteArray(resultSet.getBytes("ip_start")),
-                  fromByteArray(resultSet.getBytes("ip_end"))),
-              new Coordinate(
-                  resultSet.getDouble("longitude"),
-                  resultSet.getDouble("latitude")),
-              resultSet.getString("network"),
-              resultSet.getString("country")));
+          ipLocObjects.add(resultSetToPojo(resultSet));
         }
       }
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
     }
     return ipLocObjects;
-  }
-
-  /**
-   * Saves the {@code IpLocObject} object in the repository.
-   *
-   * @param ipLocObject the {@code IpLocObject} object
-   */
-  public void save(IpLocObject ipLocObject) {
-    try (var connection = dataSource.getConnection();
-        var statement = connection.prepareStatement(INSERT_SQL)) {
-      statement.setString(1, ipLocObject.address());
-      statement.setBytes(2, ipLocObject.inetRange().start().getAddress());
-      statement.setBytes(3, ipLocObject.inetRange().end().getAddress());
-      statement.setDouble(4, ipLocObject.coordinate().getX());
-      statement.setDouble(5, ipLocObject.coordinate().getY());
-      statement.setString(6, ipLocObject.network());
-      statement.setString(7, ipLocObject.country());
-      statement.executeUpdate();
-    } catch (SQLException e) {
-      logger.error("Unable to save data", e);
-    }
   }
 
   /**
@@ -207,13 +187,15 @@ public final class IpLocRepository {
         var statement = connection.prepareStatement(INSERT_SQL);) {
       connection.setAutoCommit(false);
       for (IpLocObject ipLocObject : ipLocObjects) {
-        statement.setString(1, ipLocObject.address());
+        statement.setString(1, ipLocObject.geocoderInput());
         statement.setBytes(2, ipLocObject.inetRange().start().getAddress());
         statement.setBytes(3, ipLocObject.inetRange().end().getAddress());
         statement.setDouble(4, ipLocObject.coordinate().getX());
         statement.setDouble(5, ipLocObject.coordinate().getY());
         statement.setString(6, ipLocObject.network());
         statement.setString(7, ipLocObject.country());
+        statement.setString(8, ipLocObject.source());
+        statement.setString(9, ipLocObject.precision().toString());
         statement.addBatch();
       }
       statement.executeBatch();

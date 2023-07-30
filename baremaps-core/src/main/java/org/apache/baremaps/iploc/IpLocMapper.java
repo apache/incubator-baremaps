@@ -13,15 +13,18 @@
 package org.apache.baremaps.iploc;
 
 
+import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import net.ripe.ipresource.IpResourceRange;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.baremaps.utils.IsoCountriesUtils;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
@@ -85,80 +88,64 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
               inetRange,
               location.get(),
               network,
-              attributes.get("country")));
+              attributes.get("country"),
+              attributes.get("source"),
+              IpLocPrecision.GEOLOC));
         }
       }
 
-      // If there is an address we use that address to query the geocoder
-      if (attributes.containsKey("address")) {
-        var location = findLocation(attributes.get("address"), attributes.get("country"));
+      // If there is a country, we use that with a cherry-picked list of fields to query the
+      // geocoder with confidence to find a relevant precise location,
+      // in the worst case the error is within a country
+      List<String> searchedFields = List.of("descr", "netname");
+      // at least one of a searchedField is present and the country is present.
+      if (attributes.keySet().stream().anyMatch(searchedFields::contains)
+          && attributes.containsKey("country")) {
+        // build a query text string out of the cherry-picked fields
+        var queryTextBuilder = new StringBuilder();
+        for (String field : searchedFields) {
+          if (!Strings.isNullOrEmpty(attributes.get(field))) {
+            queryTextBuilder.append(attributes.get(field)).append(" ");
+          }
+        }
+
+        String queryText = queryTextBuilder.toString();
+        var location = findLocationInCountry(queryText, attributes.get("country"));
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
-              attributes.get("address"),
+              queryText,
               inetRange,
               location.get(),
               network,
-              attributes.get("country")));
+              attributes.get("country"),
+              attributes.get("source"),
+              IpLocPrecision.GEOCODER));
         }
       }
 
-      // If there is a description we use that description to query the geocoder
-      if (attributes.containsKey("descr")) {
-        var location = findLocation(attributes.get("descr"), attributes.get("country"));
-        if (location.isPresent()) {
-          return Optional.of(new IpLocObject(
-              attributes.get("descr"),
-              inetRange,
-              location.get(),
-              network,
-              attributes.get("country")));
-        }
-      }
-
-      // If there is a name we use that name to query the geocoder
-      if (attributes.containsKey("name")) {
-        var location = findLocation(attributes.get("name"), attributes.get("country"));
-        if (location.isPresent()) {
-          return Optional.of(new IpLocObject(attributes.get("name"),
-              inetRange,
-              location.get(),
-              network, attributes.get("country")));
-        }
-      }
-
-      // If there is a country that follows the ISO format we use that country's actual name from
-      // the iso country map to query the geocoder
-      if (attributes.containsKey("country")
-          && IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
-        var countryUppercase = attributes.get("country").toUpperCase();
-        var location =
-            findLocation(IsoCountriesUtils.getCountry(countryUppercase), countryUppercase);
-        if (location.isPresent()) {
-          return Optional.of(new IpLocObject(
-              IsoCountriesUtils.getCountry(countryUppercase),
-              inetRange,
-              location.get(),
-              network,
-              countryUppercase));
-        }
-      }
-
-      // If there is a country that did not follow the ISO format we will query using the country
-      // has plain text
+      // If there is a country get the location of country
       if (attributes.containsKey("country")) {
-        var location = findLocation(attributes.get("country"), "");
+        var location = findCountryLocation(attributes.get("country"));
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               attributes.get("country"),
               inetRange,
               location.get(),
               network,
-              attributes.get("country")));
+              attributes.get("country"),
+              attributes.get("source"),
+              IpLocPrecision.COUNTRY));
         }
       }
 
-      return Optional.empty();
-
+      return Optional.of(new IpLocObject(
+          null,
+          inetRange,
+          new Coordinate(),
+          network,
+          null,
+          attributes.get("source"),
+          IpLocPrecision.WORLD));
     } catch (Exception e) {
       logger.warn("Error while mapping nic object to ip loc object", e);
       logger.warn("Nic object attributes:");
@@ -174,21 +161,35 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
     }
   }
 
+  private Optional<Coordinate> findCountryLocation(String country)
+      throws IOException, ParseException {
+    GeonamesQueryBuilder geonamesQuery = new GeonamesQueryBuilder().featureCode("PCLI");
+    if (IsoCountriesUtils.containsCountry(country.toUpperCase())) {
+      geonamesQuery.countryCode(country.toUpperCase());
+    } else {
+      geonamesQuery.queryText(country).build();
+    }
+    return findLocation(geonamesQuery.build());
+  }
+
+  private Optional<Coordinate> findLocationInCountry(String terms, String countryCode)
+      throws IOException, ParseException {
+    var geonamesQuery =
+        new GeonamesQueryBuilder().queryText(terms).countryCode(countryCode).build();
+    return findLocation(geonamesQuery);
+  }
+
   /**
-   * Uses the geocoder to find the location of the specified search terms.
+   * Uses the geocoder to find the location of the specified query
    *
-   * @param searchTerms the search terms
-   * @param countryCode the country code
    * @return an {@code Optional} containing the location of the search terms
    * @throws IOException if an I/O error occurs
    */
-  private Optional<Coordinate> findLocation(String searchTerms, String countryCode)
-      throws IOException, ParseException {
+  private Optional<Coordinate> findLocation(Query query)
+      throws IOException {
     var indexSearcher = searcherManager.acquire();
-    var geonamesQuery =
-        new GeonamesQueryBuilder().queryText(searchTerms).countryCode(countryCode).build();
 
-    var topDocs = indexSearcher.search(geonamesQuery, 1);
+    var topDocs = indexSearcher.search(query, 1);
     if (topDocs.scoreDocs.length == 0) {
       return Optional.empty();
     }

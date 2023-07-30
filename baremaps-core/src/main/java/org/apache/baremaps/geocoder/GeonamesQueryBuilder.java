@@ -14,6 +14,7 @@ package org.apache.baremaps.geocoder;
 
 
 
+import com.google.common.base.Strings;
 import java.text.ParseException;
 import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
@@ -44,6 +45,7 @@ public class GeonamesQueryBuilder {
   private boolean scoringByPopulation;
 
   private boolean andOperator;
+  private String featureCode;
 
 
   public GeonamesQueryBuilder() {
@@ -67,15 +69,20 @@ public class GeonamesQueryBuilder {
   /**
    * The scoring will take into account the population
    */
-  public GeonamesQueryBuilder withScoringByPopulation() {
+  public GeonamesQueryBuilder scoringByPopulation() {
     this.scoringByPopulation = true;
+    return this;
+  }
+
+  public GeonamesQueryBuilder featureCode(String featureCode) {
+    this.featureCode = featureCode;
     return this;
   }
 
   /**
    * The queryText will be parsed with AND operator between terms instead of OR.
    */
-  public GeonamesQueryBuilder withAndOperator() {
+  public GeonamesQueryBuilder andOperator() {
     this.andOperator = true;
     return this;
   }
@@ -86,6 +93,7 @@ public class GeonamesQueryBuilder {
     if (queryText != null) {
       var queryTextEsc = QueryParser.escape(queryText);
       if (!queryTextEsc.isBlank()) {
+        // Changing the fields here might affect queries using queryText.
         var fieldWeights = Map.of("name", 1f, "asciiname", 1f, "country", 1f, "countryCode", 1f);
         var parser = new SimpleQueryParser(analyzer, fieldWeights);
         if (andOperator) {
@@ -104,6 +112,12 @@ public class GeonamesQueryBuilder {
         var countryCodeQuery = new TermQuery(new Term("countryCode", countryCodeEsc));
         builder.add(countryCodeQuery, BooleanClause.Occur.MUST);
       }
+    }
+
+
+    if (!Strings.isNullOrEmpty(featureCode)) {
+      var featureCodeQuery = new TermQuery(new Term("featureCode", featureCode));
+      builder.add(featureCodeQuery, BooleanClause.Occur.MUST);
     }
 
     if (scoringByPopulation) {

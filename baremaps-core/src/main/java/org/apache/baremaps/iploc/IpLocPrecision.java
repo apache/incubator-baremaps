@@ -12,20 +12,9 @@
 
 package org.apache.baremaps.iploc;
 
-import org.locationtech.jts.geom.Coordinate;
-
-/**
- * A record representing an IP associated with a location.
- */
-public record IpLocObject(
-    String geocoderInput,
-    InetRange inetRange,
-    Coordinate coordinate,
-    String network,
-    String country,
-
-    String source,
-
-    IpLocPrecision precision) {
-
+public enum IpLocPrecision {
+  GEOLOC,
+  GEOCODER,
+  COUNTRY,
+  WORLD
 }

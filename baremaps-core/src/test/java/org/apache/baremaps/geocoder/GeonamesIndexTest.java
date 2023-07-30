@@ -77,7 +77,7 @@ public class GeonamesIndexTest {
   @Test
   void testAndQueryNoHits() throws Exception {
     var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz berlin").withAndOperator().countryCode("LI")
+        new GeonamesQueryBuilder().queryText("vaduz berlin").andOperator().countryCode("LI")
             .build();
     var topDocs = searcher.search(geonamesQuery, 1);
     assertEquals(0, topDocs.totalHits.value);
@@ -86,7 +86,7 @@ public class GeonamesIndexTest {
   @Test
   void testAndQuery() throws Exception {
     var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz liechtenstein").withAndOperator()
+        new GeonamesQueryBuilder().queryText("vaduz liechtenstein").andOperator()
             .countryCode("LI").build();
     var topDocs = searcher.search(geonamesQuery, 1);
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
