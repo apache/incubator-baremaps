@@ -33,6 +33,8 @@ import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A resource that provides access to the geocoder.
@@ -40,6 +42,8 @@ import org.apache.lucene.search.SearcherManager;
 @Singleton
 @javax.ws.rs.Path("/")
 public class GeocoderResource {
+
+  private static final Logger logger = LoggerFactory.getLogger(GeocoderResource.class);
 
   record GeocoderResponse(List<GeocoderResult> results) {
   }
@@ -85,16 +89,17 @@ public class GeocoderResource {
         return Response.status(Response.Status.OK).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
             .header(CONTENT_TYPE, APPLICATION_JSON).entity(new GeocoderResponse(results)).build();
       } catch (IllegalArgumentException e) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        logger.warn("Illegal input while processing request", e);
+        return Response.status(Response.Status.BAD_REQUEST).build();
       } catch (IOException | ParseException e) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage())
-            .build();
+        logger.error("Error while processing request", e);
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
       } finally {
         searcherManager.release(searcher);
       }
     } catch (IOException e) {
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage())
-          .build();
+      logger.error("Error while processing request", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
 
