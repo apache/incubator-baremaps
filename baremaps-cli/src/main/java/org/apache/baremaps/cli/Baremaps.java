@@ -26,11 +26,7 @@ import org.apache.baremaps.cli.map.Map;
 import org.apache.baremaps.cli.ogcapi.OgcApi;
 import org.apache.baremaps.cli.workflow.Workflow;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
@@ -42,21 +38,8 @@ import picocli.CommandLine.Option;
     sortOptions = false)
 public class Baremaps implements Callable<Integer> {
 
-  static {
-    // Apache SIS uses java.util.logging, therefore, we need to remove
-    // the existing handlers and to replace them with a bridge to slf4j.
-    SLF4JBridgeHandler.removeHandlersForRootLogger();
-    SLF4JBridgeHandler.install();
-  }
-
   @Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version info.")
   boolean version;
-
-  @Override
-  public Integer call() {
-    CommandLine.usage(this, System.out);
-    return 0;
-  }
 
   public static void main(String... args) {
     // Set the log level
@@ -69,11 +52,7 @@ public class Baremaps implements Callable<Integer> {
         level = arg.substring(12).strip();
       }
       if (!"".equals(level)) {
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration config = ctx.getConfiguration();
-        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-        loggerConfig.setLevel(Level.getLevel(level));
-        ctx.updateLoggers();
+        Configurator.setRootLevel(Level.getLevel(level));
       }
     }
 
@@ -82,6 +61,13 @@ public class Baremaps implements Callable<Integer> {
         .addMixin("options", new Options());
     cmd.execute(args);
   }
+
+  @Override
+  public Integer call() {
+    CommandLine.usage(this, System.out);
+    return 0;
+  }
+
 
   static class VersionProvider implements IVersionProvider {
 
