@@ -23,14 +23,14 @@ import org.locationtech.jts.geom.Coordinate;
 /** A consumer that stores openstreetmap coordinates in a map. */
 public class CoordinateMapBuilder implements Consumer<Entity> {
 
-  private final DataMap<Coordinate> coordinateMap;
+  private final DataMap<Long, Coordinate> coordinateMap;
 
   /**
    * Constructs a {@code CacheBlockConsumer} with the provided map.
    *
    * @param coordinateMap the map of coordinates
    */
-  public CoordinateMapBuilder(DataMap<Coordinate> coordinateMap) {
+  public CoordinateMapBuilder(DataMap<Long, Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
   }
 

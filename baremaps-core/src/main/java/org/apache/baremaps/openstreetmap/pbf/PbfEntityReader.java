@@ -70,23 +70,23 @@ public class PbfEntityReader implements PbfReader<Entity> {
   }
 
   @Override
-  public DataMap<Coordinate> coordinateMap() {
+  public DataMap<Long, Coordinate> coordinateMap() {
     return reader.coordinateMap();
   }
 
   @Override
-  public PbfEntityReader coordinateMap(DataMap<Coordinate> coordinateMap) {
+  public PbfEntityReader coordinateMap(DataMap<Long, Coordinate> coordinateMap) {
     reader.coordinateMap(coordinateMap);
     return this;
   }
 
   @Override
-  public DataMap<List<Long>> referenceMap() {
+  public DataMap<Long, List<Long>> referenceMap() {
     return reader.referenceMap();
   }
 
   @Override
-  public PbfEntityReader referenceMap(DataMap<List<Long>> referenceMap) {
+  public PbfEntityReader referenceMap(DataMap<Long, List<Long>> referenceMap) {
     reader.referenceMap(referenceMap);
     return this;
   }

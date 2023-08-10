@@ -73,7 +73,7 @@ public interface PbfReader<T> extends OsmReader<T> {
    *
    * @return the map of coordinates
    */
-  DataMap<Coordinate> coordinateMap();
+  DataMap<Long, Coordinate> coordinateMap();
 
   /**
    * Sets the map used to store coordinates for generating geometries.
@@ -81,14 +81,14 @@ public interface PbfReader<T> extends OsmReader<T> {
    * @param coordinateMap the map of coordinates
    * @return the parser
    */
-  PbfReader coordinateMap(DataMap<Coordinate> coordinateMap);
+  PbfReader coordinateMap(DataMap<Long, Coordinate> coordinateMap);
 
   /**
    * Gets the map used to store references for generating geometries.
    *
    * @return the map of references
    */
-  DataMap<List<Long>> referenceMap();
+  DataMap<Long, List<Long>> referenceMap();
 
   /**
    * Sets the map used to store references for generating geometries.
@@ -96,7 +96,7 @@ public interface PbfReader<T> extends OsmReader<T> {
    * @param referenceMap the map of references
    * @return the parser
    */
-  PbfReader referenceMap(DataMap<List<Long>> referenceMap);
+  PbfReader referenceMap(DataMap<Long, List<Long>> referenceMap);
 
   /**
    * Creates an ordered stream of osm objects.

@@ -29,7 +29,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void putAndGet(DataMap<Long> map) {
+  void putAndGet(DataMap<Long, Long> map) {
     for (long i = 0; i < 1000; i++) {
       map.put(i, i * 2);
     }
@@ -40,7 +40,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void containsKey(DataMap<Long> map) {
+  void containsKey(DataMap<Long, Long> map) {
     for (long i = 0; i < 1000; i++) {
       assertFalse(map.containsKey(i));
     }
@@ -54,7 +54,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void containsValue(DataMap<Long> map) {
+  void containsValue(DataMap<Long, Long> map) {
     for (long i = 0; i < 1000; i++) {
       assertFalse(map.containsValue(i));
     }
@@ -68,7 +68,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void getAll(DataMap<Long> map) {
+  void getAll(DataMap<Long, Long> map) {
     for (long i = 0; i < 1000; i++) {
       map.put(i, i);
     }
@@ -83,7 +83,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void size(DataMap<Long> map) {
+  void size(DataMap<Long, Long> map) {
     for (long i = 0; i < 1000; i++) {
       map.put(i, i);
     }
@@ -94,7 +94,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void keySet(DataMap<Long> map) {
+  void keySet(DataMap<Long, Long> map) {
     var set = new HashSet<Long>();
     for (long i = 0; i < 1000; i++) {
       set.add(i);
@@ -106,7 +106,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void valueSet(DataMap<Long> map) {
+  void valueSet(DataMap<Long, Long> map) {
     var set = new HashSet<Long>();
     for (long i = 0; i < 1000; i++) {
       set.add(i);
@@ -117,7 +117,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void entrySet(DataMap<Long> map) {
+  void entrySet(DataMap<Long, Long> map) {
     var set = new HashSet<Entry<Long, Long>>();
     for (long i = 0; i < 1000; i++) {
       set.add(Map.entry(i, i));
@@ -128,7 +128,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void isEmpty(DataMap<Long> map) {
+  void isEmpty(DataMap<Long, Long> map) {
     assertTrue(map.isEmpty());
     map.put(0l, 0l);
     assertFalse(map.isEmpty());
@@ -136,7 +136,7 @@ class DataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void map(DataMap<Long> map) {
+  void map(DataMap<Long, Long> map) {
     assertTrue(map.isEmpty());
 
     map.put(10l, 10l);

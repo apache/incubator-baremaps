@@ -23,14 +23,14 @@ import org.apache.baremaps.openstreetmap.model.Way;
 /** A consumer that stores openstreetmap references in a map. */
 public class ReferenceMapBuilder implements Consumer<Entity> {
 
-  private final DataMap<List<Long>> referenceMap;
+  private final DataMap<Long, List<Long>> referenceMap;
 
   /**
    * Constructs a {@code CacheBlockConsumer} with the provided map.
    *
    * @param referenceMap the map of references
    */
-  public ReferenceMapBuilder(DataMap<List<Long>> referenceMap) {
+  public ReferenceMapBuilder(DataMap<Long, List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
   }
 

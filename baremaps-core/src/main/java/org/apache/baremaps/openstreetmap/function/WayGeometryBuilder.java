@@ -31,14 +31,14 @@ public class WayGeometryBuilder implements Consumer<Way> {
 
   private static final Logger logger = LoggerFactory.getLogger(WayGeometryBuilder.class);
 
-  private final DataMap<Coordinate> coordinateMap;
+  private final DataMap<Long, Coordinate> coordinateMap;
 
   /**
    * Constructs a way geometry builder.
    *
    * @param coordinateMap the coordinates map
    */
-  public WayGeometryBuilder(DataMap<Coordinate> coordinateMap) {
+  public WayGeometryBuilder(DataMap<Long, Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
   }
 

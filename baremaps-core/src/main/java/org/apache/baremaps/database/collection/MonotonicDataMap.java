@@ -31,7 +31,7 @@ import org.apache.baremaps.database.type.PairDataType.Pair;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class MonotonicDataMap<E> extends DataMap<E> {
+public class MonotonicDataMap<E> extends DataMap<Long, E> {
 
   private final DataList<Long> offsets;
   private final DataList<Pair<Long, Long>> keys;

@@ -26,7 +26,7 @@ import java.util.Map;
  *
  * @param <E> The type of the elements.
  */
-public class IndexedDataMap<E> extends DataMap<E> {
+public class IndexedDataMap<E> extends DataMap<Long, E> {
 
   private final Map<Long, Long> index;
 
@@ -109,7 +109,7 @@ public class IndexedDataMap<E> extends DataMap<E> {
    */
   @Override
   public long sizeAsLong() {
-    if (index instanceof DataMap<Long>dataMap) {
+    if (index instanceof DataMap<?, ?>dataMap) {
       return dataMap.sizeAsLong();
     } else {
       return index.size();

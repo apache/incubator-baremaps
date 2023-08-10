@@ -36,8 +36,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationGeometryBuilder.class);
 
-  private final DataMap<Coordinate> coordinateMap;
-  private final DataMap<List<Long>> referenceMap;
+  private final DataMap<Long, Coordinate> coordinateMap;
+  private final DataMap<Long, List<Long>> referenceMap;
 
   /**
    * Constructs a relation geometry builder.
@@ -45,8 +45,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
    * @param coordinateMap the coordinates map
    * @param referenceMap the references map
    */
-  public RelationGeometryBuilder(DataMap<Coordinate> coordinateMap,
-      DataMap<List<Long>> referenceMap) {
+  public RelationGeometryBuilder(DataMap<Long, Coordinate> coordinateMap,
+      DataMap<Long, List<Long>> referenceMap) {
     this.coordinateMap = coordinateMap;
     this.referenceMap = referenceMap;
   }

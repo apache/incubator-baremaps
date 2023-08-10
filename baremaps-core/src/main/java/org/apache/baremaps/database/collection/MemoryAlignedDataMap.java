@@ -27,7 +27,7 @@ import org.apache.baremaps.database.type.FixedSizeDataType;
  * <p>
  * This code has been adapted from Planetiler (Apache license).
  */
-public class MemoryAlignedDataMap<E> extends DataMap<E> {
+public class MemoryAlignedDataMap<E> extends DataMap<Long, E> {
 
   private final FixedSizeDataType<E> dataType;
 

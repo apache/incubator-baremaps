@@ -69,7 +69,7 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
 
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-    DataMap<Coordinate> coordinateMap;
+    DataMap<Long, Coordinate> coordinateMap;
     if (Files.size(path) > 1 << 30) {
       var coordinatesFile = Files.createFile(cacheDir.resolve("coordinates"));
       coordinateMap = new MemoryAlignedDataMap<>(
@@ -114,8 +114,8 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
 
   public static void execute(
       Path path,
-      DataMap<Coordinate> coordinateMap,
-      DataMap<List<Long>> referenceMap,
+      DataMap<Long, Coordinate> coordinateMap,
+      DataMap<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,

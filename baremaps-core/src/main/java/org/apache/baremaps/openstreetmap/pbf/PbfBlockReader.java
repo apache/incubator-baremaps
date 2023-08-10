@@ -32,9 +32,9 @@ public class PbfBlockReader implements PbfReader<Block> {
 
   private int srid = 4326;
 
-  private DataMap<Coordinate> coordinateMap;
+  private DataMap<Long, Coordinate> coordinateMap;
 
-  private DataMap<List<Long>> referenceMap;
+  private DataMap<Long, List<Long>> referenceMap;
 
 
   @Override
@@ -75,23 +75,23 @@ public class PbfBlockReader implements PbfReader<Block> {
   }
 
   @Override
-  public DataMap<Coordinate> coordinateMap() {
+  public DataMap<Long, Coordinate> coordinateMap() {
     return coordinateMap;
   }
 
   @Override
-  public PbfBlockReader coordinateMap(DataMap<Coordinate> coordinateMap) {
+  public PbfBlockReader coordinateMap(DataMap<Long, Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
     return this;
   }
 
   @Override
-  public DataMap<List<Long>> referenceMap() {
+  public DataMap<Long, List<Long>> referenceMap() {
     return referenceMap;
   }
 
   @Override
-  public PbfBlockReader referenceMap(DataMap<List<Long>> referenceMap) {
+  public PbfBlockReader referenceMap(DataMap<Long, List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
     return this;
   }

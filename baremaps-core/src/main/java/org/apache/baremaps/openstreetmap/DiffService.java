@@ -45,8 +45,8 @@ public class DiffService implements Callable<List<TileCoord>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final DataMap<Coordinate> coordinateMap;
-  private final DataMap<List<Long>> referenceMap;
+  private final DataMap<Long, Coordinate> coordinateMap;
+  private final DataMap<Long, List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -54,7 +54,8 @@ public class DiffService implements Callable<List<TileCoord>> {
   private final int srid;
   private final int zoom;
 
-  public DiffService(DataMap<Coordinate> coordinateMap, DataMap<List<Long>> referenceMap,
+  public DiffService(DataMap<Long, Coordinate> coordinateMap,
+      DataMap<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
       int zoom) {

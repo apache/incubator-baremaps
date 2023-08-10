@@ -24,7 +24,7 @@ import org.apache.baremaps.database.type.PairDataType.Pair;
  * their key and inserted in a monotonic way. The elements cannot be removed or updated once
  * inserted.
  */
-public class MonotonicPairedDataMap<E> extends DataMap<E> {
+public class MonotonicPairedDataMap<E> extends DataMap<Long, E> {
 
   private final DataList<Long> offsets;
   private final MemoryAlignedDataList<Pair<Long, E>> values;
