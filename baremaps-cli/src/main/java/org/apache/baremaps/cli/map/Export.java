@@ -53,14 +53,14 @@ public class Export implements Callable<Integer> {
       description = "The index of the batch in the array.")
   private int batchArrayIndex = 0;
 
-  @Option(names = {"--mbtiles"}, paramLabel = "MBTILES",
-      description = "The repository is in the MBTiles format.")
-  private boolean mbtiles = false;
+  @Option(names = {"--format"}, paramLabel = "FORMAT",
+      description = "The format of the repository.")
+  private ExportVectorTiles.Format format = ExportVectorTiles.Format.file;
 
   @Override
   public Integer call() throws Exception {
     new ExportVectorTiles(tileset.toAbsolutePath(),
-        repository.toAbsolutePath(), batchArraySize, batchArrayIndex, mbtiles)
+        repository.toAbsolutePath(), batchArraySize, batchArrayIndex, format)
             .execute(new WorkflowContext());
     return 0;
   }

@@ -33,6 +33,7 @@ import waterway from "./layers/waterway/tileset.js";
 export default {
   "tilejson": "2.2.0",
   "center": [...config.center, config.zoom],
+  "bounds": [...config.bounds],
   "minzoom": 0.0,
   "maxzoom": 14.0,
   "tiles": [

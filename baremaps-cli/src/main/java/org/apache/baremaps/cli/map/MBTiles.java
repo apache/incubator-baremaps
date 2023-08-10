@@ -71,7 +71,7 @@ public class MBTiles implements Callable<Integer> {
     var configReader = new ConfigReader();
     var caffeineSpec = CaffeineSpec.parse(cache);
 
-    var datasource = SqliteUtils.createDataSource(mbtilesPath);
+    var datasource = SqliteUtils.createDataSource(mbtilesPath, true);
     var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new MBTilesStore(datasource);
     var tileCache = new TileCache(tileStore, caffeineSpec);

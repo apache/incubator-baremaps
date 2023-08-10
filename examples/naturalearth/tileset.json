@@ -1,7 +1,7 @@
 {
   "tilejson": "2.2.0",
   "minzoom": 0,
-  "maxzoom": 12,
+  "maxzoom": 6,
   "tiles": [
     "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
   ],

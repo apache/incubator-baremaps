@@ -21,9 +21,11 @@ examples/output/
 /baremaps/
 
 # Map
-/basemap/data/
-/basemap/cache_*/
-/basemap/local.*
+basemap/data/
+basemap/cache_*/
+basemap/local.*
+basemap/tiles.mbtiles
+basemap/tiles/
 
 # Examples
 examples/ip-to-location/archives/
@@ -36,8 +38,15 @@ examples/geocoding/downloads/
 examples/geocoding/geocoder-index/
 
 examples/extrusion/*.pbf
+
 examples/naturalearth/natural_earth_vector/
+examples/naturalearth/natural_earth_vector.gpkg.zip
+examples/naturalearth/tiles/
+
 examples/openstreetmap/*.pbf
+examples/openstreetmap/tiles.mbtiles
+examples/openstreetmap/tiles/
+
 examples/transformation/*.pbf
 
 # JMH
