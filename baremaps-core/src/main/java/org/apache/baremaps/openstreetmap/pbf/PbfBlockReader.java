@@ -36,7 +36,6 @@ public class PbfBlockReader implements PbfReader<Block> {
 
   private DataMap<Long, List<Long>> referenceMap;
 
-
   @Override
   public int buffer() {
     return buffer;

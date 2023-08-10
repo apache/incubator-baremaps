@@ -43,8 +43,9 @@ public final class SqliteUtils {
    * @param path the path to the SQLite database
    * @return the SQLite data source
    */
-  public static HikariDataSource createDataSource(Path path) {
+  public static HikariDataSource createDataSource(Path path, boolean readOnly) {
     var sqliteConfig = new SQLiteConfig();
+    sqliteConfig.setReadOnly(readOnly);
     sqliteConfig.setCacheSize(1000000);
     sqliteConfig.setPageSize(65536);
     sqliteConfig.setJournalMode(JournalMode.OFF);
@@ -54,11 +55,13 @@ public final class SqliteUtils {
 
     var sqliteDataSource = new SQLiteDataSource();
     sqliteDataSource.setConfig(sqliteConfig);
-    sqliteDataSource.setUrl("jdbc:sqlite:" + path);
+    sqliteDataSource.setUrl("jdbc:sqlite:" + path.toAbsolutePath());
+
+    System.out.println(path.toAbsolutePath());
 
     var hikariConfig = new HikariConfig();
     hikariConfig.setDataSource(sqliteDataSource);
-    hikariConfig.setMaximumPoolSize(1);
+    hikariConfig.setMaximumPoolSize(readOnly ? Runtime.getRuntime().availableProcessors() : 1);
 
     return new HikariDataSource(hikariConfig);
   }

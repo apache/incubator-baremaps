@@ -40,7 +40,6 @@ public class ObjectMapperTest {
                     "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
                     3857)))));
     var json = mapper.writeValueAsString(workflow1);
-    System.out.println(json);
     assertTrue(json.contains(DownloadUrl.class.getSimpleName()));
     assertTrue(json.contains(ImportOpenStreetMap.class.getSimpleName()));
 

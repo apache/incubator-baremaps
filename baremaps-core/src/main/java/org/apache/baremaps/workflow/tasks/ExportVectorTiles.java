@@ -44,7 +44,12 @@ public record ExportVectorTiles(
     Path repository,
     int batchArraySize,
     int batchArrayIndex,
-    boolean mbtiles) implements Task {
+    Format format) implements Task {
+
+  public enum Format {
+    file,
+    mbtiles
+  }
 
   private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
 
@@ -77,15 +82,18 @@ public record ExportVectorTiles(
   }
 
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
-    if (mbtiles) {
-      Files.deleteIfExists(repository);
-      var dataSource = SqliteUtils.createDataSource(repository);
-      var tilesStore = new MBTilesStore(dataSource);
-      tilesStore.initializeDatabase();
-      tilesStore.writeMetadata(metadata(source));
-      return tilesStore;
-    } else {
-      return new FileTileStore(repository);
+    switch (format) {
+      case file:
+        return new FileTileStore(repository);
+      case mbtiles:
+        Files.deleteIfExists(repository);
+        var dataSource = SqliteUtils.createDataSource(repository, false);
+        var tilesStore = new MBTilesStore(dataSource);
+        tilesStore.initializeDatabase();
+        tilesStore.writeMetadata(metadata(source));
+        return tilesStore;
+      default:
+        throw new IllegalArgumentException("Unsupported format");
     }
   }
 
