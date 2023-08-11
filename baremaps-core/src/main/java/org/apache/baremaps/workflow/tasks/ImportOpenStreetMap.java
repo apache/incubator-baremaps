@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.apache.baremaps.database.collection.*;
 import org.apache.baremaps.database.memory.MemoryMappedDirectory;
+import org.apache.baremaps.database.memory.MemoryMappedFile;
 import org.apache.baremaps.database.type.LongDataType;
 import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.PairDataType;
@@ -69,16 +70,24 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
 
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-    var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-    var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
-    var coordinateMap =
-        new MonotonicDataMap<>(
-            new MemoryAlignedDataList<>(
-                new PairDataType<>(new LongDataType(), new LongDataType()),
-                new MemoryMappedDirectory(coordinateKeysDir)),
-            new AppendOnlyBuffer<>(
-                new LonLatDataType(),
-                new MemoryMappedDirectory(coordinateValuesDir)));
+    DataMap<Long, Coordinate> coordinateMap;
+    if (Files.size(path) > 1 << 30) {
+      var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
+      coordinateMap = new MemoryAlignedDataMap<>(
+              new LonLatDataType(),
+              new MemoryMappedDirectory(coordinateDir));
+    } else {
+      var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
+      var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
+      coordinateMap =
+              new MonotonicDataMap<>(
+                      new MemoryAlignedDataList<>(
+                              new PairDataType<>(new LongDataType(), new LongDataType()),
+                              new MemoryMappedDirectory(coordinateKeysDir)),
+                      new AppendOnlyBuffer<>(
+                              new LonLatDataType(),
+                              new MemoryMappedDirectory(coordinateValuesDir)));
+    }
 
     var referenceKeysDir = Files.createDirectory(cacheDir.resolve("reference_keys"));
     var referenceValuesDir = Files.createDirectory(cacheDir.resolve("reference_vals"));
