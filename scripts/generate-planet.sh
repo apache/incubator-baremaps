@@ -23,7 +23,7 @@ rm -fr data tiles tiles.mbtiles
 awk '{gsub("https://download.geofabrik.de/europe/switzerland-latest.osm.pbf", "https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf"); print}' config.js > tmpfile && mv tmpfile config.js
 awk '{gsub("6.02260949059, 45.7769477403, 10.4427014502, 47.8308275417", "-180, -90, 180, 90"); print}' config.js > tmpfile && mv tmpfile config.js
 
-baremaps workflow execute --file workflow.js > workflow.log
+baremaps workflow execute --file workflow.js
 
 echo ""
 echo "--------------------------------------------------------------------"
@@ -31,7 +31,4 @@ echo "Export the Basemap tiles"
 echo "--------------------------------------------------------------------"
 echo ""
 
-baremaps map export \
-  --tileset 'tileset.js' \
-  --repository 'tiles.mbtiles' \
-  --format mbtiles > export.log
+baremaps map export --tileset 'tileset.js' --repository 'tiles.mbtiles' --format mbtiles
