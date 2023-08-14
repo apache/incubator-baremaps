@@ -10,7 +10,11 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 
+# Start from the scripts directory
+DIR="$(dirname "$0")"
+cd "$DIR" || exit
 cd ../basemap
+
 
 echo ""
 echo "--------------------------------------------------------------------"
