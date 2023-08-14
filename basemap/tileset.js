@@ -47,7 +47,7 @@ export default {
     amenity,
     attraction,
     barrier,
-    //boundary,
+    boundary,
     building,
     highway,
     landuse,
