@@ -10,8 +10,6 @@
   the License.
   -->
 <div align="center">
-<br/>
-<img src="logo.svg" width="100px">
 
 # Apache Baremaps (Incubating)
 
