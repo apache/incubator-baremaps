@@ -21,7 +21,7 @@ echo ""
 rm -fr data tiles tiles.mbtiles
 
 awk '{gsub("https://download.geofabrik.de/europe/switzerland-latest.osm.pbf", "https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf"); print}' config.js > tmpfile && mv tmpfile config.js
-awk '{gsub("6.02260949059, 45.7769477403, 10.4427014502, 47.8308275417", "-180, -90, 180, 90"); print}' config.js > tmpfile && mv tmpfile config.js
+awk '{gsub("6.02260949059, 45.7769477403, 10.4427014502, 47.8308275417", "-180, -85.0511, 180, 85.0511"); print}' config.js > tmpfile && mv tmpfile config.js
 
 baremaps workflow execute --file workflow.js
 
