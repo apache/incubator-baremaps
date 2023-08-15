@@ -48,9 +48,11 @@ public class TestFiles {
 
   public static final Path MONACO_STATE_TXT = resolve("monaco/monaco-state.txt");
 
+  public static final Path STYLE_JS = resolve("style.js");
+
   public static Path resolve(String resource) {
     Path cwd = Path.of("").toAbsolutePath();
     Path pathFromRoot = Path.of("baremaps-core", "src", "test", "resources", resource);
-    return cwd.resolveSibling(pathFromRoot);
+    return cwd.resolveSibling(pathFromRoot).toAbsolutePath();
   }
 }
