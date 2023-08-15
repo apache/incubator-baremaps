@@ -39,14 +39,19 @@ public class ConfigReader {
   }
 
   private String eval(Path path) throws IOException {
-    try (var context = Context.newBuilder("js").option("js.esm-eval-returns-exports", "true")
-        .option("js.scripting", "true").allowExperimentalOptions(true).allowIO(true).build()) {
+    try (var context = Context.newBuilder("js")
+        .option("js.esm-eval-returns-exports", "true")
+        .option("js.scripting", "true")
+        .allowExperimentalOptions(true)
+        .allowIO(true)
+        .build()) {
       var script = String.format("""
           import config from '%s';
           export default JSON.stringify(config);
-          """, path.toAbsolutePath());
+          """, path.toAbsolutePath().toUri());
       var source = Source.newBuilder("js", new StringReader(script), "script.js")
-          .mimeType("application/javascript+module").build();
+          .mimeType("application/javascript+module")
+          .build();
       var value = context.eval(source);
       return value.getMember("default").toString();
     } catch (Exception e) {

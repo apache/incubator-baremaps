@@ -10,22 +10,24 @@
  * the License.
  */
 
-package org.apache.baremaps.stream;
+package org.apache.baremaps.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.io.IOException;
+import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.vectortile.style.Style;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-class StreamUtilsTest {
+class ConfigReaderTest {
 
   @Test
-  void partition() {
-    List<Integer> list = IntStream.range(0, 100).boxed().toList();
-    List<List<Integer>> partitions = StreamUtils.partition(list.stream(), 10)
-        .map(stream -> stream.collect(Collectors.toList())).toList();
-    assertEquals(partitions.size(), 10);
+  void readStyle() throws IOException {
+    var config = new ConfigReader().read(TestFiles.STYLE_JS);
+    var style = new ObjectMapper().readValue(config, Style.class);
+    var source = style.getSources().get("mymap");
+    assertEquals("http://my.server.com/{z}/{y}/{x}.mvt", source.getTiles().get(0));
+    assertEquals(14, source.getMaxzoom());
   }
 }
