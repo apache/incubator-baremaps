@@ -47,7 +47,7 @@ public class MBTilesBenchmark {
   @Setup
   public void setup() throws IOException, TileStoreException {
     file = Files.createTempFile(Paths.get("."), "baremaps", ".mbtiles");
-    mbTilesStore = new MBTilesStore(SqliteUtils.createDataSource(file));
+    mbTilesStore = new MBTilesStore(SqliteUtils.createDataSource(file, false));
     mbTilesStore.initializeDatabase();
   }
 

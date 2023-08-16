@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.Coordinate;
 /**
  * A read-only {@link DataMap} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL.
  */
-public class PostgresCoordinateMap extends DataMap<Coordinate> {
+public class PostgresCoordinateMap extends DataMap<Long, Coordinate> {
 
   public static final String SELECT_CONTAINS_KEY = """
       SELECT 1

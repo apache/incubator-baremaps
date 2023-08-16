@@ -20,13 +20,13 @@ import java.util.*;
 /**
  * An abstract map of data elements that can hold a large number of elements.
  *
- * @param <E> The type of the elements.
+ * @param <V> The type of the elements.
  */
-public abstract class DataMap<E> implements Map<Long, E> {
+public abstract class DataMap<K, V> implements Map<K, V> {
 
   /** {@inheritDoc} */
   @Override
-  public void putAll(Map<? extends Long, ? extends E> m) {
+  public void putAll(Map<? extends K, ? extends V> m) {
     m.forEach(this::put);
   }
 
@@ -36,7 +36,7 @@ public abstract class DataMap<E> implements Map<Long, E> {
    * @param keys the keys
    * @return the values
    */
-  public List<E> getAll(List<Long> keys) {
+  public List<V> getAll(List<K> keys) {
     return Streams.stream(keys).map(this::get).toList();
   }
 
@@ -63,17 +63,17 @@ public abstract class DataMap<E> implements Map<Long, E> {
    *
    * @return an iterator
    */
-  protected abstract Iterator<Long> keyIterator();
+  protected abstract Iterator<K> keyIterator();
 
   /** {@inheritDoc} */
   @Override
-  public Set<Long> keySet() {
+  public Set<K> keySet() {
     return new KeySet();
   }
 
-  private class KeySet extends AbstractSet<Long> {
+  private class KeySet extends AbstractSet<K> {
     @Override
-    public Iterator<Long> iterator() {
+    public Iterator<K> iterator() {
       return keyIterator();
     }
 
@@ -88,17 +88,17 @@ public abstract class DataMap<E> implements Map<Long, E> {
    *
    * @return an iterator
    */
-  protected abstract Iterator<E> valueIterator();
+  protected abstract Iterator<V> valueIterator();
 
   /** {@inheritDoc} */
   @Override
-  public Collection<E> values() {
+  public Collection<V> values() {
     return new ValueCollection();
   }
 
-  private class ValueCollection extends AbstractCollection<E> {
+  private class ValueCollection extends AbstractCollection<V> {
     @Override
-    public Iterator<E> iterator() {
+    public Iterator<V> iterator() {
       return valueIterator();
     }
 
@@ -113,17 +113,17 @@ public abstract class DataMap<E> implements Map<Long, E> {
    *
    * @return an iterator
    */
-  protected abstract Iterator<Entry<Long, E>> entryIterator();
+  protected abstract Iterator<Entry<K, V>> entryIterator();
 
   /** {@inheritDoc} */
   @Override
-  public Set<Entry<Long, E>> entrySet() {
+  public Set<Entry<K, V>> entrySet() {
     return new EntrySet();
   }
 
-  private class EntrySet extends AbstractSet<Entry<Long, E>> {
+  private class EntrySet extends AbstractSet<Entry<K, V>> {
     @Override
-    public Iterator<Entry<Long, E>> iterator() {
+    public Iterator<Entry<K, V>> iterator() {
       return entryIterator();
     }
 

@@ -19,16 +19,16 @@ import java.util.Map;
 import org.apache.baremaps.database.collection.DataMap;
 import org.jetbrains.annotations.Nullable;
 
-public class MockDataMap<T> extends DataMap<T> {
+public class MockDataMap<K, T> extends DataMap<K, T> {
 
-  private final Map<Long, T> values;
+  private final Map<K, T> values;
 
-  public MockDataMap(Map<Long, T> values) {
+  public MockDataMap(Map<K, T> values) {
     this.values = values;
   }
 
   @Override
-  protected Iterator<Long> keyIterator() {
+  protected Iterator<K> keyIterator() {
     return values.keySet().iterator();
   }
 
@@ -38,7 +38,7 @@ public class MockDataMap<T> extends DataMap<T> {
   }
 
   @Override
-  protected Iterator<Entry<Long, T>> entryIterator() {
+  protected Iterator<Entry<K, T>> entryIterator() {
     return values.entrySet().iterator();
   }
 
@@ -64,7 +64,7 @@ public class MockDataMap<T> extends DataMap<T> {
 
   @Nullable
   @Override
-  public T put(Long key, T value) {
+  public T put(K key, T value) {
     return values.put(key, value);
   }
 

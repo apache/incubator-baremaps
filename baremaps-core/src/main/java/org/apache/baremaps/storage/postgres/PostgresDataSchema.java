@@ -213,7 +213,6 @@ public class PostgresDataSchema implements DataSchema {
         .map(column -> "\"" + column.name() + "\"")
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
-    System.out.println(builder.toString());
     return builder.toString();
   }
 

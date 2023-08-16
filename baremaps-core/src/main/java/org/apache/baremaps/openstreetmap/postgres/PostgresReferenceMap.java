@@ -27,7 +27,7 @@ import org.apache.baremaps.database.collection.DataMap;
 /**
  * A read-only {@code LongDataMap} for references baked by OpenStreetMap ways stored in Postgres.
  */
-public class PostgresReferenceMap extends DataMap<List<Long>> {
+public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
 
   public static final String SELECT_CONTAINS_KEY = """
       SELECT 1

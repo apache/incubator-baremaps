@@ -107,7 +107,7 @@ class EntityDataTypeGeometryBuilderTest {
 
   static final Node NODE_15 = new Node(15, INFO, ImmutableMap.of(), 3, 1);
 
-  static final DataMap<Coordinate> COORDINATE_CACHE = new MockDataMap(Arrays
+  static final DataMap<Long, Coordinate> COORDINATE_CACHE = new MockDataMap(Arrays
       .asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
           NODE_10, NODE_11, NODE_12, NODE_13, NODE_14, NODE_15)
       .stream()
@@ -129,7 +129,7 @@ class EntityDataTypeGeometryBuilderTest {
   static final Way WAY_5 =
       new Way(5, INFO, ImmutableMap.of(), ImmutableList.of(12l, 13l, 14l, 15l, 12l));
 
-  static final DataMap<List<Long>> REFERENCE_CACHE =
+  static final DataMap<Long, List<Long>> REFERENCE_CACHE =
       new MockDataMap(Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
           .collect(Collectors.toMap(w -> w.id(), w -> w.getNodes())));
 

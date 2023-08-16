@@ -37,10 +37,10 @@ class RelationGeometryBuilderTest {
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
     List<Entity> entities = new XmlEntityReader().stream(input).toList();
-    DataMap<Coordinate> coordinateMap = new MockDataMap<>(
+    DataMap<Long, Coordinate> coordinateMap = new MockDataMap<>(
         entities.stream().filter(e -> e instanceof Node).map(e -> (Node) e).collect(
             Collectors.toMap(n -> n.id(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    DataMap<List<Long>> referenceMap =
+    DataMap<Long, List<Long>> referenceMap =
         new MockDataMap<>(entities.stream().filter(e -> e instanceof Way).map(e -> (Way) e)
             .collect(Collectors.toMap(w -> w.id(), w -> w.getNodes())));
     Relation relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)

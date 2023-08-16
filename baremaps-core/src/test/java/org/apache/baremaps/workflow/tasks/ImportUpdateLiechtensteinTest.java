@@ -47,9 +47,9 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
     PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
-    DataMap<Coordinate> coordinateMap =
+    DataMap<Long, Coordinate> coordinateMap =
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new CoordinateDataType(), new OnHeapMemory()));
-    DataMap<List<Long>> referenceMap =
+    DataMap<Long, List<Long>> referenceMap =
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data

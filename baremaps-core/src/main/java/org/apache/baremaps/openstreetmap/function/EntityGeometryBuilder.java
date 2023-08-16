@@ -36,8 +36,8 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
    * @param coordinateMap the coordinate cache
    * @param referenceMap the reference cache
    */
-  public EntityGeometryBuilder(DataMap<Coordinate> coordinateMap,
-      DataMap<List<Long>> referenceMap) {
+  public EntityGeometryBuilder(DataMap<Long, Coordinate> coordinateMap,
+      DataMap<Long, List<Long>> referenceMap) {
     this.nodeGeometryBuilder = new NodeGeometryBuilder();
     this.wayGeometryBuilder = new WayGeometryBuilder(coordinateMap);
     this.relationGeometryBuilder = new RelationGeometryBuilder(coordinateMap, referenceMap);

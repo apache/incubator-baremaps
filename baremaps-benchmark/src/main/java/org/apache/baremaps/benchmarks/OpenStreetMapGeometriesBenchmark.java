@@ -75,9 +75,9 @@ public class OpenStreetMapGeometriesBenchmark {
   @Measurement(iterations = 3)
   public void store() throws IOException {
     Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
-    DataMap<Coordinate> coordinateMap = new IndexedDataMap<>(
+    DataMap<Long, Coordinate> coordinateMap = new IndexedDataMap<>(
         new AppendOnlyBuffer<>(new CoordinateDataType(), new MemoryMappedFile(file)));
-    DataMap<List<Long>> referenceMap =
+    DataMap<Long, List<Long>> referenceMap =
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);

@@ -26,7 +26,7 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class GeometryMapBuilder implements Consumer<Entity> {
 
-  private final DataMap<Geometry> geometryMap;
+  private final DataMap<Long, Geometry> geometryMap;
 
   private final Predicate<Entity> filter;
 
@@ -36,7 +36,7 @@ public class GeometryMapBuilder implements Consumer<Entity> {
    * @param geometryMap the geometry map
    * @param filter the entity filter
    */
-  public GeometryMapBuilder(DataMap<Geometry> geometryMap, Predicate<Entity> filter) {
+  public GeometryMapBuilder(DataMap<Long, Geometry> geometryMap, Predicate<Entity> filter) {
     this.geometryMap = geometryMap;
     this.filter = filter;
   }

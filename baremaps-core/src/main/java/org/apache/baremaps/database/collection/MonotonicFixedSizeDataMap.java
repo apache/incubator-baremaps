@@ -30,7 +30,7 @@ import org.apache.baremaps.database.type.LongDataType;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class MonotonicFixedSizeDataMap<E> extends DataMap<E> {
+public class MonotonicFixedSizeDataMap<E> extends DataMap<Long, E> {
 
   private final DataList<Long> offsets;
   private final DataList<Long> keys;
