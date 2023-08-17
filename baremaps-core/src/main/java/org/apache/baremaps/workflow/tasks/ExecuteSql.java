@@ -17,20 +17,17 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public record ExecuteSql(String database, Path file, boolean parallel) implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(ExecuteSql.class);
-
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var sql = removeComments(Files.readString(file));
-    var queries = Arrays.stream(sql.split(";"));
+    var script = clean(Files.readString(file));
+    var queries = split(script);
     if (parallel) {
       queries = queries.parallel();
     }
@@ -46,12 +43,22 @@ public record ExecuteSql(String database, Path file, boolean parallel) implement
   }
 
   /**
+   * Split a SQL string into multiple SQL statements.
+   *
+   * @param sql The SQL string.
+   * @return The SQL statements.
+   */
+  public static Stream<String> split(String sql) {
+    return Arrays.stream(sql.split("\\s*;\\s*(?=(?:[^']*'[^']*')*[^']*$)"));
+  }
+
+  /**
    * Remove comments from a SQL string.
    *
    * @param sql The SQL string.
    * @return The SQL string without comments.
    */
-  public static String removeComments(String sql) {
+  public static String clean(String sql) {
     var result = sql;
 
     // remove single line comments
@@ -66,5 +73,4 @@ public record ExecuteSql(String database, Path file, boolean parallel) implement
 
     return result;
   }
-
 }

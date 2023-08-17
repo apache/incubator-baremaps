@@ -13,14 +13,13 @@
 package org.apache.baremaps.workflow.tasks;
 
 
-
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class ExecuteSqlFileTest extends PostgresContainerTest {
+class ExecuteSqlIntegrationTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
