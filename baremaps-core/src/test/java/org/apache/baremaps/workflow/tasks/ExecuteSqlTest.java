@@ -18,22 +18,31 @@ import org.junit.jupiter.api.Test;
 
 class ExecuteSqlTest {
 
-  private static final String INPUT = """
-      SELECT 1;
-      -- test
-      SELECT 2;
-      /* test */
-      SELECT 3;
-      /*
-      test
-      */
-      """;
-
-  private static final String OUTPUT = "SELECT 1;SELECT 2;SELECT 3;";
+  @Test
+  void split() {
+    var input = """
+        SELECT 1;
+        SELECT split_part('a;b;c', ';', 1);
+        """;
+    var output = new String[] {"SELECT 1", "SELECT split_part('a;b;c', ';', 1)"};
+    var queries = ExecuteSql.split(input).toArray();
+    assertArrayEquals(output, queries);
+  }
 
   @Test
-  void removeComments() {
-    var queriesWithoutComments = ExecuteSql.removeComments(INPUT).strip();
-    assertEquals(OUTPUT.trim(), queriesWithoutComments.replace("\n", "").strip());
+  void clean() {
+    var input = """
+        SELECT 1;
+        -- test
+        SELECT 2;
+        /* test */
+        SELECT 3;
+        /*
+        test
+        */
+        """;
+    var output = "SELECT 1;SELECT 2;SELECT 3;";
+    var queriesWithoutComments = ExecuteSql.clean(input).strip();
+    assertEquals(output.trim(), queriesWithoutComments.replace("\n", "").strip());
   }
 }
