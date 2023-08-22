@@ -55,19 +55,6 @@ public interface TileStore {
   void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException;
 
   /**
-   * Writes the content of several tiles.
-   *
-   * @param tileCoords the tile coordinates
-   * @param blobs the content of the tiles
-   * @throws TileStoreException
-   */
-  default void write(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
-    for (int i = 0; i < tileCoords.size(); i++) {
-      write(tileCoords.get(i), blobs.get(i));
-    }
-  }
-
-  /**
    * Deletes the content of a tile.
    *
    * @param tileCoord the tile coordinate

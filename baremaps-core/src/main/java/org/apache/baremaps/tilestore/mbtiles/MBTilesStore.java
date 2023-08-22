@@ -108,26 +108,6 @@ public class MBTilesStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void write(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
-      for (int i = 0; i < tileCoords.size(); i++) {
-        TileCoord tileCoord = tileCoords.get(i);
-        ByteBuffer blob = blobs.get(i);
-        statement.setInt(1, tileCoord.z());
-        statement.setInt(2, tileCoord.x());
-        statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
-        statement.setBytes(4, blob.array());
-        statement.addBatch();
-      }
-      statement.executeBatch();
-    } catch (SQLException e) {
-      throw new TileStoreException(e);
-    }
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE_TILE)) {
