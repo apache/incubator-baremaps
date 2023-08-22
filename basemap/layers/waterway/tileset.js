@@ -19,11 +19,11 @@ export default {
         },
         {
             "minzoom": 10,
-            "maxzoom": 12,
+            "maxzoom": 13,
             "sql": "SELECT id, tags, geom FROM osm_waterway_z$zoom WHERE tags ->> 'waterway' IN ('river', 'stream')"
         },
         {
-            "minzoom": 12,
+            "minzoom": 13,
             "maxzoom": 20,
             "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'waterway'"
         }
