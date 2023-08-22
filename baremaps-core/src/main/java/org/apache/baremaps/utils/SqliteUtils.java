@@ -32,6 +32,8 @@ import org.sqlite.SQLiteConfig.SynchronousMode;
 import org.sqlite.SQLiteConfig.TempStore;
 import org.sqlite.SQLiteDataSource;
 
+import javax.sql.DataSource;
+
 /** A helper class for creating executing sql scripts onto a SQLite database */
 public final class SqliteUtils {
 
@@ -43,7 +45,7 @@ public final class SqliteUtils {
    * @param path the path to the SQLite database
    * @return the SQLite data source
    */
-  public static HikariDataSource createDataSource(Path path, boolean readOnly) {
+  public static DataSource createDataSource(Path path, boolean readOnly) {
     var sqliteConfig = new SQLiteConfig();
     sqliteConfig.setReadOnly(readOnly);
     sqliteConfig.setCacheSize(1000000);
@@ -56,8 +58,6 @@ public final class SqliteUtils {
     var sqliteDataSource = new SQLiteDataSource();
     sqliteDataSource.setConfig(sqliteConfig);
     sqliteDataSource.setUrl("jdbc:sqlite:" + path.toAbsolutePath());
-
-    System.out.println(path.toAbsolutePath());
 
     var hikariConfig = new HikariConfig();
     hikariConfig.setDataSource(sqliteDataSource);

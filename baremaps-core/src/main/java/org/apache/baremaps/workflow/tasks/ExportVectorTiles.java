@@ -74,7 +74,8 @@ public record ExportVectorTiles(
         StreamUtils.stream(TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom()))
             .peek(new ProgressLogger<>(count, 5000));
 
-    StreamUtils.batch(stream, 10).forEach(new TileChannel(sourceTileStore, targetTileStore));
+    StreamUtils.batch(stream, Runtime.getRuntime().availableProcessors() * 2)
+            .forEach(new TileChannel(sourceTileStore, targetTileStore));
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
