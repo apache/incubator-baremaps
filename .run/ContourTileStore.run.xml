@@ -1,12 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="basemap-mbtiles" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
-    <module name="baremaps-cli" />
-    <option name="PROGRAM_PARAMETERS" value="map mbtiles --mbtiles $USER_HOME$/Datasets/Baremaps/tiles.mbtiles --tilejson tileset.js --style style.js" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/basemap" />
+  <configuration default="false" name="ContourTileStore" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.raster.ContourTileStore" />
+    <module name="baremaps-core" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=$PROJECT_DIR$/../../osgeo/gdal/build/swig/java" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="org.apache.baremaps.server.ogcapi.*" />
+        <option name="PATTERN" value="org.apache.baremaps.raster.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
