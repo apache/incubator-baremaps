@@ -100,14 +100,15 @@ public class PostgresTileStore implements TileStore {
   /** {@inheritDoc} */
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
+    String sql = withQuery(tileCoord);
     try (Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
       int length = 0;
       if (queries.stream().anyMatch(query -> zoomPredicate(query, tileCoord.z()))) {
-        String sql = withQuery(tileCoord);
         logger.debug("Executing query: {}", sql);
+        long start = System.currentTimeMillis();
         try (GZIPOutputStream gzip = new GZIPOutputStream(data);
             ResultSet resultSet = statement.executeQuery(sql)) {
           while (resultSet.next()) {
@@ -115,6 +116,13 @@ public class PostgresTileStore implements TileStore {
             length += bytes.length;
             gzip.write(bytes);
           }
+        }
+        long stop = System.currentTimeMillis();
+        long duration = stop - start;
+        if (duration > 1000) {
+          logger.warn("Executed query for tile {} in {} ms: {}", tileCoord, duration, sql);
+        } else {
+          logger.debug("Executed query for tile {} in {} ms: {}", tileCoord, duration, sql);
         }
       }
 
