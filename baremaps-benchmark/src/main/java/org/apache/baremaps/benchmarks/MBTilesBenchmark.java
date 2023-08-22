@@ -18,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -64,28 +63,6 @@ public class MBTilesBenchmark {
       random.nextBytes(bytes);
       mbTilesStore.write(new TileCoord(0, 0, i), ByteBuffer.wrap(bytes));
     }
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  public void writeMBTilesBatch(MBTilesBenchmark benchmark) throws TileStoreException {
-    var coords = new ArrayList<TileCoord>();
-    var buffers = new ArrayList<ByteBuffer>();
-    for (int i = 0; i < benchmark.iterations; i++) {
-      var bytes = new byte[1 << 16];
-      random.nextBytes(bytes);
-      coords.add(new TileCoord(0, 0, i));
-      buffers.add(ByteBuffer.wrap(bytes));
-      if (coords.size() == 100) {
-        random.nextBytes(bytes);
-        mbTilesStore.write(coords, buffers);
-        coords.clear();
-        buffers.clear();
-      }
-    }
-    mbTilesStore.write(coords, buffers);
-    coords.clear();
-    buffers.clear();
   }
 
   public static void main(String[] args) throws RunnerException {

@@ -25,14 +25,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.sql.DataSource;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConfig.JournalMode;
 import org.sqlite.SQLiteConfig.LockingMode;
 import org.sqlite.SQLiteConfig.SynchronousMode;
 import org.sqlite.SQLiteConfig.TempStore;
 import org.sqlite.SQLiteDataSource;
-
-import javax.sql.DataSource;
 
 /** A helper class for creating executing sql scripts onto a SQLite database */
 public final class SqliteUtils {

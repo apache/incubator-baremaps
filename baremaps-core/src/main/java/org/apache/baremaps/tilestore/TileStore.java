@@ -15,8 +15,6 @@ package org.apache.baremaps.tilestore;
 
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 /** Represents a store for tiles. */
 public interface TileStore {
@@ -29,21 +27,6 @@ public interface TileStore {
    * @throws TileStoreException
    */
   ByteBuffer read(TileCoord tileCoord) throws TileStoreException;
-
-  /**
-   * Reads the content of several tiles.
-   *
-   * @param tileCoords the tile coordinates
-   * @return the content of the tiles
-   * @throws TileStoreException
-   */
-  default List<ByteBuffer> read(List<TileCoord> tileCoords) throws TileStoreException {
-    var blobs = new ArrayList<ByteBuffer>(tileCoords.size());
-    for (var tileCoord : tileCoords) {
-      blobs.add(read(tileCoord));
-    }
-    return blobs;
-  }
 
   /**
    * Writes the content of a tile.
