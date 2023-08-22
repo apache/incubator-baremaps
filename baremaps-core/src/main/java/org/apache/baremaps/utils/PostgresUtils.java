@@ -44,7 +44,7 @@ public final class PostgresUtils {
    * @return the data source
    */
   public static HikariDataSource createDataSource(String url) {
-    return createDataSource(url, Runtime.getRuntime().availableProcessors());
+    return createDataSource(url, Runtime.getRuntime().availableProcessors() * 2);
   }
 
   /**
