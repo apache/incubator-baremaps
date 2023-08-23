@@ -119,10 +119,10 @@ public class PostgresTileStore implements TileStore {
         }
         long stop = System.currentTimeMillis();
         long duration = stop - start;
-        if (duration > 1000) {
+
+        // Log slow queries (> 10s)
+        if (duration > 10_000) {
           logger.warn("Executed query for tile {} in {} ms: {}", tileCoord, duration, sql);
-        } else {
-          logger.debug("Executed query for tile {} in {} ms: {}", tileCoord, duration, sql);
         }
       }
 
