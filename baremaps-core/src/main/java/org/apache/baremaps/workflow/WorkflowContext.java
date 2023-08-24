@@ -33,7 +33,7 @@ public class WorkflowContext {
    * @return the data source
    */
   public DataSource getDataSource(String database) {
-    return dataSources.computeIfAbsent(database, d -> PostgresUtils.createDataSource(d));
+    return dataSources.computeIfAbsent(database, PostgresUtils::createDataSource);
   }
 
 }

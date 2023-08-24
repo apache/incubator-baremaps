@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.sql.DataSource;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConfig.JournalMode;
 import org.sqlite.SQLiteConfig.LockingMode;
@@ -43,7 +44,7 @@ public final class SqliteUtils {
    * @param path the path to the SQLite database
    * @return the SQLite data source
    */
-  public static HikariDataSource createDataSource(Path path, boolean readOnly) {
+  public static DataSource createDataSource(Path path, boolean readOnly) {
     var sqliteConfig = new SQLiteConfig();
     sqliteConfig.setReadOnly(readOnly);
     sqliteConfig.setCacheSize(1000000);
@@ -56,8 +57,6 @@ public final class SqliteUtils {
     var sqliteDataSource = new SQLiteDataSource();
     sqliteDataSource.setConfig(sqliteConfig);
     sqliteDataSource.setUrl("jdbc:sqlite:" + path.toAbsolutePath());
-
-    System.out.println(path.toAbsolutePath());
 
     var hikariConfig = new HikariConfig();
     hikariConfig.setDataSource(sqliteDataSource);

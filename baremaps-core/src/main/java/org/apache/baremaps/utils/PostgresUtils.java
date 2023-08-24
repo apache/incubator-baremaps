@@ -23,13 +23,18 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A helper class for creating data sources and executing queries. */
 public final class PostgresUtils {
 
+  private static final Logger logger = LoggerFactory.getLogger(PostgresUtils.class);
+
   private PostgresUtils() {}
 
-  public static HikariDataSource createDataSource(String host, Integer port, String database,
+  public static DataSource createDataSource(String host, Integer port, String database,
       String username, String password) {
     return createDataSource(
         String.format("jdbc:postgresql://%s:%s/%s?&user=%s&password=%s", host, port,
@@ -43,8 +48,8 @@ public final class PostgresUtils {
    * @param url the JDBC url
    * @return the data source
    */
-  public static HikariDataSource createDataSource(String url) {
-    return createDataSource(url, Runtime.getRuntime().availableProcessors());
+  public static DataSource createDataSource(String url) {
+    return createDataSource(url, Runtime.getRuntime().availableProcessors() * 2);
   }
 
   /**
@@ -54,7 +59,7 @@ public final class PostgresUtils {
    * @param poolSize the pool size
    * @return the data source
    */
-  public static HikariDataSource createDataSource(String url, int poolSize) {
+  public static DataSource createDataSource(String url, int poolSize) {
     if (poolSize < 1) {
       throw new IllegalArgumentException("PoolSize cannot be inferior to 1");
     }

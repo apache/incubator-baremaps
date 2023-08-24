@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.baremaps.tilestore.TileCoord;
@@ -101,26 +100,6 @@ public class MBTilesStore implements TileStore {
       statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
       statement.setBytes(4, blob.array());
       statement.executeUpdate();
-    } catch (SQLException e) {
-      throw new TileStoreException(e);
-    }
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void write(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
-      for (int i = 0; i < tileCoords.size(); i++) {
-        TileCoord tileCoord = tileCoords.get(i);
-        ByteBuffer blob = blobs.get(i);
-        statement.setInt(1, tileCoord.z());
-        statement.setInt(2, tileCoord.x());
-        statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
-        statement.setBytes(4, blob.array());
-        statement.addBatch();
-      }
-      statement.executeBatch();
     } catch (SQLException e) {
       throw new TileStoreException(e);
     }

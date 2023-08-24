@@ -29,6 +29,7 @@ public class PostgresQuery {
   private final Integer minzoom;
   private final Integer maxzoom;
   private final String sql;
+  private final PlainSelect ast;
 
   /**
    * Constructs a {@code PostgresQuery}.
@@ -43,6 +44,7 @@ public class PostgresQuery {
     this.minzoom = minzoom;
     this.maxzoom = maxzoom;
     this.sql = sql;
+    this.ast = parse(sql);
   }
 
   /**
@@ -87,7 +89,7 @@ public class PostgresQuery {
    * @return the AST
    */
   public PlainSelect getAst() {
-    return parse(sql);
+    return ast;
   }
 
   private PlainSelect parse(String query) {

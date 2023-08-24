@@ -13,7 +13,7 @@ export default {
     id: 'boundary',
     queries: [
         {
-            minzoom: 10,
+            minzoom: 13,
             maxzoom: 20,
             sql:
                 "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'boundary'",
