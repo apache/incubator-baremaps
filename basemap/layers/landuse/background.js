@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
-import {withFillSortKey, asLayoutProperty, asPaintProperty} from "../../utils/utils.js";
+import {withFillSortKey, asLayoutProperty, asPaintProperty, asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
 let directives = [
@@ -109,17 +109,17 @@ let directives = [
         filter: ['==', ['get', 'landuse'], 'pedestrian'],
         'fill-color': theme.landuseBackgroundPedestrianFillColor,
     },
-].map(withFillSortKey);
+];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'landuse_background',
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'landuse',
-    layout: asLayoutProperty(directives, {
+    layout: {
         visibility: 'visible',
-    }),
-    paint: asPaintProperty(directives, {
-        'fill-antialias': true,
-    }),
-}
+    },
+    paint: {
+        'fill-antialias': false,
+    },
+});

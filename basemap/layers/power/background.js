@@ -22,8 +22,8 @@ export default {
         visibility: 'visible',
     },
     paint: {
+        'fill-antialias': false,
         'fill-color': theme.powerBackgroundPowerPlantFillColor,
-        'fill-antialias': true,
         'fill-outline-color': theme.powerBackgroundPowerPlantFillOutlineColor,
     },
 }

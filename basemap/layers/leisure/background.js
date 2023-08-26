@@ -45,6 +45,6 @@ export default asLayerObject(withSortKeys(directives), {
         visibility: 'visible',
     },
     paint: {
-        'fill-antialias': true,
+        'fill-antialias': false,
     },
 });

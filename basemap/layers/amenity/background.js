@@ -44,4 +44,10 @@ export default asLayerObject(withSortKeys(directives), {
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'amenity',
+    layout: {
+        visibility: 'visible',
+    },
+    paint: {
+        'fill-antialias': false,
+    },
 });
