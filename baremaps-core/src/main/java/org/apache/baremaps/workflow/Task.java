@@ -43,6 +43,7 @@ import org.apache.baremaps.workflow.tasks.*;
     @JsonSubTypes.Type(value = LogMessage.class, name = "LogMessage"),
     @JsonSubTypes.Type(value = UnzipFile.class, name = "UnzipFile"),
     @JsonSubTypes.Type(value = UngzipFile.class, name = "UngzipFile"),
+    @JsonSubTypes.Type(value = DecompressBZip2.class, name = "DecompressBZip2"),
     @JsonSubTypes.Type(value = UpdateOpenStreetMap.class, name = "UpdateOpenStreetMap"),
     @JsonSubTypes.Type(value = CreateGeonamesIndex.class, name = "CreateGeonamesIndex"),
     @JsonSubTypes.Type(value = CreateIplocIndex.class, name = "CreateIplocIndex")})
