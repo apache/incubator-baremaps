@@ -30,7 +30,7 @@ class ExecuteCommandTest {
   @Test
   @Disabled
   void execute() throws Exception {
-    var path = Paths.get("test.txt").toAbsolutePath();
+    var path = Paths.get("file.txt").toAbsolutePath();
     new ExecuteCommand(String.format("echo test > %s", path)).execute(new WorkflowContext());
     assertTrue(Files.exists(path));
     assertTrue(Files.readString(path).contains("test"));
