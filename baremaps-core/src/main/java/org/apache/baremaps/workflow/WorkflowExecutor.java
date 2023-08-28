@@ -210,28 +210,39 @@ public class WorkflowExecutor implements AutoCloseable {
    */
   private void logStepMeasures() {
     logger.info("----------------------------------------");
+
     var workflowStart = stepMeasures.stream()
-        .mapToLong(measures -> measures.stepMeasures.stream()
-            .mapToLong(measure -> measure.start)
-            .min().orElseGet(() -> 0L))
-        .min().orElseGet(() -> 0L);
+            .flatMapToLong(measures -> measures.stepMeasures.stream()
+                .mapToLong(measure -> measure.start))
+            .min();
+
     var workflowEnd = stepMeasures.stream()
-        .mapToLong(measures -> measures.stepMeasures.stream()
-            .mapToLong(measure -> measure.end)
-            .max().orElseGet(() -> 0L))
-        .max().orElseGet(() -> 0L);
-    var workflowDuration = Duration.ofMillis(workflowEnd - workflowStart);
-    logger.info("Workflow graph: {}", this.graph);
-    logger.info("  Duration: {}", formatDuration(workflowDuration));
+            .flatMapToLong(measures -> measures.stepMeasures.stream()
+                .mapToLong(measure -> measure.end))
+            .max();
+
+    if (workflowStart.isPresent() && workflowEnd.isPresent()) {
+      var workflowDuration = Duration.ofMillis(workflowEnd.getAsLong() - workflowStart.getAsLong());
+      logger.info("Workflow graph: {}", this.graph);
+      logger.info("  Duration: {}", formatDuration(workflowDuration));
+    } else {
+      logger.info("Workflow graph: {}", this.graph);
+      logger.info("  Duration: unknown");
+    }
 
     for (var stepMeasure : this.stepMeasures) {
-      var stepStart =
-          stepMeasure.stepMeasures.stream().mapToLong(measure -> measure.start).min().getAsLong();
-      var stepEnd =
-          stepMeasure.stepMeasures.stream().mapToLong(measure -> measure.end).max().getAsLong();
-      var stepDuration = Duration.ofMillis(stepEnd - stepStart);
-      logger.info("Step: {}, Duration: {} ms", stepMeasure.step.getId(),
-          formatDuration(stepDuration));
+      var stepStart = stepMeasure.stepMeasures.stream()
+                  .mapToLong(measure -> measure.start).min();
+      var stepEnd = stepMeasure.stepMeasures.stream()
+              .mapToLong(measure -> measure.end).max();
+
+      if (stepStart.isPresent() && stepEnd.isPresent()) {
+        var stepDuration = Duration.ofMillis(stepEnd.getAsLong() - stepStart.getAsLong());
+        logger.info("Step: {}, Duration: {} ms", stepMeasure.step.getId(),
+            formatDuration(stepDuration));
+      } else {
+        logger.info("Step: {}, Duration: unknown", stepMeasure.step.getId());
+      }
 
       for (var taskMeasure : stepMeasure.stepMeasures) {
         var taskDuration = Duration.ofMillis(taskMeasure.end - taskMeasure.start);
