@@ -25,9 +25,13 @@ import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.stream.StreamException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A consumer for importing OpenStreetMap changes in a database. */
 public class ChangeImporter implements Consumer<Change> {
+
+  private static final Logger logger = LoggerFactory.getLogger(ChangeImporter.class);
 
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -52,28 +56,61 @@ public class ChangeImporter implements Consumer<Change> {
   /** {@inheritDoc} */
   @Override
   public void accept(Change change) {
+    var nodes = change.getEntities().stream()
+        .filter(entity -> entity instanceof Node)
+        .map(entity -> (Node) entity)
+        .toList();
+    var ways = change.getEntities().stream()
+        .filter(entity -> entity instanceof Way)
+        .map(entity -> (Way) entity)
+        .toList();
+    var relations = change.getEntities().stream()
+        .filter(entity -> entity instanceof Relation)
+        .map(entity -> (Relation) entity)
+        .toList();
     try {
-      for (var entity : change.getEntities()) {
-        switch (change.getType()) {
-          case CREATE:
-          case MODIFY:
-            if (entity instanceof Node node) {
-              nodeRepository.put(node);
-            } else if (entity instanceof Way way) {
-              wayRepository.put(way);
-            } else if (entity instanceof Relation relation) {
-              relationRepository.put(relation);
-            }
-            break;
-          case DELETE:
-            if (entity instanceof Node node) {
-              nodeRepository.delete(node.id());
-            } else if (entity instanceof Way way) {
-              wayRepository.delete(way.id());
-            } else if (entity instanceof Relation relation) {
-              relationRepository.delete(relation.id());
-            }
-            break;
+      switch (change.getType()) {
+        case CREATE -> {
+          if (!nodes.isEmpty()) {
+            logger.info("Creating {} nodes", nodes.size());
+            nodeRepository.copy(nodes);
+          }
+          if (!ways.isEmpty()) {
+            logger.info("Creating {} ways", ways.size());
+            wayRepository.copy(ways);
+          }
+          if (!relations.isEmpty()) {
+            logger.info("Creating {} relations", relations.size());
+            relationRepository.copy(relations);
+          }
+        }
+        case MODIFY -> {
+          if (!nodes.isEmpty()) {
+            logger.info("Modifying {} nodes", nodes.size());
+            nodeRepository.put(nodes);
+          }
+          if (!ways.isEmpty()) {
+            logger.info("Modifying {} ways", ways.size());
+            wayRepository.put(ways);
+          }
+          if (!relations.isEmpty()) {
+            logger.info("Modifying {} relations", relations.size());
+            relationRepository.put(relations);
+          }
+        }
+        case DELETE -> {
+          if (!nodes.isEmpty()) {
+            logger.info("Deleting {} nodes", nodes.size());
+            nodeRepository.delete(nodes.stream().map(Node::id).toList());
+          }
+          if (!ways.isEmpty()) {
+            logger.info("Deleting {} ways", ways.size());
+            wayRepository.delete(ways.stream().map(Way::id).toList());
+          }
+          if (!relations.isEmpty()) {
+            logger.info("Deleting {} relations", relations.size());
+            relationRepository.delete(relations.stream().map(Relation::id).toList());
+          }
         }
       }
     } catch (RepositoryException e) {
