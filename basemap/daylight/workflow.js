@@ -26,7 +26,7 @@ export default {
         //   "path": "data/data.osm.pbf"
         // },
         // {
-        //   "type": "ImportOpenStreetMap",
+        //   "type": "ImportOsmPbf",
         //   "file": "data/data.osm.pbf",
         //   "database": config.database,
         //   "databaseSrid": 3857
