@@ -23,16 +23,11 @@ import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.ChangeEntitiesHandler;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.postgres.PostgresCoordinateMap;
 import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
@@ -45,7 +40,6 @@ import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,33 +50,19 @@ public record UpdateOpenStreetMap(Object database, Integer databaseSrid) impleme
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
-    DataMap<Long, Coordinate> coordinateMap = new PostgresCoordinateMap(datasource);
-    DataMap<Long, List<Long>> referenceMap = new PostgresReferenceMap(datasource);
-    HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
-    Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
-    Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
-    Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
-    execute(
-        coordinateMap,
-        referenceMap,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        databaseSrid);
-  }
+    var coordinateMap = new PostgresCoordinateMap(datasource);
+    var referenceMap = new PostgresReferenceMap(datasource);
+    var headerRepository = new PostgresHeaderRepository(datasource);
+    var nodeRepository = new PostgresNodeRepository(datasource);
+    var wayRepository = new PostgresWayRepository(datasource);
+    var relationRepository = new PostgresRelationRepository(datasource);
 
-  public static void execute(DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
-      HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
-      Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
-      int srid) throws Exception {
     var header = headerRepository.selectLatest();
     var replicationUrl = header.getReplicationUrl();
     var sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
     var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
-    var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
+    var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
     var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
     var prepareChange = consumeThenReturn(prepareGeometries);
     var saveChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
