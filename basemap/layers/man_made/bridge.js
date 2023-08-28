@@ -28,6 +28,6 @@ export default asLayerObject(directives, {
         visibility: 'visible',
     },
     paint: {
-        'fill-antialias': true,
+        'fill-antialias': false,
     },
 });

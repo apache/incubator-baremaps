@@ -9,17 +9,17 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
-import {asLayerObject, withFillSortKey} from "../../utils/utils.js";
+import {asLayerObject, withFillSortKey, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'landuse'], 'grass'],
-        'fill-color': theme.landuseOverlayGrassFillColor,
-    },
-    {
         filter: ['==', ['get', 'landuse'], 'forest'],
         'fill-color': theme.landuseOverlayForestFillColor,
+    },
+    {
+        filter: ['==', ['get', 'landuse'], 'grass'],
+        'fill-color': theme.landuseOverlayGrassFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'greenhouse_horticulture'],
@@ -35,7 +35,7 @@ let directives = [
     },
 ];
 
-export default asLayerObject(withFillSortKey(directives), {
+export default asLayerObject(withSortKeys(directives), {
     id: 'landuse_overlay',
     type: 'fill',
     source: 'baremaps',
@@ -44,6 +44,6 @@ export default asLayerObject(withFillSortKey(directives), {
         visibility: 'visible',
     },
     paint: {
-        'fill-antialias': true,
+        'fill-antialias': false,
     },
 });

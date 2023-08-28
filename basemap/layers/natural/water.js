@@ -20,7 +20,7 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'fill-antialias': true,
+        'fill-antialias': false,
     },
     directives: [
         {

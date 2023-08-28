@@ -21,8 +21,8 @@ export default {
         visibility: 'visible',
     },
     paint: {
+        'fill-antialias': false,
         'fill-color': theme.buildingShapeFillColor,
-        'fill-antialias': true,
         'fill-outline-color': theme.buildingShapeFillOutlineColor,
     },
 }
