@@ -278,7 +278,7 @@ public class WorkflowExecutor implements AutoCloseable {
       builder.append(sec).append(" s ");
     }
     final long ms = duration.toMillis() - Duration.ofSeconds(duration.toSeconds()).toMillis();
-    if (ms > 0) {
+    if (ms >= 0) {
       builder.append(ms).append(" ms ");
     }
     return builder.toString();
