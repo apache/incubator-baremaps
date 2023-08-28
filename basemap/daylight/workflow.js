@@ -50,7 +50,7 @@ export default {
           {
             "type": "DownloadUrl",
             "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/coastlines-v1.29.tgz",
-            "path": "data/coastlines.osc.bz2"
+            "path": "data/coastlines.tgz"
           },
           {
             "type": "DownloadUrl",
@@ -83,8 +83,8 @@ export default {
         {
           "type": "DecompressFile",
           "compression": "bzip2",
-          "source": "data/coastlines.osc.bz2",
-          "target": "data/coastlines.osc"
+          "source": "data/coastlines.tgz",
+          "target": "data/coastlines"
         },
       ]
     },
