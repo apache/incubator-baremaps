@@ -13,12 +13,12 @@ export default {
     "id": "natural",
     "queries": [
         {
-            "minzoom": 3,
-            "maxzoom": 6,
+            "minzoom": 1,
+            "maxzoom": 8,
             "sql": "SELECT id, tags, geom FROM osm_natural_z$zoom WHERE tags ->> 'natural' IN ('wood', 'scrub', 'heath', 'grassland', 'bare_rock', 'scree', 'shingle', 'sand', 'mud', 'water', 'wetland', 'glacier', 'beach')"
         },
         {
-            "minzoom": 6,
+            "minzoom": 8,
             "maxzoom": 13,
             "sql": "SELECT id, tags, geom FROM osm_natural_z$zoom WHERE tags ->> 'natural' IN ('wood', 'scrub', 'heath', 'grassland', 'bare_rock', 'scree', 'shingle', 'sand', 'mud', 'water', 'wetland', 'glacier', 'beach')"
         },
