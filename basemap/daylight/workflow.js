@@ -20,21 +20,21 @@ export default {
       "id": "openstreetmap-data",
       "needs": [],
       "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/planet-v1.29.osm.pbf",
-          "path": "data/data.osm.pbf"
-        },
-        {
-          "type": "ImportOpenStreetMap",
-          "file": "data/data.osm.pbf",
-          "database": config.database,
-          "databaseSrid": 3857
-        },
+        // {
+        //   "type": "DownloadUrl",
+        //   "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/planet-v1.29.osm.pbf",
+        //   "path": "data/data.osm.pbf"
+        // },
+        // {
+        //   "type": "ImportOpenStreetMap",
+        //   "file": "data/data.osm.pbf",
+        //   "database": config.database,
+        //   "databaseSrid": 3857
+        // },
       ]
     },
     {
-        "id": "openstreetmap-roads",
+        "id": "openstreetmap-download",
         "needs": ["openstreetmap-data"],
         "tasks": [
           {
@@ -43,66 +43,48 @@ export default {
             "path": "data/roads.osc.bz2"
           },
           {
-            "type": "DecompressFile",
-            "compression": "bzip2",
-            "file": "data/roads.osc.bz2",
-            "directory": "data/roads.osc"
+            "type": "DownloadUrl",
+            "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/admin-v1.29.osc.bz2",
+            "path": "data/admin.osc.bz2"
+          },
+          {
+            "type": "DownloadUrl",
+            "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/coastlines-v1.29.tgz",
+            "path": "data/coastlines.osc.bz2"
+          },
+          {
+            "type": "DownloadUrl",
+            "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/preferred-localization-v1.29.tsv",
+            "path": "data/preferred-localization.tsv"
+          },
+          {
+            "type": "DownloadUrl",
+            "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/important-features-v1.29.json",
+            "path": "data/important-features.json"
           },
         ]
     },
     {
-      "id": "openstreetmap-admin",
-      "needs": ["openstreetmap-data"],
+      "id": "openstreetmap-decompress",
+      "needs": ["openstreetmap-download"],
       "tasks": [
         {
-          "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/admin-v1.29.osc.bz2",
-          "path": "data/admin.osc.bz2"
+          "type": "DecompressFile",
+          "compression": "bzip2",
+          "source": "data/roads.osc.bz2",
+          "target": "data/roads.osc"
         },
         {
           "type": "DecompressFile",
           "compression": "bzip2",
-          "file": "data/admin.osc.bz2",
-          "directory": "data/admin.osc"
-        },
-      ]
-    },
-    {
-      "id": "openstreetmap-coastlines",
-      "needs": ["openstreetmap-data"],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/coastlines-v1.29.tgz",
-          "path": "data/coastlines.osc.bz2"
+          "source": "data/admin.osc.bz2",
+          "target": "data/admin.osc"
         },
         {
           "type": "DecompressFile",
           "compression": "bzip2",
-          "file": "data/coastlines.osc.bz2",
-          "directory": "data/coastlines.osc"
-        },
-      ]
-    },
-    {
-      "id": "openstreetmap-preferred-localization",
-      "needs": ["openstreetmap-data"],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/preferred-localization-v1.29.tsv",
-          "path": "data/preferred-localization.tsv"
-        },
-      ]
-    },
-    {
-      "id": "openstreetmap-important-features",
-      "needs": ["openstreetmap-data"],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/important-features-v1.29.json",
-          "path": "data/important-features.json"
+          "source": "data/coastlines.osc.bz2",
+          "target": "data/coastlines.osc"
         },
       ]
     },
