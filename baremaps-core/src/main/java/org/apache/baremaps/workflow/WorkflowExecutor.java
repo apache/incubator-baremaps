@@ -212,14 +212,14 @@ public class WorkflowExecutor implements AutoCloseable {
     logger.info("----------------------------------------");
 
     var workflowStart = stepMeasures.stream()
-            .flatMapToLong(measures -> measures.stepMeasures.stream()
-                .mapToLong(measure -> measure.start))
-            .min();
+        .flatMapToLong(measures -> measures.stepMeasures.stream()
+            .mapToLong(measure -> measure.start))
+        .min();
 
     var workflowEnd = stepMeasures.stream()
-            .flatMapToLong(measures -> measures.stepMeasures.stream()
-                .mapToLong(measure -> measure.end))
-            .max();
+        .flatMapToLong(measures -> measures.stepMeasures.stream()
+            .mapToLong(measure -> measure.end))
+        .max();
 
     if (workflowStart.isPresent() && workflowEnd.isPresent()) {
       var workflowDuration = Duration.ofMillis(workflowEnd.getAsLong() - workflowStart.getAsLong());
@@ -232,9 +232,9 @@ public class WorkflowExecutor implements AutoCloseable {
 
     for (var stepMeasure : this.stepMeasures) {
       var stepStart = stepMeasure.stepMeasures.stream()
-                  .mapToLong(measure -> measure.start).min();
+          .mapToLong(measure -> measure.start).min();
       var stepEnd = stepMeasure.stepMeasures.stream()
-              .mapToLong(measure -> measure.end).max();
+          .mapToLong(measure -> measure.end).max();
 
       if (stepStart.isPresent() && stepEnd.isPresent()) {
         var stepDuration = Duration.ofMillis(stepEnd.getAsLong() - stepStart.getAsLong());
@@ -262,24 +262,28 @@ public class WorkflowExecutor implements AutoCloseable {
   private static String formatDuration(Duration duration) {
     var builder = new StringBuilder();
     var days = duration.toDays();
-    if (days > 0) {
-      builder.append(days).append(" days ");
-    }
-    final long hrs = duration.toHours() - Duration.ofDays(duration.toDays()).toHours();
-    if (hrs > 0) {
-      builder.append(hrs).append(" hrs ");
-    }
-    final long min = duration.toMinutes() - Duration.ofHours(duration.toHours()).toMinutes();
-    if (min > 0) {
-      builder.append(min).append(" min ");
-    }
-    final long sec = duration.toSeconds() - Duration.ofMinutes(duration.toMinutes()).toSeconds();
-    if (sec > 0) {
-      builder.append(sec).append(" s ");
-    }
-    final long ms = duration.toMillis() - Duration.ofSeconds(duration.toSeconds()).toMillis();
-    if (ms >= 0) {
-      builder.append(ms).append(" ms ");
+    if (duration.isZero()) {
+      builder.append("0 ms");
+    } else {
+      if (days > 0) {
+        builder.append(days).append(" days ");
+      }
+      final long hrs = duration.toHours() - Duration.ofDays(duration.toDays()).toHours();
+      if (hrs > 0) {
+        builder.append(hrs).append(" hrs ");
+      }
+      final long min = duration.toMinutes() - Duration.ofHours(duration.toHours()).toMinutes();
+      if (min > 0) {
+        builder.append(min).append(" min ");
+      }
+      final long sec = duration.toSeconds() - Duration.ofMinutes(duration.toMinutes()).toSeconds();
+      if (sec > 0) {
+        builder.append(sec).append(" s ");
+      }
+      final long ms = duration.toMillis() - Duration.ofSeconds(duration.toSeconds()).toMillis();
+      if (ms > 0) {
+        builder.append(ms).append(" ms ");
+      }
     }
     return builder.toString();
   }
