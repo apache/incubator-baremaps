@@ -82,7 +82,7 @@ export default {
         },
         {
           "type": "DecompressFile",
-          "compression": "bzip2",
+          "compression": "targz",
           "source": "data/coastlines.tgz",
           "target": "data/coastlines"
         },
