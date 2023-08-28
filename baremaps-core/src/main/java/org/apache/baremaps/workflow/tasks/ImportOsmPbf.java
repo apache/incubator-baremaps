@@ -50,7 +50,7 @@ public record ImportOpenStreetMap(Path file, Object database, Integer databaseSr
     implements
       Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
+  private static final Logger logger = LoggerFactory.getLogger(ImportOsmPbf.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

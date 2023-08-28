@@ -28,7 +28,7 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 @Command(name = "import-osm", description = "Import OpenStreetMap data in Postgres.")
-public class ImportOpenStreetMap implements Callable<Integer> {
+public class ImportOsmPbf implements Callable<Integer> {
 
   @Mixin
   private Options options;
@@ -47,8 +47,10 @@ public class ImportOpenStreetMap implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new org.apache.baremaps.workflow.tasks.ImportOpenStreetMap(file.toAbsolutePath(),
-        database, srid).execute(new WorkflowContext());
+    new org.apache.baremaps.workflow.tasks.ImportOsmPbf(
+        file.toAbsolutePath(),
+        database,
+        srid).execute(new WorkflowContext());
     return 0;
   }
 }

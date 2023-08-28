@@ -61,7 +61,7 @@ class ImportUpdateDataTest extends PostgresRepositoryTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    ImportOpenStreetMap.execute(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,
+    ImportOsmPbf.execute(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,
         nodeRepository, wayRepository, relationRepository, 3857);
 
     headerRepository.put(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),

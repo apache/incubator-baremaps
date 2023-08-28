@@ -58,7 +58,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    ImportOpenStreetMap.execute(LIECHTENSTEIN_OSM_PBF, coordinateMap, referenceMap,
+    ImportOsmPbf.execute(LIECHTENSTEIN_OSM_PBF, coordinateMap, referenceMap,
         headerRepository,
         nodeRepository, wayRepository, relationRepository, 3857);
 

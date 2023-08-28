@@ -25,7 +25,7 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class ImportOpenStreetMapTest extends PostgresContainerTest {
+class ImportOsmPbfTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
@@ -33,7 +33,7 @@ class ImportOpenStreetMapTest extends PostgresContainerTest {
     var file = TestFiles.resolve("data.osm.pbf");
     var jdbcUrl = jdbcUrl();
     var srid = 3857;
-    var task = new ImportOpenStreetMap(file, jdbcUrl, srid);
+    var task = new ImportOsmPbf(file, jdbcUrl, srid);
     task.execute(new WorkflowContext());
   }
 }

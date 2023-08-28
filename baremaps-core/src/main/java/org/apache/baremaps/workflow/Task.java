@@ -38,7 +38,7 @@ import org.apache.baremaps.workflow.tasks.*;
     @JsonSubTypes.Type(value = ExecuteSqlScript.class, name = "ExecuteSqlScript"),
     @JsonSubTypes.Type(value = ExportVectorTiles.class, name = "ExportVectorTiles"),
     @JsonSubTypes.Type(value = ImportGeoPackage.class, name = "ImportGeoPackage"),
-    @JsonSubTypes.Type(value = ImportOpenStreetMap.class, name = "ImportOpenStreetMap"),
+    @JsonSubTypes.Type(value = ImportOsmPbf.class, name = "ImportOsmPbf"),
     @JsonSubTypes.Type(value = ImportShapefile.class, name = "ImportShapefile"),
     @JsonSubTypes.Type(value = LogMessage.class, name = "LogMessage"),
     @JsonSubTypes.Type(value = UnzipFile.class, name = "UnzipFile"),
