@@ -213,13 +213,13 @@ public class WorkflowExecutor implements AutoCloseable {
     var workflowStart = stepMeasures.stream()
         .mapToLong(measures -> measures.stepMeasures.stream()
             .mapToLong(measure -> measure.start)
-            .min().getAsLong())
-        .min().getAsLong();
+            .min().orElseGet(() -> 0L))
+        .min().orElseGet(() -> 0L);
     var workflowEnd = stepMeasures.stream()
         .mapToLong(measures -> measures.stepMeasures.stream()
             .mapToLong(measure -> measure.end)
-            .max().getAsLong())
-        .max().getAsLong();
+            .max().orElseGet(() -> 0L))
+        .max().orElseGet(() -> 0L);
     var workflowDuration = Duration.ofMillis(workflowEnd - workflowStart);
     logger.info("Workflow graph: {}", this.graph);
     logger.info("  Duration: {}", formatDuration(workflowDuration));
