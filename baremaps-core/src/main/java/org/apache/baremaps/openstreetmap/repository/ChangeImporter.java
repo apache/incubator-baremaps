@@ -60,56 +60,48 @@ public class ChangeImporter implements Consumer<Change> {
         .filter(entity -> entity instanceof Node)
         .map(entity -> (Node) entity)
         .toList();
+    var nodeIds = nodes.stream().map(Node::id).toList();
     var ways = change.getEntities().stream()
         .filter(entity -> entity instanceof Way)
         .map(entity -> (Way) entity)
         .toList();
+    var wayIds = ways.stream().map(Way::id).toList();
     var relations = change.getEntities().stream()
         .filter(entity -> entity instanceof Relation)
         .map(entity -> (Relation) entity)
         .toList();
+    var relationIds = relations.stream().map(Relation::id).toList();
     try {
       switch (change.getType()) {
-        case CREATE -> {
+        case CREATE, MODIFY -> {
           if (!nodes.isEmpty()) {
             logger.info("Creating {} nodes", nodes.size());
+            nodeRepository.delete(nodeIds);
             nodeRepository.copy(nodes);
           }
           if (!ways.isEmpty()) {
             logger.info("Creating {} ways", ways.size());
+            wayRepository.delete(wayIds);
             wayRepository.copy(ways);
           }
           if (!relations.isEmpty()) {
             logger.info("Creating {} relations", relations.size());
+            relationRepository.delete(relationIds);
             relationRepository.copy(relations);
-          }
-        }
-        case MODIFY -> {
-          if (!nodes.isEmpty()) {
-            logger.info("Modifying {} nodes", nodes.size());
-            nodeRepository.put(nodes);
-          }
-          if (!ways.isEmpty()) {
-            logger.info("Modifying {} ways", ways.size());
-            wayRepository.put(ways);
-          }
-          if (!relations.isEmpty()) {
-            logger.info("Modifying {} relations", relations.size());
-            relationRepository.put(relations);
           }
         }
         case DELETE -> {
           if (!nodes.isEmpty()) {
             logger.info("Deleting {} nodes", nodes.size());
-            nodeRepository.delete(nodes.stream().map(Node::id).toList());
+            nodeRepository.delete(nodeIds);
           }
           if (!ways.isEmpty()) {
             logger.info("Deleting {} ways", ways.size());
-            wayRepository.delete(ways.stream().map(Way::id).toList());
+            wayRepository.delete(wayIds);
           }
           if (!relations.isEmpty()) {
             logger.info("Deleting {} relations", relations.size());
-            relationRepository.delete(relations.stream().map(Relation::id).toList());
+            relationRepository.delete(relationIds);
           }
         }
       }
