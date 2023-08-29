@@ -168,6 +168,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
 
     // 2) Check that the immediate next byte read isn't the EOF signal.
     byte eofCheck = getByteBuffer().get();
+
     if (eofCheck == 0x1A) {
       return false;
     } else {
