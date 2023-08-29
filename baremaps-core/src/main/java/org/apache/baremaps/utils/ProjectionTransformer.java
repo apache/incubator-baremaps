@@ -19,6 +19,7 @@ package org.apache.baremaps.utils;
 
 
 
+import java.util.Objects;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -76,9 +77,11 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   @Override
-  protected CoordinateSequence transformCoordinates(CoordinateSequence coordinateSequence,
+  protected CoordinateSequence transformCoordinates(
+      CoordinateSequence coordinateSequence,
       Geometry parent) {
     Coordinate[] coordinateArray = Stream.of(coordinateSequence.toCoordinateArray())
+        .filter(Objects::nonNull)
         .map(this::transformCoordinate).toArray(Coordinate[]::new);
     return new CoordinateArraySequence(coordinateArray);
   }

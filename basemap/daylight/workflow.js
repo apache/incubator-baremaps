@@ -92,12 +92,12 @@ export default {
       "id": "openstreetmap-import",
       "needs": [],
       "tasks": [
-        {
-          "type": "ImportOsmChange",
-          "file": "data/roads.osc",
-          "database": config.database,
-          "srid": 3857
-        },
+        // {
+        //   "type": "ImportOsmChange",
+        //   "file": "data/roads.osc",
+        //   "database": config.database,
+        //   "srid": 3857
+        // },
         {
           "type": "ImportOsmChange",
           "file": "data/admin.osc",
