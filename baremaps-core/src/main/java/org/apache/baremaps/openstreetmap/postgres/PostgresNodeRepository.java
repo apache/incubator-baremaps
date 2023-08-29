@@ -126,7 +126,7 @@ public class PostgresNodeRepository implements NodeRepository {
         tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
     this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
-    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s IN (?)", tableName, idColumn);
     this.copy = String.format(
         "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
         tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
