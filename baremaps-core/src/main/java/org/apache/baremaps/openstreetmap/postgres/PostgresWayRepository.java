@@ -96,13 +96,13 @@ public class PostgresWayRepository implements WayRepository {
     this.dataSource = dataSource;
     this.createTable = String.format("""
         CREATE TABLE %1$s (
-          %2$s bigint PRIMARY KEY,
+          %2$s int8 PRIMARY KEY,
           %3$s int,
           %4$s int,
           %5$s timestamp without time zone,
-          %6$s bigint,
+          %6$s int8,
           %7$s jsonb,
-          %8$s bigint[],
+          %8$s int8[],
           %9$s geometry
         )""", tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn, nodesColumn, geometryColumn);
@@ -129,7 +129,7 @@ public class PostgresWayRepository implements WayRepository {
         %9$s = excluded.%9$s""", tableName, idColumn, versionColumn, uidColumn, timestampColumn,
         changesetColumn, tagsColumn, nodesColumn, geometryColumn);
     this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
-    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s IN (?)", tableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
     this.copy = String.format(
         "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY", tableName,
         idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
@@ -260,7 +260,7 @@ public class PostgresWayRepository implements WayRepository {
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(deleteIn)) {
-      statement.setArray(1, connection.createArrayOf("bigint", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
