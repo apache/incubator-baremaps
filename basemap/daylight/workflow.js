@@ -98,14 +98,27 @@ export default {
         //   "database": config.database,
         //   "srid": 3857
         // },
-        {
-          "type": "ImportOsmChange",
-          "file": "data/admin.osc",
-          "database": config.database,
-          "srid": 3857
-        },
+        // {
+        //   "type": "ImportOsmChange",
+        //   "file": "data/admin.osc",
+        //   "database": config.database,
+        //   "srid": 3857
+        // },
       ]
     },
+    {
+        "id": "openstreetmap-coastlines",
+        "needs": [],
+        "tasks": [
+          {
+            "type": "ImportShapefile",
+            "file": "data/coastlines/water_polygons.shp",
+            "database": config.database,
+            "sourceSRID": 4326,
+            "targetSRID": 3857
+          },
+        ]
+    }
     // {
     //   "id": "openstreetmap-nodes",
     //   "needs": [
