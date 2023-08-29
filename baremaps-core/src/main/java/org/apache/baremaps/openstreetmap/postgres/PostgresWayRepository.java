@@ -260,7 +260,7 @@ public class PostgresWayRepository implements WayRepository {
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(deleteIn)) {
-      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("bigint", keys.toArray()));
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
