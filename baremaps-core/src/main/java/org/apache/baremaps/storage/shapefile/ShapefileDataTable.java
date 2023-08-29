@@ -28,11 +28,15 @@ import org.apache.baremaps.database.schema.DataRowType;
 import org.apache.baremaps.database.schema.DataTableException;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A table that stores rows in a shapefile.
  */
 public class ShapefileDataTable extends AbstractDataTable {
+
+  private static final Logger logger = LoggerFactory.getLogger(ShapefileDataTable.class);
 
   private final ShapefileReader shapeFile;
 
@@ -106,7 +110,8 @@ public class ShapefileDataTable extends AbstractDataTable {
           next = shapefileInputStream.readRow();
         }
         return next != null;
-      } catch (IOException exception) {
+      } catch (IOException e) {
+        logger.error("Malformed shapefile", e);
         shapefileInputStream.close();
         return false;
       }
