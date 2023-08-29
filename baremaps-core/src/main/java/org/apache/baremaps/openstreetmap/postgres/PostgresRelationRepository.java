@@ -264,7 +264,7 @@ public class PostgresRelationRepository implements RelationRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(deleteIn)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
-      statement.executeBatch();
+      statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
     }
