@@ -95,11 +95,11 @@ public class PostgresNodeRepository implements NodeRepository {
     this.createTable = String.format("""
         CREATE TABLE %1$s
         (
-            %2$s bigint PRIMARY KEY,
+            %2$s int8 PRIMARY KEY,
             %3$s int,
             %4$s int,
             %5$s timestamp without time zone,
-            %6$s bigint,
+            %6$s int8,
             %7$s jsonb,
             %8$s float,
             %9$s float,
@@ -126,7 +126,7 @@ public class PostgresNodeRepository implements NodeRepository {
         tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
     this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
-    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s IN (?)", tableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
     this.copy = String.format(
         "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
         tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
@@ -257,7 +257,7 @@ public class PostgresNodeRepository implements NodeRepository {
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(deleteIn)) {
-      statement.setArray(1, connection.createArrayOf("bigint", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
