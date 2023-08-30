@@ -14,11 +14,11 @@ export default {
     "queries": [
         {
             "minzoom": 0,
-            "maxzoom": 10,
-            "sql": "SELECT id, tags, geom FROM osm_water_simplified"
+            "maxzoom": 12,
+            "sql": "SELECT id, tags, geom FROM osm_water_z$zoom"
         },
         {
-            "minzoom": 10,
+            "minzoom": 12,
             "maxzoom": 20,
             "sql": "SELECT id, tags, geom FROM osm_water"
         }

@@ -10,118 +10,143 @@
  the License.
  **/
 
-let config = {
-    "database": "jdbc:postgresql://localhost:5432/daylight?user=daylight&password=daylight"
-};
+import config from "./config.js";
 
 export default {
   "steps": [
-    // {
-    //   "id": "openstreetmap-data",
-    //   "needs": [],
-    //   "tasks": [
-    //     {
-    //       "type": "DownloadUrl",
-    //       "url": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-    //       "path": "data/data.osm.pbf"
-    //     },
-    //     {
-    //       "type": "ImportOsmPbf",
-    //       "file": "data/data.osm.pbf",
-    //       "database": config.database,
-    //       "databaseSrid": 3857
-    //     },
-    //   ]
-    // },
-    // {
-    //     "id": "openstreetmap-download",
-    //     "needs": ["openstreetmap-data"],
-    //     "tasks": [
-    //       {
-    //         "type": "DownloadUrl",
-    //         "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/fb-ml-roads-v1.29.osc.bz2",
-    //         "path": "data/roads.osc.bz2"
-    //       },
-    //       {
-    //         "type": "DownloadUrl",
-    //         "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/admin-v1.29.osc.bz2",
-    //         "path": "data/admin.osc.bz2"
-    //       },
-    //       {
-    //         "type": "DownloadUrl",
-    //         "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/coastlines-v1.29.tgz",
-    //         "path": "data/coastlines.tgz"
-    //       },
-    //       {
-    //         "type": "DownloadUrl",
-    //         "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/preferred-localization-v1.29.tsv",
-    //         "path": "data/preferred-localization.tsv"
-    //       },
-    //       {
-    //         "type": "DownloadUrl",
-    //         "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/important-features-v1.29.json",
-    //         "path": "data/important-features.json"
-    //       },
-    //     ]
-    // },
-    // {
-    //   "id": "openstreetmap-decompress",
-    //   "needs": ["openstreetmap-download"],
-    //   "tasks": [
-    //     {
-    //       "type": "DecompressFile",
-    //       "compression": "bzip2",
-    //       "source": "data/roads.osc.bz2",
-    //       "target": "data/roads.osc"
-    //     },
-    //     {
-    //       "type": "DecompressFile",
-    //       "compression": "bzip2",
-    //       "source": "data/admin.osc.bz2",
-    //       "target": "data/admin.osc"
-    //     },
-    //     {
-    //       "type": "DecompressFile",
-    //       "compression": "targz",
-    //       "source": "data/coastlines.tgz",
-    //       "target": "data/coastlines"
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-import",
-    //   "needs": [],
-    //   "tasks": [
-    //     {
-    //       "type": "ImportOsmChange",
-    //       "file": "data/roads.osc",
-    //       "database": config.database,
-    //       "srid": 3857
-    //     },
-    //     {
-    //       "type": "ImportOsmChange",
-    //       "file": "data/admin.osc",
-    //       "database": config.database,
-    //       "srid": 3857
-    //     },
-    //   ]
-    // },
-    // {
-    //     "id": "openstreetmap-coastlines",
-    //     "needs": [],
-    //     "tasks": [
-    //       {
-    //         "type": "ImportShapefile",
-    //         "file": "data/coastlines/water_polygons.shp",
-    //         "database": config.database,
-    //         "sourceSRID": 4326,
-    //         "targetSRID": 3857
-    //       },
-    //     ]
-    // }
+    {
+      "id": "openstreetmap-pbf",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
+          "path": "data/data.osm.pbf"
+        },
+        {
+          "type": "ImportOsmPbf",
+          "file": "data/data.osm.pbf",
+          "database": config.database,
+          "databaseSrid": 3857
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-road",
+      "needs": ["openstreetmap-data"],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/fb-ml-roads-v1.29.osc.bz2",
+          "path": "data/roads.osc.bz2"
+        },
+        {
+          "type": "DecompressFile",
+          "compression": "bzip2",
+          "source": "data/roads.osc.bz2",
+          "target": "data/roads.osc"
+        },
+        {
+          "type": "ImportOsmChange",
+          "file": "data/roads.osc",
+          "database": config.database,
+          "srid": 3857
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-admin",
+      "needs": ["openstreetmap-data"],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/admin-v1.29.osc.bz2",
+          "path": "data/admin.osc.bz2"
+        },
+        {
+          "type": "DecompressFile",
+          "compression": "bzip2",
+          "source": "data/admin.osc.bz2",
+          "target": "data/admin.osc"
+        },
+        {
+          "type": "ImportOsmChange",
+          "file": "data/admin.osc",
+          "database": config.database,
+          "srid": 3857
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-coastlines",
+      "needs": ["openstreetmap-data"],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/coastlines-v1.29.tgz",
+          "path": "data/coastlines.tgz"
+        },
+        {
+          "type": "DecompressFile",
+          "compression": "targz",
+          "source": "data/coastlines.tgz",
+          "target": "data/coastlines"
+        },
+        {
+          "type": "ImportShapefile",
+          "file": "data/coastlines/water_polygons.shp",
+          "database": config.database,
+          "sourceSRID": 4326,
+          "targetSRID": 3857
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/water/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/water/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/water/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/water/index.sql",
+          "database": config.database,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-preferred-localization",
+      "needs": ["openstreetmap-data"],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/preferred-localization-v1.29.tsv",
+          "path": "data/preferred-localization.tsv"
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-important-features",
+      "needs": ["openstreetmap-data"],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/important-features-v1.29.json",
+          "path": "data/important-features.json"
+        },
+      ]
+    },
     {
       "id": "openstreetmap-nodes",
-      "needs": [],
+      "needs": ["openstreetmap-road","openstreetmap-admin"],
       "tasks": [
         {
           "type": "ExecuteSql",
@@ -133,7 +158,7 @@ export default {
     },
     {
       "id": "openstreetmap-ways",
-      "needs": [],
+      "needs": ["openstreetmap-road","openstreetmap-admin"],
       "tasks": [
         {
           "type": "ExecuteSql",
@@ -145,7 +170,7 @@ export default {
     },
     {
       "id": "openstreetmap-relations",
-      "needs": [],
+      "needs": ["openstreetmap-road","openstreetmap-admin"],
       "tasks": [
         {
           "type": "ExecuteSql",
@@ -157,7 +182,7 @@ export default {
     },
     {
       "id": "openstreetmap-member",
-      "needs": [],
+      "needs": ["openstreetmap-road","openstreetmap-admin"],
       "tasks": [
         {
           "type": "ExecuteSql",
@@ -399,32 +424,5 @@ export default {
         },
       ]
     },
-      {
-          "id": "openstreetmap-water",
-          "needs": [],
-          "tasks": [
-              {
-                  "type": "ExecuteSql",
-                  "file": "layers/water/clean.sql",
-                  "database": config.database,
-              },
-              {
-                  "type": "ExecuteSql",
-                  "file": "layers/water/prepare.sql",
-                  "database": config.database,
-              },
-              {
-                "type": "ExecuteSql",
-                "file": "layers/water/simplify.sql",
-                "database": config.database,
-                "parallel": true,
-              },
-              {
-                  "type": "ExecuteSql",
-                  "file": "layers/water/index.sql",
-                  "database": config.database,
-              },
-          ]
-      },
   ]
 }
