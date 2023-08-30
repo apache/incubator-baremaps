@@ -43,7 +43,6 @@
                 <include>CONTRIBUTING.md</include>
                 <include>exemples/**</include>
                 <include>.gitignore</include>
-                <include>logo.svg</include>
                 <include>RELEASE.md</include>
                 <include>.run/**</include>
                 <include>scripts/**</include>
