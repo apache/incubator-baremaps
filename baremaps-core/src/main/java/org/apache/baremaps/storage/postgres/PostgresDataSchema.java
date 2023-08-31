@@ -15,7 +15,9 @@ package org.apache.baremaps.storage.postgres;
 
 import de.bytefish.pgbulkinsert.pgsql.handlers.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
@@ -82,10 +84,22 @@ public class PostgresDataSchema implements DataSchema {
   @Override
   public void add(DataTable table) {
     try (var connection = dataSource.getConnection()) {
-      var rowType = adaptDataType(table.rowType());
+      var regex = "[^a-zA-Z0-9]";
+      var name = table.rowType().name().replaceAll(regex, "_").toLowerCase();
+      var mapping = new HashMap<String, String>();
+      var properties = new ArrayList<DataColumn>();
+      for (DataColumn column : table.rowType().columns()) {
+        if (PostgresTypeConversion.typeToName.containsKey(column.type())) {
+          var columnName = column.name().replaceAll(regex, "_").toLowerCase();
+          mapping.put(columnName, column.name());
+          properties.add(new DataColumnImpl(columnName, column.type()));
+        }
+      }
+
+      var rowType = new DataRowTypeImpl(name, properties);
 
       // Drop the table if it exists
-      var dropQuery = dropTable(rowType.name());
+      var dropQuery = dropTable(rowType);
       logger.debug(dropQuery);
       try (var dropStatement = connection.prepareStatement(dropQuery)) {
         dropStatement.execute();
@@ -109,12 +123,13 @@ public class PostgresDataSchema implements DataSchema {
         for (DataRow row : table) {
           writer.startRow(columns.size());
           for (int i = 0; i < columns.size(); i++) {
-            var column = columns.get(i);
-            var handler = handlers.get(i);
-            var value = row.get(column.name());
+            var targetColumn = columns.get(i).name();
+            var sourceColumn = mapping.get(targetColumn);
+            var value = row.get(sourceColumn);
             if (value == null) {
               writer.writeNull();
             } else {
+              var handler = handlers.get(i);
               writer.write(handler, value);
             }
           }
@@ -130,8 +145,9 @@ public class PostgresDataSchema implements DataSchema {
    */
   @Override
   public void remove(String name) {
+    var rowType = get(name).rowType();
     try (var connection = dataSource.getConnection();
-        var statement = connection.prepareStatement(dropTable(name))) {
+        var statement = connection.prepareStatement(dropTable(rowType))) {
       statement.execute();
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -155,28 +171,13 @@ public class PostgresDataSchema implements DataSchema {
   }
 
   /**
-   * Adapt the data type to postgres (e.g. use compatible names).
-   *
-   * @param rowType the row type to adapt
-   * @return the adapted row type
-   */
-  protected DataRowType adaptDataType(DataRowType rowType) {
-    var name = rowType.name().replaceAll("[^a-zA-Z0-9]", "_");
-    var properties = rowType.columns().stream()
-        .filter(column -> PostgresTypeConversion.typeToName.containsKey(column.type()))
-        .map(column -> (DataColumn) new DataColumnImpl(column.name(), column.type()))
-        .toList();
-    return new DataRowTypeImpl(name, properties);
-  }
-
-  /**
    * Generate a drop table query.
    *
-   * @param name the table name
+   * @param rowType the table name
    * @return the query
    */
-  protected String dropTable(String name) {
-    return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", name);
+  protected String dropTable(DataRowType rowType) {
+    return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", rowType.name());
   }
 
   /**
