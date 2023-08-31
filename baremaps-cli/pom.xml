@@ -23,10 +23,10 @@
   <name>baremaps-cli</name>
 
   <properties>
-    <thirdparty.directory>${project.build.directory}/generated-sources/license</thirdparty.directory>
-    <thirdparty.filename>THIRD-PARTY</thirdparty.filename>
     <license.directory>${project.build.directory}/generated-sources/license</license.directory>
     <license.filename>LICENSE</license.filename>
+    <thirdparty.directory>${project.build.directory}/generated-sources/license</thirdparty.directory>
+    <thirdparty.filename>THIRD-PARTY</thirdparty.filename>
   </properties>
 
   <dependencies>
@@ -93,33 +93,6 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>default-cli</id>
-            <phase>package</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <concat destfile="${license.directory}/${license.filename}"
-                        force="yes">
-                  <fileset dir="${maven.multiModuleProjectDirectory}/">
-                    <include name="LICENSE"/>
-                  </fileset>
-                  <fileset dir="${thirdparty.directory}">
-                    <include name="${thirdparty.filename}"/>
-                  </fileset>
-                </concat>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
         <version>${version.plugin.jib-maven-plugin}</version>
@@ -132,6 +105,32 @@
             <tags>v${project.version}</tags>
           </to>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>default-cli</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <concat destfile="${license.directory}/${license.filename}" force="yes">
+                  <fileset dir="${maven.multiModuleProjectDirectory}/">
+                    <include name="LICENSE" />
+                  </fileset>
+                  <fileset dir="${thirdparty.directory}">
+                    <include name="${thirdparty.filename}" />
+                  </fileset>
+                </concat>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
