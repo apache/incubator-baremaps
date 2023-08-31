@@ -22,6 +22,13 @@
   <artifactId>baremaps-cli</artifactId>
   <name>baremaps-cli</name>
 
+  <properties>
+    <thirdparty.directory>${project.build.directory}/generated-sources/license</thirdparty.directory>
+    <thirdparty.filename>THIRD-PARTY</thirdparty.filename>
+    <license.directory>${project.build.directory}/generated-sources/license</license.directory>
+    <license.filename>LICENSE</license.filename>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>info.picocli</groupId>
@@ -85,6 +92,33 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>default-cli</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <concat destfile="${license.directory}/${license.filename}"
+                        force="yes">
+                  <fileset dir="${maven.multiModuleProjectDirectory}/">
+                    <include name="LICENSE"/>
+                  </fileset>
+                  <fileset dir="${thirdparty.directory}">
+                    <include name="${thirdparty.filename}"/>
+                  </fileset>
+                </concat>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
@@ -157,7 +191,8 @@
         <version>2.2.0</version>
         <configuration>
           <force>true</force>
-          <thirdPartyFilename>THIRD-PARTY</thirdPartyFilename>
+          <outputDirectory>${thirdparty.directory}</outputDirectory>
+          <thirdPartyFilename>${thirdparty.filename}</thirdPartyFilename>
           <!-- Template to group by license with handling of multi licensing -->
           <fileTemplate>${basedir}/licenseBundledDeps.ftl</fileTemplate>
           <!-- Only bundled bits matters https://infra.apache.org/licensing-howto.html#bundled-vs-non-bundled -->
