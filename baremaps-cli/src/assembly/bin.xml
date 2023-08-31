@@ -27,7 +27,6 @@
         <include>NOTICE</include>
       </includes>
       <lineEnding>unix</lineEnding>
-      <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
       <directory>../.</directory>
@@ -37,7 +36,6 @@
       </includes>
       <filtered>true</filtered>
       <lineEnding>unix</lineEnding>
-      <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
       <directory>${license.directory}</directory>
@@ -46,7 +44,6 @@
         <include>${license.filename}</include>
       </includes>
       <lineEnding>unix</lineEnding>
-      <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
       <directory>src/bin</directory>
