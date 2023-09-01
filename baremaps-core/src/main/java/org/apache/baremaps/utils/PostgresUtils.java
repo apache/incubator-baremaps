@@ -55,18 +55,36 @@ public final class PostgresUtils {
   /**
    * Creates a data source from a JDBC url with a pool size defined by the user.
    *
-   * @param url the JDBC url
+   * @param jdbcUrl the JDBC url
    * @param poolSize the pool size
    * @return the data source
    */
-  public static DataSource createDataSource(String url, int poolSize) {
+  public static DataSource createDataSource(String jdbcUrl, int poolSize) {
     if (poolSize < 1) {
       throw new IllegalArgumentException("PoolSize cannot be inferior to 1");
     }
-    HikariConfig config = new HikariConfig();
-    config.setJdbcUrl(url);
+    var multiQueriesJdbcUrl = withAllowMultiQueriesParameter(jdbcUrl);
+    var config = new HikariConfig();
+    config.setJdbcUrl(multiQueriesJdbcUrl);
     config.setMaximumPoolSize(poolSize);
     return new HikariDataSource(config);
+  }
+
+  /**
+   * Appends the multi-queries parameter to the given JDBC URL.
+   *
+   * @param jdbcUrl the JDBC URL
+   * @return the JDBC URL with the multi-queries parameter
+   */
+  private static String withAllowMultiQueriesParameter(String jdbcUrl) {
+    if (jdbcUrl == null || jdbcUrl.isEmpty()) {
+      return jdbcUrl;
+    }
+    if (jdbcUrl.contains("?")) {
+      return jdbcUrl + "&allowMultiQueries=true";
+    } else {
+      return jdbcUrl + "?allowMultiQueries=true";
+    }
   }
 
   /**

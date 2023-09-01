@@ -34,8 +34,9 @@ public record ExecuteSql(String database, Path file, boolean parallel) implement
     queries.forEach(
         query -> {
           var dataSource = context.getDataSource(database);
-          try (var connection = dataSource.getConnection()) {
-            connection.createStatement().execute(query);
+          try (var connection = dataSource.getConnection();
+              var statement = connection.createStatement()) {
+            statement.execute(query);
           } catch (SQLException e) {
             throw new WorkflowException(e);
           }
