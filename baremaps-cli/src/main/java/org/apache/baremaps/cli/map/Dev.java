@@ -93,11 +93,11 @@ public class Dev implements Callable<Integer> {
       }
     };
 
-    var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
-    var tileJSONSupplier = (Supplier<TileJSON>) () -> {
+    var tileJSONSupplierType = new TypeLiteral<Supplier<Tileset>>() {};
+    var tileJSONSupplier = (Supplier<Tileset>) () -> {
       try {
         var config = configReader.read(tilesetPath);
-        return objectMapper.readValue(config, TileJSON.class);
+        return objectMapper.readValue(config, Tileset.class);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

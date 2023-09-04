@@ -92,7 +92,7 @@ public class Serve implements Callable<Integer> {
             .register(CorsFilter.class)
             .register(TileResource.class)
             .register(StyleResource.class)
-            .register(TilesetResource.class)
+            .register(TileJSONResource.class)
             .register(ClassPathResource.class)
             .register(newContextResolver(objectMapper))
             .register(new AbstractBinder() {
