@@ -18,12 +18,11 @@ import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.baremaps.vectortile.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 
 /**
- * A resource that provides access to the tileset file.
- * Only suitable for development purposes, as it exposes SQL queries.
+ * A resource that provides access to the tileset file. Only suitable for development purposes, as
+ * it exposes SQL queries.
  */
 @Singleton
 @javax.ws.rs.Path("/")

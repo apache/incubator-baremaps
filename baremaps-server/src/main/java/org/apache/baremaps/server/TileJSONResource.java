@@ -12,14 +12,13 @@
 
 package org.apache.baremaps.server;
 
-import org.apache.baremaps.vectortile.tilejson.TileJSON;
-
+import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.function.Supplier;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
 
 /**
  * A resource that provides access to the tileJSON file.
