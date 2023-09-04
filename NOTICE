@@ -4,21 +4,44 @@ Copyright 2022-2023 The Apache Software Foundation.
 Baremaps development team
 Copyright 2020-2022.
 
-This product includes protocol buffers definitions copied from OSMPBF.
+This product includes protocol buffers definitions derived from OSMPBF.
 MIT License.
 Please visit the following URLs for the licensing information:
-https://github.com/openstreetmap/OSM-binary/issues/18
-https://github.com/openstreetmap/OSM-binary/pull/35
+- https://github.com/openstreetmap/OSM-binary/issues/18
+- https://github.com/openstreetmap/OSM-binary/pull/35
+The derived files are:
+- baremaps-core/src/main/proto/osmformat.proto
+- baremaps-core/src/main/proto/fileformat.proto
+
+This product includes protocol buffers definitions derived from Mapbox Vector Tile.
+Creative Commons Public License.
+Please visit the following URL for the licensing information:
+- https://github.com/mapbox/vector-tile-spec/blob/master/LICENSE
+The derived files are:
+- baremaps-core/src/main/proto/vector_tile.proto
 
 This product includes code derived from Palantir Streams.
 Apache License, Version 2.0
 Please visit the following URL for the full text of the Palantir license:
 https://github.com/palantir/streams/blob/develop/LICENSE
+The derived files are:
+- baremaps-core/src/main/java/org/apache/baremaps/stream/BufferedSpliterator.java
 
 This product includes code derived from Planetiler.
 Apache License, Version 2.0
 Please visit the following URL for the full text of the Planetiler license:
 https://github.com/onthegomap/planetiler/blob/main/LICENSE
+The derived files are:
+- baremaps-core/src/main/java/org/apache/baremaps/database/collection/MemoryAlignedDataMap.java
+- baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicDataMap.java
+- baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicFixedSizeDataMap.java
+
+This product includes code derived from Apache SIS.
+Apache License, Version 2.0
+Please visit the following URL for the full text of the SIS license:
+https://github.com/apache/sis/blob/main/LICENSE
+The derived files are:
+- baremaps-core/src/main/java/org/apache/baremaps/storage/shapefile/internal/*.java
 
 This product includes data from the European Petroleum Survey Group (EPSG).
 Please visit the following URL for the full text of the EPSG Terms of Use:
