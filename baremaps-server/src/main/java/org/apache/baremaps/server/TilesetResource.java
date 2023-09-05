@@ -39,7 +39,10 @@ public class TilesetResource {
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
   public Tileset getTileset() {
-    return tilesetSupplier.get();
+    var tileset = tilesetSupplier.get();
+    // Hide the database connection
+    tileset.setDatabase(null);
+    return tileset;
   }
 
 }
