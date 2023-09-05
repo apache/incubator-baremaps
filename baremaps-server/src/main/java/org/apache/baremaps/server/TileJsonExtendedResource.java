@@ -18,7 +18,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.baremaps.vectortile.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tilejsonextended.TileJSONExtended;
 
 /**

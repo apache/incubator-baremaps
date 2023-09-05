@@ -14,10 +14,7 @@ package org.apache.baremaps.vectortile.tilejson;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
-import org.apache.baremaps.vectortile.tilejsonextended.TileJSONExtended;
 
 /**
  * TileJSON is an open standard for representing map metadata. Based on version 3.3.0.
@@ -79,6 +76,7 @@ public class TileJSON {
       List<? extends VectorLayer> vectorLayers) {
     this.vectorLayers = vectorLayers;
   }
+
   public List<? extends VectorLayer> getVectorLayers() {
     return vectorLayers;
   }
