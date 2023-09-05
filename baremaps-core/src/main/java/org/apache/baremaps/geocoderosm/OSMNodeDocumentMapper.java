@@ -14,6 +14,7 @@ package org.apache.baremaps.geocoderosm;
 
 
 
+import java.util.Optional;
 import java.util.function.Function;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.lucene.document.Document;
@@ -28,11 +29,15 @@ public class OSMNodeDocumentMapper implements Function<Node, Document> {
   @Override
   public Document apply(Node node) {
     Document document = new Document();
-    document.add(new TextField("name", node.getTags().get("name").toString(), Field.Store.YES));
-    document.add(new StoredField("latitude", node.getLat()));
-    document.add(new StoredField("longitude", node.getLon()));
-    document.add(new NumericDocValuesField("population", Long.parseLong(node.getTags().get("population").toString())));
-    document.add(new StoredField("population", Long.parseLong(node.getTags().get("population").toString())));
+    document.add(new TextField(OSMTags.NAME.key(), node.getTags().get(OSMTags.NAME.key()).toString(), Field.Store.YES));
+    document.add(new StoredField(OSMTags.LATITUDE.key(), node.getLat()));
+    document.add(new StoredField(OSMTags.LONGITUDE.key(), node.getLon()));
+    if (node.getTags().containsKey(OSMTags.POPULATION.key())) {
+      var population = Long.parseLong(node.getTags().get(OSMTags.POPULATION.key()).toString());
+      document.add(new NumericDocValuesField(OSMTags.POPULATION.key(), population));
+      document.add(new StoredField(OSMTags.POPULATION.key(), population));
+    }
     return document;
   }
+
 }

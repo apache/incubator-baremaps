@@ -30,6 +30,7 @@ import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.PairDataType;
 import org.apache.baremaps.database.type.geometry.LonLatDataType;
 import org.apache.baremaps.geocoder.GeocoderConstants;
+import org.apache.baremaps.geocoderosm.BlockGeocoderImporter;
 import org.apache.baremaps.geocoderosm.OSMNodeDocumentMapper;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
@@ -124,33 +125,5 @@ public record CreateGeocoderOpenStreetMap(Path file, Integer databaseSrid,Path i
       StreamUtils.batch(reader.stream(input)).forEach(importer);
     }
 
-  }
-
-  static class BlockGeocoderImporter implements Consumer<Block> {
-
-
-    private final IndexWriter indexWriter;
-
-    public BlockGeocoderImporter(IndexWriter indexWriter) {
-      this.indexWriter = indexWriter;
-    }
-
-    @Override
-    public void accept(Block block) {
-      if (block instanceof HeaderBlock headerBlock) {
-        // headerBlock.getHeader();
-      } else if (block instanceof DataBlock dataBlock) {
-        var documents = Stream
-            .concat(dataBlock.getDenseNodes().stream(), dataBlock.getNodes().stream())
-            .filter(node -> node.getTags().containsKey("population"))
-            .map(new OSMNodeDocumentMapper());
-        try {
-          indexWriter.addDocuments((Iterable<Document>) documents::iterator);
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-
-      }
-    }
   }
 }

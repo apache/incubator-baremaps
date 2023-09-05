@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import org.apache.baremaps.geocoderosm.GeocoderOSMQuery;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -49,10 +50,9 @@ public class OSMIndexTest {
 
     var task = new CreateGeocoderOpenStreetMap(LIECHTENSTEIN_OSM_PBF, 3857, directory);
     task.execute(new WorkflowContext());
-    //var dir = MMapDirectory.open(directory);
-    //var dir = MMapDirectory.open(directory);
-    //var searcherManager = new SearcherManager(dir, new SearcherFactory());
-    //searcher = searcherManager.acquire();
+    var dir = MMapDirectory.open(directory);
+    var searcherManager = new SearcherManager(dir, new SearcherFactory());
+    searcher = searcherManager.acquire();
   }
 
   @AfterAll
@@ -62,7 +62,12 @@ public class OSMIndexTest {
 
   @Test
   void testCreateIndex() throws Exception {
-    var x = 4;
+    var query =
+        new GeocoderOSMQuery("vaduz").build();
+    var topDocs = searcher.search(query, 1);
+    var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
+    assertEquals("Vaduz", doc.getField("name").stringValue());
+    System.out.println(doc);
   }
 
 }
