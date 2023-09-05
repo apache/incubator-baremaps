@@ -1,9 +1,14 @@
 package org.apache.baremaps.tilestore.pmtiles;
 
 import com.google.common.math.LongMath;
+import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.tilestore.pmtiles.PMTiles.Compression;
+import org.apache.baremaps.tilestore.pmtiles.PMTiles.TileType;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,6 +88,74 @@ class PMTilesTest {
         assertThrows(RuntimeException.class, () -> PMTiles.tileIdToZxy(9007199254740991L));
         assertThrows(RuntimeException.class, () -> PMTiles.zxyToTileId(27, 0, 0));
         assertThrows(RuntimeException.class, () -> PMTiles.zxyToTileId(0, 1, 1));
+    }
+
+    @Test
+    void bytesToHeader() throws IOException {
+        var file = TestFiles.resolve("pmtiles/test_fixture_1.pmtiles");
+        try (var channel = Files.newByteChannel(file)) {
+            var buffer = ByteBuffer.allocate(127);
+            channel.read(buffer);
+            buffer.flip();
+            var header = PMTiles.bytesToHeader(buffer, "1");
+            assertEquals(header.rootDirectoryOffset(), 127);
+            assertEquals(header.rootDirectoryLength(), 25);
+            assertEquals(header.jsonMetadataOffset(), 152);
+            assertEquals(header.jsonMetadataLength(), 247);
+            assertEquals(header.leafDirectoryOffset(), 0);
+            assertEquals(header.leafDirectoryLength(), 0);
+            assertEquals(header.tileDataOffset(), 399);
+            assertEquals(header.tileDataLength(), 69);
+            assertEquals(header.numAddressedTiles(), 1);
+            assertEquals(header.numTileEntries(), 1);
+            assertEquals(header.numTileContents(), 1);
+            assertFalse(header.clustered());
+            assertEquals(header.internalCompression(), Compression.Gzip);
+            assertEquals(header.tileCompression(), Compression.Gzip);
+            assertEquals(header.tileType(), TileType.Mvt);
+            assertEquals(header.minZoom(), 0);
+            assertEquals(header.maxZoom(), 0);
+            assertEquals(header.minLon(), 0);
+            assertEquals(header.minLat(), 0);
+            assertEquals(Math.round(header.maxLon()), 1);
+            assertEquals(Math.round(header.maxLat()), 1);
+        }
+    }
+
+    @Test
+    void headerToBytes() throws IOException {
+        var etag = "1";
+        var buffer = ByteBuffer.allocate(127);
+        var header = new PMTiles.Header(
+                127,
+                25,
+                152,
+                247,
+                0,
+                0,
+                399,
+                69,
+                1,
+                1,
+                1,
+                10,
+                false,
+                Compression.Gzip,
+                Compression.Gzip,
+                TileType.Mvt,
+                0,
+                0,
+                0,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                etag);
+        PMTiles.headerToBytes(header, buffer);
+        var header2 = PMTiles.bytesToHeader(buffer, etag);
+        assertEquals(header, header2);
     }
 
 }

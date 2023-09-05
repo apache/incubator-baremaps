@@ -3,6 +3,7 @@ package org.apache.baremaps.tilestore.pmtiles;
 import com.google.common.math.LongMath;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class PMTiles {
 
@@ -142,4 +143,119 @@ public class PMTiles {
         }
         throw new RuntimeException("Tile zoom level exceeds max safe number limit (26)");
     }
+
+    enum Compression {
+        Unknown,
+        None,
+        Gzip,
+        Brotli,
+        Zstd,
+    }
+
+    enum TileType {
+        Unknown,
+        Mvt,
+        Png,
+        Jpeg,
+        Webp,
+        Avif,
+    }
+
+    public record Header(
+            int specVersion,
+            long rootDirectoryOffset,
+            long rootDirectoryLength,
+            long jsonMetadataOffset,
+            long jsonMetadataLength,
+            long leafDirectoryOffset,
+            long leafDirectoryLength,
+            long tileDataOffset,
+            long tileDataLength,
+            long numAddressedTiles,
+            long numTileEntries,
+            long numTileContents,
+            boolean clustered,
+            Compression internalCompression,
+            Compression tileCompression,
+            TileType tileType,
+            int minZoom,
+            int maxZoom,
+            double minLon,
+            double minLat,
+            double maxLon,
+            double maxLat,
+            int centerZoom,
+            double centerLon,
+            double centerLat,
+            String etag
+    ) {}
+
+    public static Header bytesToHeader(ByteBuffer buf, String etag) {
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+        return new Header(
+                buf.get(7),
+                buf.getLong(8),
+                buf.getLong(16),
+                buf.getLong(24),
+                buf.getLong(32),
+                buf.getLong(40),
+                buf.getLong(48),
+                buf.getLong(56),
+                buf.getLong(64),
+                buf.getLong(72),
+                buf.getLong(80),
+                buf.getLong(88),
+                buf.get(96) == 1,
+                Compression.values()[buf.get(97)],
+                Compression.values()[buf.get(98)],
+                TileType.values()[buf.get(99)],
+                buf.get(100),
+                buf.get(101),
+                (double) buf.getInt(102) / 10000000,
+                (double) buf.getInt(106) / 10000000,
+                (double) buf.getInt(110) / 10000000,
+                (double) buf.getInt(114) / 10000000,
+                buf.get(118),
+                (double) buf.getInt(119) / 10000000,
+                (double) buf.getInt(123) / 10000000,
+                etag
+        );
+    }
+
+    public static void headerToBytes(Header header, ByteBuffer buf) {
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+        buf.put(0, (byte) 0x4d);
+        buf.put(1, (byte) 0x42);
+        buf.put(2, (byte) 0x54);
+        buf.put(3, (byte) 0x42);
+        buf.put(4, (byte) 0x49);
+        buf.put(5, (byte) 0x4e);
+        buf.put(6, (byte) 0x41);
+        buf.put(7, (byte) header.specVersion);
+        buf.putLong(8, header.rootDirectoryOffset);
+        buf.putLong(16, header.rootDirectoryLength);
+        buf.putLong(24, header.jsonMetadataOffset);
+        buf.putLong(32, header.jsonMetadataLength);
+        buf.putLong(40, header.leafDirectoryOffset);
+        buf.putLong(48, header.leafDirectoryLength);
+        buf.putLong(56, header.tileDataOffset);
+        buf.putLong(64, header.tileDataLength);
+        buf.putLong(72, header.numAddressedTiles);
+        buf.putLong(80, header.numTileEntries);
+        buf.putLong(88, header.numTileContents);
+        buf.put(96, (byte) (header.clustered ? 1 : 0));
+        buf.put(97, (byte) header.internalCompression.ordinal());
+        buf.put(98, (byte) header.tileCompression.ordinal());
+        buf.put(99, (byte) header.tileType.ordinal());
+        buf.put(100, (byte) header.minZoom);
+        buf.put(101, (byte) header.maxZoom);
+        buf.putInt(102, (int) (header.minLon * 10000000));
+        buf.putInt(106, (int) (header.minLat * 10000000));
+        buf.putInt(110, (int) (header.maxLon * 10000000));
+        buf.putInt(114, (int) (header.maxLat * 10000000));
+        buf.put(118, (byte) header.centerZoom);
+        buf.putInt(119, (int) (header.centerLon * 10000000));
+        buf.putInt(123, (int) (header.centerLat * 10000000));
+    }
+
 }
