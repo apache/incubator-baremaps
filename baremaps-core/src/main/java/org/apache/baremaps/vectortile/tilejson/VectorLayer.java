@@ -15,10 +15,30 @@ package org.apache.baremaps.vectortile.tilejson;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
-public record VectorLayer(
-    @JsonProperty("id") String id,
-    @JsonProperty("fields") Map<String, String> fields,
-    @JsonProperty("description") String description,
-    @JsonProperty("maxzoom") Integer maxzoom,
-    @JsonProperty("minzoom") Integer minzoom) {
+public class VectorLayer {
+  @JsonProperty("id") String id;
+  @JsonProperty("fields") Map<String, String> fields;
+  @JsonProperty("description") String description;
+  @JsonProperty("maxzoom") Integer maxzoom;
+  @JsonProperty("minzoom") Integer minzoom;
+
+  public String getId() {
+    return id;
+  }
+
+  public Map<String, String> getFields() {
+    return fields;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public Integer getMaxzoom() {
+    return maxzoom;
+  }
+
+  public Integer getMinzoom() {
+    return minzoom;
+  }
 }

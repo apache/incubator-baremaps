@@ -50,6 +50,8 @@ public class TestFiles {
 
   public static final Path STYLE_JS = resolve("style.js");
 
+  public static final Path TILESET_JSON = resolve("style.js");
+
   public static Path resolve(String resource) {
     Path cwd = Path.of("").toAbsolutePath();
     Path pathFromRoot = Path.of("baremaps-core", "src", "test", "resources", resource);

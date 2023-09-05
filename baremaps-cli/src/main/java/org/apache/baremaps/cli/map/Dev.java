@@ -30,6 +30,7 @@ import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
+import org.apache.baremaps.vectortile.tilejsonextended.TileJSONExtended;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -103,12 +104,23 @@ public class Dev implements Callable<Integer> {
       }
     };
 
+    var tileJSONExtendedSupplierType = new TypeLiteral<Supplier<TileJSONExtended>>() {};
+    var tileJSONExtendedSupplier = (Supplier<TileJSONExtended>) () -> {
+      try {
+        var config = configReader.read(tilesetPath);
+        return objectMapper.readValue(config, TileJSONExtended.class);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
+
     var application = new ResourceConfig()
         .register(CorsFilter.class)
         .register(ChangeResource.class)
         .register(TileResource.class)
         .register(StyleResource.class)
         .register(TilesetResource.class)
+        .register(TileJsonExtendedResource.class)
         .register(ChangeResource.class)
         .register(ClassPathResource.class)
         .register(newContextResolver(objectMapper))
@@ -122,6 +134,7 @@ public class Dev implements Callable<Integer> {
             bind(tileStoreSupplier).to(tileStoreType);
             bind(styleSupplier).to(styleSupplierType);
             bind(tileJSONSupplier).to(tileJSONSupplierType);
+            bind(tileJSONExtendedSupplier).to(tileJSONExtendedSupplierType);
           }
         });
 

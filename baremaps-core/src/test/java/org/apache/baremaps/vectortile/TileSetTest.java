@@ -15,7 +15,10 @@ package org.apache.baremaps.vectortile;
 
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -23,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
+import org.apache.baremaps.vectortile.tilejsonextended.TileJSONExtended;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.junit.Test;
 
@@ -46,7 +50,7 @@ public class TileSetTest {
 
     assertEquals("jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
         tileSet.getDatabase());
-    assertEquals("aerialway", tileJSON.getVectorLayers().get(0).id());
+    assertEquals("aerialway", tileJSON.getVectorLayers().get(0).getId());
   }
 
   @Test
@@ -55,10 +59,40 @@ public class TileSetTest {
     var tileSet = objectMapper.readValue(resourceFile(tilesetFile), Tileset.class);
     // Mapping to a POJO strictly following TileJSON specifications for API clients.
     var tileJSON = objectMapper.readValue(resourceFile(tilesetFile), TileJSON.class);
+    // Mapping to a POJO following TileJSON with extended fields specific to baremaps
+    var tileJSONExtended =
+        objectMapper.readValue(resourceFile(tilesetFile), TileJSONExtended.class);
 
+
+    // Assert on Deserial
     assertEquals("jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
         tileSet.getDatabase());
-    assertEquals("aeroway", tileJSON.getVectorLayers().get(0).id());
+    assertEquals("aeroway", tileJSON.getVectorLayers().get(0).getId());
+    assertEquals("aeroway", tileJSONExtended.getVectorLayers().get(0).getId());
+    assertEquals("aeroway", tileJSONExtended.getVectorLayersExtended().get(0).getId());
+    assertEquals("SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'",
+        tileJSONExtended.getVectorLayersExtended().get(0).getQueries().get(0).getSql());
+
+
+    var jsonTileSet = objectMapper.writeValueAsString(tileSet);
+    var jsonTileJSON = objectMapper.writeValueAsString(tileJSON);
+    var jsonTileJSONExtended = objectMapper.writeValueAsString(tileJSONExtended);
+
+    // Password is only in internal POJO TileSet
+    assertTrue(jsonTileSet.contains("password=baremaps"));
+    assertFalse(jsonTileJSON.contains("password=baremaps"));
+    assertFalse(jsonTileJSONExtended.contains("password=baremaps"));
+
+    // Queries are only in internal TileSet and exposed TileJSONExtended
+    assertTrue(jsonTileSet.contains("SELECT id"));
+    assertFalse(jsonTileJSON.contains("SELECT id"));
+    assertTrue(jsonTileJSONExtended.contains("SELECT id"));
+
+
+    // Validating the Deserial/Serial/Deserial is equals to Deserial/Serial
+    var tileJSONExtendedCopy = objectMapper.readValue(jsonTileJSONExtended, TileJSONExtended.class);
+    assertEquals(objectMapper.writeValueAsString(tileJSONExtended),
+        objectMapper.writeValueAsString(tileJSONExtendedCopy));
   }
 
   @Test
@@ -68,10 +102,11 @@ public class TileSetTest {
     // Mapping to a POJO strictly following TileJSON specifications for API clients.
     var tileJSON = objectMapper.readValue(resourceFile(referenceFile), TileJSON.class);
 
+
     assertNull(tileSet.getDatabase());
-    assertEquals("telephone", tileJSON.getVectorLayers().get(0).id());
+    assertEquals("telephone", tileJSON.getVectorLayers().get(0).getId());
     assertEquals("the phone number", tileJSON.getVectorLayers().stream()
-        .filter(vl -> vl.id().equals("telephone"))
-        .findFirst().get().fields().get("phone_number"));
+        .filter(vl -> vl.getId().equals("telephone"))
+        .findFirst().get().getFields().get("phone_number"));
   }
 }

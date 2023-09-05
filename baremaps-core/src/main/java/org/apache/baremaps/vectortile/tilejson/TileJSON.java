@@ -14,7 +14,10 @@ package org.apache.baremaps.vectortile.tilejson;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.util.List;
+import org.apache.baremaps.vectortile.tilejsonextended.TileJSONExtended;
 
 /**
  * TileJSON is an open standard for representing map metadata. Based on version 3.3.0.
@@ -32,11 +35,12 @@ import java.util.List;
  *      https://github.com/mapbox/tilejson-spec</a>
  */
 public class TileJSON {
+  @JsonProperty("tilejson")
   String tilejson;
   @JsonProperty("tiles")
   List<String> tiles;
   @JsonProperty("vector_layers")
-  List<VectorLayer> vectorLayers;
+  List<? extends VectorLayer> vectorLayers;
   @JsonProperty("attribution")
   String attribution;
   @JsonProperty("bounds")
@@ -71,7 +75,11 @@ public class TileJSON {
     this.tiles = tiles;
   }
 
-  public List<VectorLayer> getVectorLayers() {
+  public void setVectorLayers(
+      List<? extends VectorLayer> vectorLayers) {
+    this.vectorLayers = vectorLayers;
+  }
+  public List<? extends VectorLayer> getVectorLayers() {
     return vectorLayers;
   }
 
