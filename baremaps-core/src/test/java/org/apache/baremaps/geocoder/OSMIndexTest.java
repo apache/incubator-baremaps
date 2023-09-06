@@ -12,7 +12,6 @@
 
 package org.apache.baremaps.geocoder;
 
-import static org.apache.baremaps.testing.TestFiles.DATA_OSM_PBF;
 import static org.apache.baremaps.testing.TestFiles.LIECHTENSTEIN_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,12 +21,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import org.apache.baremaps.geocoderosm.GeocoderOSMQuery;
-import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.tasks.CreateGeocoderOpenStreetMap;
-import org.apache.baremaps.workflow.tasks.CreateGeonamesIndex;
+import org.apache.lucene.document.LatLonShape;
+import org.apache.lucene.document.ShapeField;
+import org.apache.lucene.geo.Polygon;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.MMapDirectory;
@@ -48,7 +49,7 @@ public class OSMIndexTest {
 
     // Create the geonames index
 
-    var task = new CreateGeocoderOpenStreetMap(LIECHTENSTEIN_OSM_PBF, 3857, directory);
+    var task = new CreateGeocoderOpenStreetMap(LIECHTENSTEIN_OSM_PBF, directory);
     task.execute(new WorkflowContext());
     var dir = MMapDirectory.open(directory);
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
@@ -68,6 +69,65 @@ public class OSMIndexTest {
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
     assertEquals("Vaduz", doc.getField("name").stringValue());
     System.out.println(doc);
+  }
+
+  @Test
+  void testGeoQuery() throws Exception {
+    var query = LatLonShape.newPointQuery("polygon", ShapeField.QueryRelation.CONTAINS,
+        new double[] {47.1392862, 9.5227962});
+    var topDocs = searcher.search(query, 10);
+    for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+      System.out.println(searcher.doc(scoreDoc.doc));
+    }
+  }
+
+  @Test
+  void testPolygonQuery() throws Exception {
+    // Drawing box at https://geojson.io/#map=14.18/47.13807/9.5242
+    var bbox = """
+        {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "properties": {},
+              "geometry": {
+                "coordinates": [
+                  [
+                    [
+                      9.503676237856723,
+                      47.14708630518214
+                    ],
+                    [
+                      9.503676237856723,
+                      47.1290480684377
+                    ],
+                    [
+                      9.544726212280978,
+                      47.1290480684377
+                    ],
+                    [
+                      9.544726212280978,
+                      47.14708630518214
+                    ],
+                    [
+                      9.503676237856723,
+                      47.14708630518214
+                    ]
+                  ]
+                ],
+                "type": "Polygon"
+              }
+            }
+          ]
+        }
+        """;
+    var polygon = Polygon.fromGeoJSON(bbox);
+    var query = LatLonShape.newPolygonQuery("polygon", ShapeField.QueryRelation.WITHIN, polygon);
+    var topDocs = searcher.search(query, 10);
+    for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+      System.out.println(searcher.doc(scoreDoc.doc));
+    }
   }
 
 }

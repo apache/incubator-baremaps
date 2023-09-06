@@ -17,8 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 import org.apache.baremaps.database.collection.AppendOnlyBuffer;
 import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.database.collection.MemoryAlignedDataList;
@@ -31,28 +29,21 @@ import org.apache.baremaps.database.type.PairDataType;
 import org.apache.baremaps.database.type.geometry.LonLatDataType;
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoderosm.BlockGeocoderImporter;
-import org.apache.baremaps.geocoderosm.OSMNodeDocumentMapper;
-import org.apache.baremaps.openstreetmap.model.Block;
-import org.apache.baremaps.openstreetmap.model.DataBlock;
-import org.apache.baremaps.openstreetmap.model.HeaderBlock;
-import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.MMapDirectory;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record CreateGeocoderOpenStreetMap(Path file, Integer databaseSrid,Path indexDirectory)
+public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
     implements
-    Task {
+      Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeocoderOpenStreetMap.class);
 
@@ -97,13 +88,13 @@ public record CreateGeocoderOpenStreetMap(Path file, Integer databaseSrid,Path i
     var directory = MMapDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
 
-    try(var indexWriter = new IndexWriter(directory, config)) {
+    try (var indexWriter = new IndexWriter(directory, config)) {
       var importer = new BlockGeocoderImporter(indexWriter);
       execute(
           path,
           coordinateMap,
           referenceMap,
-          databaseSrid, importer);
+          importer);
     }
     FileUtils.deleteRecursively(cacheDir);
   }
@@ -112,12 +103,13 @@ public record CreateGeocoderOpenStreetMap(Path file, Integer databaseSrid,Path i
       Path path,
       DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap,
-      Integer databaseSrid, BlockGeocoderImporter importer) throws IOException {
+      BlockGeocoderImporter importer) throws IOException {
 
     // configure the block reader
     var reader = new PbfBlockReader()
         .geometries(true)
-        .projection(databaseSrid)
+        // Must be to 4326 projection to avoid transformation before using Lucene API
+        .projection(4326)
         .coordinateMap(coordinateMap)
         .referenceMap(referenceMap);
 

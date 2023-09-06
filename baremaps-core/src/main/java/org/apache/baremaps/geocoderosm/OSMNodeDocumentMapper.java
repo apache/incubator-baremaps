@@ -14,26 +14,73 @@ package org.apache.baremaps.geocoderosm;
 
 
 
-import java.util.Optional;
+import java.text.ParseException;
 import java.util.function.Function;
+import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.LatLonShape;
 import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.geo.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 
-public class OSMNodeDocumentMapper implements Function<Node, Document> {
+public class OSMNodeDocumentMapper implements Function<Element, Document> {
 
   @Override
-  public Document apply(Node node) {
+  public Document apply(Element element) {
     Document document = new Document();
-    document.add(new TextField(OSMTags.NAME.key(), node.getTags().get(OSMTags.NAME.key()).toString(), Field.Store.YES));
-    document.add(new StoredField(OSMTags.LATITUDE.key(), node.getLat()));
-    document.add(new StoredField(OSMTags.LONGITUDE.key(), node.getLon()));
-    if (node.getTags().containsKey(OSMTags.POPULATION.key())) {
-      var population = Long.parseLong(node.getTags().get(OSMTags.POPULATION.key()).toString());
+    if (element.getTags().containsKey(OSMTags.NAME.key())) {
+      document.add(
+          new TextField(OSMTags.NAME.key(), element.getTags().get(OSMTags.NAME.key()).toString(),
+              Field.Store.YES));
+    }
+
+    if (element instanceof Node node) {
+      document.add(LatLonShape.createIndexableFields("polygon", node.getLat(), node.getLon())[0]);
+      document.add(new StoredField("latitude", node.getLat()));
+      document.add(new StoredField("longitude", node.getLon()));
+    }
+    if (element.getGeometry() != null
+        && !element.getGeometry().getGeometryType().equals(Geometry.TYPENAME_POINT)) {
+      // JTS to GeoJSON
+      var geojsonWriter = new GeoJsonWriter();
+      // Remove crs field in GeoJSON as Lucene parsing is very strict.
+      // Avoid "crs must be CRS84 from OGC, but saw: EPSG:4326"
+      // See:
+      // https://github.com/apache/lucene/blob/ef42af65f27f7f078b1ab426de9f2b2fa214ad86/lucene/core/src/java/org/apache/lucene/geo/SimpleGeoJSONPolygonParser.java#L180
+      geojsonWriter.setEncodeCRS(false);
+      // Assume that Geometry is in EPSG:4326/WGS84 for Lucene Polygon.fromGeoJSON
+      var geojson = geojsonWriter.write(element.getGeometry());
+
+      // GeoJSON to Lucene Polygon
+      try {
+        var polygons = Polygon.fromGeoJSON(geojson);
+
+        for (Polygon polygon : polygons) {
+          // LatLonShape.createIndexableFields can create multiple polygons out of a single polygon
+          // through tesselation
+          for (Field field : LatLonShape.createIndexableFields("polygon", polygon)) {
+            document.add(field);
+          }
+        }
+      } catch (ParseException e) {
+        // ignore geometry
+        System.out.println("geometry failed: " + e);
+      }
+
+    }
+
+
+
+    // document.add(new StoredField(OSMTags.LATITUDE.key(), node.getLat()));
+    // document.add(new StoredField(OSMTags.LONGITUDE.key(), node.getLon()));
+    if (element.getTags().containsKey(OSMTags.POPULATION.key())) {
+      var population = Long.parseLong(element.getTags().get(OSMTags.POPULATION.key()).toString());
       document.add(new NumericDocValuesField(OSMTags.POPULATION.key(), population));
       document.add(new StoredField(OSMTags.POPULATION.key(), population));
     }
