@@ -15,6 +15,8 @@ package org.apache.baremaps.tilestore.pmtiles;
 import com.google.common.math.LongMath;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PMTiles {
 
@@ -22,7 +24,7 @@ public class PMTiles {
     return high * 0x100000000L + low;
   }
 
-  public static long readVarintRemainder(long l, ByteBuffer buf) {
+  public static long readVarIntRemainder(long l, ByteBuffer buf) {
     long h, b;
     b = buf.get() & 0xff;
     h = (b & 0x70) >> 4;
@@ -57,7 +59,18 @@ public class PMTiles {
     throw new RuntimeException("Expected varint not more than 10 bytes");
   }
 
-  public static long readVarint(ByteBuffer buf) {
+  public static int encodeVarInt(ByteBuffer buf, long value) {
+    int n = 1;
+    while (value >= 0x80) {
+      buf.put((byte) (value | 0x80));
+      value >>>= 7;
+      n++;
+    }
+    buf.put((byte) value);
+    return n;
+  }
+
+  public static long decodeVarInt(ByteBuffer buf) {
     long val, b;
     b = buf.get() & 0xff;
     val = b & 0x7f;
@@ -80,7 +93,7 @@ public class PMTiles {
       return val;
     }
     val |= (b & 0x0f) << 28;
-    return readVarintRemainder(val, buf);
+    return readVarIntRemainder(val, buf);
   }
 
   public static void rotate(long n, long[] xy, long rx, long ry) {
@@ -172,6 +185,8 @@ public class PMTiles {
     Avif,
   }
 
+  private static final int HEADER_SIZE_BYTES = 127;
+
   public record Header(
       int specVersion,
       long rootDirectoryOffset,
@@ -201,7 +216,7 @@ public class PMTiles {
       String etag) {
   }
 
-  public static Header bytesToHeader(ByteBuffer buf, String etag) {
+  public static Header decodeHeader(ByteBuffer buf, String etag) {
     buf.order(ByteOrder.LITTLE_ENDIAN);
     return new Header(
         buf.get(7),
@@ -232,7 +247,7 @@ public class PMTiles {
         etag);
   }
 
-  public static void headerToBytes(Header header, ByteBuffer buf) {
+  public static void encodeHeader(Header header, ByteBuffer buf) {
     buf.order(ByteOrder.LITTLE_ENDIAN);
     buf.put(0, (byte) 0x50);
     buf.put(1, (byte) 0x4D);
@@ -266,6 +281,139 @@ public class PMTiles {
     buf.put(118, (byte) header.centerZoom);
     buf.putInt(119, (int) (header.centerLon * 10000000));
     buf.putInt(123, (int) (header.centerLat * 10000000));
+  }
+
+  public static class Entry {
+    private long tileId;
+    private long offset;
+    private long length;
+    private long runLength;
+
+    public Entry() {
+
+    }
+
+    public Entry(long tileId, long offset, long length, long runLength) {
+      this.tileId = tileId;
+      this.offset = offset;
+      this.length = length;
+      this.runLength = runLength;
+    }
+
+    public long getTileId() {
+      return tileId;
+    }
+
+    public void setTileId(long tileId) {
+      this.tileId = tileId;
+    }
+
+    public long getOffset() {
+      return offset;
+    }
+
+    public void setOffset(long offset) {
+      this.offset = offset;
+    }
+
+    public long getLength() {
+      return length;
+    }
+
+    public void setLength(long length) {
+      this.length = length;
+    }
+
+    public long getRunLength() {
+      return runLength;
+    }
+
+    public void setRunLength(long runLength) {
+      this.runLength = runLength;
+    }
+  }
+
+  public static void encodeDirectory(ByteBuffer buffer, List<Entry> entries) {
+    buffer.order(ByteOrder.LITTLE_ENDIAN);
+    encodeVarInt(buffer, entries.size());
+    long lastId = 0;
+    for (Entry entry : entries) {
+      encodeVarInt(buffer, entry.getTileId() - lastId);
+      lastId = entry.getTileId();
+    }
+    for (Entry entry : entries) {
+      encodeVarInt(buffer, entry.getRunLength());
+    }
+    for (Entry entry : entries) {
+      encodeVarInt(buffer, entry.getLength());
+    }
+    for (Entry entry : entries) {
+      if (entry.getOffset() == 0 && entry.getLength() > 0) {
+        Entry prevEntry = entries.get(entries.indexOf(entry) - 1);
+        encodeVarInt(buffer, prevEntry.offset + prevEntry.length + 1);
+      } else {
+        encodeVarInt(buffer, entry.getOffset() + 1);
+      }
+    }
+  }
+
+  public static List<Entry> decodeDirectory(ByteBuffer buffer) {
+    buffer.order(ByteOrder.LITTLE_ENDIAN);
+    long numEntries = decodeVarInt(buffer);
+    List<Entry> entries = new ArrayList<>((int) numEntries);
+    long lastId = 0;
+    for (int i = 0; i < numEntries; i++) {
+      long value = decodeVarInt(buffer);
+      lastId = lastId + value;
+      Entry entry = new Entry();
+      entry.setTileId(lastId);
+      entries.add(entry);
+    }
+    for (int i = 0; i < numEntries; i++) {
+      long value = decodeVarInt(buffer);
+      entries.get(i).setRunLength(value);
+    }
+    for (int i = 0; i < numEntries; i++) {
+      long value = decodeVarInt(buffer);
+      entries.get(i).setLength(value);
+    }
+    for (int i = 0; i < numEntries; i++) {
+      long value = decodeVarInt(buffer);
+      if (value == 0 && i > 0) {
+        Entry prevEntry = entries.get(i - 1);
+        entries.get(i).setOffset(prevEntry.offset + prevEntry.length);;
+      } else {
+        entries.get(i).setOffset(value - 1);
+      }
+    }
+    return entries;
+  }
+
+  public static Entry findTile(List<Entry> entries, long tileId) {
+    int m = 0;
+    int n = entries.size() - 1;
+    while (m <= n) {
+      int k = (n + m) >> 1;
+      long cmp = tileId - entries.get(k).getTileId();
+      if (cmp > 0) {
+        m = k + 1;
+      } else if (cmp < 0) {
+        n = k - 1;
+      } else {
+        return entries.get(k);
+      }
+    }
+
+    // at this point, m > n
+    if (n >= 0) {
+      if (entries.get(n).runLength == 0) {
+        return entries.get(n);
+      }
+      if (tileId - entries.get(n).tileId < entries.get(n).runLength) {
+        return entries.get(n);
+      }
+    }
+    return null;
   }
 
 }

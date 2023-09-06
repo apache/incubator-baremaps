@@ -18,31 +18,51 @@ import com.google.common.math.LongMath;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Optional;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.tilestore.pmtiles.PMTiles.Compression;
+import org.apache.baremaps.tilestore.pmtiles.PMTiles.Entry;
 import org.apache.baremaps.tilestore.pmtiles.PMTiles.TileType;
 import org.junit.jupiter.api.Test;
 
 class PMTilesTest {
 
   @Test
-  void varint() {
+  void decodeVarInt() {
     var b = ByteBuffer.wrap(new byte[] {
         (byte) 0, (byte) 1,
         (byte) 127, (byte) 0xe5,
         (byte) 0x8e, (byte) 0x26
     });
-    assertEquals(PMTiles.readVarint(b), 0);
-    assertEquals(PMTiles.readVarint(b), 1);
-    assertEquals(PMTiles.readVarint(b), 127);
-    assertEquals(PMTiles.readVarint(b), 624485);
+    assertEquals(PMTiles.decodeVarInt(b), 0);
+    assertEquals(PMTiles.decodeVarInt(b), 1);
+    assertEquals(PMTiles.decodeVarInt(b), 127);
+    assertEquals(PMTiles.decodeVarInt(b), 624485);
     b = ByteBuffer.wrap(new byte[] {
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0x0f,
     });
-    assertEquals(PMTiles.readVarint(b), 9007199254740991L);
+    assertEquals(PMTiles.decodeVarInt(b), 9007199254740991L);
+  }
+
+  @Test
+  void encodeVarInt() {
+    var buffer = ByteBuffer.allocate(10);
+    for (long i = 0; i < 1000; i++) {
+      PMTiles.encodeVarInt(buffer, i);
+      buffer.flip();
+      assertEquals(i, PMTiles.decodeVarInt(buffer));
+      buffer.clear();
+    }
+    for (long i = Long.MAX_VALUE - 1000; i < Long.MAX_VALUE; i++) {
+      PMTiles.encodeVarInt(buffer, i);
+      buffer.flip();
+      assertEquals(i, PMTiles.decodeVarInt(buffer));
+      buffer.clear();
+    }
   }
 
   @Test
@@ -102,13 +122,13 @@ class PMTilesTest {
   }
 
   @Test
-  void bytesToHeader() throws IOException {
+  void decodeHeader() throws IOException {
     var file = TestFiles.resolve("pmtiles/test_fixture_1.pmtiles");
     try (var channel = Files.newByteChannel(file)) {
       var buffer = ByteBuffer.allocate(127);
       channel.read(buffer);
       buffer.flip();
-      var header = PMTiles.bytesToHeader(buffer, "1");
+      var header = PMTiles.decodeHeader(buffer, "1");
       assertEquals(header.rootDirectoryOffset(), 127);
       assertEquals(header.rootDirectoryLength(), 25);
       assertEquals(header.jsonMetadataOffset(), 152);
@@ -134,7 +154,7 @@ class PMTilesTest {
   }
 
   @Test
-  void headerToBytes() throws IOException {
+  void encodeHeader() throws IOException {
     var etag = "1";
     var buffer = ByteBuffer.allocate(127);
     var header = new PMTiles.Header(
@@ -164,9 +184,66 @@ class PMTilesTest {
         0,
         0,
         etag);
-    PMTiles.headerToBytes(header, buffer);
-    var header2 = PMTiles.bytesToHeader(buffer, etag);
+    PMTiles.encodeHeader(header, buffer);
+    var header2 = PMTiles.decodeHeader(buffer, etag);
     assertEquals(header, header2);
   }
+
+  @Test
+  void searchForMissingEntry() {
+    var entries = new ArrayList<Entry>();
+    assertEquals(PMTiles.findTile(entries, 101), Optional.empty());
+  }
+
+  @Test
+  void searchForFirstEntry() {
+    var entry = new Entry(100, 1, 1, 1);
+    var entries = new ArrayList<Entry>();
+    entries.add(entry);
+    assertEquals(PMTiles.findTile(entries, 100), Optional.of(entry));
+  }
+
+  @Test
+  void searchWithRunLength() {
+    var entry = new Entry(3, 3, 1, 2);
+    var entries = new ArrayList<Entry>();
+    entries.add(entry);
+    entries.add(new Entry(5, 5, 1, 2));
+    assertEquals(PMTiles.findTile(entries, 4), Optional.of(entry));
+  }
+
+  @Test
+  void searchWithMultipleTileEntries() {
+    var entries = new ArrayList<Entry>();
+    entries.add(new Entry(100, 1, 1, 2));
+    var entry = PMTiles.findTile(entries, 101);
+    assertEquals(entry.getOffset(), 1);
+    assertEquals(entry.getLength(), 1);
+
+    entries = new ArrayList<Entry>();
+    entries.add(new Entry(100, 1, 1, 1));
+    entries.add(new Entry(150, 2, 2, 2));
+    entry = PMTiles.findTile(entries, 151);
+    assertEquals(entry.getOffset(), 2);
+    assertEquals(entry.getLength(), 2);
+
+    entries = new ArrayList<>();
+    entries.add(new Entry(50, 1, 1, 2));
+    entries.add(new Entry(100, 2, 2, 1));
+    entries.add(new Entry(150, 3, 3, 1));
+    entry = PMTiles.findTile(entries, 51);
+    assertEquals(entry.getOffset(), 1);
+    assertEquals(entry.getLength(), 1);
+  }
+
+  @Test
+  void leafSearch() {
+    var entries = new ArrayList<Entry>();
+    entries.add(new Entry(100, 1, 1, 0));
+    var entry = PMTiles.findTile(entries, 150);
+    assertEquals(entry.getOffset(), 1);
+    assertEquals(entry.getLength(), 1);
+  }
+
 
 }
