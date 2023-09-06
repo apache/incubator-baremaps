@@ -18,31 +18,27 @@ import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
 
 /**
- * A resource that provides access to the tileset file. Only suitable for development purposes, as
- * it exposes SQL queries.
+ * A resource that provides access to the tileJSON file.
  */
 @Singleton
 @javax.ws.rs.Path("/")
-public class TilesetResource {
+public class TileJSONResource {
 
-  private final Supplier<Tileset> tilesetSupplier;
+  private final Supplier<TileJSON> tileJSONSupplier;
 
   @Inject
-  public TilesetResource(Supplier<Tileset> tilesetSupplier) {
-    this.tilesetSupplier = tilesetSupplier;
+  public TileJSONResource(Supplier<TileJSON> tileJSONSupplier) {
+    this.tileJSONSupplier = tileJSONSupplier;
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTileset() {
-    var tileset = tilesetSupplier.get();
-    // Hide the database connection
-    tileset.setDatabase(null);
-    return tileset;
+  public TileJSON getTileset() {
+    return tileJSONSupplier.get();
   }
 
 }

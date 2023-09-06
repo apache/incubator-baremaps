@@ -10,6 +10,9 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 
+DIR="$(dirname "$0")"
+cd "$DIR" || exit
+
 echo ""
 echo "--------------------------------------------------------------------"
 echo "Build the project"

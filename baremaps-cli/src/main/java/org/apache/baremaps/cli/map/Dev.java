@@ -29,7 +29,6 @@ import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.style.Style;
-import org.apache.baremaps.vectortile.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -93,11 +92,11 @@ public class Dev implements Callable<Integer> {
       }
     };
 
-    var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
-    var tileJSONSupplier = (Supplier<TileJSON>) () -> {
+    var tileJSONSupplierType = new TypeLiteral<Supplier<Tileset>>() {};
+    var tileJSONSupplier = (Supplier<Tileset>) () -> {
       try {
         var config = configReader.read(tilesetPath);
-        return objectMapper.readValue(config, TileJSON.class);
+        return objectMapper.readValue(config, Tileset.class);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
