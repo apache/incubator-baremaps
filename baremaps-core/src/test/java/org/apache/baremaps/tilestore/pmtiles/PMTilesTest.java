@@ -19,11 +19,15 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.baremaps.testing.TestFiles;
-import org.apache.baremaps.tilestore.pmtiles.PMTiles.Compression;
-import org.apache.baremaps.tilestore.pmtiles.PMTiles.Entry;
-import org.apache.baremaps.tilestore.pmtiles.PMTiles.TileType;
+import org.apache.baremaps.vectortile.VectorTileDecoder;
+import org.apache.baremaps.vectortile.VectorTileViewer;
+import org.apache.baremaps.vectortile.VectorTileViewer.TilePanel;
 import org.junit.jupiter.api.Test;
+
+import javax.swing.*;
 
 class PMTilesTest {
 
@@ -127,28 +131,28 @@ class PMTilesTest {
       var buffer = ByteBuffer.allocate(127);
       channel.read(buffer);
       buffer.flip();
-      var header = PMTiles.decodeHeader(buffer, "1");
-      assertEquals(header.rootDirectoryOffset(), 127);
-      assertEquals(header.rootDirectoryLength(), 25);
-      assertEquals(header.jsonMetadataOffset(), 152);
-      assertEquals(header.jsonMetadataLength(), 247);
-      assertEquals(header.leafDirectoryOffset(), 0);
-      assertEquals(header.leafDirectoryLength(), 0);
-      assertEquals(header.tileDataOffset(), 399);
-      assertEquals(header.tileDataLength(), 69);
-      assertEquals(header.numAddressedTiles(), 1);
-      assertEquals(header.numTileEntries(), 1);
-      assertEquals(header.numTileContents(), 1);
-      assertFalse(header.clustered());
-      assertEquals(header.internalCompression(), Compression.Gzip);
-      assertEquals(header.tileCompression(), Compression.Gzip);
-      assertEquals(header.tileType(), TileType.Mvt);
-      assertEquals(header.minZoom(), 0);
-      assertEquals(header.maxZoom(), 0);
-      assertEquals(header.minLon(), 0);
-      assertEquals(header.minLat(), 0);
-      assertEquals(Math.round(header.maxLon()), 1);
-      assertEquals(Math.round(header.maxLat()), 1);
+      var header = PMTiles.decodeHeader(buffer);
+      assertEquals(header.getRootDirectoryOffset(), 127);
+      assertEquals(header.getRootDirectoryLength(), 25);
+      assertEquals(header.getJsonMetadataOffset(), 152);
+      assertEquals(header.getJsonMetadataLength(), 247);
+      assertEquals(header.getLeafDirectoryOffset(), 0);
+      assertEquals(header.getLeafDirectoryLength(), 0);
+      assertEquals(header.getTileDataOffset(), 399);
+      assertEquals(header.getTileDataLength(), 69);
+      assertEquals(header.getNumAddressedTiles(), 1);
+      assertEquals(header.getNumTileEntries(), 1);
+      assertEquals(header.getNumTileContents(), 1);
+      assertFalse(header.isClustered());
+      assertEquals(header.getInternalCompression(), Compression.Gzip);
+      assertEquals(header.getTileCompression(), Compression.Gzip);
+      assertEquals(header.getTileType(), TileType.Mvt);
+      assertEquals(header.getMinZoom(), 0);
+      assertEquals(header.getMaxZoom(), 0);
+      assertEquals(header.getMinLon(), 0);
+      assertEquals(header.getMinLat(), 0);
+      assertEquals(Math.round(header.getMaxLon()), 1);
+      assertEquals(Math.round(header.getMaxLat()), 1);
     }
   }
 
@@ -156,7 +160,7 @@ class PMTilesTest {
   void encodeHeader() throws IOException {
     var etag = "1";
     var buffer = ByteBuffer.allocate(127);
-    var header = new PMTiles.Header(
+    var header = new Header(
         127,
         25,
         152,
@@ -181,10 +185,10 @@ class PMTilesTest {
         0,
         0,
         0,
-        0,
-        etag);
+        0
+    );
     PMTiles.encodeHeader(header, buffer);
-    var header2 = PMTiles.decodeHeader(buffer, etag);
+    var header2 = PMTiles.decodeHeader(buffer);
     assertEquals(header, header2);
   }
 
@@ -242,6 +246,28 @@ class PMTilesTest {
     var entry = PMTiles.findTile(entries, 150);
     assertEquals(entry.getOffset(), 1);
     assertEquals(entry.getLength(), 1);
+  }
+
+  @Test
+  void reader() throws InvalidProtocolBufferException, InterruptedException {
+    var reader = new PMTilesReader(TestFiles.resolve("pmtiles/test_fixture_1.pmtiles"));
+    var header = reader.getHeader();
+    assertEquals(header.getRootDirectoryOffset(), 127);
+    var rootDirectory = reader.getRootDirectory();
+    assertEquals(rootDirectory.size(), 1);
+    var entry = rootDirectory.get(0);
+    ByteBuffer buffer = reader.getTile(0,0,0);
+
+    VectorTileViewer viewer = new VectorTileViewer();
+    var parsed = org.apache.baremaps.mvt.binary.VectorTile.Tile.parseFrom(buffer);
+    var tile = new VectorTileDecoder().decodeTile(parsed);
+    JFrame f = new JFrame("Vector Tile Viewer");
+    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    f.add(new TilePanel(tile, 1000));
+    f.pack();
+    f.setVisible(true);
+
+    Thread.sleep(10000);
   }
 
 

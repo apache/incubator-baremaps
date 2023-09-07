@@ -168,55 +168,9 @@ public class PMTiles {
     throw new RuntimeException("Tile zoom level exceeds max safe number limit (26)");
   }
 
-  enum Compression {
-    Unknown,
-    None,
-    Gzip,
-    Brotli,
-    Zstd,
-  }
-
-  enum TileType {
-    Unknown,
-    Mvt,
-    Png,
-    Jpeg,
-    Webp,
-    Avif,
-  }
-
   private static final int HEADER_SIZE_BYTES = 127;
 
-  public record Header(
-      int specVersion,
-      long rootDirectoryOffset,
-      long rootDirectoryLength,
-      long jsonMetadataOffset,
-      long jsonMetadataLength,
-      long leafDirectoryOffset,
-      long leafDirectoryLength,
-      long tileDataOffset,
-      long tileDataLength,
-      long numAddressedTiles,
-      long numTileEntries,
-      long numTileContents,
-      boolean clustered,
-      Compression internalCompression,
-      Compression tileCompression,
-      TileType tileType,
-      int minZoom,
-      int maxZoom,
-      double minLon,
-      double minLat,
-      double maxLon,
-      double maxLat,
-      int centerZoom,
-      double centerLon,
-      double centerLat,
-      String etag) {
-  }
-
-  public static Header decodeHeader(ByteBuffer buf, String etag) {
+  public static Header decodeHeader(ByteBuffer buf) {
     buf.order(ByteOrder.LITTLE_ENDIAN);
     return new Header(
         buf.get(7),
@@ -243,8 +197,8 @@ public class PMTiles {
         (double) buf.getInt(114) / 10000000,
         buf.get(118),
         (double) buf.getInt(119) / 10000000,
-        (double) buf.getInt(123) / 10000000,
-        etag);
+        (double) buf.getInt(123) / 10000000
+    );
   }
 
   public static void encodeHeader(Header header, ByteBuffer buf) {
@@ -256,81 +210,31 @@ public class PMTiles {
     buf.put(4, (byte) 0x6C);
     buf.put(5, (byte) 0x65);
     buf.put(6, (byte) 0x73);
-    buf.put(7, (byte) header.specVersion);
-    buf.putLong(8, header.rootDirectoryOffset);
-    buf.putLong(16, header.rootDirectoryLength);
-    buf.putLong(24, header.jsonMetadataOffset);
-    buf.putLong(32, header.jsonMetadataLength);
-    buf.putLong(40, header.leafDirectoryOffset);
-    buf.putLong(48, header.leafDirectoryLength);
-    buf.putLong(56, header.tileDataOffset);
-    buf.putLong(64, header.tileDataLength);
-    buf.putLong(72, header.numAddressedTiles);
-    buf.putLong(80, header.numTileEntries);
-    buf.putLong(88, header.numTileContents);
-    buf.put(96, (byte) (header.clustered ? 1 : 0));
-    buf.put(97, (byte) header.internalCompression.ordinal());
-    buf.put(98, (byte) header.tileCompression.ordinal());
-    buf.put(99, (byte) header.tileType.ordinal());
-    buf.put(100, (byte) header.minZoom);
-    buf.put(101, (byte) header.maxZoom);
-    buf.putInt(102, (int) (header.minLon * 10000000));
-    buf.putInt(106, (int) (header.minLat * 10000000));
-    buf.putInt(110, (int) (header.maxLon * 10000000));
-    buf.putInt(114, (int) (header.maxLat * 10000000));
-    buf.put(118, (byte) header.centerZoom);
-    buf.putInt(119, (int) (header.centerLon * 10000000));
-    buf.putInt(123, (int) (header.centerLat * 10000000));
-  }
-
-  public static class Entry {
-    private long tileId;
-    private long offset;
-    private long length;
-    private long runLength;
-
-    public Entry() {
-
-    }
-
-    public Entry(long tileId, long offset, long length, long runLength) {
-      this.tileId = tileId;
-      this.offset = offset;
-      this.length = length;
-      this.runLength = runLength;
-    }
-
-    public long getTileId() {
-      return tileId;
-    }
-
-    public void setTileId(long tileId) {
-      this.tileId = tileId;
-    }
-
-    public long getOffset() {
-      return offset;
-    }
-
-    public void setOffset(long offset) {
-      this.offset = offset;
-    }
-
-    public long getLength() {
-      return length;
-    }
-
-    public void setLength(long length) {
-      this.length = length;
-    }
-
-    public long getRunLength() {
-      return runLength;
-    }
-
-    public void setRunLength(long runLength) {
-      this.runLength = runLength;
-    }
+    buf.put(7, (byte) header.getSpecVersion());
+    buf.putLong(8, header.getRootDirectoryOffset());
+    buf.putLong(16, header.getRootDirectoryLength());
+    buf.putLong(24, header.getJsonMetadataOffset());
+    buf.putLong(32, header.getJsonMetadataLength());
+    buf.putLong(40, header.getLeafDirectoryOffset());
+    buf.putLong(48, header.getLeafDirectoryLength());
+    buf.putLong(56, header.getTileDataOffset());
+    buf.putLong(64, header.getTileDataLength());
+    buf.putLong(72, header.getNumAddressedTiles());
+    buf.putLong(80, header.getNumTileEntries());
+    buf.putLong(88, header.getNumTileContents());
+    buf.put(96, (byte) (header.isClustered() ? 1 : 0));
+    buf.put(97, (byte) header.getInternalCompression().ordinal());
+    buf.put(98, (byte) header.getTileCompression().ordinal());
+    buf.put(99, (byte) header.getTileType().ordinal());
+    buf.put(100, (byte) header.getMinZoom());
+    buf.put(101, (byte) header.getMaxZoom());
+    buf.putInt(102, (int) (header.getMinLon() * 10000000));
+    buf.putInt(106, (int) (header.getMinLat() * 10000000));
+    buf.putInt(110, (int) (header.getMaxLon() * 10000000));
+    buf.putInt(114, (int) (header.getMaxLat() * 10000000));
+    buf.put(118, (byte) header.getCenterZoom());
+    buf.putInt(119, (int) (header.getCenterLon() * 10000000));
+    buf.putInt(123, (int) (header.getCenterLat() * 10000000));
   }
 
   public static void encodeDirectory(ByteBuffer buffer, List<Entry> entries) {
@@ -350,7 +254,7 @@ public class PMTiles {
     for (Entry entry : entries) {
       if (entry.getOffset() == 0 && entry.getLength() > 0) {
         Entry prevEntry = entries.get(entries.indexOf(entry) - 1);
-        encodeVarInt(buffer, prevEntry.offset + prevEntry.length + 1);
+        encodeVarInt(buffer, prevEntry.getOffset() + prevEntry.getLength() + 1);
       } else {
         encodeVarInt(buffer, entry.getOffset() + 1);
       }
@@ -381,7 +285,7 @@ public class PMTiles {
       long value = decodeVarInt(buffer);
       if (value == 0 && i > 0) {
         Entry prevEntry = entries.get(i - 1);
-        entries.get(i).setOffset(prevEntry.offset + prevEntry.length);;
+        entries.get(i).setOffset(prevEntry.getOffset() + prevEntry.getLength());;
       } else {
         entries.get(i).setOffset(value - 1);
       }
@@ -406,10 +310,10 @@ public class PMTiles {
 
     // at this point, m > n
     if (n >= 0) {
-      if (entries.get(n).runLength == 0) {
+      if (entries.get(n).getRunLength() == 0) {
         return entries.get(n);
       }
-      if (tileId - entries.get(n).tileId < entries.get(n).runLength) {
+      if (tileId - entries.get(n).getTileId() < entries.get(n).getRunLength()) {
         return entries.get(n);
       }
     }
