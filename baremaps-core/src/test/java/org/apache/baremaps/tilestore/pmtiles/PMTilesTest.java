@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Optional;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.tilestore.pmtiles.PMTiles.Compression;
 import org.apache.baremaps.tilestore.pmtiles.PMTiles.Entry;
@@ -192,7 +191,7 @@ class PMTilesTest {
   @Test
   void searchForMissingEntry() {
     var entries = new ArrayList<Entry>();
-    assertEquals(PMTiles.findTile(entries, 101), Optional.empty());
+    assertEquals(PMTiles.findTile(entries, 101), null);
   }
 
   @Test
@@ -200,7 +199,7 @@ class PMTilesTest {
     var entry = new Entry(100, 1, 1, 1);
     var entries = new ArrayList<Entry>();
     entries.add(entry);
-    assertEquals(PMTiles.findTile(entries, 100), Optional.of(entry));
+    assertEquals(PMTiles.findTile(entries, 100), entry);
   }
 
   @Test
@@ -209,7 +208,7 @@ class PMTilesTest {
     var entries = new ArrayList<Entry>();
     entries.add(entry);
     entries.add(new Entry(5, 5, 1, 2));
-    assertEquals(PMTiles.findTile(entries, 4), Optional.of(entry));
+    assertEquals(PMTiles.findTile(entries, 4), entry);
   }
 
   @Test
