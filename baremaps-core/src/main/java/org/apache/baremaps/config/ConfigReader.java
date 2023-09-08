@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Source;
+import org.graalvm.polyglot.proxy.ProxyObject;
 
 public class ConfigReader {
 
@@ -45,6 +47,11 @@ public class ConfigReader {
         .allowExperimentalOptions(true)
         .allowIO(true)
         .build()) {
+
+      // Expose the environment variables to the script
+      var env = new HashMap<String, Object>(System.getenv());
+      context.getBindings("js").putMember("env", ProxyObject.fromMap(env));
+
       var script = String.format("""
           import config from '%s';
           export default JSON.stringify(config);
