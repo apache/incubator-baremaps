@@ -71,6 +71,57 @@ public final class PostgresUtils {
   }
 
   /**
+   * Creates a data source from an object representation of a data source.
+   *
+   * @param datasource the object representation of a data source
+   * @return the data source
+   */
+  public static DataSource createDataSource(
+      org.apache.baremaps.vectortile.tileset.DataSource datasource) {
+    var config = new HikariConfig();
+    if (datasource.getDataSourceClassName() != null) {
+      config.setDataSourceClassName(datasource.getDataSourceClassName());
+    }
+    if (datasource.getJdbcUrl() != null) {
+      config.setJdbcUrl(datasource.getJdbcUrl());
+    }
+    if (datasource.getUsername() != null) {
+      config.setUsername(datasource.getUsername());
+    }
+    if (datasource.getPassword() != null) {
+      config.setPassword(datasource.getPassword());
+    }
+    if (datasource.getAutoCommit() != null) {
+      config.setAutoCommit(datasource.getAutoCommit());
+    }
+    if (datasource.getConnectionTimeout() != null) {
+      config.setConnectionTimeout(datasource.getConnectionTimeout());
+    }
+    if (datasource.getIdleTimeout() != null) {
+      config.setInitializationFailTimeout(datasource.getIdleTimeout());
+    }
+    if (datasource.getKeepAliveTime() != null) {
+      config.setKeepaliveTime(datasource.getKeepAliveTime());
+    }
+    if (datasource.getMaxLifetime() != null) {
+      config.setMaxLifetime(datasource.getMaxLifetime());
+    }
+    if (datasource.getMinimumIdle() != null) {
+      config.setMinimumIdle(datasource.getMinimumIdle());
+    }
+    if (datasource.getMaximumPoolSize() != null) {
+      config.setMaximumPoolSize(datasource.getMaximumPoolSize());
+    }
+    if (datasource.getPoolName() != null) {
+      config.setPoolName(datasource.getPoolName());
+    }
+    if (datasource.getReadOnly() != null) {
+      config.setReadOnly(datasource.getReadOnly());
+    }
+    return new HikariDataSource(config);
+  }
+
+  /**
    * Appends the multi-queries parameter to the given JDBC URL.
    *
    * @param jdbcUrl the JDBC URL

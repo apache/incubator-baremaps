@@ -72,8 +72,12 @@ public class Tileset {
   @JsonProperty("center")
   private List<Double> center = new ArrayList<>();
 
+  @Deprecated
   @JsonProperty("database")
   private String database;
+
+  @JsonProperty("datasource")
+  private String dataSource;
 
   @JsonProperty("vector_layers")
   private List<TilesetLayer> vectorLayers = new ArrayList<>();
@@ -121,6 +125,14 @@ public class Tileset {
   public Tileset setName(String name) {
     this.name = name;
     return this;
+  }
+
+  public String getDataSource() {
+    return dataSource;
+  }
+
+  public void setDataSource(String dataSource) {
+    this.dataSource = dataSource;
   }
 
   public String getDescription() {

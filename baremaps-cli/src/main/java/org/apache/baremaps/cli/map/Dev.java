@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
+import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.server.*;
@@ -69,7 +70,13 @@ public class Dev implements Callable<Integer> {
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
-    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
+
+    DataSource datasource;
+    if (tileset.getDataSource() != null) {
+      datasource = PostgresUtils.createDataSource(tileset.getDataSource());
+    } else {
+      datasource = PostgresUtils.createDataSource(tileset.getDatabase());
+    }
 
     var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStoreSupplier = (Supplier<TileStore>) () -> {
