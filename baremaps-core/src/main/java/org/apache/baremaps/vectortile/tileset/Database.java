@@ -14,7 +14,7 @@ package org.apache.baremaps.vectortile.tileset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DataSource {
+public class Database {
 
   @JsonProperty("dataSourceClassName")
   private String dataSourceClassName;
@@ -55,8 +55,7 @@ public class DataSource {
   @JsonProperty("readOnly")
   private Boolean readOnly;
 
-  public DataSource() {}
-
+  public Database() {}
 
   public String getDataSourceClassName() {
     return dataSourceClassName;

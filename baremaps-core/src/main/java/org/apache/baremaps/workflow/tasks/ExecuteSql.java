@@ -22,7 +22,7 @@ import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 
-public record ExecuteSql(String database, Path file, boolean parallel) implements Task {
+public record ExecuteSql(Object database, Path file, boolean parallel) implements Task {
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

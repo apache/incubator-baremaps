@@ -13,7 +13,6 @@
 package org.apache.baremaps.vectortile.tileset;
 
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,10 +73,7 @@ public class Tileset {
 
   @Deprecated
   @JsonProperty("database")
-  private String database;
-
-  @JsonProperty("datasource")
-  private String dataSource;
+  private Object database;
 
   @JsonProperty("vector_layers")
   private List<TilesetLayer> vectorLayers = new ArrayList<>();
@@ -125,14 +121,6 @@ public class Tileset {
   public Tileset setName(String name) {
     this.name = name;
     return this;
-  }
-
-  public String getDataSource() {
-    return dataSource;
-  }
-
-  public void setDataSource(String dataSource) {
-    this.dataSource = dataSource;
   }
 
   public String getDescription() {
@@ -252,7 +240,7 @@ public class Tileset {
     return this;
   }
 
-  public String getDatabase() {
+  public Object getDatabase() {
     return database;
   }
 

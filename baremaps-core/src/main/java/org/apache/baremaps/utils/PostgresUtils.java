@@ -13,7 +13,7 @@
 package org.apache.baremaps.utils;
 
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -24,10 +24,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
+import org.apache.baremaps.vectortile.tileset.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A helper class for creating data sources and executing queries. */
+/**
+ * A helper class for creating data sources and executing queries.
+ */
 public final class PostgresUtils {
 
   private static final Logger logger = LoggerFactory.getLogger(PostgresUtils.class);
@@ -45,11 +48,20 @@ public final class PostgresUtils {
    * Creates a data source from a JDBC url with a pool size corresponding to the number of available
    * processors.
    *
-   * @param url the JDBC url
+   * @param database the database object, either a JDBC url or a {@code DataSource}
    * @return the data source
    */
-  public static DataSource createDataSource(String url) {
-    return createDataSource(url, Runtime.getRuntime().availableProcessors() * 2);
+  public static DataSource createDataSource(Object database) {
+    if (database instanceof String url) {
+      return createDataSource(url);
+    } else {
+      var json = new ObjectMapper().convertValue(database, Database.class);
+      return createDataSource(json);
+    }
+  }
+
+  public static DataSource createDataSource(String database) {
+    return createDataSource(database, Runtime.getRuntime().availableProcessors() * 2);
   }
 
   /**
@@ -77,7 +89,7 @@ public final class PostgresUtils {
    * @return the data source
    */
   public static DataSource createDataSource(
-      org.apache.baremaps.vectortile.tileset.DataSource datasource) {
+      Database datasource) {
     var config = new HikariConfig();
     if (datasource.getDataSourceClassName() != null) {
       config.setDataSourceClassName(datasource.getDataSourceClassName());

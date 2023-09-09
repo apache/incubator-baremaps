@@ -19,7 +19,7 @@ import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 
-public record ExecuteSqlScript(String database, Path file) implements Task {
+public record ExecuteSqlScript(Object database, Path file) implements Task {
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

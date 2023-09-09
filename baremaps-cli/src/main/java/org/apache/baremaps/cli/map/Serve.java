@@ -21,7 +21,6 @@ import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
-import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.server.*;
@@ -72,15 +71,8 @@ public class Serve implements Callable<Integer> {
     var objectMapper = objectMapper();
     var configReader = new ConfigReader();
     var caffeineSpec = CaffeineSpec.parse(cache);
-
     var tileset = objectMapper.readValue(configReader.read(tilesetPath), Tileset.class);
-
-    DataSource datasource;
-    if (tileset.getDataSource() != null) {
-      datasource = PostgresUtils.createDataSource(tileset.getDataSource());
-    } else {
-      datasource = PostgresUtils.createDataSource(tileset.getDatabase());
-    }
+    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
 
     var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new PostgresTileStore(datasource, tileset);
