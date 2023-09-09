@@ -13,13 +13,14 @@
 package org.apache.baremaps.vectortile.tileset;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 
 public class Database {
 
   @JsonProperty("dataSourceClassName")
   private String dataSourceClassName;
 
-  @JsonProperty("tilejson")
+  @JsonProperty("jdbcUrl")
   private String jdbcUrl;
 
   @JsonProperty("username")
@@ -159,5 +160,35 @@ public class Database {
 
   public void setReadOnly(Boolean readOnly) {
     this.readOnly = readOnly;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Database database = (Database) o;
+    return Objects.equals(dataSourceClassName, database.dataSourceClassName)
+        && Objects.equals(jdbcUrl, database.jdbcUrl) && Objects.equals(username, database.username)
+        && Objects.equals(password, database.password)
+        && Objects.equals(autoCommit, database.autoCommit)
+        && Objects.equals(connectionTimeout, database.connectionTimeout)
+        && Objects.equals(idleTimeout, database.idleTimeout)
+        && Objects.equals(keepAliveTime, database.keepAliveTime)
+        && Objects.equals(maxLifetime, database.maxLifetime)
+        && Objects.equals(minimumIdle, database.minimumIdle)
+        && Objects.equals(maximumPoolSize, database.maximumPoolSize)
+        && Objects.equals(poolName, database.poolName)
+        && Objects.equals(readOnly, database.readOnly);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(dataSourceClassName, jdbcUrl, username, password, autoCommit,
+        connectionTimeout, idleTimeout, keepAliveTime, maxLifetime, minimumIdle, maximumPoolSize,
+        poolName, readOnly);
   }
 }
