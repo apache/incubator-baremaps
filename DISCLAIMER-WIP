@@ -12,6 +12,10 @@ the project is currently aware of (this list is likely to be incomplete):
  * Releases may have incomplete licensing conditions.
  * Releases may not have been voted on by the community.
  * Releases contain the incompatible proj4j-epsg dependency.
+ * Releases contain excerpts of the OpenStreetMap data.
+ * Releases contain excerpts of the Natural Earth data.
+ * Releases contain excerpts of the GeoNames data.
+ * Releases contain excerpts of the RIPE NCC data.
 
 If you are planning to incorporate this work into your product/project, please be aware that you
 will need to conduct a thorough licensing review to determine the overall implications of including

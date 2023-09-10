@@ -4,6 +4,9 @@ Copyright 2022-2023 The Apache Software Foundation.
 Baremaps development team
 Copyright 2020-2022.
 
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
 This product includes protocol buffers definitions derived from OSMPBF.
 MIT License.
 Please visit the following URLs for the licensing information:
@@ -36,21 +39,19 @@ The derived files are:
 - baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicDataMap.java
 - baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicFixedSizeDataMap.java
 
-This product includes code derived from Apache SIS.
-Apache License, Version 2.0
-Please visit the following URL for the full text of the SIS license:
-https://github.com/apache/sis/blob/main/LICENSE
-The derived files are:
-- baremaps-core/src/main/java/org/apache/baremaps/storage/shapefile/internal/*.java
+This product includes test data derived from OpenStreetMap.
+Open Data Commons Open Database License (ODbL).
+Please visit the following URL for the full text of the ODbL license:
+https://opendatacommons.org/licenses/odbl/1.0/
 
 This product includes data from the European Petroleum Survey Group (EPSG).
 Please visit the following URL for the full text of the EPSG Terms of Use:
 https://epsg.org/terms-of-use.html
 
-This product includes test data derived from OpenStreetMap.
-Open Data Commons Open Database License (ODbL).
-Please visit the following URL for the full text of the ODbL license:
-https://opendatacommons.org/licenses/odbl/1.0/
+This product includes test data derived from NaturalEarth.
+Public Domain.
+Please visit the following URL for the full text of the terms of use:
+https://www.naturalearthdata.com/about/terms-of-use/
 
 This product includes test data derived from GeoNames.
 Creative Commons Attribution 4.0 License.

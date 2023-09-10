@@ -207,9 +207,11 @@
    additional license terms:
 
        - OSMPBF, MIT License
+       - Mapbox Vector Tile, Creative Commons Public License
        - Palantir Streams, Apache License 2.0
        - Planetiler, Apache License 2.0
-       - EPSG, EPSG Terms of Use
        - OpenStreetMap, Open Data Commons Open Database License (ODbL)
+       - EPSG, EPSG Terms of Use
+       - Natural Earth, Public Domain
        - GeoNames, Creative Commons Attribution 4.0 License
        - RIPE NCC, RIPE NCC Terms and Conditions
