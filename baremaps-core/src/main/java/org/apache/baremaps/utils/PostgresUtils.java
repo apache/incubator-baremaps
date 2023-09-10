@@ -37,18 +37,21 @@ public final class PostgresUtils {
 
   private PostgresUtils() {}
 
-  public static DataSource createDataSource(String host, Integer port, String database,
-      String username, String password) {
+  public static DataSource createDataSource(
+      String host,
+      Integer port,
+      String database,
+      String username,
+      String password) {
     return createDataSource(
         String.format("jdbc:postgresql://%s:%s/%s?&user=%s&password=%s", host, port,
             database, username, password));
   }
 
   /**
-   * Creates a data source from a JDBC url with a pool size corresponding to the number of available
-   * processors.
+   * Creates a data source from an object, either a JDBC url or a json representation of a database.
    *
-   * @param database the database object, either a JDBC url or a {@code DataSource}
+   * @param database the database object, either a JDBC url or a json representation of a database
    * @return the data source
    */
   public static DataSource createDataSource(Object database) {
@@ -60,6 +63,12 @@ public final class PostgresUtils {
     }
   }
 
+  /**
+   * Creates a data source from a JDBC url.
+   *
+   * @param database the JDBC url
+   * @return the data source
+   */
   public static DataSource createDataSource(String database) {
     return createDataSource(database, Runtime.getRuntime().availableProcessors() * 2);
   }
@@ -83,13 +92,12 @@ public final class PostgresUtils {
   }
 
   /**
-   * Creates a data source from an object representation of a data source.
+   * Creates a data source from a json representation of a database.
    *
-   * @param datasource the object representation of a data source
+   * @param datasource the object representation of a database
    * @return the data source
    */
-  public static DataSource createDataSource(
-      Database datasource) {
+  public static DataSource createDataSource(Database datasource) {
     var config = new HikariConfig();
     if (datasource.getDataSourceClassName() != null) {
       config.setDataSourceClassName(datasource.getDataSourceClassName());
