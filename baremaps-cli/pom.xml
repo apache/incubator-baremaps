@@ -192,26 +192,10 @@
           <force>true</force>
           <outputDirectory>${thirdparty.directory}</outputDirectory>
           <thirdPartyFilename>${thirdparty.filename}</thirdPartyFilename>
-          <!-- Template to group by license with handling of multi licensing -->
-          <fileTemplate>${basedir}/licenseBundledDeps.ftl</fileTemplate>
-          <!-- Only bundled bits matters https://infra.apache.org/licensing-howto.html#bundled-vs-non-bundled -->
           <excludedScopes>test,provided</excludedScopes>
-          <!-- If true enforces excluding transitive dependencies of the excluded artifacts in the reactor;
-           otherwise only artifacts that match exclude filters are excluded.
-           It excludes all transitives dependencies of excludedScopes dependencies. -->
           <excludeTransitiveDependencies>true</excludeTransitiveDependencies>
-          <licenseMerges>
-            <licenseMerge>Apache License, Version 2.0|Apache 2|Apache 2.0 |Apache License 2.0|Apache License V2.0
-              |Apache License v2.0|Apache License, 2.0|Apache Software License, version 2.0
-              |The Apache License, Version 2.0|The Apache Software License, Version 2.0|The Apache Software License, version 2.0</licenseMerge>
-            <licenseMerge>BSD-2-Clause|BSD 2-Clause</licenseMerge>
-            <licenseMerge>Eclipse Distribution License - v 1.0|EDL 1.0</licenseMerge>
-            <licenseMerge>Eclipse Public License - v 2.0|EPL 2.0|Eclipse Public License v2.0|Eclipse Public License, Version 2.0</licenseMerge>
-            <licenseMerge>MIT License|MIT license|The MIT License|The MIT License (MIT)</licenseMerge>
-            <licenseMerge>GNU General Public License (GPL), version 2, with the Classpath exception
-              |GPL2 w/ CPE
-              |The GNU General Public License (GPL), Version 2, With Classpath Exception</licenseMerge>
-          </licenseMerges>
+          <fileTemplate>${basedir}/src/license/bundle.ftl</fileTemplate>
+          <overrideUrl>file://${basedir}/src/license/override.properties</overrideUrl>
         </configuration>
         <executions>
           <execution>
