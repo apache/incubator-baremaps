@@ -72,7 +72,7 @@ public class OSMIndexTest {
   @Test
   void testCreateIndex() throws Exception {
     var query =
-        new GeocoderOSMQuery("vaduz").build();
+        new GeocoderOsmQuery("vaduz").build();
     var topDocs = searcher.search(query, 1);
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
     assertEquals("Vaduz", doc.getField("name").stringValue());

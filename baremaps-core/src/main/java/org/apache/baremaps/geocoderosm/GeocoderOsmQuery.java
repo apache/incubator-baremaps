@@ -19,11 +19,11 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 
-public class GeocoderOSMQuery {
+public class GeocoderOsmQuery {
 
   private final String query;
 
-  public GeocoderOSMQuery(String query) {
+  public GeocoderOsmQuery(String query) {
     this.query = query;
   }
 
@@ -31,7 +31,7 @@ public class GeocoderOSMQuery {
     var builder = new BooleanQuery.Builder();
     var queryTextEsc = QueryParser.escape(query);
 
-    var parser = new SimpleQueryParser(GeocoderConstants.ANALYZER, OSMTags.NAME.key());
+    var parser = new SimpleQueryParser(GeocoderConstants.ANALYZER, OsmTags.NAME.key());
     var termsQuery = parser.parse(queryTextEsc);
     // at least one terms of the queryText must be present
     builder.add(termsQuery, BooleanClause.Occur.MUST);

@@ -19,12 +19,12 @@ import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.stream.StreamException;
 import org.apache.lucene.index.IndexWriter;
 
-public class GeocoderOSMConsumerEntity implements Consumer<Entity> {
+public class GeocoderOsmConsumerEntity implements Consumer<Entity> {
   private final IndexWriter indexWriter;
-  private final GeocoderOSMDocumentMapper geocoderOsmDocumentMapper =
-      new GeocoderOSMDocumentMapper();
+  private final GeocoderOsmDocumentMapper geocoderOsmDocumentMapper =
+      new GeocoderOsmDocumentMapper();
 
-  public GeocoderOSMConsumerEntity(IndexWriter indexWriter) {
+  public GeocoderOsmConsumerEntity(IndexWriter indexWriter) {
     this.indexWriter = indexWriter;
   }
 

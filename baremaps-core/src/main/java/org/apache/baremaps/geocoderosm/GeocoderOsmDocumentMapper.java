@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class GeocoderOSMDocumentMapper implements Function<Element, Document> {
-  private static final Logger logger = LoggerFactory.getLogger(GeocoderOSMDocumentMapper.class);
+public class GeocoderOsmDocumentMapper implements Function<Element, Document> {
+  private static final Logger logger = LoggerFactory.getLogger(GeocoderOsmDocumentMapper.class);
 
   @Override
   public Document apply(Element element) {
@@ -39,9 +39,9 @@ public class GeocoderOSMDocumentMapper implements Function<Element, Document> {
     document.add(new StoredField("osm_id", element.id()));
     document.add(new StoredField("osm_type", element.getClass().getSimpleName()));
 
-    if (element.getTags().containsKey(OSMTags.NAME.key())) {
+    if (element.getTags().containsKey(OsmTags.NAME.key())) {
       document.add(
-          new TextField(OSMTags.NAME.key(), element.getTags().get(OSMTags.NAME.key()).toString(),
+          new TextField(OsmTags.NAME.key(), element.getTags().get(OsmTags.NAME.key()).toString(),
               Field.Store.YES));
     }
 
@@ -87,10 +87,10 @@ public class GeocoderOSMDocumentMapper implements Function<Element, Document> {
 
     }
 
-    if (element.getTags().containsKey(OSMTags.POPULATION.key())) {
-      var population = Long.parseLong(element.getTags().get(OSMTags.POPULATION.key()).toString());
-      document.add(new NumericDocValuesField(OSMTags.POPULATION.key(), population));
-      document.add(new StoredField(OSMTags.POPULATION.key(), population));
+    if (element.getTags().containsKey(OsmTags.POPULATION.key())) {
+      var population = Long.parseLong(element.getTags().get(OsmTags.POPULATION.key()).toString());
+      document.add(new NumericDocValuesField(OsmTags.POPULATION.key(), population));
+      document.add(new StoredField(OsmTags.POPULATION.key(), population));
     }
     return document;
   }

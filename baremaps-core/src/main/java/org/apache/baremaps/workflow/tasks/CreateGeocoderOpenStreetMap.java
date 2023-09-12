@@ -28,7 +28,7 @@ import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.PairDataType;
 import org.apache.baremaps.database.type.geometry.LonLatDataType;
 import org.apache.baremaps.geocoder.GeocoderConstants;
-import org.apache.baremaps.geocoderosm.GeocoderOSMConsumerEntity;
+import org.apache.baremaps.geocoderosm.GeocoderOsmConsumerEntity;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.utils.FileUtils;
@@ -94,7 +94,7 @@ public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
 
     try (var indexWriter = new IndexWriter(directory, config)) {
-      var importer = new GeocoderOSMConsumerEntity(indexWriter);
+      var importer = new GeocoderOsmConsumerEntity(indexWriter);
       execute(
           path,
           coordinateMap,
@@ -108,7 +108,7 @@ public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
       Path path,
       DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap,
-      GeocoderOSMConsumerEntity importer) throws IOException {
+      GeocoderOsmConsumerEntity importer) throws IOException {
 
     // configure the block reader
     var reader = new PbfEntityReader()

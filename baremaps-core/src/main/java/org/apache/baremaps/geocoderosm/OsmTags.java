@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.geocoderosm;
 
-public enum OSMTags {
+public enum OsmTags {
   NAME("name"),
   PLACE("place"),
   POPULATION("population"),
@@ -21,7 +21,7 @@ public enum OSMTags {
 
   private final String key;
 
-  OSMTags(String key) {
+  OsmTags(String key) {
     this.key = key;
   }
 
