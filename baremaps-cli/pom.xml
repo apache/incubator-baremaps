@@ -195,7 +195,7 @@
           <excludedScopes>test,provided</excludedScopes>
           <excludeTransitiveDependencies>true</excludeTransitiveDependencies>
           <fileTemplate>${basedir}/src/license/bundle.ftl</fileTemplate>
-          <overrideUrl>file://${basedir}/src/license/override.properties</overrideUrl>
+          <overrideFile>${basedir}/src/license/override.properties</overrideFile>
         </configuration>
         <executions>
           <execution>
