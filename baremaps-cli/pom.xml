@@ -22,6 +22,13 @@
   <artifactId>baremaps-cli</artifactId>
   <name>baremaps-cli</name>
 
+  <properties>
+    <license.directory>${project.build.directory}/generated-sources/license</license.directory>
+    <license.filename>LICENSE</license.filename>
+    <thirdparty.directory>${project.build.directory}/generated-sources/license</thirdparty.directory>
+    <thirdparty.filename>THIRD-PARTY</thirdparty.filename>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>info.picocli</groupId>
@@ -101,6 +108,32 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>default-cli</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <concat destfile="${license.directory}/${license.filename}" force="yes">
+                  <fileset dir="${maven.multiModuleProjectDirectory}/">
+                    <include name="${license.filename}" />
+                  </fileset>
+                  <fileset dir="${thirdparty.directory}">
+                    <include name="${thirdparty.filename}" />
+                  </fileset>
+                </concat>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.3.0</version>
         <executions>
@@ -157,34 +190,35 @@
         <version>2.2.0</version>
         <configuration>
           <force>true</force>
-          <thirdPartyFilename>THIRD-PARTY</thirdPartyFilename>
-          <!-- Template to group by license with handling of multi licensing -->
-          <fileTemplate>${basedir}/licenseBundledDeps.ftl</fileTemplate>
-          <!-- Only bundled bits matters https://infra.apache.org/licensing-howto.html#bundled-vs-non-bundled -->
           <excludedScopes>test,provided</excludedScopes>
-          <!-- If true enforces excluding transitive dependencies of the excluded artifacts in the reactor;
-           otherwise only artifacts that match exclude filters are excluded.
-           It excludes all transitives dependencies of excludedScopes dependencies. -->
           <excludeTransitiveDependencies>true</excludeTransitiveDependencies>
-          <licenseMerges>
-            <licenseMerge>Apache License, Version 2.0|Apache 2|Apache 2.0 |Apache License 2.0|Apache License V2.0
-              |Apache License v2.0|Apache License, 2.0|Apache Software License, version 2.0
-              |The Apache License, Version 2.0|The Apache Software License, Version 2.0|The Apache Software License, version 2.0</licenseMerge>
-            <licenseMerge>BSD-2-Clause|BSD 2-Clause</licenseMerge>
-            <licenseMerge>Eclipse Distribution License - v 1.0|EDL 1.0</licenseMerge>
-            <licenseMerge>Eclipse Public License - v 2.0|EPL 2.0|Eclipse Public License v2.0|Eclipse Public License, Version 2.0</licenseMerge>
-            <licenseMerge>MIT License|MIT license|The MIT License|The MIT License (MIT)</licenseMerge>
-            <licenseMerge>GNU General Public License (GPL), version 2, with the Classpath exception
-              |GPL2 w/ CPE
-              |The GNU General Public License (GPL), Version 2, With Classpath Exception</licenseMerge>
-          </licenseMerges>
+          <outputDirectory>${thirdparty.directory}</outputDirectory>
+          <overrideFile>${basedir}/src/license/override.properties</overrideFile>
         </configuration>
         <executions>
+          <!-- Generate the third party file -->
           <execution>
+            <id>generate-third-party</id>
             <goals>
               <goal>add-third-party</goal>
             </goals>
             <phase>prepare-package</phase>
+            <configuration>
+              <thirdPartyFilename>${thirdparty.filename}</thirdPartyFilename>
+              <fileTemplate>${basedir}/src/license/bundle.ftl</fileTemplate>
+            </configuration>
+          </execution>
+          <!-- Generate the override.properties file -->
+          <execution>
+            <id>generate-override</id>
+            <goals>
+              <goal>add-third-party</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <thirdPartyFilename>override.properties</thirdPartyFilename>
+              <fileTemplate>${basedir}/src/license/override.ftl</fileTemplate>
+            </configuration>
           </execution>
         </executions>
       </plugin>
