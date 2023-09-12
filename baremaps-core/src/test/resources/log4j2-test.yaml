@@ -1,0 +1,13 @@
+Configuration:
+  status: warn
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+  Loggers:
+    Root:
+      level: warn
+      AppenderRef:
+        ref: STDOUT

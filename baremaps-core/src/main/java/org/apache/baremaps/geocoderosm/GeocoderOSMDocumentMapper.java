@@ -14,7 +14,6 @@ package org.apache.baremaps.geocoderosm;
 
 
 
-import java.text.ParseException;
 import java.util.function.Function;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Node;
@@ -27,13 +26,19 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.geo.Polygon;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-public class OSMNodeDocumentMapper implements Function<Element, Document> {
+public class GeocoderOSMDocumentMapper implements Function<Element, Document> {
+  private static final Logger logger = LoggerFactory.getLogger(GeocoderOSMDocumentMapper.class);
 
   @Override
   public Document apply(Element element) {
-    Document document = new Document();
+    var document = new Document();
+    document.add(new StoredField("osm_id", element.id()));
+    document.add(new StoredField("osm_type", element.getClass().getSimpleName()));
+
     if (element.getTags().containsKey(OSMTags.NAME.key())) {
       document.add(
           new TextField(OSMTags.NAME.key(), element.getTags().get(OSMTags.NAME.key()).toString(),
@@ -46,7 +51,13 @@ public class OSMNodeDocumentMapper implements Function<Element, Document> {
       document.add(new StoredField("longitude", node.getLon()));
     }
     if (element.getGeometry() != null
-        && !element.getGeometry().getGeometryType().equals(Geometry.TYPENAME_POINT)) {
+        && element.getGeometry().getGeometryType().equals(Geometry.TYPENAME_LINESTRING)) {
+      logger.debug("Geometry linestring ignored as not supported by Lucene Polygon.fromGeoJson: {}",
+          element);
+    }
+    if (element.getGeometry() != null
+        && !element.getGeometry().getGeometryType().equals(Geometry.TYPENAME_POINT)
+        && !element.getGeometry().getGeometryType().equals(Geometry.TYPENAME_LINESTRING)) {
       // JTS to GeoJSON
       var geojsonWriter = new GeoJsonWriter();
       // Remove crs field in GeoJSON as Lucene parsing is very strict.
@@ -68,17 +79,14 @@ public class OSMNodeDocumentMapper implements Function<Element, Document> {
             document.add(field);
           }
         }
-      } catch (ParseException e) {
+      } catch (Exception e) {
         // ignore geometry
-        System.out.println("geometry failed: " + e);
+        logger.debug("Geometry ({}) failed indexing caused by: {}",
+            element, e);
       }
 
     }
 
-
-
-    // document.add(new StoredField(OSMTags.LATITUDE.key(), node.getLat()));
-    // document.add(new StoredField(OSMTags.LONGITUDE.key(), node.getLon()));
     if (element.getTags().containsKey(OSMTags.POPULATION.key())) {
       var population = Long.parseLong(element.getTags().get(OSMTags.POPULATION.key()).toString());
       document.add(new NumericDocValuesField(OSMTags.POPULATION.key(), population));

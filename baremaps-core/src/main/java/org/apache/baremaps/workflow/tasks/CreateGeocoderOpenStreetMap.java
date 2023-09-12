@@ -28,19 +28,24 @@ import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.PairDataType;
 import org.apache.baremaps.database.type.geometry.LonLatDataType;
 import org.apache.baremaps.geocoder.GeocoderConstants;
-import org.apache.baremaps.geocoderosm.BlockGeocoderImporter;
-import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
+import org.apache.baremaps.geocoderosm.GeocoderOSMConsumerEntity;
+import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Experimental feature.
+ * 
+ * @see org.apache.baremaps.geocoderosm
+ */
 public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
     implements
       Task {
@@ -85,11 +90,11 @@ public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
                 new LongListDataType(),
                 new MemoryMappedDirectory(referenceValuesDir)));
 
-    var directory = MMapDirectory.open(indexDirectory);
+    var directory = FSDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
 
     try (var indexWriter = new IndexWriter(directory, config)) {
-      var importer = new BlockGeocoderImporter(indexWriter);
+      var importer = new GeocoderOSMConsumerEntity(indexWriter);
       execute(
           path,
           coordinateMap,
@@ -103,10 +108,10 @@ public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
       Path path,
       DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap,
-      BlockGeocoderImporter importer) throws IOException {
+      GeocoderOSMConsumerEntity importer) throws IOException {
 
     // configure the block reader
-    var reader = new PbfBlockReader()
+    var reader = new PbfEntityReader()
         .geometries(true)
         // Must be to 4326 projection to avoid transformation before using Lucene API
         .projection(4326)

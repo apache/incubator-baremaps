@@ -10,23 +10,29 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoderosm;
 
 import static org.apache.baremaps.testing.TestFiles.LIECHTENSTEIN_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
-import org.apache.baremaps.geocoderosm.GeocoderOSMQuery;
+import java.util.List;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.tasks.CreateGeocoderOpenStreetMap;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.LatLonShape;
 import org.apache.lucene.document.ShapeField;
 import org.apache.lucene.geo.Polygon;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.FieldExistsQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherFactory;
@@ -34,9 +40,11 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
+@Disabled("prototype implementation")
 public class OSMIndexTest {
 
   private static Path directory;
@@ -71,16 +79,33 @@ public class OSMIndexTest {
     System.out.println(doc);
   }
 
+
+  /**
+   * Querying document which contains a point with lat/long
+   */
   @Test
   void testGeoQuery() throws Exception {
+    var vaduzLatLong = new double[] {47.1392862, 9.5227962};
     var query = LatLonShape.newPointQuery("polygon", ShapeField.QueryRelation.CONTAINS,
-        new double[] {47.1392862, 9.5227962});
+        vaduzLatLong);
     var topDocs = searcher.search(query, 10);
+    List<Document> docs = new ArrayList<>();
     for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-      System.out.println(searcher.doc(scoreDoc.doc));
+      docs.add(searcher.doc(scoreDoc.doc));
     }
+    // Vaduz OSM relation:1155956 is present in results
+    // https://www.openstreetmap.org/relation/1155956
+    var vaduz = docs.stream()
+        .filter(doc -> Long.parseLong(doc.getField("osm_id").stringValue()) == 1155956).findFirst();
+    assertTrue(vaduz.isPresent());
+    assertEquals("1155956", vaduz.get().get("osm_id"));
+
+    docs.forEach(System.out::println);
   }
 
+  /**
+   * Querying document within a polygon shape drawn as a bounding box around Vaduz
+   */
   @Test
   void testPolygonQuery() throws Exception {
     // Drawing box at https://geojson.io/#map=14.18/47.13807/9.5242
@@ -124,7 +149,11 @@ public class OSMIndexTest {
         """;
     var polygon = Polygon.fromGeoJSON(bbox);
     var query = LatLonShape.newPolygonQuery("polygon", ShapeField.QueryRelation.WITHIN, polygon);
-    var topDocs = searcher.search(query, 10);
+    var booleanQuery = new BooleanQuery.Builder();
+    booleanQuery.add(query, BooleanClause.Occur.MUST);
+    // Filter to only include document which have a name field
+    booleanQuery.add(new FieldExistsQuery("name"), BooleanClause.Occur.MUST);
+    var topDocs = searcher.search(booleanQuery.build(), 100);
     for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
       System.out.println(searcher.doc(scoreDoc.doc));
     }

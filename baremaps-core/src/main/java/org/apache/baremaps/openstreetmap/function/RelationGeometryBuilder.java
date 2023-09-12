@@ -59,12 +59,14 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
 
       Map<String, Object> tags = relation.getTags();
 
-      // Filter multipolygon geometries
-      if (!"multipolygon".equals(tags.get("type"))) {
+      // Filter out type that are not multipolygon or boundary geometries
+      if (!("multipolygon".equals(tags.get("type"))
+          || "boundary".equals(tags.get("type")))) {
         return;
       }
 
       // Filter coastline geometries
+      // TODO: document motivation for filtering out.
       if ("coastline".equals(tags.get("natural"))) {
         return;
       }
