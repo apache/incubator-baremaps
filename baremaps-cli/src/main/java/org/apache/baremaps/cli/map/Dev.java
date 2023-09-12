@@ -69,7 +69,7 @@ public class Dev implements Callable<Integer> {
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
-    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
+    var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
 
     var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStoreSupplier = (Supplier<TileStore>) () -> {

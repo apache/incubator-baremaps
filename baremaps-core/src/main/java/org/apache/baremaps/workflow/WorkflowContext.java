@@ -24,7 +24,7 @@ import org.apache.baremaps.utils.PostgresUtils;
  */
 public class WorkflowContext {
 
-  private Map<String, DataSource> dataSources = new ConcurrentHashMap<>() {};
+  private Map<Object, DataSource> dataSources = new ConcurrentHashMap<>() {};
 
   /**
    * Returns the data source associated with the specified database.
@@ -32,8 +32,8 @@ public class WorkflowContext {
    * @param database the JDBC connection string to the database
    * @return the data source
    */
-  public DataSource getDataSource(String database) {
-    return dataSources.computeIfAbsent(database, PostgresUtils::createDataSource);
+  public DataSource getDataSource(Object database) {
+    return dataSources.computeIfAbsent(database, PostgresUtils::createDataSourceFromObject);
   }
 
 }

@@ -41,7 +41,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOpenStreetMap(Path file, String database, Integer databaseSrid)
+public record ImportOpenStreetMap(Path file, Object database, Integer databaseSrid)
     implements
       Task {
 

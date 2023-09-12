@@ -59,6 +59,7 @@ public record ExportVectorTiles(
     var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var datasource = context.getDataSource(tileset.getDatabase());
+
     var sourceTileStore = sourceTileStore(tileset, datasource);
     var targetTileStore = targetTileStore(tileset);
 

@@ -24,7 +24,7 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportGeoPackage(Path file, String database, Integer sourceSRID, Integer targetSRID)
+public record ImportGeoPackage(Path file, Object database, Integer sourceSRID, Integer targetSRID)
     implements
       Task {
 
