@@ -25,7 +25,6 @@ public class GeonamesDocumentMapper implements Function<GeonamesRecord, Document
 
   @Override
   public Document apply(GeonamesRecord record) {
-
     Document document = new Document();
     document.add(new TextField("name", record.getName(), Field.Store.YES));
     document.add(new TextField("country", IsoCountriesUtils.getCountry(record.getCountryCode()),
