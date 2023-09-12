@@ -121,7 +121,7 @@
               <target>
                 <concat destfile="${license.directory}/${license.filename}" force="yes">
                   <fileset dir="${maven.multiModuleProjectDirectory}/">
-                    <include name="LICENSE" />
+                    <include name="${license.filename}" />
                   </fileset>
                   <fileset dir="${thirdparty.directory}">
                     <include name="${thirdparty.filename}" />
@@ -190,19 +190,35 @@
         <version>2.2.0</version>
         <configuration>
           <force>true</force>
-          <outputDirectory>${thirdparty.directory}</outputDirectory>
-          <thirdPartyFilename>${thirdparty.filename}</thirdPartyFilename>
           <excludedScopes>test,provided</excludedScopes>
           <excludeTransitiveDependencies>true</excludeTransitiveDependencies>
-          <fileTemplate>${basedir}/src/license/bundle.ftl</fileTemplate>
+          <outputDirectory>${thirdparty.directory}</outputDirectory>
           <overrideFile>${basedir}/src/license/override.properties</overrideFile>
         </configuration>
         <executions>
+          <!-- Generate the third party file -->
           <execution>
+            <id>generate-third-party</id>
             <goals>
               <goal>add-third-party</goal>
             </goals>
             <phase>prepare-package</phase>
+            <configuration>
+              <thirdPartyFilename>${thirdparty.filename}</thirdPartyFilename>
+              <fileTemplate>${basedir}/src/license/bundle.ftl</fileTemplate>
+            </configuration>
+          </execution>
+          <!-- Generate the override.properties file -->
+          <execution>
+            <id>generate-override</id>
+            <goals>
+              <goal>add-third-party</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <thirdPartyFilename>override.properties</thirdPartyFilename>
+              <fileTemplate>${basedir}/src/license/override.ftl</fileTemplate>
+            </configuration>
           </execution>
         </executions>
       </plugin>
