@@ -37,6 +37,32 @@ public final class PostgresUtils {
 
   private PostgresUtils() {}
 
+
+  /**
+   * Creates a data source from an object, either a JDBC url or a json representation of a database.
+   *
+   * @param database the database object, either a JDBC url or a json representation of a database
+   * @return the data source
+   */
+  public static DataSource createDataSourceFromObject(Object database) {
+    if (database instanceof String url) {
+      return createDataSource(url);
+    } else {
+      var json = new ObjectMapper().convertValue(database, Database.class);
+      return createDataSource(json);
+    }
+  }
+
+  /**
+   * Creates a data source from parameters.
+   *
+   * @param host the host
+   * @param port the port
+   * @param database the database
+   * @param username the username
+   * @param password the password
+   * @return the data source
+   */
   public static DataSource createDataSource(
       String host,
       Integer port,
@@ -46,21 +72,6 @@ public final class PostgresUtils {
     return createDataSource(
         String.format("jdbc:postgresql://%s:%s/%s?&user=%s&password=%s", host, port,
             database, username, password));
-  }
-
-  /**
-   * Creates a data source from an object, either a JDBC url or a json representation of a database.
-   *
-   * @param database the database object, either a JDBC url or a json representation of a database
-   * @return the data source
-   */
-  public static DataSource createDataSource(Object database) {
-    if (database instanceof String url) {
-      return createDataSource(url);
-    } else {
-      var json = new ObjectMapper().convertValue(database, Database.class);
-      return createDataSource(json);
-    }
   }
 
   /**
@@ -163,8 +174,8 @@ public final class PostgresUtils {
    *
    * @param connection the JDBC connection
    * @param resource the path of the resource file
-   * @throws IOException
-   * @throws SQLException
+   * @throws IOException if an I/O error occurs
+   * @throws SQLException if a database access error occurs
    */
   public static void executeResource(Connection connection, String resource)
       throws IOException, SQLException {

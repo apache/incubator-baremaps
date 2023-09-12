@@ -72,7 +72,7 @@ public class Serve implements Callable<Integer> {
     var configReader = new ConfigReader();
     var caffeineSpec = CaffeineSpec.parse(cache);
     var tileset = objectMapper.readValue(configReader.read(tilesetPath), Tileset.class);
-    var datasource = PostgresUtils.createDataSource(tileset.getDatabase());
+    var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
 
     var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new PostgresTileStore(datasource, tileset);
