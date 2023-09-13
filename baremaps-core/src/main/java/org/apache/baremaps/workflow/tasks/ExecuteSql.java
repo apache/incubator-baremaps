@@ -23,11 +23,16 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public record ExecuteSql(Object database, Path file, boolean parallel) implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(ExecuteSql.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
@@ -39,9 +44,9 @@ public record ExecuteSql(Object database, Path file, boolean parallel) implement
     queries.forEach(
         query -> {
           var dataSource = context.getDataSource(database);
-          try (var connection = dataSource.getConnection();
-              var statement = connection.createStatement()) {
-            statement.execute(query);
+          try (var connection = dataSource.getConnection()) {
+            logger.info("Execute SQL query: {}", query);
+            connection.createStatement().execute(query);
           } catch (SQLException e) {
             throw new WorkflowException(e);
           }
