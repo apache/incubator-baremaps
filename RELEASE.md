@@ -19,6 +19,7 @@ In order to release a new version of Apache Baremaps, follow these steps:
 - [ ] Create a new branch for the release (e.g. `release-<version>`)
 
 ```bash
+cd baremaps
 git checkout -b release-<version>
 git push --set-upstream origin release-<version>
 ```
@@ -52,9 +53,10 @@ git push origin v<version>-rc<number>
 - [ ] Publish the artifacts:
 
 ```bash
+cd ..
 svn co https://dist.apache.org/repos/dist/dev/incubator/baremaps/ baremaps-dev
 mkdir baremaps-dev/<version>-rc<number>
-cp ./baremaps-cli/target/apache-baremaps-<version>-incubating-* baremaps-dev/<version>-rc<number>/.
+cp ./baremaps/baremaps-cli/target/apache-baremaps-<version>-incubating-* baremaps-dev/<version>-rc<number>/.
 svn commit -m "Baremaps <version>-rc<number>"
 ```
 
@@ -118,14 +120,14 @@ You can read the release notes here:
 https://github.com/apache/incubator-baremaps/releases/tag/v<version>-rc<number>
 
 The commit to be voted upon:
-https://github.com/apache/incubator-baremaps/tree/v<version>
+https://github.com/apache/incubator-baremaps/tree/v<version>-rc<number>
 
 Its hash is <hash>.
 
 Its tag is v<version>-rc<number>.
 
 The artifacts to be voted on are located here:
-https://dist.apache.org/repos/dist/release/incubator/baremaps/<version>-rc<number>/
+https://dist.apache.org/repos/dist/dev/incubator/baremaps/<version>-rc<number>/
 
 The hashes of the artifacts are as follows:
 <src>
