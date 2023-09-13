@@ -18,11 +18,15 @@ import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.stream.StreamException;
 import org.apache.lucene.index.IndexWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GeocoderOsmConsumerEntity implements Consumer<Entity> {
   private final IndexWriter indexWriter;
   private final GeocoderOsmDocumentMapper geocoderOsmDocumentMapper =
       new GeocoderOsmDocumentMapper();
+
+  private static final Logger logger = LoggerFactory.getLogger(GeocoderOsmConsumerEntity.class);
 
   public GeocoderOsmConsumerEntity(IndexWriter indexWriter) {
     this.indexWriter = indexWriter;
@@ -30,13 +34,14 @@ public class GeocoderOsmConsumerEntity implements Consumer<Entity> {
 
   @Override
   public void accept(Entity entity) {
-    if (entity instanceof Element element) {
-      var document = geocoderOsmDocumentMapper.apply(element);
-      try {
+    try {
+      if (entity instanceof Element element) {
+        var document = geocoderOsmDocumentMapper.apply(element);
         indexWriter.addDocument(document);
-      } catch (IOException e) {
-        throw new StreamException(e);
       }
+    } catch (Exception e) {
+      // Tolerate the failure of processing an element, partial data failure mode
+      logger.warn("The following OSM entity ({}) is not processed due to {}", entity, e);
     }
   }
 }
