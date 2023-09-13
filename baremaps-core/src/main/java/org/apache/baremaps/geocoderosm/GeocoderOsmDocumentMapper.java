@@ -60,10 +60,12 @@ public class GeocoderOsmDocumentMapper implements Function<Element, Document> {
         && !element.getGeometry().getGeometryType().equals(Geometry.TYPENAME_LINESTRING)) {
       // JTS to GeoJSON
       var geojsonWriter = new GeoJsonWriter();
-      // Remove crs field in GeoJSON as Lucene parsing is very strict.
+      // Remove crs field in GeoJSON as the field content is incompatible between
+      // Lucene Polygon.fromGeoJSON and GeoJsonWriter.
       // Avoid "crs must be CRS84 from OGC, but saw: EPSG:4326"
       // See:
       // https://github.com/apache/lucene/blob/ef42af65f27f7f078b1ab426de9f2b2fa214ad86/lucene/core/src/java/org/apache/lucene/geo/SimpleGeoJSONPolygonParser.java#L180
+      // https://github.com/locationtech/jts/blob/ee59b591f15b5150516393d3ba0b49e46a113fc9/modules/io/common/src/main/java/org/locationtech/jts/io/geojson/GeoJsonWriter.java#L226
       geojsonWriter.setEncodeCRS(false);
       // Assume that Geometry is in EPSG:4326/WGS84 for Lucene Polygon.fromGeoJSON
       var geojson = geojsonWriter.write(element.getGeometry());
