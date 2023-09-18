@@ -15,8 +15,11 @@
  limitations under the License.
  **/
 export default {
-    "host": "http://localhost:9000",
-    "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+    "host": "http://demo.baremaps.com:8888",
+    "database": {
+        "jdbcUrl": "jdbc:postgresql://localhost:5432/daylight?&user=daylight&password=daylight",
+        "maximumPoolSize": 1,
+    },
     "osmPbfUrl": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
     "center": [6.6323, 46.5197],
     "bounds": [6.02260949059, 45.7769477403, 10.4427014502, 47.8308275417],
