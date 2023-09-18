@@ -18,7 +18,7 @@ export default {
     "host": "http://demo.baremaps.com:8888",
     "database": {
         "jdbcUrl": "jdbc:postgresql://localhost:5432/daylight?&user=daylight&password=daylight",
-        "maximumPoolSize": 2,
+        "maximumPoolSize": 8,
     },
     "osmPbfUrl": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
     "center": [6.6323, 46.5197],
