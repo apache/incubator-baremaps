@@ -1,20 +1,27 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.baremaps.tilestore.pmtiles;
 
+import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
 import com.google.common.math.LongMath;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,34 +31,35 @@ public class PMTiles {
     return high * 0x100000000L + low;
   }
 
-  public static long readVarIntRemainder(long l, ByteBuffer buf) {
+  public static long readVarIntRemainder(LittleEndianDataInputStream input, long l)
+      throws IOException {
     long h, b;
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     h = (b & 0x70) >> 4;
     if (b < 0x80) {
       return toNum(l, h);
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     h |= (b & 0x7f) << 3;
     if (b < 0x80) {
       return toNum(l, h);
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     h |= (b & 0x7f) << 10;
     if (b < 0x80) {
       return toNum(l, h);
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     h |= (b & 0x7f) << 17;
     if (b < 0x80) {
       return toNum(l, h);
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     h |= (b & 0x7f) << 24;
     if (b < 0x80) {
       return toNum(l, h);
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     h |= (b & 0x01) << 31;
     if (b < 0x80) {
       return toNum(l, h);
@@ -59,41 +67,42 @@ public class PMTiles {
     throw new RuntimeException("Expected varint not more than 10 bytes");
   }
 
-  public static int encodeVarInt(ByteBuffer buf, long value) {
+  public static int writeVarInt(LittleEndianDataOutputStream output, long value)
+      throws IOException {
     int n = 1;
     while (value >= 0x80) {
-      buf.put((byte) (value | 0x80));
+      output.writeByte((byte) (value | 0x80));
       value >>>= 7;
       n++;
     }
-    buf.put((byte) value);
+    output.writeByte((byte) value);
     return n;
   }
 
-  public static long decodeVarInt(ByteBuffer buf) {
+  public static long readVarInt(LittleEndianDataInputStream input) throws IOException {
     long val, b;
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     val = b & 0x7f;
     if (b < 0x80) {
       return val;
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     val |= (b & 0x7f) << 7;
     if (b < 0x80) {
       return val;
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     val |= (b & 0x7f) << 14;
     if (b < 0x80) {
       return val;
     }
-    b = buf.get() & 0xff;
+    b = input.readByte() & 0xff;
     val |= (b & 0x7f) << 21;
     if (b < 0x80) {
       return val;
     }
     val |= (b & 0x0f) << 28;
-    return readVarIntRemainder(val, buf);
+    return readVarIntRemainder(input, val);
   }
 
   public static void rotate(long n, long[] xy, long rx, long ry) {
@@ -170,119 +179,119 @@ public class PMTiles {
 
   private static final int HEADER_SIZE_BYTES = 127;
 
-  public static Header decodeHeader(ByteBuffer buf) {
-    buf.order(ByteOrder.LITTLE_ENDIAN);
+  public static Header deserializeHeader(LittleEndianDataInputStream input) throws IOException {
+    input.skipBytes(7);
     return new Header(
-        buf.get(7),
-        buf.getLong(8),
-        buf.getLong(16),
-        buf.getLong(24),
-        buf.getLong(32),
-        buf.getLong(40),
-        buf.getLong(48),
-        buf.getLong(56),
-        buf.getLong(64),
-        buf.getLong(72),
-        buf.getLong(80),
-        buf.getLong(88),
-        buf.get(96) == 1,
-        Compression.values()[buf.get(97)],
-        Compression.values()[buf.get(98)],
-        TileType.values()[buf.get(99)],
-        buf.get(100),
-        buf.get(101),
-        (double) buf.getInt(102) / 10000000,
-        (double) buf.getInt(106) / 10000000,
-        (double) buf.getInt(110) / 10000000,
-        (double) buf.getInt(114) / 10000000,
-        buf.get(118),
-        (double) buf.getInt(119) / 10000000,
-        (double) buf.getInt(123) / 10000000
-    );
+        input.readByte(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readLong(),
+        input.readByte() == 1,
+        Compression.values()[input.readByte()],
+        Compression.values()[input.readByte()],
+        TileType.values()[input.readByte()],
+        input.readByte(),
+        input.readByte(),
+        (double) input.readInt() / 10000000,
+        (double) input.readInt() / 10000000,
+        (double) input.readInt() / 10000000,
+        (double) input.readInt() / 10000000,
+        input.readByte(),
+        (double) input.readInt() / 10000000,
+        (double) input.readInt() / 10000000);
   }
 
-  public static void encodeHeader(Header header, ByteBuffer buf) {
-    buf.order(ByteOrder.LITTLE_ENDIAN);
-    buf.put(0, (byte) 0x50);
-    buf.put(1, (byte) 0x4D);
-    buf.put(2, (byte) 0x54);
-    buf.put(3, (byte) 0x69);
-    buf.put(4, (byte) 0x6C);
-    buf.put(5, (byte) 0x65);
-    buf.put(6, (byte) 0x73);
-    buf.put(7, (byte) header.getSpecVersion());
-    buf.putLong(8, header.getRootDirectoryOffset());
-    buf.putLong(16, header.getRootDirectoryLength());
-    buf.putLong(24, header.getJsonMetadataOffset());
-    buf.putLong(32, header.getJsonMetadataLength());
-    buf.putLong(40, header.getLeafDirectoryOffset());
-    buf.putLong(48, header.getLeafDirectoryLength());
-    buf.putLong(56, header.getTileDataOffset());
-    buf.putLong(64, header.getTileDataLength());
-    buf.putLong(72, header.getNumAddressedTiles());
-    buf.putLong(80, header.getNumTileEntries());
-    buf.putLong(88, header.getNumTileContents());
-    buf.put(96, (byte) (header.isClustered() ? 1 : 0));
-    buf.put(97, (byte) header.getInternalCompression().ordinal());
-    buf.put(98, (byte) header.getTileCompression().ordinal());
-    buf.put(99, (byte) header.getTileType().ordinal());
-    buf.put(100, (byte) header.getMinZoom());
-    buf.put(101, (byte) header.getMaxZoom());
-    buf.putInt(102, (int) (header.getMinLon() * 10000000));
-    buf.putInt(106, (int) (header.getMinLat() * 10000000));
-    buf.putInt(110, (int) (header.getMaxLon() * 10000000));
-    buf.putInt(114, (int) (header.getMaxLat() * 10000000));
-    buf.put(118, (byte) header.getCenterZoom());
-    buf.putInt(119, (int) (header.getCenterLon() * 10000000));
-    buf.putInt(123, (int) (header.getCenterLat() * 10000000));
+  public static void serializeHeader(LittleEndianDataOutputStream output, Header header)
+      throws IOException {
+    output.writeByte((byte) 0x50);
+    output.writeByte((byte) 0x4D);
+    output.writeByte((byte) 0x54);
+    output.writeByte((byte) 0x69);
+    output.writeByte((byte) 0x6C);
+    output.writeByte((byte) 0x65);
+    output.writeByte((byte) 0x73);
+    output.writeByte((byte) header.getSpecVersion());
+    output.writeLong(header.getRootDirectoryOffset());
+    output.writeLong(header.getRootDirectoryLength());
+    output.writeLong(header.getJsonMetadataOffset());
+    output.writeLong(header.getJsonMetadataLength());
+    output.writeLong(header.getLeafDirectoryOffset());
+    output.writeLong(header.getLeafDirectoryLength());
+    output.writeLong(header.getTileDataOffset());
+    output.writeLong(header.getTileDataLength());
+    output.writeLong(header.getNumAddressedTiles());
+    output.writeLong(header.getNumTileEntries());
+    output.writeLong(header.getNumTileContents());
+    output.writeByte((byte) (header.isClustered() ? 1 : 0));
+    output.writeByte((byte) header.getInternalCompression().ordinal());
+    output.writeByte((byte) header.getTileCompression().ordinal());
+    output.writeByte((byte) header.getTileType().ordinal());
+    output.writeByte((byte) header.getMinZoom());
+    output.writeByte((byte) header.getMaxZoom());
+    output.writeInt((int) (header.getMinLon() * 10000000));
+    output.writeInt((int) (header.getMinLat() * 10000000));
+    output.writeInt((int) (header.getMaxLon() * 10000000));
+    output.writeInt((int) (header.getMaxLat() * 10000000));
+    output.writeByte((byte) header.getCenterZoom());
+    output.writeInt((int) (header.getCenterLon() * 10000000));
+    output.writeInt((int) (header.getCenterLat() * 10000000));
   }
 
-  public static void encodeDirectory(ByteBuffer buffer, List<Entry> entries) {
-    buffer.order(ByteOrder.LITTLE_ENDIAN);
-    encodeVarInt(buffer, entries.size());
+  public static void serializeEntries(LittleEndianDataOutputStream output, List<Entry> entries)
+      throws IOException {
+    writeVarInt(output, entries.size());
     long lastId = 0;
     for (Entry entry : entries) {
-      encodeVarInt(buffer, entry.getTileId() - lastId);
+      writeVarInt(output, entry.getTileId() - lastId);
       lastId = entry.getTileId();
     }
     for (Entry entry : entries) {
-      encodeVarInt(buffer, entry.getRunLength());
+      writeVarInt(output, entry.getRunLength());
     }
     for (Entry entry : entries) {
-      encodeVarInt(buffer, entry.getLength());
+      writeVarInt(output, entry.getLength());
     }
-    for (Entry entry : entries) {
-      if (entry.getOffset() == 0 && entry.getLength() > 0) {
-        Entry prevEntry = entries.get(entries.indexOf(entry) - 1);
-        encodeVarInt(buffer, prevEntry.getOffset() + prevEntry.getLength() + 1);
+    for (int i = 0; i < entries.size(); i++) {
+      Entry entry = entries.get(i);
+      if (i > 0
+          && entry.getOffset() == entries.get(i - 1).getOffset() + entries.get(i - 1).getLength()) {
+        writeVarInt(output, 0);
       } else {
-        encodeVarInt(buffer, entry.getOffset() + 1);
+        writeVarInt(output, entry.getOffset() + 1);
       }
     }
   }
 
-  public static List<Entry> decodeDirectory(ByteBuffer buffer) {
-    buffer.order(ByteOrder.LITTLE_ENDIAN);
-    long numEntries = decodeVarInt(buffer);
+  public static List<Entry> deserializeEntries(LittleEndianDataInputStream buffer)
+      throws IOException {
+    long numEntries = readVarInt(buffer);
     List<Entry> entries = new ArrayList<>((int) numEntries);
     long lastId = 0;
     for (int i = 0; i < numEntries; i++) {
-      long value = decodeVarInt(buffer);
+      long value = readVarInt(buffer);
       lastId = lastId + value;
       Entry entry = new Entry();
       entry.setTileId(lastId);
       entries.add(entry);
     }
     for (int i = 0; i < numEntries; i++) {
-      long value = decodeVarInt(buffer);
+      long value = readVarInt(buffer);
       entries.get(i).setRunLength(value);
     }
     for (int i = 0; i < numEntries; i++) {
-      long value = decodeVarInt(buffer);
+      long value = readVarInt(buffer);
       entries.get(i).setLength(value);
     }
     for (int i = 0; i < numEntries; i++) {
-      long value = decodeVarInt(buffer);
+      long value = readVarInt(buffer);
       if (value == 0 && i > 0) {
         Entry prevEntry = entries.get(i - 1);
         entries.get(i).setOffset(prevEntry.getOffset() + prevEntry.getLength());;
@@ -320,4 +329,67 @@ public class PMTiles {
     return null;
   }
 
+  record Directories(byte[] root, byte[] leaves, int numLeaves) {
+  }
+
+  public static Directories buildRootLeaves(List<Entry> entries, int leafSize) throws IOException {
+    var rootEntries = new ArrayList<Entry>();
+    var numLeaves = 0;
+    byte[] leavesBytes = null;
+    byte[] rootBytes = null;
+
+    try (var leavesOutput = new ByteArrayOutputStream();
+        var leavesDataOutput = new LittleEndianDataOutputStream(leavesOutput)) {
+      for (var i = 0; i < entries.size(); i += leafSize) {
+        numLeaves++;
+        var end = i + leafSize;
+        if (i + leafSize > entries.size()) {
+          end = entries.size();
+        }
+
+        var offset = leavesOutput.size();
+        serializeEntries(leavesDataOutput, entries.subList(i, end));
+        var length = leavesOutput.size();
+        rootEntries.add(new Entry(entries.get(i).getTileId(), offset, length, 0));
+      }
+
+      leavesBytes = leavesOutput.toByteArray();
+    }
+
+    try (var rootOutput = new ByteArrayOutputStream();
+        var rootDataOutput = new LittleEndianDataOutputStream(rootOutput)) {
+      serializeEntries(rootDataOutput, rootEntries);
+      rootBytes = rootOutput.toByteArray();
+    }
+
+    return new Directories(rootBytes, leavesBytes, numLeaves);
+  }
+
+  public static Directories optimizeDirectories(List<Entry> entries, int targetRootLenght)
+      throws IOException {
+    if (entries.size() < 16384) {
+      byte[] rootBytes = null;
+      try (var rootOutput = new ByteArrayOutputStream();
+          var rootDataOutput = new LittleEndianDataOutputStream(rootOutput)) {
+        serializeEntries(rootDataOutput, entries);
+        rootBytes = rootOutput.toByteArray();
+      }
+      if (rootBytes.length <= targetRootLenght) {
+        return new Directories(rootBytes, new byte[] {}, 0);
+      }
+    }
+
+    double leafSize = (double) entries.size() / 3500d;
+    if (leafSize < 4096d) {
+      leafSize = 4096d;
+    }
+    for (;;) {
+      var directories = buildRootLeaves(entries, (int) leafSize);
+      if (directories.root.length <= targetRootLenght) {
+        return directories;
+      }
+      leafSize = leafSize * 1.2;
+    }
+
+  }
 }

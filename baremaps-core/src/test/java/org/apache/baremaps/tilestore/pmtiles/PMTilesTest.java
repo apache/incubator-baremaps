@@ -1,70 +1,75 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.baremaps.tilestore.pmtiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
 import com.google.common.math.LongMath;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-
-import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.List;
+import java.util.Random;
 import org.apache.baremaps.testing.TestFiles;
-import org.apache.baremaps.vectortile.VectorTileDecoder;
-import org.apache.baremaps.vectortile.VectorTileViewer;
-import org.apache.baremaps.vectortile.VectorTileViewer.TilePanel;
 import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
 
 class PMTilesTest {
 
   @Test
-  void decodeVarInt() {
-    var b = ByteBuffer.wrap(new byte[] {
+  void decodeVarInt() throws IOException {
+    var b = new LittleEndianDataInputStream(new ByteArrayInputStream(new byte[] {
         (byte) 0, (byte) 1,
         (byte) 127, (byte) 0xe5,
         (byte) 0x8e, (byte) 0x26
-    });
-    assertEquals(PMTiles.decodeVarInt(b), 0);
-    assertEquals(PMTiles.decodeVarInt(b), 1);
-    assertEquals(PMTiles.decodeVarInt(b), 127);
-    assertEquals(PMTiles.decodeVarInt(b), 624485);
-    b = ByteBuffer.wrap(new byte[] {
+    }));
+    assertEquals(PMTiles.readVarInt(b), 0);
+    assertEquals(PMTiles.readVarInt(b), 1);
+    assertEquals(PMTiles.readVarInt(b), 127);
+    assertEquals(PMTiles.readVarInt(b), 624485);
+    b = new LittleEndianDataInputStream(new ByteArrayInputStream(new byte[] {
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0x0f,
-    });
-    assertEquals(PMTiles.decodeVarInt(b), 9007199254740991L);
+    }));
+    assertEquals(PMTiles.readVarInt(b), 9007199254740991L);
   }
 
   @Test
-  void encodeVarInt() {
-    var buffer = ByteBuffer.allocate(10);
+  void encodeVarInt() throws IOException {
     for (long i = 0; i < 1000; i++) {
-      PMTiles.encodeVarInt(buffer, i);
-      buffer.flip();
-      assertEquals(i, PMTiles.decodeVarInt(buffer));
-      buffer.clear();
+      var array = new ByteArrayOutputStream();
+      var output = new LittleEndianDataOutputStream(array);
+      PMTiles.writeVarInt(output, i);
+      var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
+      assertEquals(i, PMTiles.readVarInt(input));
     }
     for (long i = Long.MAX_VALUE - 1000; i < Long.MAX_VALUE; i++) {
-      PMTiles.encodeVarInt(buffer, i);
-      buffer.flip();
-      assertEquals(i, PMTiles.decodeVarInt(buffer));
-      buffer.clear();
+      var array = new ByteArrayOutputStream();
+      var output = new LittleEndianDataOutputStream(array);
+      PMTiles.writeVarInt(output, i);
+      var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
+      assertEquals(i, PMTiles.readVarInt(input));
     }
   }
 
@@ -127,11 +132,9 @@ class PMTilesTest {
   @Test
   void decodeHeader() throws IOException {
     var file = TestFiles.resolve("pmtiles/test_fixture_1.pmtiles");
-    try (var channel = Files.newByteChannel(file)) {
-      var buffer = ByteBuffer.allocate(127);
-      channel.read(buffer);
-      buffer.flip();
-      var header = PMTiles.decodeHeader(buffer);
+    try (var channel = FileChannel.open(file)) {
+      var input = new LittleEndianDataInputStream(Channels.newInputStream(channel));
+      var header = PMTiles.deserializeHeader(input);
       assertEquals(header.getRootDirectoryOffset(), 127);
       assertEquals(header.getRootDirectoryLength(), 25);
       assertEquals(header.getJsonMetadataOffset(), 152);
@@ -159,7 +162,6 @@ class PMTilesTest {
   @Test
   void encodeHeader() throws IOException {
     var etag = "1";
-    var buffer = ByteBuffer.allocate(127);
     var header = new Header(
         127,
         25,
@@ -185,10 +187,18 @@ class PMTilesTest {
         0,
         0,
         0,
-        0
-    );
-    PMTiles.encodeHeader(header, buffer);
-    var header2 = PMTiles.decodeHeader(buffer);
+        0);
+
+    var array = new ByteArrayOutputStream();
+
+    var output = new LittleEndianDataOutputStream(array);
+    PMTiles.serializeHeader(output, header);
+
+    var array2 = array.toByteArray();
+
+    var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
+    var header2 = PMTiles.deserializeHeader(input);
+
     assertEquals(header, header2);
   }
 
@@ -249,26 +259,32 @@ class PMTilesTest {
   }
 
   @Test
-  void reader() throws InvalidProtocolBufferException, InterruptedException {
-    var reader = new PMTilesReader(TestFiles.resolve("pmtiles/test_fixture_1.pmtiles"));
-    var header = reader.getHeader();
-    assertEquals(header.getRootDirectoryOffset(), 127);
-    var rootDirectory = reader.getRootDirectory();
-    assertEquals(rootDirectory.size(), 1);
-    var entry = rootDirectory.get(0);
-    ByteBuffer buffer = reader.getTile(0,0,0);
+  void buildRootLeaves() throws IOException {
+    var entries = List.of(new Entry(100, 1, 1, 0));
+    var directories = PMTiles.buildRootLeaves(entries, 1);
+    assertEquals(directories.numLeaves(), 1);
 
-    VectorTileViewer viewer = new VectorTileViewer();
-    var parsed = org.apache.baremaps.mvt.binary.VectorTile.Tile.parseFrom(buffer);
-    var tile = new VectorTileDecoder().decodeTile(parsed);
-    JFrame f = new JFrame("Vector Tile Viewer");
-    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    f.add(new TilePanel(tile, 1000));
-    f.pack();
-    f.setVisible(true);
-
-    Thread.sleep(10000);
   }
 
+  @Test
+  void optimizeDirectories() throws IOException {
+    var random = new Random(3857);
+    var entries = new ArrayList<Entry>();
+    entries.add(new Entry(0, 0, 100, 1));
+    var directories = PMTiles.optimizeDirectories(entries, 100);
+    assertFalse(directories.leaves().length > 0);
+    assertEquals(0, directories.numLeaves());
 
+    entries = new ArrayList<>();
+    int offset = 0;
+    for (var i = 0; i < 1000; i++) {
+      var randTileSize = random.nextInt(1000000);
+      entries.add(new Entry(i, offset, randTileSize, 1));
+      offset += randTileSize;
+    }
+    directories = PMTiles.optimizeDirectories(entries, 1024);
+    assertFalse(directories.root().length > 1024);
+    assertFalse(directories.numLeaves() == 0);
+    assertFalse(directories.leaves().length == 0);
+  }
 }

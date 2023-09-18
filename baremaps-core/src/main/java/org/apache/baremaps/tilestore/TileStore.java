@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Represents a store for tiles. */
-public interface TileStore {
+public interface TileStore extends AutoCloseable {
 
   /**
    * Reads the content of a tile.

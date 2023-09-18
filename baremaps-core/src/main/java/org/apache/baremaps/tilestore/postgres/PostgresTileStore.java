@@ -216,4 +216,9 @@ public class PostgresTileStore implements TileStore {
   public void delete(TileCoord tileCoord) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
   }
+
+  @Override
+  public void close() throws Exception {
+    // do nothing
+  }
 }

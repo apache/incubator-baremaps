@@ -1,70 +1,74 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.baremaps.tilestore.pmtiles;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 enum Compression {
-    Unknown,
-    None,
-    Gzip,
-    Brotli,
-    Zstd;
+  Unknown,
+  None,
+  Gzip,
+  Brotli,
+  Zstd;
 
-    ByteBuffer decompress(ByteBuffer buffer) {
-        return switch (this) {
-            case None -> buffer;
-            case Gzip -> decompressGzip(buffer);
-            case Brotli -> decompressBrotli(buffer);
-            case Zstd -> decompressZstd(buffer);
-            default -> throw new RuntimeException("Unknown compression");
-        };
-    }
+  InputStream decompress(InputStream inputStream) throws IOException {
+    return switch (this) {
+      case None -> inputStream;
+      case Gzip -> decompressGzip(inputStream);
+      case Brotli -> decompressBrotli(inputStream);
+      case Zstd -> decompressZstd(inputStream);
+      default -> throw new RuntimeException("Unknown compression");
+    };
+  }
 
-    static ByteBuffer decompressGzip(ByteBuffer buffer) {
-        try(var inputStream = new GZIPInputStream(new ByteArrayInputStream(buffer.array()))) {
-            return ByteBuffer.wrap(inputStream.readAllBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  static InputStream decompressGzip(InputStream inputStream) throws IOException {
+    return new GZIPInputStream(inputStream);
+  }
 
-    static ByteBuffer decompressBrotli(ByteBuffer buffer) {
-        throw new RuntimeException("Brotli compression not implemented");
-    }
+  static InputStream decompressBrotli(InputStream buffer) {
+    throw new RuntimeException("Brotli compression not implemented");
+  }
 
-    static ByteBuffer decompressZstd(ByteBuffer buffer) {
-        throw new RuntimeException("Zstd compression not implemented");
-    }
+  static InputStream decompressZstd(InputStream buffer) {
+    throw new RuntimeException("Zstd compression not implemented");
+  }
 
-    ByteBuffer compress(ByteBuffer buffer) {
-        return switch (this) {
-            case None -> buffer;
-            case Gzip -> compressGzip(buffer);
-            case Brotli -> compressBrotli(buffer);
-            case Zstd -> compressZstd(buffer);
-            default -> throw new RuntimeException("Unknown compression");
-        };
-    }
+  OutputStream compress(OutputStream outputStream) throws IOException {
+    return switch (this) {
+      case None -> outputStream;
+      case Gzip -> compressGzip(outputStream);
+      case Brotli -> compressBrotli(outputStream);
+      case Zstd -> compressZstd(outputStream);
+      default -> throw new RuntimeException("Unknown compression");
+    };
+  }
 
-    static ByteBuffer compressGzip(ByteBuffer buffer) {
-        try(var outputStream = new ByteArrayOutputStream();
-        var gzipOutputStream = new GZIPOutputStream(outputStream)) {
-            gzipOutputStream.write(buffer.array());
-            return ByteBuffer.wrap(outputStream.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  static OutputStream compressGzip(OutputStream outputStream) throws IOException {
+    return new GZIPOutputStream(outputStream);
+  }
 
-    static ByteBuffer compressBrotli(ByteBuffer buffer) {
-        throw new RuntimeException("Brotli compression not implemented");
-    }
+  static OutputStream compressBrotli(OutputStream outputStream) {
+    throw new RuntimeException("Brotli compression not implemented");
+  }
 
-    static ByteBuffer compressZstd(ByteBuffer buffer) {
-        throw new RuntimeException("Zstd compression not implemented");
-    }
+  static OutputStream compressZstd(OutputStream outputStream) {
+    throw new RuntimeException("Zstd compression not implemented");
+  }
 }

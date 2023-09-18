@@ -15,71 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.tilestore.file;
-
-
+package org.apache.baremaps.tilestore.pmtiles;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
-/** Represents a {@code TileStore} baked by a directory. */
-public class FileTileStore implements TileStore {
+public class PMTilesStore implements TileStore {
 
-  private final Path path;
+  private final PMTilesWriter writer;
 
-  /**
-   * Constructs a {@code FileTileStore}.
-   *
-   * @param path the directory
-   */
-  public FileTileStore(Path path) {
-    this.path = path;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
+  public PMTilesStore(Path path) {
     try {
-      return ByteBuffer.wrap(Files.readAllBytes(resolve(tileCoord)));
+      this.writer = new PMTilesWriter(path);
     } catch (IOException e) {
-      throw new TileStoreException(e);
+      throw new RuntimeException(e);
     }
   }
 
-  /** {@inheritDoc} */
+  @Override
+  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
+    throw new UnsupportedOperationException();
+  }
+
   @Override
   public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     try {
-      var file = resolve(tileCoord);
-      Files.createDirectories(file.getParent());
-      Files.write(file, blob.array());
+      writer.writeTile(tileCoord.z(), tileCoord.x(), tileCoord.y(), blob.array());
     } catch (IOException e) {
       throw new TileStoreException(e);
     }
   }
 
-  /** {@inheritDoc} */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void close() throws TileStoreException {
     try {
-      Files.deleteIfExists(resolve(tileCoord));
+      writer.finalize();
     } catch (IOException e) {
       throw new TileStoreException(e);
     }
-  }
-
-  /** {@inheritDoc} */
-  public Path resolve(TileCoord tileCoord) {
-    return path.resolve(String.format("%s/%s/%s.mvt", tileCoord.z(), tileCoord.x(), tileCoord.y()));
-  }
-
-  @Override
-  public void close() {
-    // Do nothing
   }
 }
