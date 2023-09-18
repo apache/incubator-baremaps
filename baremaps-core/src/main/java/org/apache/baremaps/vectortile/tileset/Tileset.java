@@ -76,7 +76,6 @@ public class Tileset {
   @JsonProperty("center")
   private List<Double> center = new ArrayList<>();
 
-  @Deprecated
   @JsonProperty("database")
   private Object database;
 
