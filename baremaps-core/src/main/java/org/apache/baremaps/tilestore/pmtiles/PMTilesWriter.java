@@ -76,7 +76,6 @@ public class PMTilesWriter {
 
     var metadata = new ObjectMapper().writeValueAsBytes(metadataMap);
 
-
     var directories = PMTiles.optimizeDirectories(entries, 16247);
     long rootOffset = 127;
     long rootLength = directories.root().length;
@@ -108,7 +107,13 @@ public class PMTilesWriter {
     header.setLeavesLength(leavesLength);
     header.setTilesOffset(tilesOffset);
     header.setTilesLength(tilesLength);
-
+    header.setCenterZoom(14);
+    header.setCenterLat(46.5197);
+    header.setCenterLon(6.6323);
+    header.setMinLon(-180);
+    header.setMinLat(-90);
+    header.setMaxLon(180);
+    header.setMaxLat(90);
 
     try (var output = new LittleEndianDataOutputStream(new FileOutputStream(path.toFile()))) {
       PMTiles.serializeHeader(output, header);
