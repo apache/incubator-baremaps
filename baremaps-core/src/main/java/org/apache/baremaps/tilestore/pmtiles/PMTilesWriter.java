@@ -18,6 +18,7 @@
 package org.apache.baremaps.tilestore.pmtiles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.hash.Hashing;
 import com.google.common.io.LittleEndianDataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,30 +30,60 @@ public class PMTilesWriter {
 
   private final Path path;
 
-  private List<Entry> entries;
+  private final List<Entry> entries;
+
+  private final Map<Long, Long> tileHashToOffset;
+
+  private Long lastTileHash = null;
 
   private Path tilePath;
 
   private boolean clustered = true;
 
   public PMTilesWriter(Path path) throws IOException {
+    this(path, new ArrayList<>(), new HashMap<>());
+  }
+
+  public PMTilesWriter(Path path, List<Entry> entries, Map<Long, Long> tileHashToOffset)
+      throws IOException {
     this.path = path;
-    this.entries = new ArrayList<>();
+    this.entries = entries;
+    this.tileHashToOffset = tileHashToOffset;
     this.tilePath = Files.createTempFile(path.getParent(), "tiles", ".tmp");
   }
 
-  public void writeTile(int z, int x, int y, byte[] bytes) throws IOException {
+  public synchronized void writeTile(int z, int x, int y, byte[] bytes) throws IOException {
+    // Write the tile
     var tileId = PMTiles.zxyToTileId(z, x, y);
-    var offset = Files.size(tilePath);
-    var length = bytes.length;
+    var tileLength = bytes.length;
+    Long tileHash = Hashing.farmHashFingerprint64().hashBytes(bytes).asLong();
 
+    // If the tile is not greater than the last one, the index is not clustered
     if (entries.size() > 0 && tileId < entries.get(entries.size() - 1).getTileId()) {
       clustered = false;
     }
 
-    try (var output = new FileOutputStream(tilePath.toFile(), true)) {
-      output.write(bytes);
-      entries.add(new Entry(tileId, offset, length, 1));
+    // If the tile is the same as the last one, increment the run length
+    if (clustered && tileHash.equals(lastTileHash)) {
+      var lastEntry = entries.get(entries.size() - 1);
+      lastEntry.setRunLength(lastEntry.getRunLength() + 1);
+    }
+
+    // Else, if the tile is the same as the last one, increment the run length
+    else if (tileHashToOffset.containsKey(tileHash)) {
+      var tileOffset = tileHashToOffset.get(tileHash);
+      entries.add(new Entry(tileId, tileOffset, tileLength, 1));
+    }
+
+    // Else, write the tile and add it to the index
+    else {
+      var tileOffset = Files.size(tilePath);
+      tileHashToOffset.put(tileHash, tileOffset);
+      lastTileHash = tileHash;
+      try (var output = new FileOutputStream(tilePath.toFile(), true)) {
+        output.write(bytes);
+        entries.add(new Entry(tileId, tileOffset, tileLength, 1));
+      }
     }
   }
 
@@ -74,19 +105,18 @@ public class PMTilesWriter {
         "power", "railway", "route", "waterway")
         .stream().map(s -> Map.of("id", s)).toList());
 
-    var metadata = new ObjectMapper().writeValueAsBytes(metadataMap);
+
+    var metadataBytes = new ObjectMapper().writeValueAsBytes(metadataMap);
 
     var directories = PMTiles.optimizeDirectories(entries, 16247);
-    long rootOffset = 127;
-    long rootLength = directories.root().length;
-    long metadataOffset = rootOffset + rootLength;
-    long metadataLength = metadata.length;
-    long leavesOffset = metadataOffset + metadataLength;
-    long leavesLength = directories.leaves().length;
-    long tilesOffset = leavesOffset + leavesLength;
-    long tilesLength = Files.size(tilePath);
-    int minZoom = (int) PMTiles.tileIdToZxy(entries.get(0).getTileId())[0];
-    int maxZoom = (int) PMTiles.tileIdToZxy(entries.get(entries.size() - 1).getTileId())[0];
+    var rootOffset = 127;
+    var rootLength = directories.root().length;
+    var metadataOffset = rootOffset + rootLength;
+    var metadataLength = metadataBytes.length;
+    var leavesOffset = metadataOffset + metadataLength;
+    var leavesLength = directories.leaves().length;
+    var tilesOffset = leavesOffset + leavesLength;
+    var tilesLength = Files.size(tilePath);
     var numTiles = entries.size();
 
     var header = new Header();
@@ -94,11 +124,10 @@ public class PMTilesWriter {
     header.setNumTileEntries(numTiles);
     header.setNumTileContents(numTiles);
     header.setClustered(true);
+
     header.setInternalCompression(Compression.None);
     header.setTileCompression(Compression.Gzip);
     header.setTileType(TileType.Mvt);
-    header.setMinZoom(minZoom);
-    header.setMaxZoom(maxZoom);
     header.setRootOffset(rootOffset);
     header.setRootLength(rootLength);
     header.setMetadataOffset(metadataOffset);
@@ -107,18 +136,21 @@ public class PMTilesWriter {
     header.setLeavesLength(leavesLength);
     header.setTilesOffset(tilesOffset);
     header.setTilesLength(tilesLength);
-    header.setCenterZoom(14);
-    header.setCenterLat(46.5197);
-    header.setCenterLon(6.6323);
+
+    header.setMinZoom(1);
+    header.setMaxZoom(14);
     header.setMinLon(-180);
     header.setMinLat(-90);
     header.setMaxLon(180);
     header.setMaxLat(90);
+    header.setCenterZoom(14);
+    header.setCenterLat(46.5197);
+    header.setCenterLon(6.6323);
 
     try (var output = new LittleEndianDataOutputStream(new FileOutputStream(path.toFile()))) {
       PMTiles.serializeHeader(output, header);
       output.write(directories.root());
-      output.write(metadata);
+      output.write(metadataBytes);
       output.write(directories.leaves());
       Files.copy(tilePath, output);
     } finally {
