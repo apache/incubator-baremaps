@@ -19,6 +19,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipFile;
+
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -34,7 +35,7 @@ public record DecompressFile(Path source, Path target, Compression compression) 
     targz,
     tarbz2,
     gzip,
-    bzip2
+    bzip2;
   }
 
   private static final Logger logger = LoggerFactory.getLogger(UngzipFile.class);
