@@ -76,21 +76,19 @@ public class Dev implements Callable<Integer> {
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
 
-    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {
-    };
+    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStoreSupplier = (Supplier<TileStore>) () -> {
       try {
         var config = configReader.read(this.tilesetPath);
         var tilesetObject =
-                objectMapper.readValue(config, Tileset.class);
+            objectMapper.readValue(config, Tileset.class);
         return new PostgresTileStore(datasource, tilesetObject);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     };
 
-    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {
-    };
+    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
     var styleSupplier = (Supplier<Style>) () -> {
       try {
         var config = configReader.read(stylePath);
@@ -100,8 +98,7 @@ public class Dev implements Callable<Integer> {
       }
     };
 
-    var tileJSONSupplierType = new TypeLiteral<Supplier<Tileset>>() {
-    };
+    var tileJSONSupplierType = new TypeLiteral<Supplier<Tileset>>() {};
     var tileJSONSupplier = (Supplier<Tileset>) () -> {
       try {
         var config = configReader.read(tilesetPath);
@@ -112,26 +109,26 @@ public class Dev implements Callable<Integer> {
     };
 
     var application = new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(ChangeResource.class)
-            .register(TileResource.class)
-            .register(StyleResource.class)
-            .register(TilesetResource.class)
-            .register(ChangeResource.class)
-            .register(ClassPathResource.class)
-            .register(newContextResolver(objectMapper))
-            .register(new AbstractBinder() {
-              @Override
-              protected void configure() {
-                bind("assets").to(String.class).named("directory");
-                bind("viewer.html").to(String.class).named("index");
-                bind(tilesetPath).to(Path.class).named("tileset");
-                bind(stylePath).to(Path.class).named("style");
-                bind(tileStoreSupplier).to(tileStoreType);
-                bind(styleSupplier).to(styleSupplierType);
-                bind(tileJSONSupplier).to(tileJSONSupplierType);
-              }
-            });
+        .register(CorsFilter.class)
+        .register(ChangeResource.class)
+        .register(TileResource.class)
+        .register(StyleResource.class)
+        .register(TilesetResource.class)
+        .register(ChangeResource.class)
+        .register(ClassPathResource.class)
+        .register(newContextResolver(objectMapper))
+        .register(new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind("assets").to(String.class).named("directory");
+            bind("viewer.html").to(String.class).named("index");
+            bind(tilesetPath).to(Path.class).named("tileset");
+            bind(stylePath).to(Path.class).named("style");
+            bind(tileStoreSupplier).to(tileStoreType);
+            bind(styleSupplier).to(styleSupplierType);
+            bind(tileJSONSupplier).to(tileJSONSupplierType);
+          }
+        });
 
     var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
     var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);

@@ -29,12 +29,13 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmChange(Path file, String database, Integer srid, Compression compression) implements Task {
+public record ImportOsmChange(Path file, String database, Integer srid,
+    Compression compression) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmChange.class);
 
   public ImportOsmChange(Path file, String database, Integer srid) {
-    this (file, database, srid, Compression.detect(file));
+    this(file, database, srid, Compression.detect(file));
   }
 
   @Override
@@ -54,7 +55,8 @@ public record ImportOsmChange(Path file, String database, Integer srid, Compress
     var prepareChange = consumeThenReturn(prepareGeometries);
     var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
 
-    try (var changeInputStream = new BufferedInputStream(compression.decompress(Files.newInputStream(file)))) {
+    try (var changeInputStream =
+        new BufferedInputStream(compression.decompress(Files.newInputStream(file)))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
   }
