@@ -10,7 +10,6 @@ releases may have incomplete or un-reviewed licensing conditions. What follows i
 the project is currently aware of (this list is likely to be incomplete):
 
  * Releases may have incomplete licensing conditions.
- * Releases may not have been voted on by the community.
  * Releases contain the incompatible proj4j-epsg dependency.
  * Releases contain excerpts of the OpenStreetMap data.
  * Releases contain excerpts of the Natural Earth data.
@@ -20,4 +19,4 @@ the project is currently aware of (this list is likely to be incomplete):
 If you are planning to incorporate this work into your product/project, please be aware that you
 will need to conduct a thorough licensing review to determine the overall implications of including
 this work. For the current status of this project through the Apache Incubator,
-visit: https://incubator.apache.org/projects/Apache Podling-Name.html
+visit: https://incubator.apache.org/projects/baremaps.html
