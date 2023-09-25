@@ -203,8 +203,8 @@ public final class TileCoord implements Comparable<TileCoord> {
     return new Envelope(x1, x2, y1, y2);
   }
 
-  public static double tile2lon(int x, int z) {
-    return x / Math.pow(2.0, z) * 360.0 - 180;
+  public static double tile2lon(double x, double z) {
+    return x / Math.pow(2.0, z) * 360.0 - 180.0;
   }
 
   public static double tile2lat(int y, int z) {

@@ -17,13 +17,14 @@
 
 package org.apache.baremaps.server;
 
-import java.util.function.Supplier;
+import org.apache.baremaps.vectortile.tileset.Tileset;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.baremaps.vectortile.tileset.Tileset;
+import java.util.function.Supplier;
 
 /**
  * A resource that provides access to the tileset file. Only suitable for development purposes, as

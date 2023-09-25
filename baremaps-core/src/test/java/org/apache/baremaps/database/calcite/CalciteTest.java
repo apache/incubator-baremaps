@@ -44,7 +44,6 @@ import org.locationtech.jts.geom.*;
 
 public class CalciteTest {
 
-
   @Test
   public void test() throws SQLException {
     GeometryFactory geometryFactory = new GeometryFactory();
