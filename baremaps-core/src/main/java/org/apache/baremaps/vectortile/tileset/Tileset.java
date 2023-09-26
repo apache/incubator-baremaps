@@ -244,7 +244,7 @@ public class Tileset {
     return database;
   }
 
-  public void setDatabase(String database) {
+  public void setDatabase(Object database) {
     this.database = database;
   }
 
