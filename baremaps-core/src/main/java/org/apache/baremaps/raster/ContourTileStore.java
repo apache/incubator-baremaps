@@ -27,7 +27,11 @@ import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import org.locationtech.proj4j.ProjCoordinate;
 
 import java.io.IOException;
@@ -49,19 +53,42 @@ public class ContourTileStore implements TileStore, AutoCloseable {
         ogr.RegisterAll();
     }
 
+    private final String dem = """
+            <GDAL_WMS>
+                <Service name="TMS">
+                    <ServerUrl>https://s3.amazonaws.com/elevation-tiles-prod/geotiff/${z}/${x}/${y}.tif</ServerUrl>
+                </Service>
+                <DataWindow>
+                    <UpperLeftX>-20037508.34</UpperLeftX>
+                    <UpperLeftY>20037508.34</UpperLeftY>
+                    <LowerRightX>20037508.34</LowerRightX>
+                    <LowerRightY>-20037508.34</LowerRightY>
+                    <TileLevel>0</TileLevel>
+                    <TileCountX>1</TileCountX>
+                    <TileCountY>1</TileCountY>
+                    <YOrigin>top</YOrigin>
+                </DataWindow>
+                <Projection>EPSG:3857</Projection>
+                <BlockSizeX>512</BlockSizeX>
+                <BlockSizeY>512</BlockSizeY>
+                <BandsCount>1</BandsCount>
+                <DataType>Int16</DataType>
+                <ZeroBlockHttpCodes>403,404</ZeroBlockHttpCodes>
+                <DataValues>
+                    <NoData>-32768</NoData>
+                </DataValues>
+                <Cache/>
+            </GDAL_WMS>
+            """;
+
     private final Map<Integer, Dataset> datasets = new HashMap<>();
 
     public ContourTileStore() {
     }
 
     public Dataset initDataset(Integer zoom) {
-        try {
-            var dem = Files.readString(Paths.get("dem.xml"));
-            dem = dem.replace("<TileLevel>0</TileLevel>", "<TileLevel>" + zoom + "</TileLevel>");
-            return gdal.Open(dem, gdalconstConstants.GA_ReadOnly);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        var dem = this.dem.replace("<TileLevel>0</TileLevel>", "<TileLevel>" + zoom + "</TileLevel>");
+        return gdal.Open(dem, gdalconstConstants.GA_ReadOnly);
     }
 
 
@@ -102,51 +129,69 @@ public class ContourTileStore implements TileStore, AutoCloseable {
         var srs = new SpatialReference(wkt);
         var vectorDriver = ogr.GetDriverByName("Memory");
         var vectorDataSource = vectorDriver.CreateDataSource("vector");
-        var vectorLayer = vectorDataSource.CreateLayer("vector", srs, ogr.wkbLineString);
+        var vectorLayer = vectorDataSource.CreateLayer("vector", srs, ogr.wkbLineString, new Vector(List.of("ADVERTIZE_UTF8=YES")));
 
+        vectorLayer.CreateField(new org.gdal.ogr.FieldDefn("elevation", ogr.OFTReal));
 
         String levels = IntStream.range(1, 1000)
                 .mapToObj(i -> i * 10)
                 .filter(l -> {
-                    if (tile.z() <= 9) {
-                        return l % 1000 == 0;
-                    } else if (tile.z() <= 10) {
+                    if (tile.z() <= 4) {
+                        return l == 1000 || l == 3000 || l == 5000 || l == 7000 || l == 9000;
+                    } else if (tile.z() <= 8) {
                         return l % 800 == 0;
-                    } else if (tile.z() <= 11) {
+                    } else if (tile.z() == 9) {
                         return l % 400 == 0;
-                    } else if (tile.z() <= 12) {
+                    } else if (tile.z() == 10) {
+                        return l % 400 == 0;
+                    } else if (tile.z() == 11) {
                         return l % 200 == 0;
-                    } else if (tile.z() <= 13) {
+                    } else if (tile.z() == 12) {
+                        return l % 200 == 0;
+                    } else if (tile.z() == 13) {
                         return l % 100 == 0;
-                    } else if (tile.z() <= 14) {
+                    } else if (tile.z() == 14) {
                         return l % 50 == 0;
                     } else {
-                        return l % 10 == 0;
+                        return false;
                     }
                 })
                 .map(Object::toString)
                 .collect(Collectors.joining(","));
 
-        gdal.ContourGenerateEx(rasterBand, vectorLayer, new Vector<>(List.of("FIXED_LEVELS=" + levels)));
+        gdal.ContourGenerateEx(rasterBand, vectorLayer, new Vector<>(List.of("ELEV_FIELD=elevation", "FIXED_LEVELS=" + levels)));
 
         // return the contours
-        var geometries = LongStream.range(0, vectorLayer.GetFeatureCount())
-                .mapToObj(vectorLayer::GetFeature)
-                .map(feature -> feature.GetGeometryRef())
-                .map(geometry -> GeometryUtils.deserialize(geometry.ExportToWkb()))
-                .map(targetEnvelope::intersection)
-                .toList();
+        var featureCount = vectorLayer.GetFeatureCount();
+        var features = LongStream.range(0, featureCount).mapToObj(featureIndex -> {
+                    var feature = vectorLayer.GetFeature(featureIndex);
+                    var id = feature.GetFID();
+                    var properties = new HashMap<String, Object>();
+                    var fieldCount = feature.GetFieldCount();
+                    for (int i = 0; i < fieldCount; i++) {
+                        var field = feature.GetFieldDefnRef(i);
+                        var name = field.GetName();
+                        var value = feature.GetFieldAsString(name);
+                        properties.put(name, value);
+                        field.delete();
+                    }
+                    var ref = feature.GetGeometryRef();
+                    var wkb = ref.ExportToWkb();
+                    var geometry = GeometryUtils.deserialize(wkb);
+                    var tileGeometry = targetEnvelope.intersection(geometry);
+                    var mvtGeometry = VectorTileFunctions
+                            .asVectorTileGeom(tileGeometry, targetEnvelope.getEnvelopeInternal(), 4096, 0, true);
 
-        var features = geometries.stream()
-                .map(geometry -> VectorTileFunctions.asVectorTileGeom(geometry, targetEnvelope.getEnvelopeInternal(), 4096, 0,
-                        true))
-                .filter(geometry -> geometry.getCoordinates().length >= 2)
-                .map(geometry -> new Feature(null, Map.of(), geometry))
+                    feature.delete();
+                    return new Feature(id, properties, mvtGeometry);
+                })
+                .filter(feature -> feature.getGeometry().getCoordinates().length >= 2)
                 .toList();
 
         var vectorTile = VectorTileFunctions
                 .asVectorTile(new VectorTile(List.of(new Layer("contours", 4096, features))));
 
+        vectorLayer.delete();
         rasterBand.delete();
         rasterDataset.delete();
         sourceBand.delete();
