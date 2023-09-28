@@ -18,7 +18,6 @@ import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.baremaps.database.collection.*;
 import org.apache.baremaps.database.memory.MemoryMappedDirectory;
 import org.apache.baremaps.database.type.LongDataType;
@@ -30,6 +29,7 @@ import org.apache.baremaps.openstreetmap.postgres.*;
 import org.apache.baremaps.openstreetmap.repository.ChangeImporter;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.utils.Compression;
+import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
@@ -56,31 +56,31 @@ public record ImportOsmChange(Path file, Object database, Integer srid,
     if (Files.size(path) > 1 << 30) {
       var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
       coordinateMap = new MemoryAlignedDataMap<>(
-              new LonLatDataType(),
-              new MemoryMappedDirectory(coordinateDir));
+          new LonLatDataType(),
+          new MemoryMappedDirectory(coordinateDir));
     } else {
       var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
       var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
       coordinateMap =
-              new MonotonicDataMap<>(
-                      new MemoryAlignedDataList<>(
-                              new PairDataType<>(new LongDataType(), new LongDataType()),
-                              new MemoryMappedDirectory(coordinateKeysDir)),
-                      new AppendOnlyBuffer<>(
-                              new LonLatDataType(),
-                              new MemoryMappedDirectory(coordinateValuesDir)));
+          new MonotonicDataMap<>(
+              new MemoryAlignedDataList<>(
+                  new PairDataType<>(new LongDataType(), new LongDataType()),
+                  new MemoryMappedDirectory(coordinateKeysDir)),
+              new AppendOnlyBuffer<>(
+                  new LonLatDataType(),
+                  new MemoryMappedDirectory(coordinateValuesDir)));
     }
 
     var referenceKeysDir = Files.createDirectory(cacheDir.resolve("reference_keys"));
     var referenceValuesDir = Files.createDirectory(cacheDir.resolve("reference_vals"));
     var referenceMap =
-            new MonotonicDataMap<>(
-                    new MemoryAlignedDataList<>(
-                            new PairDataType<>(new LongDataType(), new LongDataType()),
-                            new MemoryMappedDirectory(referenceKeysDir)),
-                    new AppendOnlyBuffer<>(
-                            new LongListDataType(),
-                            new MemoryMappedDirectory(referenceValuesDir)));
+        new MonotonicDataMap<>(
+            new MemoryAlignedDataList<>(
+                new PairDataType<>(new LongDataType(), new LongDataType()),
+                new MemoryMappedDirectory(referenceKeysDir)),
+            new AppendOnlyBuffer<>(
+                new LongListDataType(),
+                new MemoryMappedDirectory(referenceValuesDir)));
 
     var nodeRepository = new PostgresNodeRepository(datasource);
     var wayRepository = new PostgresWayRepository(datasource);
@@ -90,7 +90,8 @@ public record ImportOsmChange(Path file, Object database, Integer srid,
     var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
     var buildGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
-    var prepareGeometries = coordinateMapBuilder.andThen(referenceMapBuilder).andThen(buildGeometry).andThen(reprojectGeometry);
+    var prepareGeometries = coordinateMapBuilder.andThen(referenceMapBuilder).andThen(buildGeometry)
+        .andThen(reprojectGeometry);
     var prepareChange = consumeThenReturn(new ChangeEntitiesHandler(prepareGeometries));
     var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
 
@@ -98,5 +99,7 @@ public record ImportOsmChange(Path file, Object database, Integer srid,
         new BufferedInputStream(compression.decompress(Files.newInputStream(path)))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
+
+    FileUtils.deleteRecursively(cacheDir);
   }
 }

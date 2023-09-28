@@ -104,25 +104,46 @@ public record ImportOsmPbf(Path file, Object database, Integer databaseSrid)
                 new LongListDataType(),
                 new MemoryMappedDirectory(referenceValuesDir)));
 
+    execute(
+        path,
+        coordinateMap,
+        referenceMap,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        databaseSrid);
+
+    FileUtils.deleteRecursively(cacheDir);
+  }
+
+  public static void execute(
+      Path path,
+      DataMap<Long, Coordinate> coordinateMap,
+      DataMap<Long, List<Long>> referenceMap,
+      HeaderRepository headerRepository,
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository,
+      Integer databaseSrid) throws IOException {
+
     // configure the block reader
     var reader = new PbfBlockReader()
-            .geometries(true)
-            .projection(databaseSrid)
-            .coordinateMap(coordinateMap)
-            .referenceMap(referenceMap);
+        .geometries(true)
+        .projection(databaseSrid)
+        .coordinateMap(coordinateMap)
+        .referenceMap(referenceMap);
 
     // configure the block importer
     var importer = new BlockImporter(
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository);
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository);
 
     // Stream and process the blocks
     try (var input = Files.newInputStream(path)) {
       StreamUtils.batch(reader.stream(input)).forEach(importer);
     }
-
-    FileUtils.deleteRecursively(cacheDir);
   }
 }
