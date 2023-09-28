@@ -36,12 +36,12 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmChange(Path file, String database, Integer srid,
+public record ImportOsmChange(Path file, Object database, Integer srid,
     Compression compression) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmChange.class);
 
-  public ImportOsmChange(Path file, String database, Integer srid) {
+  public ImportOsmChange(Path file, Object database, Integer srid) {
     this(file, database, srid, Compression.detect(file));
   }
 
