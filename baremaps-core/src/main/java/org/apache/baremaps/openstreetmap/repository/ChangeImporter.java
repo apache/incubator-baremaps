@@ -106,7 +106,7 @@ public class ChangeImporter implements Consumer<Change> {
         }
       }
     } catch (RepositoryException e) {
-      throw new StreamException(e);
+      logger.error("Error while saving changes", e);
     }
   }
 }
