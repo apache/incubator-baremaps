@@ -14,23 +14,23 @@ import config from "./config.js";
 
 export default {
   "steps": [
-    {
-      "id": "openstreetmap-data",
-      "needs": [],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.30/planet-v1.30.osm.pbf",
-          "path": "data/data.osm.pbf"
-        },
-        {
-          "type": "ImportOsmPbf",
-          "file": "data/data.osm.pbf",
-          "database": config.database,
-          "databaseSrid": 3857
-        },
-      ]
-    },
+    // {
+    //   "id": "openstreetmap-data",
+    //   "needs": [],
+    //   "tasks": [
+    //     {
+    //       "type": "DownloadUrl",
+    //       "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.30/planet-v1.30.osm.pbf",
+    //       "path": "data/data.osm.pbf"
+    //     },
+    //     {
+    //       "type": "ImportOsmPbf",
+    //       "file": "data/data.osm.pbf",
+    //       "database": config.database,
+    //       "databaseSrid": 3857
+    //     },
+    //   ]
+    // },
     {
       "id": "openstreetmap-building",
       "needs": ["openstreetmap-data"],
@@ -78,7 +78,7 @@ export default {
         },
         {
           "type": "ImportOsmChange",
-          "file": "data/admin.osc",
+          "file": "data/admin.osc.bz2",
           "compression": "bzip2",
           "database": config.database,
           "srid": 3857
