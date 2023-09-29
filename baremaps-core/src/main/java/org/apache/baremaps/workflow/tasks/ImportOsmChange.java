@@ -51,7 +51,6 @@ public record ImportOsmChange(Path file, Object database, Integer srid,
     var path = file.toAbsolutePath();
 
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
-
     DataMap<Long, Coordinate> coordinateMap;
     if (Files.size(path) > 1 << 30) {
       var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));

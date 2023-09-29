@@ -75,32 +75,32 @@ public class ChangeImporter implements Consumer<Change> {
       switch (change.getType()) {
         case CREATE, MODIFY -> {
           if (!nodes.isEmpty()) {
-            logger.info("Creating {} nodes", nodes.size());
+            logger.trace("Creating {} nodes", nodes.size());
             nodeRepository.delete(nodeIds);
             nodeRepository.copy(nodes);
           }
           if (!ways.isEmpty()) {
-            logger.info("Creating {} ways", ways.size());
+            logger.trace("Creating {} ways", ways.size());
             wayRepository.delete(wayIds);
             wayRepository.copy(ways);
           }
           if (!relations.isEmpty()) {
-            logger.info("Creating {} relations", relations.size());
+            logger.trace("Creating {} relations", relations.size());
             relationRepository.delete(relationIds);
             relationRepository.copy(relations);
           }
         }
         case DELETE -> {
           if (!nodes.isEmpty()) {
-            logger.info("Deleting {} nodes", nodes.size());
+            logger.trace("Deleting {} nodes", nodes.size());
             nodeRepository.delete(nodeIds);
           }
           if (!ways.isEmpty()) {
-            logger.info("Deleting {} ways", ways.size());
+            logger.trace("Deleting {} ways", ways.size());
             wayRepository.delete(wayIds);
           }
           if (!relations.isEmpty()) {
-            logger.info("Deleting {} relations", relations.size());
+            logger.trace("Deleting {} relations", relations.size());
             relationRepository.delete(relationIds);
           }
         }
@@ -109,6 +109,4 @@ public class ChangeImporter implements Consumer<Change> {
       throw new StreamException(e);
     }
   }
-
-
 }

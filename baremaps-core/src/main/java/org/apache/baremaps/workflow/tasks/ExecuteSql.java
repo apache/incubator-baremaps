@@ -44,7 +44,7 @@ public record ExecuteSql(Object database, Path file, boolean parallel) implement
         query -> {
           var dataSource = context.getDataSource(database);
           try (var connection = dataSource.getConnection()) {
-            logger.info("Execute SQL query: {}", query);
+            logger.info("Execute SQL query: {}", query.replaceAll("\\s+", " "));
             connection.createStatement().execute(query);
           } catch (SQLException e) {
             throw new WorkflowException(e);
