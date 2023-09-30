@@ -24,7 +24,6 @@ import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.stream.StreamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
