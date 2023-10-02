@@ -20,7 +20,7 @@ limitations under the License.
 
   <groupId>org.apache.baremaps</groupId>
   <artifactId>baremaps</artifactId>
-  <version>0.7.2-SNAPSHOT</version>
+  <version>0.7.2</version>
   <packaging>pom</packaging>
   <name>baremaps</name>
   <description>Apache Baremaps (incubating) is a toolkit and a set of infrastructure components for creating, publishing, and operating online maps.</description>
