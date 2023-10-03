@@ -4,6 +4,16 @@
     "baremaps" : {
       "type" : "vector",
       "url" : "http://localhost:9000/tiles.json"
+    },
+    "dem": {
+     "type": "raster-dem",
+      "encoding": "terrarium",
+      "tiles": [
+        "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
+      ],
+      "tileSize": 256,
+      "maxzoom": 13,
+      "minzoom": 0
     }
   },
   "layers" : [ {
@@ -12,6 +22,13 @@
     "maxzoom" : 24,
     "paint" : {
       "background-color" : "rgba(255, 255, 255, 1)"
+    }
+  },{
+    "id": "hills",
+    "type": "hillshade",
+    "source": "dem",
+    "paint": {
+      "hillshade-exaggeration": 0.25
     }
   }, {
     "id" : "contours",
