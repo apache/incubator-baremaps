@@ -37,7 +37,7 @@ docker run \
 cd ./baremaps-cli/target/
 
 # Hash and sign the artifacts
-for artifact in ./baremaps-$version-incubating-*; do
+for artifact in ./apache-baremaps-$version-incubating-*; do
 
   # Hash the artifact
   shasum -a 512 "$artifact" > "$artifact.sha512"
