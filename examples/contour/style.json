@@ -1,43 +1,101 @@
 {
-  "version" : 8,
-  "sources" : {
-    "baremaps" : {
-      "type" : "vector",
-      "url" : "http://localhost:9000/tiles.json"
+  "version": 8,
+  "glyphs": "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf",
+  "sources": {
+    "baremaps": {
+      "type": "vector",
+      "url": "http://localhost:9000/tiles.json"
     }
   },
-  "layers" : [ {
-    "id" : "background",
-    "type" : "background",
-    "maxzoom" : 24,
-    "paint" : {
-      "background-color" : "rgba(255, 255, 255, 1)"
-    }
-  }, {
-    "id" : "contours_m",
-    "type" : "line",
-    "source" : "baremaps",
-    "source-layer" : "contours_m",
-    "layout" : {
-      "line-cap" : "round",
-      "line-join" : "round"
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "maxzoom": 24,
+      "paint": {
+        "background-color": "rgba(255, 255, 255, 1)"
+      }
     },
-    "paint" : {
-      "line-color" : "rgba(0, 0, 0, 1)"
-    }
-  }, {
-    "id" : "contours_ft",
-    "type" : "line",
-    "source" : "baremaps",
-    "source-layer" : "contours_ft",
-    "layout" : {
-      "line-cap" : "round",
-      "line-join" : "round"
+    {
+      "id": "contours_m",
+      "type": "line",
+      "source": "baremaps",
+      "source-layer": "contours_m",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgb(33, 45, 64)"
+      }
     },
-    "paint" : {
-      "line-color" : "rgba(100, 100, 100, 1)"
+    {
+      "id": "contours_m_label",
+      "type": "symbol",
+      "source": "baremaps",
+      "source-layer": "contours_m",
+      "layout": {
+        "symbol-placement": "line",
+        "text-anchor": "center",
+        "text-field": [
+          "concat",
+          [
+            "get",
+            "elevation_m"
+          ],
+          " m"
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 12
+      },
+      "paint": {
+        "text-color": "rgb(33, 45, 64)"
+      }
+    },
+    {
+      "id": "contours_ft",
+      "type": "line",
+      "source": "baremaps",
+      "source-layer": "contours_ft",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgb(125, 78, 87)"
+      }
+    },
+    {
+      "id": "contours_ft_label",
+      "type": "symbol",
+      "source": "baremaps",
+      "source-layer": "contours_ft",
+      "layout": {
+        "symbol-placement": "line",
+        "text-anchor": "center",
+        "text-field": [
+          "concat",
+          [
+            "get",
+            "elevation_ft"
+          ],
+          " ft"
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 12
+      },
+      "paint": {
+        "text-color": "rgb(125, 78, 87)"
+      }
     }
-  } ],
-  "center" : [ 9.5554, 47.166 ],
-  "zoom" : 14
+  ],
+  "center": [
+    9.5554,
+    47.166
+  ],
+  "zoom": 14
 }
