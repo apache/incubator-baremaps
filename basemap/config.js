@@ -17,8 +17,8 @@
 export default {
     "host": "http://localhost:9000",
     "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-    "osmPbfUrl": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
-    "center": [6.6323, 46.5197],
-    "bounds": [6.02260949059, 45.7769477403, 10.4427014502, 47.8308275417],
+    "osmPbfUrl": "https://download.geofabrik.de/europe/new-york-latest.osm.pbf",
+    "center": [-74.0060, 40.7128],
+    "bounds": [-180, -85, 180, 85],
     "zoom": 14,
 }

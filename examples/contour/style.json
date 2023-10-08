@@ -4,16 +4,6 @@
     "baremaps" : {
       "type" : "vector",
       "url" : "http://localhost:9000/tiles.json"
-    },
-    "dem": {
-     "type": "raster-dem",
-      "encoding": "terrarium",
-      "tiles": [
-        "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
-      ],
-      "tileSize": 256,
-      "maxzoom": 13,
-      "minzoom": 0
     }
   },
   "layers" : [ {
@@ -23,24 +13,29 @@
     "paint" : {
       "background-color" : "rgba(255, 255, 255, 1)"
     }
-  },{
-    "id": "hills",
-    "type": "hillshade",
-    "source": "dem",
-    "paint": {
-      "hillshade-exaggeration": 0.25
-    }
   }, {
-    "id" : "contours",
+    "id" : "contours_m",
     "type" : "line",
     "source" : "baremaps",
-    "source-layer" : "contours",
+    "source-layer" : "contours_m",
     "layout" : {
       "line-cap" : "round",
       "line-join" : "round"
     },
     "paint" : {
-      "line-color" : "rgba(181, 169, 152, 1)"
+      "line-color" : "rgba(0, 0, 0, 1)"
+    }
+  }, {
+    "id" : "contours_ft",
+    "type" : "line",
+    "source" : "baremaps",
+    "source-layer" : "contours_ft",
+    "layout" : {
+      "line-cap" : "round",
+      "line-join" : "round"
+    },
+    "paint" : {
+      "line-color" : "rgba(100, 100, 100, 1)"
     }
   } ],
   "center" : [ 9.5554, 47.166 ],

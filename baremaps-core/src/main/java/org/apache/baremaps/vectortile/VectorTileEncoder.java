@@ -58,7 +58,9 @@ public class VectorTileEncoder {
    */
   public Tile encodeTile(VectorTile tile) {
     Tile.Builder builder = Tile.newBuilder();
-    tile.getLayers().forEach(layer -> builder.addLayers(encodeLayer(layer)));
+    for (var layer : tile.getLayers()) {
+      builder.addLayers(encodeLayer(layer));
+    }
     return builder.build();
   }
 

@@ -24,36 +24,30 @@ import org.gdal.gdal.Dataset;
 import org.gdal.gdal.WarpOptions;
 import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconstConstants;
+import org.gdal.ogr.FieldDefn;
 import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 import org.locationtech.proj4j.ProjCoordinate;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
 public class ContourTileStore implements TileStore, AutoCloseable {
 
     static {
+        // Register the gdal and ogr drivers
         gdal.AllRegister();
         ogr.RegisterAll();
     }
 
-    private final String dem = """
+    /**
+     * The definition of the digital elevation model.
+     */
+    private static final String DEM = """
             <GDAL_WMS>
                 <Service name="TMS">
                     <ServerUrl>https://s3.amazonaws.com/elevation-tiles-prod/geotiff/${z}/${x}/${y}.tif</ServerUrl>
@@ -81,122 +75,247 @@ public class ContourTileStore implements TileStore, AutoCloseable {
             </GDAL_WMS>
             """;
 
-    private final Map<Integer, Dataset> datasets = new HashMap<>();
 
-    public ContourTileStore() {
-    }
-
-    public Dataset initDataset(Integer zoom) {
-        var dem = this.dem.replace("<TileLevel>0</TileLevel>", "<TileLevel>" + zoom + "</TileLevel>");
-        return gdal.Open(dem, gdalconstConstants.GA_ReadOnly);
-    }
-
-
-    @Override
-    public synchronized ByteBuffer read(TileCoord tile) throws TileStoreException {
-        var dataset = datasets.computeIfAbsent(tile.z(), this::initDataset);
-        var sourceBand = dataset.GetRasterBand(1);
-        var envelope = tile.envelope();
-
-        // Transform the extent to the source projection
-        var transformer = GeometryUtils.coordinateTransform(4326, 3857);
-        var min = transformer.transform(new ProjCoordinate(envelope.getMinX(), envelope.getMinY()),
-                new ProjCoordinate());
-        var max = transformer.transform(new ProjCoordinate(envelope.getMaxX(), envelope.getMaxY()),
-                new ProjCoordinate());
-        var buffer = (max.x - min.x) / 4096 * 16;
-
-        var targetEnvelope = new GeometryFactory().createPolygon(new Coordinate[]{
-                new Coordinate(min.x, min.y),
-                new Coordinate(min.x, max.y),
-                new Coordinate(max.x, max.y),
-                new Coordinate(max.x, min.y),
-                new Coordinate(min.x, min.y)
-        });
-        var bufferedEnvelope = targetEnvelope.buffer(buffer);
-
-        // Warp the raster to the requested extent
-        var rasterOptions = new WarpOptions(new Vector<>(List.of(
-                "-of", "MEM",
-                "-te", Double.toString(bufferedEnvelope.getEnvelopeInternal().getMinX()), Double.toString(bufferedEnvelope.getEnvelopeInternal().getMinY()),
-                Double.toString(bufferedEnvelope.getEnvelopeInternal().getMaxX()), Double.toString(bufferedEnvelope.getEnvelopeInternal().getMaxY()),
-                "-te_srs", "EPSG:3857")));
-        var rasterDataset = gdal.Warp("", new Dataset[]{dataset}, rasterOptions);
-        var rasterBand = rasterDataset.GetRasterBand(1);
-
-        // Generate the contours
-        var wkt = rasterDataset.GetProjection();
-        var srs = new SpatialReference(wkt);
-        var vectorDriver = ogr.GetDriverByName("Memory");
-        var vectorDataSource = vectorDriver.CreateDataSource("vector");
-        var vectorLayer = vectorDataSource.CreateLayer("vector", srs, ogr.wkbLineString, new Vector(List.of("ADVERTIZE_UTF8=YES")));
-
-        vectorLayer.CreateField(new org.gdal.ogr.FieldDefn("elevation", ogr.OFTReal));
-
-        String levels = IntStream.range(1, 1000)
-                .mapToObj(i -> i * 10)
+    private static final Map<Integer, String> CONTOUR_LEVELS_BY_ZOOM_LEVELS_IN_METERS = IntStream.range(0, 20).mapToObj(zoomLevel -> {
+        var contourLevels = IntStream.range(1, 10000)
+                .mapToObj(i -> (double) i)
                 .filter(l -> {
-                    if (tile.z() <= 4) {
-                        return l == 1000 || l == 3000 || l == 5000 || l == 7000 || l == 9000;
-                    } else if (tile.z() <= 8) {
-                        return l % 800 == 0;
-                    } else if (tile.z() == 9) {
-                        return l % 400 == 0;
-                    } else if (tile.z() == 10) {
-                        return l % 400 == 0;
-                    } else if (tile.z() == 11) {
+                    if (zoomLevel <= 8) {
+                        return l % 1000 == 0;
+                    } else if (zoomLevel == 9) {
+                        return l % 500 == 0;
+                    } else if (zoomLevel == 10) {
                         return l % 200 == 0;
-                    } else if (tile.z() == 12) {
-                        return l % 200 == 0;
-                    } else if (tile.z() == 13) {
+                    } else if (zoomLevel == 11) {
                         return l % 100 == 0;
-                    } else if (tile.z() == 14) {
+                    } else if (zoomLevel == 12) {
                         return l % 50 == 0;
+                    } else if (zoomLevel == 13) {
+                        return l % 20 == 0;
+                    } else if (zoomLevel == 14) {
+                        return l % 10 == 0;
                     } else {
                         return false;
                     }
                 })
                 .map(Object::toString)
                 .collect(Collectors.joining(","));
+        return Map.entry(zoomLevel, contourLevels);
+    }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        gdal.ContourGenerateEx(rasterBand, vectorLayer, new Vector<>(List.of("ELEV_FIELD=elevation", "FIXED_LEVELS=" + levels)));
+    private static final Map<Integer, String> CONTOUR_LEVELS_BY_ZOOM_LEVELS_IN_FEETS = IntStream.range(0, 20).mapToObj(zoomLevel -> {
+        var contourLevels = IntStream.range(1, 30000)
+                .mapToObj(i -> (double) i)
+                .filter(l -> {
+                    if (zoomLevel <= 9) {
+                        return l % 1000 == 0;
+                    } else if (zoomLevel == 10) {
+                        return l % 500 == 0;
+                    } else if (zoomLevel == 11) {
+                        return l % 200 == 0;
+                    } else if (zoomLevel == 12) {
+                        return l % 100 == 0;
+                    } else if (zoomLevel == 13) {
+                        return l % 50 == 0;
+                    } else if (zoomLevel == 14) {
+                        return l % 20 == 0;
+                    } else {
+                        return false;
+                    }
+                })
+                .map(l -> l * 0.3048)
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
+        return Map.entry(zoomLevel, contourLevels);
+    }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+    private final Map<Integer, Dataset> datasets = new HashMap<>();
+
+    public ContourTileStore() {
+    }
+
+    public Dataset initRasterDatasetAtZoomLevel(Integer zoom) {
+        var dem = DEM.replace("<TileLevel>0</TileLevel>", "<TileLevel>" + zoom + "</TileLevel>");
+        return gdal.Open(dem, gdalconstConstants.GA_ReadOnly);
+    }
+
+    @Override
+    public ByteBuffer read(TileCoord tile) throws TileStoreException {
+        // Transform the tile envelope to the raster projection
+        var tileEnvelope = tile.envelope();
+        var transformer = GeometryUtils.coordinateTransform(4326, 3857);
+        var rasterMin = transformer.transform(
+                new ProjCoordinate(tileEnvelope.getMinX(), tileEnvelope.getMinY()),
+                new ProjCoordinate());
+        var rasterMax = transformer.transform(
+                new ProjCoordinate(tileEnvelope.getMaxX(), tileEnvelope.getMaxY()),
+                new ProjCoordinate());
+        var rasterBuffer = (rasterMax.x - rasterMin.x) / 4096 * 128;
+        var rasterEnvelope = new GeometryFactory().createPolygon(new Coordinate[]{
+                new Coordinate(rasterMin.x, rasterMin.y),
+                new Coordinate(rasterMin.x, rasterMax.y),
+                new Coordinate(rasterMax.x, rasterMax.y),
+                new Coordinate(rasterMax.x, rasterMin.y),
+                new Coordinate(rasterMin.x, rasterMin.y)
+        });
+        var rasterEnvelopeWithBuffer = rasterEnvelope.buffer(rasterBuffer);
+
+        // Load the raster data for the tile into the memory
+        // The cache used by gdal is not thread safe, so we need to synchronize the access to the dataset
+        // Otherwise, some tiles would be corrupted
+        Dataset rasterDataset1;
+        synchronized (this) {
+            var dataset = datasets.computeIfAbsent(tile.z(), this::initRasterDatasetAtZoomLevel);
+            var rasterOptions1 = new WarpOptions(new Vector<>(List.of(
+                    "-of", "MEM",
+                    "-te",
+                    Double.toString(rasterEnvelopeWithBuffer.getEnvelopeInternal().getMinX()),
+                    Double.toString(rasterEnvelopeWithBuffer.getEnvelopeInternal().getMinY()),
+                    Double.toString(rasterEnvelopeWithBuffer.getEnvelopeInternal().getMaxX()),
+                    Double.toString(rasterEnvelopeWithBuffer.getEnvelopeInternal().getMaxY()),
+                    "-te_srs", "EPSG:3857")));
+            rasterDataset1 = gdal.Warp("", new Dataset[]{dataset}, rasterOptions1);
+        }
+        
+        // Reduce the resolution of the raster by a factor of 4 to remove artifacts
+        var rasterOptions2 = new WarpOptions(new Vector<>(List.of(
+                "-of", "MEM",
+                "-ts",
+                String.valueOf(rasterDataset1.getRasterXSize() / 4),
+                String.valueOf(rasterDataset1.getRasterYSize() / 4),
+                "-r", "cubicspline")));
+        var rasterDataset2 = gdal.Warp("", new Dataset[]{rasterDataset1}, rasterOptions2);
+
+        // Increase the resolution of the raster by a factor of 2 to smooth the contours
+        var rasterOptions3 = new WarpOptions(new Vector<>(List.of(
+                "-of", "MEM",
+                "-ts", String.valueOf(rasterDataset1.getRasterXSize() * 2), String.valueOf(rasterDataset1.getRasterYSize() * 2),
+                "-r", "cubicspline")));
+        var rasterDataset3 = gdal.Warp("", new Dataset[]{rasterDataset2}, rasterOptions3);
+
+        // Generate the contours in meters
+        var contourLevelsInMeters = CONTOUR_LEVELS_BY_ZOOM_LEVELS_IN_METERS.get(tile.z());
+        var featuresInMeters = generateContours(rasterDataset3, rasterEnvelope, rasterEnvelopeWithBuffer, contourLevelsInMeters);
+
+        // Generate the contours in feets
+        var contourLevelsInFeets = CONTOUR_LEVELS_BY_ZOOM_LEVELS_IN_FEETS.get(tile.z());
+        var featuresInFeets = generateContours(rasterDataset3, rasterEnvelope, rasterEnvelopeWithBuffer, contourLevelsInFeets);
+
+        // Release the resources
+        rasterDataset1.delete();
+        rasterDataset2.delete();
+        rasterDataset3.delete();
+
+        // Create the vector tile
+        return VectorTileFunctions
+                .asVectorTile(new VectorTile(List.of(
+                        new Layer("contours_m", 4096, featuresInMeters),
+                        new Layer("contours_ft", 4096, featuresInFeets))));
+    }
+
+
+    public List<Feature> generateContours(Dataset rasterDataset, Geometry rasterEnvelope, Geometry rasterEnvelopeWithBuffer, String contourLevels) {
+        // Initialize the vector dataset and layer to store the contours
+        var vectorProjection = rasterDataset.GetProjection();
+        var vectorSpatialReferenceSystem = new SpatialReference(vectorProjection);
+        var vectorMemoryDriver = ogr.GetDriverByName("Memory");
+        var vectorDataSource = vectorMemoryDriver.CreateDataSource("vector");
+        var vectorLayer = vectorDataSource.CreateLayer("vector", vectorSpatialReferenceSystem, ogr.wkbLineString, new Vector(List.of("ADVERTIZE_UTF8=YES")));
+        vectorLayer.CreateField(new FieldDefn("elevation", ogr.OFTReal));
+
+        // Get the raster band to generate the contours from
+        var rasterBand = rasterDataset.GetRasterBand(1);
+
+        // Generate the contours and store them in the vector layer
+        gdal.ContourGenerateEx(rasterBand, vectorLayer, new Vector<>(List.of("ELEV_FIELD=elevation", "FIXED_LEVELS=" + contourLevels)));
 
         // return the contours
-        var featureCount = vectorLayer.GetFeatureCount();
-        var features = LongStream.range(0, featureCount).mapToObj(featureIndex -> {
-                    var feature = vectorLayer.GetFeature(featureIndex);
-                    var id = feature.GetFID();
-                    var properties = new HashMap<String, Object>();
-                    var fieldCount = feature.GetFieldCount();
-                    for (int i = 0; i < fieldCount; i++) {
-                        var field = feature.GetFieldDefnRef(i);
-                        var name = field.GetName();
-                        var value = feature.GetFieldAsString(name);
-                        properties.put(name, value);
-                        field.delete();
-                    }
-                    var ref = feature.GetGeometryRef();
-                    var wkb = ref.ExportToWkb();
-                    var geometry = GeometryUtils.deserialize(wkb);
-                    var tileGeometry = targetEnvelope.intersection(geometry);
-                    var mvtGeometry = VectorTileFunctions
-                            .asVectorTileGeom(tileGeometry, targetEnvelope.getEnvelopeInternal(), 4096, 0, true);
+        var features = new ArrayList<Feature>();
+        for (var i = 0; i < vectorLayer.GetFeatureCount(); i++) {
+            var vectorFeature = vectorLayer.GetFeature(i);
 
-                    feature.delete();
-                    return new Feature(id, properties, mvtGeometry);
-                })
-                .filter(feature -> feature.getGeometry().getCoordinates().length >= 2)
-                .toList();
+            // Get the feature id
+            var id = vectorFeature.GetFID();
 
-        var vectorTile = VectorTileFunctions
-                .asVectorTile(new VectorTile(List.of(new Layer("contours", 4096, features))));
+            // Get the feature properties
+            var properties = new HashMap<String, Object>();
+            for (int j = 0; j < vectorFeature.GetFieldCount(); j++) {
+                var field = vectorFeature.GetFieldDefnRef(j);
+                var name = field.GetName();
+                var value = vectorFeature.GetFieldAsString(name);
 
+                // Parse the elevation
+                if (name.equals("elevation")) {
+                    var elevationInMeters = Double.parseDouble(value);
+                    var elevationInFeet = Math.round(elevationInMeters * 3.28084 * 100) / 100.0;
+                    properties.put("elevation_m", elevationInMeters);
+                    properties.put("elevation_ft", elevationInFeet);
+                }
+
+                // Release the field resources
+                field.delete();
+            }
+
+            // Get the wkb geometry
+            var vectorGeometry = vectorFeature.GetGeometryRef();
+            var wkb = vectorGeometry.ExportToWkb();
+
+            // Release the geometry and feature resources
+            vectorGeometry.delete();
+            vectorFeature.delete();
+
+            // Deserialize the wkb geometry and clip it to the raster envelope with buffer
+            var geometry = GeometryUtils.deserialize(wkb);
+            geometry = rasterEnvelopeWithBuffer.intersection(geometry);
+
+            // Create the vector tile geometry with the correct buffer
+            var mvtGeometry = VectorTileFunctions
+                    .asVectorTileGeom(geometry, rasterEnvelope.getEnvelopeInternal(), 4096, 128, true);
+
+            // The following code is used to simplify the geometry at the tile boundaries,
+            // which is necessary to prevent artifacts from appearing at the intersections
+            // of the vector tiles.
+
+            // Create the vector tile envelope to simplify the geometry at the tile boundaries
+            var mvtEnvelope = new GeometryFactory().createPolygon(new Coordinate[]{
+                    new Coordinate(0, 0),
+                    new Coordinate(0, 4096),
+                    new Coordinate(4096, 4096),
+                    new Coordinate(4096, 0),
+                    new Coordinate(0, 0)
+            });
+
+            // The tolerance to use when simplifying the geometry at the tile boundaries.
+            // This value is a good balance between preserving the accuracy of the geometry
+            // and minimizing the size of the vector tiles.
+            var tolerance = 10;
+
+            // Simplify the inside of the vector tile at the tile boundaries
+            var insideGeom = mvtGeometry.intersection(mvtEnvelope);
+            var insideSimplifier = new TopologyPreservingSimplifier(insideGeom);
+            insideSimplifier.setDistanceTolerance(tolerance);
+            insideGeom = insideSimplifier.getResultGeometry();
+
+            // Simplify the outside of the vector tile at the tile boundaries
+            var outsideGeom = mvtGeometry.difference(mvtEnvelope);
+            var outsideSimplifier = new TopologyPreservingSimplifier(outsideGeom);
+            outsideSimplifier.setDistanceTolerance(tolerance);
+            outsideGeom = outsideSimplifier.getResultGeometry();
+
+            // Merge the simplified geometries back together
+            mvtGeometry = insideGeom.union(outsideGeom);
+
+            // Add the feature to the list of features if it is valid and has more than one coordinate
+            if (mvtGeometry.isValid() && mvtGeometry.getCoordinates().length > 1) {
+                features.add(new Feature(id, properties, mvtGeometry));
+            }
+        }
+
+        // Release the resources
         vectorLayer.delete();
         rasterBand.delete();
-        rasterDataset.delete();
-        sourceBand.delete();
 
-        return vectorTile;
+        return features;
     }
 
     @Override
@@ -218,5 +337,4 @@ public class ContourTileStore implements TileStore, AutoCloseable {
         var store = new ContourTileStore();
         store.read(new TileCoord(8492, 5792, 14).parent());
     }
-
 }
