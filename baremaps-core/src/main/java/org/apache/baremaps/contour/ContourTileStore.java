@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.raster;
+package org.apache.baremaps.contour;
 
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
@@ -195,11 +195,11 @@ public class ContourTileStore implements TileStore, AutoCloseable {
 
         // Generate the contours in meters
         var contourLevelsInMeters = CONTOUR_LEVELS_BY_ZOOM_LEVELS_IN_METERS.get(tile.z());
-        var featuresInMeters = generateContours(rasterDataset3, rasterEnvelope, rasterEnvelopeWithBuffer, contourLevelsInMeters);
+        var featuresInMeters = generateContour(rasterDataset3, rasterEnvelope, rasterEnvelopeWithBuffer, contourLevelsInMeters);
 
         // Generate the contours in feets
         var contourLevelsInFeets = CONTOUR_LEVELS_BY_ZOOM_LEVELS_IN_FEETS.get(tile.z());
-        var featuresInFeets = generateContours(rasterDataset3, rasterEnvelope, rasterEnvelopeWithBuffer, contourLevelsInFeets);
+        var featuresInFeets = generateContour(rasterDataset3, rasterEnvelope, rasterEnvelopeWithBuffer, contourLevelsInFeets);
 
         // Release the resources
         rasterDataset1.delete();
@@ -209,12 +209,12 @@ public class ContourTileStore implements TileStore, AutoCloseable {
         // Create the vector tile
         return VectorTileFunctions
                 .asVectorTile(new VectorTile(List.of(
-                        new Layer("contours_m", 4096, featuresInMeters),
-                        new Layer("contours_ft", 4096, featuresInFeets))));
+                        new Layer("contour_m", 4096, featuresInMeters),
+                        new Layer("contour_ft", 4096, featuresInFeets))));
     }
 
 
-    public List<Feature> generateContours(Dataset rasterDataset, Geometry rasterEnvelope, Geometry rasterEnvelopeWithBuffer, String contourLevels) {
+    public List<Feature> generateContour(Dataset rasterDataset, Geometry rasterEnvelope, Geometry rasterEnvelopeWithBuffer, String contourLevels) {
         // Initialize the vector dataset and layer to store the contours
         var vectorProjection = rasterDataset.GetProjection();
         var vectorSpatialReferenceSystem = new SpatialReference(vectorProjection);

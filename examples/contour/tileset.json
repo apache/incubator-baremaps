@@ -11,7 +11,7 @@
   "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
   "vector_layers": [
     {
-      "id": "contours_m",
+      "id": "contour_m",
       "queries": [
         {
           "minzoom": 0,
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "id": "contours_ft",
+      "id": "contour_ft",
       "queries": [
         {
           "minzoom": 0,

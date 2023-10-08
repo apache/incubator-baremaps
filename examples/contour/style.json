@@ -17,10 +17,10 @@
       }
     },
     {
-      "id": "contours_m",
+      "id": "contour_m",
       "type": "line",
       "source": "baremaps",
-      "source-layer": "contours_m",
+      "source-layer": "contour_m",
       "layout": {
         "line-cap": "round",
         "line-join": "round"
@@ -30,10 +30,10 @@
       }
     },
     {
-      "id": "contours_m_label",
+      "id": "contour_m_label",
       "type": "symbol",
       "source": "baremaps",
-      "source-layer": "contours_m",
+      "source-layer": "contour_m",
       "layout": {
         "symbol-placement": "line",
         "text-anchor": "center",
@@ -55,10 +55,10 @@
       }
     },
     {
-      "id": "contours_ft",
+      "id": "contour_ft",
       "type": "line",
       "source": "baremaps",
-      "source-layer": "contours_ft",
+      "source-layer": "contour_ft",
       "layout": {
         "line-cap": "round",
         "line-join": "round"
@@ -68,10 +68,10 @@
       }
     },
     {
-      "id": "contours_ft_label",
+      "id": "contour_ft_label",
       "type": "symbol",
       "source": "baremaps",
-      "source-layer": "contours_ft",
+      "source-layer": "contour_ft",
       "layout": {
         "symbol-placement": "line",
         "text-anchor": "center",

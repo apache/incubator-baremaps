@@ -19,7 +19,7 @@ import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.raster.ContourTileStore;
+import org.apache.baremaps.contour.ContourTileStore;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.ServerResources;
 import org.apache.baremaps.tilestore.TileStore;
