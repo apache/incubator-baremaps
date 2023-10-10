@@ -19,7 +19,8 @@ import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.contour.ContourTileStore;
+
+import org.apache.baremaps.contour.OceanContourTileStore;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.ServerResources;
 import org.apache.baremaps.tilestore.TileStore;
@@ -56,7 +57,7 @@ public class Contour implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     var objectMapper = ObjectMapperUtils.objectMapper();
-    var tileStore = new ContourTileStore();
+    var tileStore = new OceanContourTileStore();
 
     // Configure the application
     var application =
