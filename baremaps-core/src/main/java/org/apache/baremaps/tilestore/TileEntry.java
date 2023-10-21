@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.stream;
+package org.apache.baremaps.tilestore;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.nio.ByteBuffer;
 
-import java.util.List;
-import java.util.stream.IntStream;
-import org.junit.jupiter.api.Test;
+public class TileEntry {
 
-class StreamUtilsTest {
+  private final TileCoord tileCoord;
+  private final ByteBuffer byteBuffer;
 
-  @Test
-  void partition() {
-    List<Integer> list = IntStream.range(0, 100).boxed().toList();
-    List<List<Integer>> partitions = StreamUtils.partition(list.stream(), 10).toList();
-    assertEquals(partitions.size(), 10);
+  public TileEntry(TileCoord tileCoord, ByteBuffer byteBuffer) {
+    this.tileCoord = tileCoord;
+    this.byteBuffer = byteBuffer;
+  }
+
+  public TileCoord getTileCoord() {
+    return tileCoord;
+  }
+
+  public ByteBuffer getByteBuffer() {
+    return byteBuffer;
   }
 }

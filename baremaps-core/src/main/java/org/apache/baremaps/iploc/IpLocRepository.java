@@ -217,7 +217,6 @@ public final class IpLocRepository {
    */
   public void save(Stream<IpLocObject> ipLocObjects) {
     StreamUtils.partition(ipLocObjects, 100)
-        .map(Stream::toList)
         .forEach(this::save);
   }
 }

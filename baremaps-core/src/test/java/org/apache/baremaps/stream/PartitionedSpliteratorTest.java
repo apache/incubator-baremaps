@@ -22,10 +22,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class PartitionedSpliteratorTest {
@@ -67,11 +67,11 @@ class PartitionedSpliteratorTest {
     PartitionedSpliterator<Integer> stream =
         new PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 250);
 
-    Spliterator<Stream<Integer>> a = stream.trySplit();
-    Spliterator<Stream<Integer>> b = stream.trySplit();
-    Spliterator<Stream<Integer>> c = stream.trySplit();
-    Spliterator<Stream<Integer>> d = stream.trySplit();
-    Spliterator<Stream<Integer>> e = stream.trySplit();
+    Spliterator<List<Integer>> a = stream.trySplit();
+    Spliterator<List<Integer>> b = stream.trySplit();
+    Spliterator<List<Integer>> c = stream.trySplit();
+    Spliterator<List<Integer>> d = stream.trySplit();
+    Spliterator<List<Integer>> e = stream.trySplit();
     AtomicInteger i = new AtomicInteger();
     a.forEachRemaining(s -> s.forEach(item -> {
       assertEquals(i.get(), (long) item); // cast necessary otherwise call is ambiguous
@@ -100,10 +100,10 @@ class PartitionedSpliteratorTest {
     PartitionedSpliterator<Integer> stream =
         new PartitionedSpliterator<>(IntStream.range(0, 600).spliterator(), 250);
 
-    Spliterator<Stream<Integer>> a = stream.trySplit();
-    Spliterator<Stream<Integer>> b = stream.trySplit();
-    Spliterator<Stream<Integer>> c = stream.trySplit();
-    Spliterator<Stream<Integer>> d = stream.trySplit();
+    Spliterator<List<Integer>> a = stream.trySplit();
+    Spliterator<List<Integer>> b = stream.trySplit();
+    Spliterator<List<Integer>> c = stream.trySplit();
+    Spliterator<List<Integer>> d = stream.trySplit();
     AtomicInteger i = new AtomicInteger();
     a.forEachRemaining(s -> s.forEach(item -> {
       assertEquals(i.get(), (long) item); // cast necessary otherwise call is ambiguous

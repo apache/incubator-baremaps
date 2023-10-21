@@ -18,7 +18,6 @@
 package org.apache.baremaps.tilestore.mbtiles;
 
 
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
@@ -27,9 +26,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.tilestore.TileEntry;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
@@ -40,7 +41,7 @@ import org.apache.baremaps.tilestore.TileStoreException;
  */
 public class MBTilesStore implements TileStore {
 
-  private static final String CREATE_TABLE_METADATA =
+  public static final String CREATE_TABLE_METADATA =
       "CREATE TABLE IF NOT EXISTS metadata (name TEXT, value TEXT, PRIMARY KEY (name))";
 
   private static final String CREATE_TABLE_TILES =
@@ -75,7 +76,9 @@ public class MBTilesStore implements TileStore {
     this.dataSource = dataSource;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
@@ -95,7 +98,9 @@ public class MBTilesStore implements TileStore {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
@@ -104,13 +109,39 @@ public class MBTilesStore implements TileStore {
       statement.setInt(2, tileCoord.x());
       statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
       statement.setBytes(4, blob.array());
-      statement.executeUpdate();
+      statement.execute();
     } catch (SQLException e) {
       throw new TileStoreException(e);
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void write(List<TileEntry> tileEntries) throws TileStoreException {
+    try (Connection connection = dataSource.getConnection()) {
+      // connection.setAutoCommit(false);
+      try (PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
+        for (TileEntry tileEntry : tileEntries) {
+          TileCoord tileCoord = tileEntry.getTileCoord();
+          ByteBuffer byteBuffer = tileEntry.getByteBuffer();
+          statement.setInt(1, tileCoord.z());
+          statement.setInt(2, tileCoord.x());
+          statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
+          statement.setBytes(4, byteBuffer.array());
+          statement.execute();
+        }
+      }
+      // connection.commit();
+    } catch (SQLException e) {
+      throw new TileStoreException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();

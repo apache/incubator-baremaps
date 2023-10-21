@@ -19,46 +19,97 @@ package org.apache.baremaps.tilestore.postgres;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.apache.baremaps.vectortile.tileset.TilesetLayer;
+import org.apache.baremaps.vectortile.tileset.TilesetQuery;
 import org.junit.jupiter.api.Test;
 
 class PostgresTileStoreTest {
 
   @Test
   void sameQueries() {
-    List<PostgresQuery> queries =
-        Arrays.asList(new PostgresQuery("a", 0, 20, "SELECT id, tags, geom FROM table"),
-            new PostgresQuery("b", 0, 20, "SELECT id, tags, geom FROM table"));
-    PostgresTileStore tileStore = new PostgresTileStore(null, queries);
+    Tileset tileset = new Tileset();
+    tileset.setMinzoom(0);
+    tileset.setMaxzoom(20);
+    tileset.setVectorLayers(List.of(
+        new TilesetLayer("a", Map.of(), "", 0, 20,
+            List.of(new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table"))),
+        new TilesetLayer("b", Map.of(), "", 0, 20,
+            List.of(new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table")))));
+    PostgresTileStore tileStore = new PostgresTileStore(null, tileset);
     String query = tileStore.withQuery(new TileCoord(0, 0, 10));
     assertEquals(
-        "with ha14cb45b as (select * from table where ((true) OR (true)) and st_intersects(geom, st_tileenvelope(10, 0, 0))) select st_asmvt(target, 'a', 4096, 'geom', 'id') from (select id as id, (tags ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b ) as target union all select st_asmvt(target, 'b', 4096, 'geom', 'id') from (select id as id, (tags ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b ) as target",
+        """
+            SELECT ((WITH mvtgeom AS (
+            SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(10, 0, 0)) AS geom, t.tags, t.id
+            FROM (SELECT id, tags, geom FROM table) AS t
+            WHERE t.geom && ST_TileEnvelope(10, 0, 0, margin => (64.0/4096))
+            ) SELECT ST_AsMVT(mvtgeom.*, 'a') FROM mvtgeom
+            ) || (WITH mvtgeom AS (
+            SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(10, 0, 0)) AS geom, t.tags, t.id
+            FROM (SELECT id, tags, geom FROM table) AS t
+            WHERE t.geom && ST_TileEnvelope(10, 0, 0, margin => (64.0/4096))
+            ) SELECT ST_AsMVT(mvtgeom.*, 'b') FROM mvtgeom
+            )) mvtTile""",
         query);
   }
 
   @Test
   void differentConditions1() {
-    List<PostgresQuery> queries =
-        Arrays.asList(new PostgresQuery("a", 0, 20, "SELECT id, tags, geom FROM table"),
-            new PostgresQuery("b", 0, 20, "SELECT id, tags, geom FROM table WHERE condition = 1"));
-    PostgresTileStore tileStore = new PostgresTileStore(null, queries);
+    Tileset tileset = new Tileset();
+    tileset.setMinzoom(0);
+    tileset.setMaxzoom(20);
+    tileset.setVectorLayers(List.of(
+        new TilesetLayer("a", Map.of(), "", 0, 20,
+            List.of(new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table"))),
+        new TilesetLayer("b", Map.of(), "", 0, 20, List
+            .of(new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table WHERE condition = 1")))));
+    PostgresTileStore tileStore = new PostgresTileStore(null, tileset);
     String query = tileStore.withQuery(new TileCoord(0, 0, 10));
-    assertEquals(
-        "with ha14cb45b as (select * from table where ((true) OR (condition = 1)) and st_intersects(geom, st_tileenvelope(10, 0, 0))) select st_asmvt(target, 'a', 4096, 'geom', 'id') from (select id as id, (tags ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b ) as target union all select st_asmvt(target, 'b', 4096, 'geom', 'id') from (select id as id, (tags ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b where condition = 1) as target",
+    assertEquals("""
+        SELECT ((WITH mvtgeom AS (
+        SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(10, 0, 0)) AS geom, t.tags, t.id
+        FROM (SELECT id, tags, geom FROM table) AS t
+        WHERE t.geom && ST_TileEnvelope(10, 0, 0, margin => (64.0/4096))
+        ) SELECT ST_AsMVT(mvtgeom.*, 'a') FROM mvtgeom
+        ) || (WITH mvtgeom AS (
+        SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(10, 0, 0)) AS geom, t.tags, t.id
+        FROM (SELECT id, tags, geom FROM table WHERE condition = 1) AS t
+        WHERE t.geom && ST_TileEnvelope(10, 0, 0, margin => (64.0/4096))
+        ) SELECT ST_AsMVT(mvtgeom.*, 'b') FROM mvtgeom
+        )) mvtTile""",
         query);
   }
 
   @Test
   void differentConditions2() {
-    List<PostgresQuery> queries = Arrays.asList(
-        new PostgresQuery("a", 0, 20, "SELECT id, tags, geom FROM table WHERE condition = 1"),
-        new PostgresQuery("b", 0, 20, "SELECT id, tags, geom FROM table WHERE condition = 2"));
-    PostgresTileStore tileStore = new PostgresTileStore(null, queries);
+    Tileset tileset = new Tileset();
+    tileset.setMinzoom(0);
+    tileset.setMaxzoom(20);
+    tileset.setVectorLayers(List.of(
+        new TilesetLayer("a", Map.of(), "", 0, 20,
+            List.of(
+                new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table WHERE condition = 1"))),
+        new TilesetLayer("b", Map.of(), "", 0, 20, List
+            .of(new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table WHERE condition = 2")))));
+    PostgresTileStore tileStore = new PostgresTileStore(null, tileset);
     String query = tileStore.withQuery(new TileCoord(0, 0, 10));
     assertEquals(
-        "with ha14cb45b as (select * from table where ((condition = 1) OR (condition = 2)) and st_intersects(geom, st_tileenvelope(10, 0, 0))) select st_asmvt(target, 'a', 4096, 'geom', 'id') from (select id as id, (tags ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b where condition = 1) as target union all select st_asmvt(target, 'b', 4096, 'geom', 'id') from (select id as id, (tags ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b where condition = 2) as target",
+        """
+            SELECT ((WITH mvtgeom AS (
+            SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(10, 0, 0)) AS geom, t.tags, t.id
+            FROM (SELECT id, tags, geom FROM table WHERE condition = 1) AS t
+            WHERE t.geom && ST_TileEnvelope(10, 0, 0, margin => (64.0/4096))
+            ) SELECT ST_AsMVT(mvtgeom.*, 'a') FROM mvtgeom
+            ) || (WITH mvtgeom AS (
+            SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(10, 0, 0)) AS geom, t.tags, t.id
+            FROM (SELECT id, tags, geom FROM table WHERE condition = 2) AS t
+            WHERE t.geom && ST_TileEnvelope(10, 0, 0, margin => (64.0/4096))
+            ) SELECT ST_AsMVT(mvtgeom.*, 'b') FROM mvtgeom
+            )) mvtTile""",
         query);
   }
 }

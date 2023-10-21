@@ -18,33 +18,23 @@
 package org.apache.baremaps.tilestore.postgres;
 
 
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPOutputStream;
-import javax.sql.DataSource;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.Parenthesis;
-import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
-import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.select.Join;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
-import org.apache.baremaps.tilestore.VariableUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.apache.baremaps.vectortile.tileset.TilesetQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * A read-only {@code TileStore} implementation that uses the PostgreSQL to generate vector tiles.
@@ -55,209 +45,126 @@ public class PostgresTileStore implements TileStore {
 
   private static final Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
 
-  private static final String TILE_ENVELOPE = "st_tileenvelope(%1$s, %2$s, %3$s)";
-
-  private static final String WITH_QUERY = "with %1$s %2$s";
-
-  private static final String CTE_QUERY =
-      "%1$s as (select * from %3$s%4$s where %5$s st_intersects(%2$s, $envelope))";
-
-  private static final String CTE_WHERE = "(%s) and";
-
-  private static final String STATEMENT_QUERY =
-      "select st_asmvt(target, '%1$s', 4096, 'geom', 'id') from (%2$s) as target";
-
-  private static final String STATEMENT_LAYER_QUERY = "select " + "%1$s as id, "
-      + "(%2$s ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(%3$s), 'ST_', '')))) as tags, "
-      + "st_asmvtgeom(%3$s, $envelope, 4096, 256, true) as geom " + "from %4$s %5$s";
-
-  private static final String STATEMENT_WHERE = "where %s";
-
-  private static final String UNION = " union all ";
-
-  private static final String COMMA = ", ";
-
-  private static final String SPACE = " ";
-
-  private static final String EMPTY = "";
-
   public static final String CONTENT_ENCODING = "gzip";
 
   public static final String CONTENT_TYPE = "application/vnd.mapbox-vector-tile";
 
   private final DataSource datasource;
 
-  private final List<PostgresQuery> queries;
-
-  public PostgresTileStore(DataSource datasource, List<PostgresQuery> queries) {
-    this.datasource = datasource;
-    this.queries = queries;
-  }
+  private final Tileset tileset;
 
   public PostgresTileStore(DataSource datasource, Tileset tileset) {
     this.datasource = datasource;
-    this.queries = tileset.getVectorLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream().map(query -> new PostgresQuery(layer.getId(),
-            query.getMinzoom(), query.getMaxzoom(), query.getSql())))
-        .toList();
+    this.tileset = tileset;
   }
 
-  /** {@inheritDoc} */
+  protected boolean zoomPredicate(TilesetQuery query, int zoom) {
+    return query.getMinzoom() <= zoom && zoom < query.getMaxzoom();
+  }
+
+  public String withQuery(TileCoord tileCoord) {
+    var layers = tileset.getVectorLayers().stream()
+        .map(layer -> Map.entry(layer.getId(), layer.getQueries().stream()
+            .filter(
+                query -> query.getMinzoom() <= tileCoord.z() && tileCoord.z() < query.getMaxzoom())
+            .toList()))
+        .filter(entry -> entry.getValue().size() > 0)
+        .toList();
+
+    var queryBuilder = new StringBuilder();
+    queryBuilder.append("SELECT (");
+
+    for (int i = 0; i < layers.size(); i++) {
+      var layer = layers.get(i);
+      var layerId = layer.getKey();
+      var layerQueries = layer.getValue().stream()
+          .filter(layerQuery -> zoomPredicate(layerQuery, tileCoord.z())).toList();
+
+      if (layerQueries.size() > 0) {
+        if (i > 0) {
+          queryBuilder.append(" || ");
+        }
+
+        var sqlBuilder = new StringBuilder();
+        sqlBuilder.append("(WITH mvtgeom AS (\n");
+
+        for (int j = 0; j < layerQueries.size(); j++) {
+          if (j != 0) {
+            sqlBuilder.append("\n UNION \n");
+          }
+          var layerQuery = layerQueries.get(j).getSql().replace(";", "");
+          sqlBuilder.append(String.format("""
+              SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(%d, %d, %d)) AS geom, t.tags, t.id
+              FROM (%s) AS t
+              WHERE t.geom && ST_TileEnvelope(%d, %d, %d, margin => (64.0/4096))
+              """,
+              tileCoord.z(), tileCoord.x(), tileCoord.y(),
+              layerQuery,
+              tileCoord.z(), tileCoord.x(), tileCoord.y()));
+
+        }
+
+        queryBuilder.append(sqlBuilder)
+            .append(String.format(") SELECT ST_AsMVT(mvtgeom.*, '%s') FROM mvtgeom\n)", layerId));
+      }
+    }
+    queryBuilder.append(") mvtTile");
+    return queryBuilder.toString().replace("$zoom", String.valueOf(tileCoord.z()));
+  }
+
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
-    String sql = withQuery(tileCoord);
+    String query = withQuery(tileCoord);
+
+    logger.debug("Executing query: {}", query);
+
+    long start = System.currentTimeMillis();
+
     try (Connection connection = datasource.getConnection();
-        Statement statement = connection.createStatement();
-        ByteArrayOutputStream data = new ByteArrayOutputStream()) {
+         Statement statement = connection.createStatement();
+         ResultSet resultSet = statement.executeQuery(query)) {
 
       int length = 0;
-      if (queries.stream().anyMatch(query -> zoomPredicate(query, tileCoord.z()))) {
-        logger.debug("Executing query: {}", sql);
-        long start = System.currentTimeMillis();
-        try (GZIPOutputStream gzip = new GZIPOutputStream(data);
-            ResultSet resultSet = statement.executeQuery(sql)) {
-          while (resultSet.next()) {
-            byte[] bytes = resultSet.getBytes(1);
-            length += bytes.length;
-            gzip.write(bytes);
-          }
+      try (ByteArrayOutputStream data = new ByteArrayOutputStream();
+              OutputStream gzip = new GZIPOutputStream(data)) {
+
+        while (resultSet.next()) {
+          byte[] bytes = resultSet.getBytes(1);
+          length += bytes.length;
+          gzip.write(bytes);
         }
+
         long stop = System.currentTimeMillis();
         long duration = stop - start;
 
         // Log slow queries (> 10s)
         if (duration > 10_000) {
-          logger.warn("Executed query for tile {} in {} ms: {}", tileCoord, duration, sql);
+          logger.warn("Executed query for tile {} in {} ms: {}", tileCoord, duration, query);
+        }
+
+        if (length > 0) {
+          return ByteBuffer.wrap(data.toByteArray());
+        } else {
+          return ByteBuffer.allocate(0);
         }
       }
-
-      if (length > 0) {
-        return ByteBuffer.wrap(data.toByteArray());
-      } else {
-        return null;
-      }
-    } catch (SQLException | IOException e) {
+    } catch (Exception e) {
+      logger.error(e.getMessage());
       throw new TileStoreException(e);
     }
   }
 
   /**
-   * Returns a WITH query for the provided tile.
-   *
-   * @param tileCoord the tile
-   * @return the WITH query
+   * This operation is not supported.
    */
-  protected String withQuery(TileCoord tileCoord) {
-    int zoom = tileCoord.z();
-    String sourceQueries = ctes(queries, zoom);
-    String targetQueries = statements(queries, zoom);
-    String withQuery = String.format(WITH_QUERY, sourceQueries, targetQueries);
-    Map<String, String> variables =
-        Map.of("envelope", tileEnvelope(tileCoord), "zoom", String.valueOf(zoom));
-    return VariableUtils.interpolate(variables, withQuery);
-  }
-
-  /**
-   * Returns the common table expressions for a list of input queries at a specified zoom level.
-   *
-   * @param queries the queries
-   * @param zoom the zoom level
-   * @return the common table expressions
-   */
-  protected String ctes(List<PostgresQuery> queries, int zoom) {
-    return queries.stream().filter(query -> zoomPredicate(query, zoom))
-        .collect(Collectors.groupingBy(this::commonTableExpression, LinkedHashMap::new,
-            Collectors.toList()))
-        .entrySet().stream().map(entry -> cte(entry.getKey(), entry.getValue())).distinct()
-        .collect(Collectors.joining(COMMA));
-  }
-
-  /**
-   * Returns the common table expression for a group of queries.
-   *
-   * @param group the common table expression
-   * @param queries the input queries associated with the provided group
-   * @return the common table expression
-   */
-  protected String cte(PostgresGroup group, List<PostgresQuery> queries) {
-    String alias = group.getAlias();
-    String geom = group.getSelectItems().get(2).toString();
-    String from = group.getFromItem().toString();
-    String joins = Optional.ofNullable(group.getJoins()).stream().flatMap(List::stream)
-        .map(Join::toString).collect(Collectors.joining(SPACE));
-    String where = queries.stream().map(query -> query.getAst().getWhere())
-        .map(Optional::ofNullable).map(o -> o.orElse(new Column("true"))).map(Parenthesis::new)
-        .map(Expression.class::cast).reduce(OrExpression::new)
-        .map(expression -> String.format(CTE_WHERE, expression)).orElse(EMPTY);
-    return String.format(CTE_QUERY, alias, geom, from, joins, where);
-  }
-
-  /**
-   * Returns the statements for a list of input queries at a specified zoom level.
-   *
-   * @param queries the queries
-   * @param zoom the zoom level
-   * @return the statements
-   */
-  protected String statements(List<PostgresQuery> queries, int zoom) {
-    return queries.stream().filter(query -> zoomPredicate(query, zoom))
-        .collect(
-            Collectors.groupingBy(PostgresQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
-        .entrySet().stream().map(entry -> layerStatements(entry.getValue(), entry.getKey()))
-        .collect(Collectors.joining(UNION));
-  }
-
-  /**
-   * Returns the statements for a list of input queries corresponding to a layer.
-   *
-   * @param queries the queries
-   * @param layer the layer name
-   * @return the statements
-   */
-  protected String layerStatements(List<PostgresQuery> queries, String layer) {
-    return String.format(STATEMENT_QUERY, layer, queries.stream()
-        .map(queryValue -> layerStatement(queryValue)).collect(Collectors.joining(UNION)));
-  }
-
-  /**
-   * Returns the statement for a query in a layer.
-   *
-   * @param query the query
-   * @return the statement
-   */
-  protected String layerStatement(PostgresQuery query) {
-    String alias = commonTableExpression(query).getAlias();
-    var ast = query.getAst();
-    String id = ast.getSelectItems().get(0).toString();
-    String tags = ast.getSelectItems().get(1).toString();
-    String geom = ast.getSelectItems().get(2).toString();
-    String where = Optional.ofNullable(query.getAst().getWhere())
-        .map(expression -> String.format(STATEMENT_WHERE, expression)).orElse(EMPTY);
-    return String.format(STATEMENT_LAYER_QUERY, id, tags, geom, alias, where);
-  }
-
-  protected boolean zoomPredicate(PostgresQuery query, int zoom) {
-    return query.getMinzoom() <= zoom && zoom < query.getMaxzoom();
-  }
-
-  protected PostgresGroup commonTableExpression(PostgresQuery query) {
-    return new PostgresGroup(
-        query.getAst().getSelectItems(),
-        query.getAst().getFromItem(),
-        query.getAst().getJoins());
-  }
-
-  protected String tileEnvelope(TileCoord tileCoord) {
-    return String.format(TILE_ENVELOPE, tileCoord.z(), tileCoord.x(), tileCoord.y());
-  }
-
-  /** This operation is not supported. */
   @Override
   public void write(TileCoord tileCoord, ByteBuffer blob) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 
-  /** This operation is not supported. */
+  /**
+   * This operation is not supported.
+   */
   @Override
   public void delete(TileCoord tileCoord) {
     throw new UnsupportedOperationException("The postgis tile store is read only");

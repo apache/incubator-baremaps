@@ -24,8 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.config.ConfigReader;
@@ -75,12 +74,31 @@ public record ExportVectorTiles(
         : new Envelope(-180, 180, -85.0511, 85.0511);
 
     var count = TileCoord.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
+    var start = System.currentTimeMillis();
 
-    var stream =
-        StreamUtils.stream(TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom()))
-            .peek(new ProgressLogger<>(count, 5000));
 
-    StreamUtils.batch(stream).forEach(new TileChannel(sourceTileStore, targetTileStore));
+    var tileCoordIterator =
+        TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
+    var tileCoordStream =
+        StreamUtils.stream(tileCoordIterator).peek(new ProgressLogger<>(count, 5000));
+    var bufferedTileEntryStream = StreamUtils.bufferInCompletionOrder(tileCoordStream, tile -> {
+      try {
+        return new TileEntry(tile, sourceTileStore.read(tile));
+      } catch (TileStoreException e) {
+        throw new RuntimeException(e);
+      }
+    }, 1000);
+    var partitionedTileEntryStream = StreamUtils.partition(bufferedTileEntryStream, 1000);
+    partitionedTileEntryStream.forEach(batch -> {
+      try {
+        targetTileStore.write(batch);
+      } catch (TileStoreException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    var stop = System.currentTimeMillis();
+    logger.info("Exported {} tiles in {}s", count, (stop - start) / 1000);
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
