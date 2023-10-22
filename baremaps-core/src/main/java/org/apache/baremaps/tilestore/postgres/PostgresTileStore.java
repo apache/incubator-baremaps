@@ -18,15 +18,6 @@
 package org.apache.baremaps.tilestore.postgres;
 
 
-import org.apache.baremaps.tilestore.TileCoord;
-import org.apache.baremaps.tilestore.TileStore;
-import org.apache.baremaps.tilestore.TileStoreException;
-import org.apache.baremaps.vectortile.tileset.Tileset;
-import org.apache.baremaps.vectortile.tileset.TilesetQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -35,6 +26,14 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
+import javax.sql.DataSource;
+import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.TileStoreException;
+import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.apache.baremaps.vectortile.tileset.TilesetQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A read-only {@code TileStore} implementation that uses the PostgreSQL to generate vector tiles.
@@ -90,7 +89,7 @@ public class PostgresTileStore implements TileStore {
 
         for (int j = 0; j < layerQueries.size(); j++) {
           if (j != 0) {
-            sqlBuilder.append("\n UNION \n");
+            sqlBuilder.append("UNION\n");
           }
           var layerQuery = layerQueries.get(j).getSql().replace(";", "");
           sqlBuilder.append(String.format("""
@@ -121,12 +120,12 @@ public class PostgresTileStore implements TileStore {
     long start = System.currentTimeMillis();
 
     try (Connection connection = datasource.getConnection();
-         Statement statement = connection.createStatement();
-         ResultSet resultSet = statement.executeQuery(query)) {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query)) {
 
       int length = 0;
       try (ByteArrayOutputStream data = new ByteArrayOutputStream();
-              OutputStream gzip = new GZIPOutputStream(data)) {
+          OutputStream gzip = new GZIPOutputStream(data)) {
 
         while (resultSet.next()) {
           byte[] bytes = resultSet.getBytes(1);

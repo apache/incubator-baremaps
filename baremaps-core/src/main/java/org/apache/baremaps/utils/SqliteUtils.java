@@ -20,6 +20,8 @@ package org.apache.baremaps.utils;
 
 
 import com.google.common.io.Resources;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -29,9 +31,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConfig.JournalMode;
 import org.sqlite.SQLiteConfig.LockingMode;
@@ -64,11 +63,11 @@ public final class SqliteUtils {
     sqliteDataSource.setConfig(sqliteConfig);
     sqliteDataSource.setUrl("jdbc:sqlite:" + path.toAbsolutePath());
 
-     var hikariConfig = new HikariConfig();
-     hikariConfig.setDataSource(sqliteDataSource);
-     hikariConfig.setMaximumPoolSize(readOnly ? Runtime.getRuntime().availableProcessors() : 1);
+    var hikariConfig = new HikariConfig();
+    hikariConfig.setDataSource(sqliteDataSource);
+    hikariConfig.setMaximumPoolSize(readOnly ? Runtime.getRuntime().availableProcessors() : 1);
 
-     return new HikariDataSource(hikariConfig);
+    return new HikariDataSource(hikariConfig);
   }
 
   /**

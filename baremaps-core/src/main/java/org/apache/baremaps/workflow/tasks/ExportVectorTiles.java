@@ -76,7 +76,6 @@ public record ExportVectorTiles(
     var count = TileCoord.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
     var start = System.currentTimeMillis();
 
-
     var tileCoordIterator =
         TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
     var tileCoordStream =
