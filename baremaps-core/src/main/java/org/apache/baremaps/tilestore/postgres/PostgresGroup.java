@@ -33,7 +33,7 @@ import net.sf.jsqlparser.statement.select.SelectItem;
  */
 class PostgresGroup {
 
-  private final List<SelectItem> selectItems;
+  private final List<SelectItem<?>> selectItems;
   private final FromItem fromItem;
   private final List<Join> joins;
 
@@ -45,7 +45,7 @@ class PostgresGroup {
    * @param fromItem the from clause
    * @param joins the join clauses
    */
-  public PostgresGroup(List<SelectItem> selectItems, FromItem fromItem, List<Join> joins) {
+  public PostgresGroup(List<SelectItem<?>> selectItems, FromItem fromItem, List<Join> joins) {
     this.selectItems = selectItems;
     this.fromItem = fromItem;
     this.joins = joins;
@@ -56,7 +56,7 @@ class PostgresGroup {
    *
    * @return the selected columns
    */
-  public List<SelectItem> getSelectItems() {
+  public List<SelectItem<?>> getSelectItems() {
     return selectItems;
   }
 

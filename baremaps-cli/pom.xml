@@ -151,6 +151,7 @@ limitations under the License.
             <configuration>
               <finalName>apache-${project.parent.artifactId}-${project.parent.version}-incubating-src</finalName>
               <appendAssemblyId>false</appendAssemblyId>
+              <tarLongFileMode>posix</tarLongFileMode>
               <descriptors>
                 <descriptor>src/assembly/src.xml</descriptor>
               </descriptors>
@@ -165,6 +166,7 @@ limitations under the License.
             <configuration>
               <finalName>apache-${project.parent.artifactId}-${project.parent.version}-incubating-bin</finalName>
               <appendAssemblyId>false</appendAssemblyId>
+              <tarLongFileMode>posix</tarLongFileMode>
               <descriptors>
                 <descriptor>src/assembly/bin.xml</descriptor>
               </descriptors>
