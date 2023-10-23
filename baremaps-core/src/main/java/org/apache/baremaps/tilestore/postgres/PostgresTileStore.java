@@ -44,10 +44,6 @@ public class PostgresTileStore implements TileStore {
 
   private static final Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
 
-  public static final String CONTENT_ENCODING = "gzip";
-
-  public static final String CONTENT_TYPE = "application/vnd.mapbox-vector-tile";
-
   private final DataSource datasource;
 
   private final Tileset tileset;
@@ -100,7 +96,6 @@ public class PostgresTileStore implements TileStore {
               tileCoord.z(), tileCoord.x(), tileCoord.y(),
               layerQuery,
               tileCoord.z(), tileCoord.x(), tileCoord.y()));
-
         }
 
         queryBuilder.append(sqlBuilder)
@@ -121,31 +116,31 @@ public class PostgresTileStore implements TileStore {
 
     try (Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query)) {
+        ResultSet resultSet = statement.executeQuery(query);
+        ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
       int length = 0;
-      try (ByteArrayOutputStream data = new ByteArrayOutputStream();
-          OutputStream gzip = new GZIPOutputStream(data)) {
 
+      try (OutputStream gzip = new GZIPOutputStream(data)) {
         while (resultSet.next()) {
           byte[] bytes = resultSet.getBytes(1);
           length += bytes.length;
           gzip.write(bytes);
         }
+      }
 
-        long stop = System.currentTimeMillis();
-        long duration = stop - start;
+      long stop = System.currentTimeMillis();
+      long duration = stop - start;
 
-        // Log slow queries (> 10s)
-        if (duration > 10_000) {
-          logger.warn("Executed query for tile {} in {} ms: {}", tileCoord, duration, query);
-        }
+      // Log slow queries (> 10s)
+      if (duration > 10_000) {
+        logger.warn("Executed query for tile {} in {} ms: {}", tileCoord, duration, query);
+      }
 
-        if (length > 0) {
-          return ByteBuffer.wrap(data.toByteArray());
-        } else {
-          return ByteBuffer.allocate(0);
-        }
+      if (length > 0) {
+        return ByteBuffer.wrap(data.toByteArray());
+      } else {
+        return ByteBuffer.allocate(0);
       }
     } catch (Exception e) {
       logger.error(e.getMessage());
