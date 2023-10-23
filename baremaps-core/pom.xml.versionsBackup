@@ -55,10 +55,6 @@ limitations under the License.
       <artifactId>caffeine</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.jsqlparser</groupId>
-      <artifactId>jsqlparser</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
@@ -138,6 +134,7 @@ limitations under the License.
     <dependency>
       <groupId>org.wololo</groupId>
       <artifactId>flatgeobuf</artifactId>
+      <version>3.24.0</version>
     </dependency>
     <dependency>
       <groupId>org.xerial</groupId>
