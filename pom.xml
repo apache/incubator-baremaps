@@ -82,55 +82,55 @@ limitations under the License.
     <sonar.projectKey>apache_baremaps</sonar.projectKey>
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.annotation-api>1.3.2</version.lib.annotation-api>
-    <version.lib.awaitability>3.0.0</version.lib.awaitability>
-    <version.lib.awssdk>2.17.284</version.lib.awssdk>
-    <version.lib.caffeine>3.1.1</version.lib.caffeine>
-    <version.lib.calcite>1.34.0</version.lib.calcite>
-    <version.lib.commons-compress>1.21</version.lib.commons-compress>
-    <version.lib.fastutil>8.5.9</version.lib.fastutil>
-    <version.lib.flatgeobuf>3.24.0</version.lib.flatgeobuf>
-    <version.lib.geopackage>6.5.0</version.lib.geopackage>
-    <version.lib.graalvm>22.2.0</version.lib.graalvm>
-    <version.lib.guava>31.1-jre</version.lib.guava>
+    <version.lib.awaitability>4.2.0</version.lib.awaitability>
+    <version.lib.awssdk>2.21.5</version.lib.awssdk>
+    <version.lib.caffeine>3.1.8</version.lib.caffeine>
+    <version.lib.calcite>1.35.0</version.lib.calcite>
+    <version.lib.commons-compress>1.24.0</version.lib.commons-compress>
+    <version.lib.fastutil>8.5.12</version.lib.fastutil>
+    <version.lib.flatgeobuf>3.26.1</version.lib.flatgeobuf>
+    <version.lib.geopackage>6.6.3</version.lib.geopackage>
+    <version.lib.graalvm>23.0.2</version.lib.graalvm>
+    <version.lib.guava>32.1.3-jre</version.lib.guava>
     <version.lib.hikari>5.0.1</version.lib.hikari>
-    <version.lib.ipresource>1.49</version.lib.ipresource>
+    <version.lib.ipresource>1.52</version.lib.ipresource>
     <version.lib.jackson>2.13.0</version.lib.jackson>
     <version.lib.jakarta>2.1.6</version.lib.jakarta>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
-    <version.lib.jersey>2.35</version.lib.jersey>
+    <version.lib.jersey>2.37</version.lib.jersey>
     <version.lib.jmh>1.35</version.lib.jmh>
-    <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
+    <version.lib.jsqlparser>4.7</version.lib.jsqlparser>
     <version.lib.jts>1.19.0</version.lib.jts>
-    <version.lib.junit>5.7.1</version.lib.junit>
-    <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
-    <version.lib.log4j>2.20.0</version.lib.log4j>
-    <version.lib.pgbulkinsert>8.1.0</version.lib.pgbulkinsert>
-    <version.lib.picocli>4.6.3</version.lib.picocli>
-    <version.lib.postgresql>42.5.0</version.lib.postgresql>
-    <version.lib.proj4j>1.2.3</version.lib.proj4j>
+    <version.lib.junit>5.10.0</version.lib.junit>
+    <version.lib.junit-vintage>5.10.0</version.lib.junit-vintage>
+    <version.lib.log4j>3.0.0-alpha1</version.lib.log4j>
+    <version.lib.pgbulkinsert>8.1.2</version.lib.pgbulkinsert>
+    <version.lib.picocli>4.7.5</version.lib.picocli>
+    <version.lib.postgresql>42.6.0</version.lib.postgresql>
+    <version.lib.proj4j>1.3.0</version.lib.proj4j>
     <version.lib.protobuf>3.21.6</version.lib.protobuf>
-    <version.lib.roaringbitmap>0.9.38</version.lib.roaringbitmap>
-    <version.lib.servicetalk>0.42.28</version.lib.servicetalk>
+    <version.lib.roaringbitmap>1.0.0</version.lib.roaringbitmap>
+    <version.lib.servicetalk>0.42.38</version.lib.servicetalk>
     <version.lib.servlet>3.1.0</version.lib.servlet>
-    <version.lib.slf4j>2.0.7</version.lib.slf4j>
-    <version.lib.sqlite>3.39.3.0</version.lib.sqlite>
-    <version.lib.swagger-parser>2.1.13</version.lib.swagger-parser>
-    <version.lib.testcontainers>1.17.3</version.lib.testcontainers>
+    <version.lib.slf4j>2.0.9</version.lib.slf4j>
+    <version.lib.sqlite>3.43.2.1</version.lib.sqlite>
+    <version.lib.swagger-parser>2.1.18</version.lib.swagger-parser>
+    <version.lib.testcontainers>1.19.1</version.lib.testcontainers>
     <version.lib.validation>2.0.2</version.lib.validation>
     <version.lucene>9.4.2</version.lucene>
     <version.lucene-spatial>9.4.2</version.lucene-spatial>
-    <version.plugin.jacoco-maven-plugin>0.8.8</version.plugin.jacoco-maven-plugin>
+    <version.plugin.jacoco-maven-plugin>0.8.11</version.plugin.jacoco-maven-plugin>
     <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
     <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
     <version.plugin.maven-exec-plugin>3.0.0</version.plugin.maven-exec-plugin>
     <version.plugin.maven-gpg-plugin>1.6</version.plugin.maven-gpg-plugin>
     <version.plugin.maven-jar-plugin>3.3.0</version.plugin.maven-jar-plugin>
     <version.plugin.maven-javadoc-plugin>3.2.0</version.plugin.maven-javadoc-plugin>
-    <version.plugin.maven-jxr-plugin>3.1.1</version.plugin.maven-jxr-plugin>
+    <version.plugin.maven-jxr-plugin>3.3.1</version.plugin.maven-jxr-plugin>
     <version.plugin.maven-release-plugin>2.5.3</version.plugin.maven-release-plugin>
     <version.plugin.maven-scm-plugin>1.11.2</version.plugin.maven-scm-plugin>
     <version.plugin.maven-source-plugin>3.2.1</version.plugin.maven-source-plugin>
-    <version.plugin.maven-surefire-plugin>2.22.2</version.plugin.maven-surefire-plugin>
+    <version.plugin.maven-surefire-plugin>3.2.1</version.plugin.maven-surefire-plugin>
     <version.plugin.maven-surefire-plugin.provider.junit>1.3.2</version.plugin.maven-surefire-plugin.provider.junit>
     <version.plugin.nexus-staging-maven-plugin>1.6.13</version.plugin.nexus-staging-maven-plugin>
     <!-- Using version [6.3.0,6.5.0] creates an issue with usage of java.util.Arrays and missing necessary import
@@ -138,7 +138,7 @@ limitations under the License.
     <version.plugin.openapi-generator-maven-plugin>6.2.1</version.plugin.openapi-generator-maven-plugin>
     <version.plugin.os-maven-plugin>1.7.0</version.plugin.os-maven-plugin>
     <version.plugin.protobuf-maven-plugin>0.6.1</version.plugin.protobuf-maven-plugin>
-    <version.plugin.spotless-maven-plugin>2.33.0</version.plugin.spotless-maven-plugin>
+    <version.plugin.spotless-maven-plugin>2.40.0</version.plugin.spotless-maven-plugin>
   </properties>
 
   <dependencyManagement>

@@ -32,10 +32,10 @@ import org.apache.baremaps.database.type.RowDataType;
 import org.apache.baremaps.vectortile.VectorTileFunctions;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.model.ModelHandler;
+import org.apache.calcite.runtime.AccumOperation;
+import org.apache.calcite.runtime.CollectOperation;
 import org.apache.calcite.runtime.SpatialTypeFunctions;
-import org.apache.calcite.runtime.SpatialTypeFunctions.Accum;
-import org.apache.calcite.runtime.SpatialTypeFunctions.Collect;
-import org.apache.calcite.runtime.SpatialTypeFunctions.Union;
+import org.apache.calcite.runtime.UnionOperation;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.impl.AggregateFunctionImpl;
 import org.apache.calcite.sql.fun.SqlSpatialTypeFunctions;
@@ -63,9 +63,9 @@ public class CalciteTest {
       ModelHandler.addFunctions(rootSchema, null, emptyPath,
           SqlSpatialTypeFunctions.class.getName(), "*", true);
 
-      rootSchema.add("ST_UNION", AggregateFunctionImpl.create(Union.class));
-      rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(Accum.class));
-      rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(Collect.class));
+      rootSchema.add("ST_UNION", AggregateFunctionImpl.create(UnionOperation.class));
+      rootSchema.add("ST_ACCUM", AggregateFunctionImpl.create(AccumOperation.class));
+      rootSchema.add("ST_COLLECT", AggregateFunctionImpl.create(CollectOperation.class));
 
       ModelHandler.addFunctions(rootSchema, "ST_AsMVTGeom", emptyPath,
           VectorTileFunctions.class.getName(), "asVectorTileGeom", true);

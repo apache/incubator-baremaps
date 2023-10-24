@@ -23,7 +23,6 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SelectItemVisitorAdapter;
 
@@ -120,7 +119,7 @@ public class PostgresQuery {
     for (SelectItem selectItem : plainSelect.getSelectItems()) {
       selectItem.accept(new SelectItemVisitorAdapter() {
         @Override
-        public void visit(SelectExpressionItem selectExpressionItem) {
+        public void visit(SelectItem selectExpressionItem) {
           selectExpressionItem.setAlias(null);
         }
       });

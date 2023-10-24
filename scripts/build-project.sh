@@ -27,8 +27,8 @@ echo ""
 cd ..
 ./mvnw spotless:apply clean install -DskipTests
 rm -fr baremaps
-tar -xvf ./baremaps-cli/target/apache-baremaps-0.7.2-SNAPSHOT-incubating-bin.tar.gz -C target/
-mv ./target/apache-baremaps-0.7.2-SNAPSHOT-incubating-bin ./baremaps
+tar -xvf ./baremaps-cli/target/apache-baremaps-0.7.3-SNAPSHOT-incubating-bin.tar.gz -C target/
+mv ./target/apache-baremaps-0.7.3-SNAPSHOT-incubating-bin ./baremaps
 export PATH=$PATH:`pwd`/baremaps/bin
 
 echo ""
