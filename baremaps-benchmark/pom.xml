@@ -35,11 +35,6 @@ limitations under the License.
 
   <dependencies>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>${version.lib.annotation-api}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-core</artifactId>
     </dependency>

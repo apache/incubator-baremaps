@@ -107,7 +107,6 @@ limitations under the License.
     <version.lib.protobuf>3.21.6</version.lib.protobuf>
     <version.lib.roaringbitmap>1.0.0</version.lib.roaringbitmap>
     <version.lib.servicetalk>0.42.38</version.lib.servicetalk>
-    <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.slf4j>2.0.9</version.lib.slf4j>
     <version.lib.sqlite>3.43.2.1</version.lib.sqlite>
     <version.lib.testcontainers>1.19.1</version.lib.testcontainers>
@@ -249,11 +248,6 @@ limitations under the License.
         <groupId>jakarta.ws.rs</groupId>
         <artifactId>jakarta.ws.rs-api</artifactId>
         <version>${version.lib.jakarta}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>${version.lib.servlet}</version>
       </dependency>
       <dependency>
         <groupId>mil.nga.geopackage</groupId>
