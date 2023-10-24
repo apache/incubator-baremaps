@@ -5,7 +5,6 @@
     <option name="PROGRAM_PARAMETERS" value="workflow init --file sample-workflow.json" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="org.apache.baremaps.server.ogcapi.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

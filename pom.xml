@@ -51,7 +51,6 @@ limitations under the License.
     <module>baremaps-benchmark</module>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
-    <module>baremaps-ogcapi</module>
     <module>baremaps-server</module>
   </modules>
 
@@ -133,9 +132,6 @@ limitations under the License.
     <version.plugin.maven-surefire-plugin>3.2.1</version.plugin.maven-surefire-plugin>
     <version.plugin.maven-surefire-plugin.provider.junit>1.3.2</version.plugin.maven-surefire-plugin.provider.junit>
     <version.plugin.nexus-staging-maven-plugin>1.6.13</version.plugin.nexus-staging-maven-plugin>
-    <!-- Using version [6.3.0,6.5.0] creates an issue with usage of java.util.Arrays and missing necessary import
-     similar to https://github.com/OpenAPITools/openapi-generator/issues/8408 -->
-    <version.plugin.openapi-generator-maven-plugin>6.2.1</version.plugin.openapi-generator-maven-plugin>
     <version.plugin.os-maven-plugin>1.7.0</version.plugin.os-maven-plugin>
     <version.plugin.protobuf-maven-plugin>0.6.1</version.plugin.protobuf-maven-plugin>
     <version.plugin.spotless-maven-plugin>2.40.0</version.plugin.spotless-maven-plugin>
@@ -172,11 +168,6 @@ limitations under the License.
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-yaml</artifactId>
-        <version>${version.lib.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-jdk8</artifactId>
         <version>${version.lib.jackson}</version>
       </dependency>
       <dependency>
@@ -255,17 +246,6 @@ limitations under the License.
         <version>${version.lib.servicetalk}</version>
       </dependency>
       <dependency>
-        <groupId>io.swagger.parser.v3</groupId>
-        <artifactId>swagger-parser</artifactId>
-        <version>${version.lib.swagger-parser}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>it.unimi.dsi</groupId>
         <artifactId>fastutil</artifactId>
         <version>${version.lib.fastutil}</version>
@@ -313,11 +293,6 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-core</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-ogcapi</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -533,10 +508,6 @@ limitations under the License.
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jdk8</artifactId>
     </dependency>
     <!-- Provide logging for any child module during test -->
     <dependency>

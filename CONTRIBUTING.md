@@ -66,7 +66,6 @@ The source code of Baremaps is organized in modules:
 - `baremaps-cli` contains the command line interface.
 - `baremaps-core` contains the core features.
 - `baremaps-server` contains web resources.
-- `baremaps-ogcapi` contains ogcapi resources (experimental).
 
 The naming convention used for the modules is 'baremaps-{component}'.
 Here, component corresponds to the api and the main implementation of a component.
