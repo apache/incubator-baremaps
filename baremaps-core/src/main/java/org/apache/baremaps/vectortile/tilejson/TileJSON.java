@@ -27,10 +27,6 @@ import java.util.List;
  * <br>
  * Mainly used to project the `--tileset` configuration file to a version for clients.
  *
- * <br>
- * Implementation notes: Could not be implemented with Java Record because a class was using a
- * setter post instance creation (in baremaps-ogcapi).
- *
  * @see <a href="https://docs.mapbox.com/help/glossary/tilejson/">
  *      https://docs.mapbox.com/help/glossary/tilejson/</a>
  * @see <a href="https://github.com/mapbox/tilejson-spec">

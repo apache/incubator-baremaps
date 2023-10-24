@@ -6,7 +6,6 @@
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/basemap" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="org.apache.baremaps.server.ogcapi.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
