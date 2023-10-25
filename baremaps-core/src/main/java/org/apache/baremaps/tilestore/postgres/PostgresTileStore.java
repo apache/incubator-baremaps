@@ -81,7 +81,7 @@ public class PostgresTileStore implements TileStore {
   }
 
 
-  public static TileQuery prepareQuery(Tileset tileset, int zoom) {
+  protected static TileQuery prepareQuery(Tileset tileset, int zoom) {
     // Initialize a builder for the tile query
     var tileQuery = new StringBuilder();
     tileQuery.append("SELECT (");
@@ -117,11 +117,10 @@ public class PostgresTileStore implements TileStore {
               .replace(";", "")
               .replace("?", "??")
               .replace("$zoom", String.valueOf(zoom));
-          var queryWithParams = String.format("""
-              SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags, t.id
-              FROM (%s) AS t
-              WHERE t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))
-              """, sql);
+          var queryWithParams = String.format(
+              "SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags, t.id " +
+                  "FROM (%s) AS t WHERE t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))",
+              sql);
           layerQuery.append(queryWithParams);
 
           // Increase the parameter count (e.g. ?) and query count
@@ -162,16 +161,7 @@ public class PostgresTileStore implements TileStore {
     return new TileQuery(query, paramCount);
   }
 
-  public static class TileQuery {
-
-    private final String query;
-
-    private final int paramCount;
-
-    public TileQuery(String query, int paramCount) {
-      this.query = query;
-      this.paramCount = paramCount;
-    }
+  public record TileQuery(String query, int paramCount) {
 
     public ByteBuffer execute(Connection connection, TileCoord tileCoord)
         throws SQLException, IOException {
