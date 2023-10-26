@@ -262,7 +262,7 @@ class PMTilesTest {
   void buildRootLeaves() throws IOException {
     var entries = List.of(new Entry(100, 1, 1, 0));
     var directories = PMTiles.buildRootLeaves(entries, 1);
-    assertEquals(directories.numLeaves(), 1);
+    assertEquals(directories.getNumLeaves(), 1);
 
   }
 
@@ -272,8 +272,8 @@ class PMTilesTest {
     var entries = new ArrayList<Entry>();
     entries.add(new Entry(0, 0, 100, 1));
     var directories = PMTiles.optimizeDirectories(entries, 100);
-    assertFalse(directories.leaves().length > 0);
-    assertEquals(0, directories.numLeaves());
+    assertFalse(directories.getLeaves().length > 0);
+    assertEquals(0, directories.getNumLeaves());
 
     entries = new ArrayList<>();
     int offset = 0;
@@ -283,8 +283,8 @@ class PMTilesTest {
       offset += randTileSize;
     }
     directories = PMTiles.optimizeDirectories(entries, 1024);
-    assertFalse(directories.root().length > 1024);
-    assertFalse(directories.numLeaves() == 0);
-    assertFalse(directories.leaves().length == 0);
+    assertFalse(directories.getRoot().length > 1024);
+    assertFalse(directories.getNumLeaves() == 0);
+    assertFalse(directories.getLeaves().length == 0);
   }
 }

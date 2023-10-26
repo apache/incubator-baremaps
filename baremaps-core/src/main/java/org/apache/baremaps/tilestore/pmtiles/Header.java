@@ -19,7 +19,7 @@ package org.apache.baremaps.tilestore.pmtiles;
 
 import java.util.Objects;
 
-public class Header {
+class Header {
 
   private int specVersion;
   private long rootDirectoryOffset;
@@ -51,12 +51,30 @@ public class Header {
     this.specVersion = 3;
   }
 
-  public Header(int specVersion, long rootDirectoryOffset, long rootDirectoryLength,
-      long jsonMetadataOffset, long jsonMetadataLength, long leafDirectoryOffset,
-      long leafDirectoryLength, long tileDataOffset, long tileDataLength, long numAddressedTiles,
-      long numTileEntries, long numTileContents, boolean clustered, Compression internalCompression,
-      Compression tileCompression, TileType tileType, int minZoom, int maxZoom, double minLon,
-      double minLat, double maxLon, double maxLat, int centerZoom, double centerLon,
+  public Header(
+      int specVersion,
+      long rootDirectoryOffset,
+      long rootDirectoryLength,
+      long jsonMetadataOffset,
+      long jsonMetadataLength,
+      long leafDirectoryOffset,
+      long leafDirectoryLength,
+      long tileDataOffset,
+      long tileDataLength,
+      long numAddressedTiles,
+      long numTileEntries,
+      long numTileContents,
+      boolean clustered,
+      Compression internalCompression,
+      Compression tileCompression,
+      TileType tileType,
+      int minZoom,
+      int maxZoom,
+      double minLon,
+      double minLat, double maxLon,
+      double maxLat,
+      int centerZoom,
+      double centerLon,
       double centerLat) {
     this.specVersion = specVersion;
     this.rootDirectoryOffset = rootDirectoryOffset;

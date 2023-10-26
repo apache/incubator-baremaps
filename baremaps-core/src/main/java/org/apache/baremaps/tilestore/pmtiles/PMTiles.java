@@ -329,9 +329,6 @@ public class PMTiles {
     return null;
   }
 
-  record Directories(byte[] root, byte[] leaves, int numLeaves) {
-  }
-
   public static Directories buildRootLeaves(List<Entry> entries, int leafSize) throws IOException {
     var rootEntries = new ArrayList<Entry>();
     var numLeaves = 0;
@@ -385,7 +382,7 @@ public class PMTiles {
     }
     for (;;) {
       var directories = buildRootLeaves(entries, (int) leafSize);
-      if (directories.root.length <= targetRootLenght) {
+      if (directories.getRoot().length <= targetRootLenght) {
         return directories;
       }
       leafSize = leafSize * 1.2;

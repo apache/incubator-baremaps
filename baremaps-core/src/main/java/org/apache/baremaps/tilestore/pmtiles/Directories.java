@@ -17,50 +17,27 @@
 
 package org.apache.baremaps.tilestore.pmtiles;
 
-class Entry {
-  private long tileId;
-  private long offset;
-  private long length;
-  private long runLength;
+class Directories {
 
-  public Entry() {}
+  private final byte[] root;
+  private final byte[] leaves;
+  private final int numLeaves;
 
-  public Entry(long tileId, long offset, long length, long runLength) {
-    this.tileId = tileId;
-    this.offset = offset;
-    this.length = length;
-    this.runLength = runLength;
+  public Directories(byte[] root, byte[] leaves, int numLeaves) {
+    this.root = root;
+    this.leaves = leaves;
+    this.numLeaves = numLeaves;
   }
 
-  public long getTileId() {
-    return tileId;
+  public byte[] getRoot() {
+    return root;
   }
 
-  public void setTileId(long tileId) {
-    this.tileId = tileId;
+  public byte[] getLeaves() {
+    return leaves;
   }
 
-  public long getOffset() {
-    return offset;
-  }
-
-  public void setOffset(long offset) {
-    this.offset = offset;
-  }
-
-  public long getLength() {
-    return length;
-  }
-
-  public void setLength(long length) {
-    this.length = length;
-  }
-
-  public long getRunLength() {
-    return runLength;
-  }
-
-  public void setRunLength(long runLength) {
-    this.runLength = runLength;
+  public int getNumLeaves() {
+    return numLeaves;
   }
 }

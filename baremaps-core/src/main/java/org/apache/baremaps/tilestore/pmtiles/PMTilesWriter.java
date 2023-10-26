@@ -110,11 +110,11 @@ public class PMTilesWriter {
 
     var directories = PMTiles.optimizeDirectories(entries, 16247);
     var rootOffset = 127;
-    var rootLength = directories.root().length;
+    var rootLength = directories.getRoot().length;
     var metadataOffset = rootOffset + rootLength;
     var metadataLength = metadataBytes.length;
     var leavesOffset = metadataOffset + metadataLength;
-    var leavesLength = directories.leaves().length;
+    var leavesLength = directories.getLeaves().length;
     var tilesOffset = leavesOffset + leavesLength;
     var tilesLength = Files.size(tilePath);
     var numTiles = entries.size();
@@ -149,9 +149,9 @@ public class PMTilesWriter {
 
     try (var output = new LittleEndianDataOutputStream(new FileOutputStream(path.toFile()))) {
       PMTiles.serializeHeader(output, header);
-      output.write(directories.root());
+      output.write(directories.getRoot());
       output.write(metadataBytes);
-      output.write(directories.leaves());
+      output.write(directories.getLeaves());
       Files.copy(tilePath, output);
     } finally {
       Files.delete(tilePath);
