@@ -41,6 +41,6 @@ class PostgresTileStoreTest {
     var query = PostgresTileStore.prepareQuery(tileset, 10);
     assertEquals(
         "SELECT ((WITH mvtGeom AS (SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags, t.id FROM (SELECT id, tags, geom FROM table) AS t WHERE t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) SELECT ST_AsMVT(mvtGeom.*, 'a') FROM mvtGeom) || (WITH mvtGeom AS (SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags, t.id FROM (SELECT id, tags, geom FROM table) AS t WHERE t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) SELECT ST_AsMVT(mvtGeom.*, 'b') FROM mvtGeom)) mvtTile",
-        query.query());
+        query.sql());
   }
 }
