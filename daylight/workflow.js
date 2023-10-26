@@ -20,7 +20,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.30/planet-v1.30.osm.pbf",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/planet-v1.32.osm.pbf",
           "path": "data/data.osm.pbf"
         },
         {
@@ -37,7 +37,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.30/ms-buildings-v1.30.osc.gz",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/ms-buildings-v1.32.osc.gz",
           "path": "data/buildings.osc.gz"
         },
         {
@@ -55,7 +55,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/fb-ml-roads-v1.29.osc.bz2",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/fb-ml-roads-v1.32.osc.gz",
           "path": "data/roads.osc.bz2"
         },
         {
@@ -73,7 +73,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/admin-v1.29.osc.bz2",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/admin-v1.32.osc.bz2",
           "path": "data/admin.osc.bz2"
         },
         {
@@ -91,7 +91,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/coastlines-v1.29.tgz",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/coastlines-v1.32.tgz",
           "path": "data/coastlines.tgz"
         },
         {
@@ -136,7 +136,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/preferred-localization-v1.29.tsv",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/preferred-localization-v1.32.tsv",
           "path": "data/preferred-localization.tsv"
         },
       ]
@@ -147,7 +147,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.29/important-features-v1.29.json",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/important-features-v1.32.json",
           "path": "data/important-features.json"
         },
       ]
