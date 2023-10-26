@@ -11,24 +11,24 @@
  **/
 import config from "./config.js";
 
-import aerialway from "./layers/aerialway/tileset.js";
-import aeroway from "./layers/aeroway/tileset.js";
-import amenity from "./layers/amenity/tileset.js";
-import attraction from "./layers/attraction/tileset.js";
-import barrier from "./layers/barrier/tileset.js";
-import boundary from "./layers/boundary/tileset.js";
-import building from "./layers/building/tileset.js";
-import highway from "./layers/highway/tileset.js";
-import natural from "./layers/natural/tileset.js";
-import leisure from "./layers/leisure/tileset.js";
-import landuse from "./layers/landuse/tileset.js";
-import railway from "./layers/railway/tileset.js";
-import route from "./layers/route/tileset.js";
-import man_made from "./layers/man_made/tileset.js";
-import power from "./layers/power/tileset.js";
-import point from "./layers/point/tileset.js";
-import waterway from "./layers/waterway/tileset.js";
-import water from "./layers/water/tileset.js";
+import aerialway from "../basemap/layers/aerialway/tileset.js";
+import aeroway from "../basemap/layers/aeroway/tileset.js";
+import amenity from "../basemap/layers/amenity/tileset.js";
+import attraction from "../basemap/layers/attraction/tileset.js";
+import barrier from "../basemap/layers/barrier/tileset.js";
+import boundary from "../basemap/layers/boundary/tileset.js";
+import building from "../basemap/layers/building/tileset.js";
+import highway from "../basemap/layers/highway/tileset.js";
+import natural from "../basemap/layers/natural/tileset.js";
+import leisure from "../basemap/layers/leisure/tileset.js";
+import landuse from "../basemap/layers/landuse/tileset.js";
+import railway from "../basemap/layers/railway/tileset.js";
+import route from "../basemap/layers/route/tileset.js";
+import man_made from "../basemap/layers/man_made/tileset.js";
+import power from "../basemap/layers/power/tileset.js";
+import point from "../basemap/layers/point/tileset.js";
+import waterway from "../basemap/layers/waterway/tileset.js";
+import water from "../basemap/layers/water/tileset.js";
 
 
 export default {
