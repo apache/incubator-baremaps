@@ -46,7 +46,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmPbf(Path file, Object database, Integer databaseSrid)
+public record ImportOsmPbf(Path file, Object database, Integer databaseSrid, Boolean replaceExisting)
     implements
       Task {
 
@@ -62,16 +62,16 @@ public record ImportOsmPbf(Path file, Object database, Integer databaseSrid)
     var wayRepository = new PostgresWayRepository(dataSource);
     var relationRepository = new PostgresRelationRepository(dataSource);
 
-    headerRepository.drop();
-    nodeRepository.drop();
-    wayRepository.drop();
-    relationRepository.drop();
-
-    headerRepository.create();
-    nodeRepository.create();
-    wayRepository.create();
-    relationRepository.create();
-
+    if (replaceExisting) {
+      headerRepository.drop();
+      nodeRepository.drop();
+      wayRepository.drop();
+      relationRepository.drop();
+      headerRepository.create();
+      nodeRepository.create();
+      wayRepository.create();
+      relationRepository.create();
+    }
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
     DataMap<Long, Coordinate> coordinateMap;
