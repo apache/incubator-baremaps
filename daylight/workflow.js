@@ -14,6 +14,7 @@ import config from "./config.js";
 
 export default {
   "steps": [
+    /*
     {
       "id": "daylight-data",
       "needs": [],
@@ -32,17 +33,34 @@ export default {
       ]
     },
     {
-      "id": "daylight-building",
+      "id": "daylight-buildings",
       "needs": ["daylight-data"],
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/ms-buildings-v1.32.osc.gz",
-          "path": "data/buildings.osc.gz"
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/ml-buildings-v1.32.osm.pbf",
+          "path": "data/buildings.osm.pbf"
+        },
+        {
+          "type": "ImportOsmPbf",
+          "file": "data/buildings.osm.pbf",
+          "database": config.database,
+          "databaseSrid": 3857
+        },
+      ]
+    },
+    {
+      "id": "daylight-roads",
+      "needs": ["daylight-buildings"],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/fb-ml-roads-v1.32.osc.gz",
+          "path": "data/roads.osc.gz"
         },
         {
           "type": "ImportOsmChange",
-          "file": "data/buildings.osc.gz",
+          "file": "data/roads.osc.gz",
           "compression": "gzip",
           "database": config.database,
           "srid": 3857
@@ -50,36 +68,18 @@ export default {
       ]
     },
     {
-      "id": "daylight-road",
-      "needs": ["daylight-data"],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/fb-ml-roads-v1.32.osc.gz",
-          "path": "data/roads.osc.bz2"
-        },
-        {
-          "type": "ImportOsmChange",
-          "file": "data/roads.osc.bz2",
-          "compression": "bzip2",
-          "database": config.database,
-          "srid": 3857
-        },
-      ]
-    },
-    {
       "id": "daylight-admin",
-      "needs": ["daylight-data"],
+      "needs": ["daylight-roads"],
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/admin-v1.32.osc.bz2",
-          "path": "data/admin.osc.bz2"
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/admin-v1.32.osc.gz",
+          "path": "data/admin.osc.gz"
         },
         {
           "type": "ImportOsmChange",
-          "file": "data/admin.osc.bz2",
-          "compression": "bzip2",
+          "file": "data/admin.osc.gz",
+          "compression": "gzip",
           "database": config.database,
           "srid": 3857
         },
@@ -109,27 +109,28 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/water/clean.sql",
+          "file": "../basemap/layers/water/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/water/prepare.sql",
+          "file": "../basemap/layers/water/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/water/simplify.sql",
+          "file": "../basemap/layers/water/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/water/index.sql",
+          "file": "../basemap/layers/water/index.sql",
           "database": config.database,
         },
       ]
     },
+    */
     {
       "id": "daylight-preferred-localization",
       "needs": ["daylight-data"],
@@ -154,11 +155,11 @@ export default {
     },
     {
       "id": "daylight-nodes",
-      "needs": ["daylight-road","daylight-admin"],
+      "needs": ["daylight-admin", "daylight-coastlines", "daylight-preferred-localization", "daylight-important-features"],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_nodes.sql",
+          "file": "../basemap/queries/osm_nodes.sql",
           "database": config.database,
           "parallel": true,
         },
@@ -166,11 +167,11 @@ export default {
     },
     {
       "id": "daylight-ways",
-      "needs": ["daylight-road","daylight-admin"],
+      "needs": ["daylight-admin", "daylight-coastlines", "daylight-preferred-localization", "daylight-important-features"],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_ways.sql",
+          "file": "../basemap/queries/osm_ways.sql",
           "database": config.database,
           "parallel": true,
         },
@@ -178,11 +179,11 @@ export default {
     },
     {
       "id": "daylight-relations",
-      "needs": ["daylight-road","daylight-admin"],
+      "needs": ["daylight-admin", "daylight-coastlines", "daylight-preferred-localization", "daylight-important-features"],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_relations.sql",
+          "file": "../basemap/queries/osm_relations.sql",
           "database": config.database,
           "parallel": true,
         },
@@ -190,11 +191,11 @@ export default {
     },
     {
       "id": "daylight-member",
-      "needs": ["daylight-road","daylight-admin"],
+      "needs": ["daylight-admin", "daylight-coastlines", "daylight-preferred-localization", "daylight-important-features"],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/member/prepare.sql",
+          "file": "../basemap/layers/member/prepare.sql",
           "database": config.database,
         },
       ]
@@ -205,18 +206,18 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/point/clean.sql",
+          "file": "../basemap/layers/point/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/point/simplify.sql",
+          "file": "../basemap/layers/point/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/point/index.sql",
+          "file": "../basemap/layers/point/index.sql",
           "database": config.database,
           "parallel": true,
         },
@@ -228,17 +229,17 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/linestring/clean.sql",
+          "file": "../basemap/layers/linestring/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/linestring/prepare.sql",
+          "file": "../basemap/layers/linestring/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/linestring/index.sql",
+          "file": "../basemap/layers/linestring/index.sql",
           "database": config.database,
         },
       ]
@@ -249,17 +250,17 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/polygon/clean.sql",
+          "file": "../basemap/layers/polygon/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/polygon/prepare.sql",
+          "file": "../basemap/layers/polygon/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/polygon/index.sql",
+          "file": "../basemap/layers/polygon/index.sql",
           "database": config.database,
         },
       ]
@@ -270,23 +271,23 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/highway/clean.sql",
+          "file": "../basemap/layers/highway/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/highway/prepare.sql",
+          "file": "../basemap/layers/highway/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/highway/simplify.sql",
+          "file": "../basemap/layers/highway/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/highway/index.sql",
+          "file": "../basemap/layers/highway/index.sql",
           "database": config.database,
           "parallel": true,
         },
@@ -298,23 +299,23 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/railway/clean.sql",
+          "file": "../basemap/layers/railway/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/railway/prepare.sql",
+          "file": "../basemap/layers/railway/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/railway/simplify.sql",
+          "file": "../basemap/layers/railway/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/railway/index.sql",
+          "file": "../basemap/layers/railway/index.sql",
           "database": config.database,
           "parallel": true,
         },
@@ -326,23 +327,23 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/route/clean.sql",
+          "file": "../basemap/layers/route/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/route/prepare.sql",
+          "file": "../basemap/layers/route/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/route/simplify.sql",
+          "file": "../basemap/layers/route/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/route/index.sql",
+          "file": "../basemap/layers/route/index.sql",
           "database": config.database,
           "parallel": true,
         },
@@ -354,23 +355,23 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/natural/clean.sql",
+          "file": "../basemap/layers/natural/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/natural/prepare.sql",
+          "file": "../basemap/layers/natural/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/natural/simplify.sql",
+          "file": "../basemap/layers/natural/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/natural/index.sql",
+          "file": "../basemap/layers/natural/index.sql",
           "database": config.database,
           "parallel": true
         },
@@ -382,23 +383,23 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/landuse/clean.sql",
+          "file": "../basemap/layers/landuse/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/landuse/prepare.sql",
+          "file": "../basemap/layers/landuse/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/landuse/simplify.sql",
+          "file": "../basemap/layers/landuse/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/landuse/index.sql",
+          "file": "../basemap/layers/landuse/index.sql",
           "database": config.database,
           "parallel": true
         },
@@ -410,23 +411,23 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "layers/waterway/clean.sql",
+          "file": "../basemap/layers/waterway/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/waterway/prepare.sql",
+          "file": "../basemap/layers/waterway/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/waterway/simplify.sql",
+          "file": "../basemap/layers/waterway/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "layers/waterway/index.sql",
+          "file": "../basemap/layers/waterway/index.sql",
           "database": config.database,
           "parallel": true
         },
