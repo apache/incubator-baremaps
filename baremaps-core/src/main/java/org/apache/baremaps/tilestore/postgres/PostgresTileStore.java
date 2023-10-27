@@ -90,6 +90,9 @@ public class PostgresTileStore implements TileStore {
         statement.setInt(i + 3, tileCoord.y());
       }
 
+      // Log the sql query
+      logger.debug("Executing sql for tile {}: {}", tileCoord, statement);
+
       try (ResultSet resultSet = statement.executeQuery();
           OutputStream gzip = new GZIPOutputStream(data)) {
         while (resultSet.next()) {
@@ -192,9 +195,8 @@ public class PostgresTileStore implements TileStore {
     var tileQueryTail = ") mvtTile";
     tileSql.append(tileQueryTail);
 
-    // Log the resulting sql
+    // Format the sql query
     var sql = tileSql.toString().replace("\n", " ");
-    logger.debug("sql: {}", sql);
 
     return new Query(sql, paramCount);
   }
