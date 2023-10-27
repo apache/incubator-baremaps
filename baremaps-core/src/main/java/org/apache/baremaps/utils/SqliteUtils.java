@@ -52,7 +52,7 @@ public final class SqliteUtils {
   public static DataSource createDataSource(Path path, boolean readOnly) {
     var sqliteConfig = new SQLiteConfig();
     sqliteConfig.setReadOnly(readOnly);
-    sqliteConfig.setCacheSize(1000000);
+    sqliteConfig.setCacheSize(-1000000);
     sqliteConfig.setPageSize(65536);
     sqliteConfig.setJournalMode(JournalMode.OFF);
     sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);

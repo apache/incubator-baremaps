@@ -18,12 +18,12 @@
 package org.apache.baremaps.tilestore.postgres;
 
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
 import org.apache.baremaps.postgres.metadata.TableMetadata;
+import org.apache.baremaps.vectortile.tileset.TilesetQuery;
 
 /**
  * A generator that uses PostgreSQL metadata to generate input queries for a {@code
@@ -82,14 +82,14 @@ public class PostgresQueryGenerator {
    *
    * @return the queries
    */
-  public List<PostgresQuery> generate() {
+  public List<TilesetQuery> generate() {
     return new DatabaseMetadata(dataSource)
         .getTableMetaData(catalog, schemaPattern, tableNamePattern, types).stream()
         .filter(table -> table.primaryKeys().size() == 1)
         .filter(table -> table.getGeometryColumns().size() == 1).map(this::getLayer).toList();
   }
 
-  private PostgresQuery getLayer(TableMetadata table) {
+  private TilesetQuery getLayer(TableMetadata table) {
     String tableSchema = table.table().tableSchem();
     String tableName = table.table().tableName();
     String layer = String.format("%s.%s", tableSchema, tableName);
@@ -102,6 +102,6 @@ public class PostgresQueryGenerator {
             .collect(Collectors.joining(", ", "hstore(array[", "])"));
     String sql = String.format("SELECT %s, %s, %s FROM %s", idColumn, tagsColumns, geometryColumn,
         tableName);
-    return new PostgresQuery(layer, 0, 20, sql);
+    return new TilesetQuery(0, 20, sql);
   }
 }

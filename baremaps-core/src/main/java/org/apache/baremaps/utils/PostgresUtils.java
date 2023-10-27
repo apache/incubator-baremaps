@@ -100,10 +100,13 @@ public final class PostgresUtils {
     if (poolSize < 1) {
       throw new IllegalArgumentException("PoolSize cannot be inferior to 1");
     }
-    var multiQueriesJdbcUrl = withAllowMultiQueriesParameter(jdbcUrl);
+
     var config = new HikariConfig();
-    config.setJdbcUrl(multiQueriesJdbcUrl);
+    config.setJdbcUrl(jdbcUrl);
     config.setMaximumPoolSize(poolSize);
+    config.addDataSourceProperty("allowMultiQueries", true);
+    config.addDataSourceProperty("prepareThreshold", 100);
+
     return new HikariDataSource(config);
   }
 
@@ -154,6 +157,10 @@ public final class PostgresUtils {
     if (datasource.getReadOnly() != null) {
       config.setReadOnly(datasource.getReadOnly());
     }
+
+    config.addDataSourceProperty("allowMultiQueries", true);
+    config.addDataSourceProperty("prepareThreshold", 100);
+
     return new HikariDataSource(config);
   }
 

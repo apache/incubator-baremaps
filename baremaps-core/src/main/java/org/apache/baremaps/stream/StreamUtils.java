@@ -20,6 +20,7 @@ package org.apache.baremaps.stream;
 
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.CompletableFuture;
@@ -190,7 +191,7 @@ public class StreamUtils {
   }
 
   /** Partition the provided stream according to a partition size. */
-  public static <T> Stream<Stream<T>> partition(
+  public static <T> Stream<List<T>> partition(
       Stream<T> stream,
       int partitionSize) {
     return StreamSupport.stream(

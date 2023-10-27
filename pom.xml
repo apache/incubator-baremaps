@@ -96,7 +96,6 @@ limitations under the License.
     <version.lib.jakarta>2.1.6</version.lib.jakarta>
     <version.lib.jersey>2.37</version.lib.jersey>
     <version.lib.jmh>1.35</version.lib.jmh>
-    <version.lib.jsqlparser>4.7</version.lib.jsqlparser>
     <version.lib.jts>1.19.0</version.lib.jts>
     <version.lib.junit>5.10.0</version.lib.junit>
     <version.lib.junit-vintage>5.10.0</version.lib.junit-vintage>
@@ -169,11 +168,6 @@ limitations under the License.
         <groupId>com.github.ben-manes.caffeine</groupId>
         <artifactId>caffeine</artifactId>
         <version>${version.lib.caffeine}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.jsqlparser</groupId>
-        <artifactId>jsqlparser</artifactId>
-        <version>${version.lib.jsqlparser}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>

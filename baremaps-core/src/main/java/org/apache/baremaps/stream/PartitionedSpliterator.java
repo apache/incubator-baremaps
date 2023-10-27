@@ -19,6 +19,8 @@ package org.apache.baremaps.stream;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -28,7 +30,7 @@ import java.util.stream.Stream;
  *
  * @param <T> the type of elements returned by this {@code Spliterator}
  */
-public class PartitionedSpliterator<T> implements Spliterator<Stream<T>> {
+public class PartitionedSpliterator<T> implements Spliterator<List<T>> {
 
   private final Spliterator<T> spliterator;
 
@@ -47,23 +49,23 @@ public class PartitionedSpliterator<T> implements Spliterator<Stream<T>> {
 
   /** {@inheritDoc} */
   @Override
-  public boolean tryAdvance(Consumer<? super Stream<T>> action) {
-    Stream.Builder<T> partition = Stream.builder();
+  public boolean tryAdvance(Consumer<? super List<T>> action) {
+    var list = new ArrayList<T>(partitionSize);
     int size = 0;
-    while (size < partitionSize && spliterator.tryAdvance(partition::add)) {
+    while (size < partitionSize && spliterator.tryAdvance(list::add)) {
       size++;
     }
     if (size == 0) {
       return false;
     }
-    action.accept(partition.build());
+    action.accept(list);
     return true;
   }
 
   /** {@inheritDoc} */
   @Override
-  public Spliterator<Stream<T>> trySplit() {
-    HoldingConsumer<Stream<T>> consumer = new HoldingConsumer<>();
+  public Spliterator<List<T>> trySplit() {
+    HoldingConsumer<List<T>> consumer = new HoldingConsumer<>();
     tryAdvance(consumer);
     return Stream.ofNullable(consumer.value()).spliterator();
   }
