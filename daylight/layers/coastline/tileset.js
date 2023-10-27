@@ -15,12 +15,12 @@ export default {
         {
             "minzoom": 0,
             "maxzoom": 12,
-            "sql": "SELECT id, tags, geom FROM osm_water_z$zoom"
+            "sql": "SELECT id, tags, geom FROM osm_coastline_z$zoom"
         },
         {
             "minzoom": 12,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_water"
+            "sql": "SELECT id, tags, geom FROM osm_coastline"
         }
     ]
 }

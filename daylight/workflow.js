@@ -14,7 +14,6 @@ import config from "./config.js";
 
 export default {
   "steps": [
-    /*
     {
       "id": "daylight-data",
       "needs": [],
@@ -109,28 +108,27 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "../basemap/layers/water/clean.sql",
+          "file": "./layers/coastline/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "../basemap/layers/water/prepare.sql",
+          "file": "./layers/coastline/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "../basemap/layers/water/simplify.sql",
+          "file": "./layers/coastline/simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "../basemap/layers/water/index.sql",
+          "file": "./layers/coastline/index.sql",
           "database": config.database,
         },
       ]
     },
-    */
     {
       "id": "daylight-preferred-localization",
       "needs": ["daylight-data"],
