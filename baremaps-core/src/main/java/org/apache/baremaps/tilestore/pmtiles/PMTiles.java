@@ -365,7 +365,7 @@ public class PMTiles {
   public static Directories optimizeDirectories(List<Entry> entries, int targetRootLenght)
       throws IOException {
     if (entries.size() < 16384) {
-      byte[] rootBytes = null;
+      byte[] rootBytes;
       try (var rootOutput = new ByteArrayOutputStream();
           var rootDataOutput = new LittleEndianDataOutputStream(rootOutput)) {
         serializeEntries(rootDataOutput, entries);
@@ -376,9 +376,9 @@ public class PMTiles {
       }
     }
 
-    double leafSize = (double) entries.size() / 3500d;
-    if (leafSize < 4096d) {
-      leafSize = 4096d;
+    double leafSize = (double) entries.size() / 3500;
+    if (leafSize < 4096) {
+      leafSize = 4096;
     }
     for (;;) {
       var directories = buildRootLeaves(entries, (int) leafSize);
@@ -387,6 +387,5 @@ public class PMTiles {
       }
       leafSize = leafSize * 1.2;
     }
-
   }
 }

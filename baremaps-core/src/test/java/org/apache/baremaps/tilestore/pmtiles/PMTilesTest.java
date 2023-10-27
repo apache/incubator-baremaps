@@ -149,7 +149,7 @@ class PMTilesTest {
       assertFalse(header.isClustered());
       assertEquals(header.getInternalCompression(), Compression.Gzip);
       assertEquals(header.getTileCompression(), Compression.Gzip);
-      assertEquals(header.getTileType(), TileType.Mvt);
+      assertEquals(header.getTileType(), TileType.mvt);
       assertEquals(header.getMinZoom(), 0);
       assertEquals(header.getMaxZoom(), 0);
       assertEquals(header.getMinLon(), 0);
@@ -178,7 +178,7 @@ class PMTilesTest {
         false,
         Compression.Gzip,
         Compression.Gzip,
-        TileType.Mvt,
+        TileType.mvt,
         0,
         0,
         0,
