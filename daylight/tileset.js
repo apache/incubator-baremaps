@@ -28,7 +28,7 @@ import man_made from "../basemap/layers/man_made/tileset.js";
 import power from "../basemap/layers/power/tileset.js";
 import point from "../basemap/layers/point/tileset.js";
 import waterway from "../basemap/layers/waterway/tileset.js";
-import water from "../basemap/layers/water/tileset.js";
+import water from "./layers/coastline/tileset.js";
 
 
 export default {

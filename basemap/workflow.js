@@ -48,7 +48,7 @@ export default {
       ]
     },
     {
-      "id": "water-polygons",
+      "id": "openstreetmap-water-polygons",
       "needs": [],
       "tasks": [
         {
@@ -71,7 +71,7 @@ export default {
       ]
     },
     {
-      "id": "simplified-water-polygons",
+      "id": "openstreetmap-simplified-water-polygons",
       "needs": [],
       "tasks": [
         {
@@ -96,8 +96,8 @@ export default {
     {
       "id": "openstreetmap-ocean",
       "needs": [
-        "water-polygons",
-        "simplified-water-polygons",
+        "openstreetmap-water-polygons",
+        "openstreetmap-simplified-water-polygons",
       ],
       "tasks": [
         {

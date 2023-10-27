@@ -7,5 +7,5 @@
 -- is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 -- or implied. See the License for the specific language governing permissions and limitations under
 -- the License.
-CREATE MATERIALIZED VIEW osm_water AS
+CREATE MATERIALIZED VIEW osm_coastline AS
 SELECT row_number() OVER () as id, '{"ocean":"water"}'::jsonb as tags, st_setsrid(geometry, 3857) AS geom FROM water_polygons_shp;
