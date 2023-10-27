@@ -50,7 +50,8 @@ public class ImportOsmPbf implements Callable<Integer> {
     new org.apache.baremaps.workflow.tasks.ImportOsmPbf(
         file.toAbsolutePath(),
         database,
-        srid).execute(new WorkflowContext());
+        srid,
+            true).execute(new WorkflowContext());
     return 0;
   }
 }
