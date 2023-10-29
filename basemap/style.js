@@ -76,8 +76,8 @@ export default {
             "url": `${config.host}/tiles.json`
         }
     },
-    "sprite": `https://tiles.baremaps.com/sprites/osm/sprite`,
-    "glyphs": "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf",
+    "sprite": `https://baremaps.apache.org/sprites/osm/sprite`,
+    "glyphs": "https://baremaps.apache.org/fonts/{fontstack}/{range}.pbf",
     "layers": [
         background,
         power_background,
