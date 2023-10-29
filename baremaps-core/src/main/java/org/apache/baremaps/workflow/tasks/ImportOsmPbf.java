@@ -46,7 +46,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmPbf(Path file, Object database, Integer databaseSrid, Boolean replaceExisting)
+public record ImportOsmPbf(Path file, Object database, Integer databaseSrid,
+    Boolean replaceExisting)
     implements
       Task {
 

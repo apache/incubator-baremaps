@@ -51,7 +51,7 @@ public class ImportOsmPbf implements Callable<Integer> {
         file.toAbsolutePath(),
         database,
         srid,
-            true).execute(new WorkflowContext());
+        true).execute(new WorkflowContext());
     return 0;
   }
 }
