@@ -59,17 +59,17 @@ public class ChangeImporter implements Consumer<Change> {
         .filter(entity -> entity instanceof Node)
         .map(entity -> (Node) entity)
         .toList();
-    var nodeIds = nodes.stream().map(Node::id).toList();
+    var nodeIds = nodes.stream().map(Node::getId).toList();
     var ways = change.getEntities().stream()
         .filter(entity -> entity instanceof Way)
         .map(entity -> (Way) entity)
         .toList();
-    var wayIds = ways.stream().map(Way::id).toList();
+    var wayIds = ways.stream().map(Way::getId).toList();
     var relations = change.getEntities().stream()
         .filter(entity -> entity instanceof Relation)
         .map(entity -> (Relation) entity)
         .toList();
-    var relationIds = relations.stream().map(Relation::id).toList();
+    var relationIds = relations.stream().map(Relation::getId).toList();
     try {
       switch (change.getType()) {
         case CREATE, MODIFY -> {

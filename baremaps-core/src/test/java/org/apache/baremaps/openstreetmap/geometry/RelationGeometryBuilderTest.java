@@ -44,10 +44,10 @@ class RelationGeometryBuilderTest {
     List<Entity> entities = new XmlEntityReader().stream(input).toList();
     DataMap<Long, Coordinate> coordinateMap = new MockDataMap<>(
         entities.stream().filter(e -> e instanceof Node).map(e -> (Node) e).collect(
-            Collectors.toMap(n -> n.id(), n -> new Coordinate(n.getLon(), n.getLat()))));
+            Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
     DataMap<Long, List<Long>> referenceMap =
         new MockDataMap<>(entities.stream().filter(e -> e instanceof Way).map(e -> (Way) e)
-            .collect(Collectors.toMap(w -> w.id(), w -> w.getNodes())));
+            .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
     Relation relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
         .findFirst().get();
     new RelationGeometryBuilder(coordinateMap, referenceMap).accept(relation);

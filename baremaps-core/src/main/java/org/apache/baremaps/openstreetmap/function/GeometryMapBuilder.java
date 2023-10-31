@@ -50,7 +50,7 @@ public class GeometryMapBuilder implements Consumer<Entity> {
   @Override
   public void accept(Entity entity) {
     if (filter.test(entity) && entity instanceof Element element) {
-      geometryMap.put(element.id(), element.getGeometry());
+      geometryMap.put(element.getId(), element.getGeometry());
     }
   }
 }

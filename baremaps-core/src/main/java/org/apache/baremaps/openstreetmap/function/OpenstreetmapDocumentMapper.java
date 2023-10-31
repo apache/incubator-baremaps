@@ -39,7 +39,7 @@ public class OpenstreetmapDocumentMapper implements Function<Element, Document> 
   public Document apply(Element element) {
     var document = new Document();
 
-    document.add(new StoredField("id", element.id()));
+    document.add(new StoredField("id", element.getId()));
 
     element.getTags().forEach((key, value) -> {
       document.add(new StoredField(key, value.toString()));
