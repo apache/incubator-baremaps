@@ -80,37 +80,37 @@ class EntityDataTypeGeometryBuilderTest {
 
   static final Info INFO = new Info(0, TIMESTAMP, 0, 0);
 
-  static final Node NODE_0 = new Node(0, INFO, ImmutableMap.of(), 0, 0);
+  static final Node NODE_0 = new Node(0L, INFO, ImmutableMap.of(), 0d, 0d);
 
-  static final Node NODE_1 = new Node(1, INFO, ImmutableMap.of(), 0, 4);
+  static final Node NODE_1 = new Node(1L, INFO, ImmutableMap.of(), 0d, 4d);
 
-  static final Node NODE_2 = new Node(2, INFO, ImmutableMap.of(), 4, 4);
+  static final Node NODE_2 = new Node(2L, INFO, ImmutableMap.of(), 4d, 4d);
 
-  static final Node NODE_3 = new Node(3, INFO, ImmutableMap.of(), 4, 0);
+  static final Node NODE_3 = new Node(3L, INFO, ImmutableMap.of(), 4d, 0d);
 
-  static final Node NODE_4 = new Node(4, INFO, ImmutableMap.of(), 1, 1);
+  static final Node NODE_4 = new Node(4L, INFO, ImmutableMap.of(), 1d, 1d);
 
-  static final Node NODE_5 = new Node(5, INFO, ImmutableMap.of(), 1, 2);
+  static final Node NODE_5 = new Node(5L, INFO, ImmutableMap.of(), 1d, 2d);
 
-  static final Node NODE_6 = new Node(6, INFO, ImmutableMap.of(), 2, 2);
+  static final Node NODE_6 = new Node(6L, INFO, ImmutableMap.of(), 2d, 2d);
 
-  static final Node NODE_7 = new Node(7, INFO, ImmutableMap.of(), 2, 1);
+  static final Node NODE_7 = new Node(7L, INFO, ImmutableMap.of(), 2d, 1d);
 
-  static final Node NODE_8 = new Node(8, INFO, ImmutableMap.of(), 4, 1);
+  static final Node NODE_8 = new Node(8L, INFO, ImmutableMap.of(), 4d, 1d);
 
-  static final Node NODE_9 = new Node(9, INFO, ImmutableMap.of(), 4, 1);
+  static final Node NODE_9 = new Node(9L, INFO, ImmutableMap.of(), 4d, 1d);
 
-  static final Node NODE_10 = new Node(10, INFO, ImmutableMap.of(), 5, 2);
+  static final Node NODE_10 = new Node(10L, INFO, ImmutableMap.of(), 5d, 2d);
 
-  static final Node NODE_11 = new Node(11, INFO, ImmutableMap.of(), 5, 1);
+  static final Node NODE_11 = new Node(11L, INFO, ImmutableMap.of(), 5d, 1d);
 
-  static final Node NODE_12 = new Node(12, INFO, ImmutableMap.of(), 2, 1);
+  static final Node NODE_12 = new Node(12L, INFO, ImmutableMap.of(), 2d, 1d);
 
-  static final Node NODE_13 = new Node(13, INFO, ImmutableMap.of(), 2, 2);
+  static final Node NODE_13 = new Node(13L, INFO, ImmutableMap.of(), 2d, 2d);
 
-  static final Node NODE_14 = new Node(14, INFO, ImmutableMap.of(), 3, 3);
+  static final Node NODE_14 = new Node(14L, INFO, ImmutableMap.of(), 3d, 3d);
 
-  static final Node NODE_15 = new Node(15, INFO, ImmutableMap.of(), 3, 1);
+  static final Node NODE_15 = new Node(15L, INFO, ImmutableMap.of(), 3d, 1d);
 
   static final DataMap<Long, Coordinate> COORDINATE_CACHE = new MockDataMap(Arrays
       .asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
@@ -118,43 +118,43 @@ class EntityDataTypeGeometryBuilderTest {
       .stream()
       .collect(Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
 
-  static final Way WAY_0 = new Way(0, INFO, ImmutableMap.of(), ImmutableList.of());
+  static final Way WAY_0 = new Way(0L, INFO, ImmutableMap.of(), ImmutableList.of());
 
-  static final Way WAY_1 = new Way(1, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l));
+  static final Way WAY_1 = new Way(1L, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l));
 
   static final Way WAY_2 =
-      new Way(2, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l, 0l));
+      new Way(2L, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l, 0l));
 
   static final Way WAY_3 =
-      new Way(3, INFO, ImmutableMap.of(), ImmutableList.of(8l, 9l, 10l, 11l, 8l));
+      new Way(3L, INFO, ImmutableMap.of(), ImmutableList.of(8l, 9l, 10l, 11l, 8l));
 
   static final Way WAY_4 =
-      new Way(4, INFO, ImmutableMap.of(), ImmutableList.of(4l, 5l, 6l, 7l, 4l));
+      new Way(4L, INFO, ImmutableMap.of(), ImmutableList.of(4l, 5l, 6l, 7l, 4l));
 
   static final Way WAY_5 =
-      new Way(5, INFO, ImmutableMap.of(), ImmutableList.of(12l, 13l, 14l, 15l, 12l));
+      new Way(5L, INFO, ImmutableMap.of(), ImmutableList.of(12l, 13l, 14l, 15l, 12l));
 
   static final DataMap<Long, List<Long>> REFERENCE_CACHE =
       new MockDataMap(Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
           .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
 
-  static final Relation RELATION_0 = new Relation(0, INFO, ImmutableMap.of(), Arrays.asList());
+  static final Relation RELATION_0 = new Relation(0L, INFO, ImmutableMap.of(), Arrays.asList());
 
   static final Relation RELATION_1 =
-      new Relation(1, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList());
+      new Relation(1L, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList());
 
-  static final Relation RELATION_2 = new Relation(2, INFO, ImmutableMap.of("type", "multipolygon"),
+  static final Relation RELATION_2 = new Relation(2L, INFO, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(new Member(2l, MemberType.WAY, "outer")));
 
   static final Relation RELATION_3 =
-      new Relation(3, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList(
+      new Relation(3L, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList(
           new Member(2l, MemberType.WAY, "outer"), new Member(3l, MemberType.WAY, "inner")));
 
-  static final Relation RELATION_4 = new Relation(4, INFO, ImmutableMap.of("type", "multipolygon"),
+  static final Relation RELATION_4 = new Relation(4L, INFO, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
           new Member(3l, MemberType.WAY, "inner"), new Member(4l, MemberType.WAY, "outer")));
 
-  static final Relation RELATION_5 = new Relation(5, INFO, ImmutableMap.of("type", "multipolygon"),
+  static final Relation RELATION_5 = new Relation(5L, INFO, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
           new Member(4l, MemberType.WAY, "inner"), new Member(5l, MemberType.WAY, "inner")));
 

@@ -63,7 +63,7 @@ public final class Node extends Element {
    * @param lat the latitude
    * @param geometry the geometry
    */
-  public Node(long id, Info info, Map<String, Object> tags, Double lon, Double lat,
+  public Node(Long id, Info info, Map<String, Object> tags, Double lon, Double lat,
       Geometry geometry) {
     super(id, info, tags, geometry);
     this.lon = lon;

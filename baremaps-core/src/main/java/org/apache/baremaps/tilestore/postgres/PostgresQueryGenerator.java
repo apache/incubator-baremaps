@@ -54,7 +54,7 @@ public class PostgresQueryGenerator {
    * @param dataSource the data source
    */
   public PostgresQueryGenerator(DataSource dataSource) {
-    this(dataSource, null, null, null, null, null);
+    this(dataSource, null, null, null, null);
   }
 
   /**
