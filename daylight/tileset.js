@@ -29,6 +29,7 @@ import power from "../basemap/layers/power/tileset.js";
 import point from "../basemap/layers/point/tileset.js";
 import waterway from "../basemap/layers/waterway/tileset.js";
 import coastline from "./layers/coastline/tileset.js";
+import landcover from "./layers/landcover/tileset.js";
 
 
 export default {
@@ -61,5 +62,6 @@ export default {
     railway,
     route,
     waterway,
+    // landcover,
   ]
 }

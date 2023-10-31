@@ -15,7 +15,7 @@
  limitations under the License.
  **/
 export default {
-    "host": "http://demo.baremaps.com:9091",
+    "host": "http://localhost:9000",
     "database": "jdbc:postgresql://localhost:5432/daylight?&user=daylight&password=daylight",
     "center": [0, 0],
     "bounds": [-180, -85.0511, 180, 85.0511],
