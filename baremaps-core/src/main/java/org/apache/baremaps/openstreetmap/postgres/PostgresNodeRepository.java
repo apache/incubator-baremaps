@@ -93,7 +93,7 @@ public class PostgresNodeRepository implements NodeRepository {
       String tagsColumn, String longitudeColumn, String latitudeColumn, String geometryColumn) {
     this.dataSource = dataSource;
     this.createTable = String.format("""
-        CREATE TABLE %1$s
+        CREATE TABLE IF NOT EXISTS %1$s
         (
             %2$s int8 PRIMARY KEY,
             %3$s int,
