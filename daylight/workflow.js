@@ -110,17 +110,7 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "./layers/coastline/clean.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
           "file": "./layers/coastline/prepare.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "./layers/coastline/index.sql",
           "database": config.database,
         },
       ]
