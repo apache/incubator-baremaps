@@ -55,6 +55,15 @@ WITH
             (ST_Dump(geom)).geom AS geom
         FROM
             merged
+        UNION
+        -- Add the linestrings that are part of the daylight distribution
+        SELECT
+                tags -> 'highway' AS highway,
+                tags -> 'construction' AS construction,
+                geom AS geom
+        FROM osm_linestring
+        WHERE tags ->> 'highway' IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'unclassified', 'residential', 'construction')
+          AND changeset = 1000000000
     )
 SELECT
     row_number() OVER () AS id,
