@@ -10,17 +10,12 @@
  the License.
  **/
 export default {
-    "id": "ocean",
+    "id": "landcover",
     "queries": [
         {
             "minzoom": 0,
             "maxzoom": 10,
-            "sql": "SELECT id, tags, geom FROM osm_coastline_simplified"
+            "sql": "SELECT id, tags, geom FROM esa_landcover"
         },
-        {
-            "minzoom": 10,
-            "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_coastline"
-        }
     ]
 }

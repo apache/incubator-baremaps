@@ -4,10 +4,10 @@
     <module name="baremaps-cli" />
     <option name="PROGRAM_PARAMETERS" value="map serve --tileset tileset.js --style style.js" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/basemap" />
-    <extension name="coverage">
-      <pattern>
-        <option name="ENABLED" value="true" />
-      </pattern>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
     </extension>
     <method v="2">
       <option name="Make" enabled="true" />

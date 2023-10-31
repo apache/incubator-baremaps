@@ -49,7 +49,6 @@ import highway_construction_line from "../basemap/layers/highway/construction_li
 import highway_construction_dash from "../basemap/layers/highway/construction_dash.js";
 import highway_label from '../basemap/layers/highway/highway_label.js';
 
-import coastline_overlay from './layers/coastline/overlay.js';
 import route_line from "../basemap/layers/route/style.js"
 import building_shape from "../basemap/layers/building/shape.js";
 import building_number from "../basemap/layers/building/number.js";
@@ -63,6 +62,9 @@ import waterway_tunnel_casing from "../basemap/layers/waterway/tunnel_casing.js"
 import icon from "../basemap/layers/point/icon.js";
 import country_label from '../basemap/layers/point/country_label.js';
 import point_label from '../basemap/layers/point/point_label.js';
+
+import coastline from './layers/coastline/style.js';
+import landcover from './layers/landcover/style.js';
 
 export default {
     "version": 8,
@@ -89,7 +91,8 @@ export default {
         natural_overlay,
         amenity_overlay,
         leisure_overlay,
-        coastline_overlay,
+        coastline,
+        // landcover,
         waterway_line,
         waterway_tunnel_casing,
         waterway_tunnel_line,
