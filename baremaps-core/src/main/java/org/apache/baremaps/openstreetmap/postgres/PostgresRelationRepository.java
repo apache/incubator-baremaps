@@ -203,7 +203,7 @@ public class PostgresRelationRepository implements RelationRepository {
         Map<Long, Relation> values = new HashMap<>();
         while (result.next()) {
           Relation value = getValue(result);
-          values.put(value.id(), value);
+          values.put(value.getId(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -282,7 +282,7 @@ public class PostgresRelationRepository implements RelationRepository {
         writer.writeHeader();
         for (Relation value : values) {
           writer.startRow(10);
-          writer.writeLong(value.id());
+          writer.writeLong(value.getId());
           writer.writeInteger(value.getInfo().getVersion());
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
@@ -323,7 +323,7 @@ public class PostgresRelationRepository implements RelationRepository {
 
   private void setValue(PreparedStatement statement, Relation value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.id());
+    statement.setObject(1, value.getId());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());

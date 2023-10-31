@@ -34,13 +34,17 @@ abstract class Element implements Entity
 permits Node, Way, Relation
 {
 
-  protected final long id;
+  protected Long id;
 
-  protected final Info info;
+  protected Info info;
 
-  protected final Map<String, Object> tags;
+  protected Map<String, Object> tags;
 
   protected Geometry geometry;
+
+  protected Element() {
+
+  }
 
   protected Element(long id, Info info, Map<String, Object> tags) {
     this(id, info, tags, null);
@@ -66,8 +70,15 @@ permits Node, Way, Relation
    *
    * @return the id
    */
-  public long id() {
+  public long getId() {
     return id;
+  }
+
+  /**
+   * Sets the id.
+   */
+  public void setId(long id) {
+    this.id = id;
   }
 
   /**
@@ -80,12 +91,30 @@ permits Node, Way, Relation
   }
 
   /**
+   * Sets the info.
+   *
+   * @param info the info
+   */
+  public void setInfo(Info info) {
+    this.info = info;
+  }
+
+  /**
    * Returns the tags.
    *
    * @return the tags
    */
   public Map<String, Object> getTags() {
     return tags;
+  }
+
+  /**
+   * Sets the tags.
+   *
+   * @param tags the tags
+   */
+  public void setTags(Map<String, Object> tags) {
+    this.tags = tags;
   }
 
   /**

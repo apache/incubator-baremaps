@@ -41,7 +41,7 @@ public class GeocoderOsmDocumentMapper implements Function<Element, Document> {
   @Override
   public Document apply(Element element) {
     var document = new Document();
-    document.add(new StoredField("osm_id", element.id()));
+    document.add(new StoredField("osm_id", element.getId()));
     document.add(new StoredField("osm_type", element.getClass().getSimpleName()));
 
     if (element.getTags().containsKey(OsmTags.NAME.key())) {

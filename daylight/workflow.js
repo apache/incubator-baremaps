@@ -115,33 +115,38 @@ export default {
     //     },
     //   ]
     // },
-    {
-      "id": "daylight-preferred-localization",
-      "needs": ["daylight-data"],
-      "tasks": [
-        // {
-        //   "type": "DownloadUrl",
-        //   "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/preferred-localization-v1.33.tsv",
-        //   "path": "data/preferred-localization.tsv"
-        // },
-        {
-            "type": "ImportDaylightTranslations",
-            "file": "data/preferred-localization.tsv",
-            "database": config.database,
-        }
-      ]
-    },
     // {
-    //   "id": "daylight-important-features",
+    //   "id": "daylight-preferred-localization",
     //   "needs": ["daylight-data"],
     //   "tasks": [
     //     {
     //       "type": "DownloadUrl",
-    //       "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/important-features-v1.32.json",
-    //       "path": "data/important-features.json"
+    //       "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/preferred-localization-v1.33.tsv",
+    //       "path": "data/preferred-localization.tsv"
     //     },
+    //     {
+    //         "type": "ImportDaylightTranslations",
+    //         "file": "data/preferred-localization.tsv",
+    //         "database": config.database,
+    //     }
     //   ]
     // },
+    {
+      "id": "daylight-important-features",
+      "needs": ["daylight-data"],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/important-features-v1.32.json",
+          "path": "data/important-features.json"
+        },
+        {
+          "type": "ImportDaylightFeatures",
+          "file": "data/important-features.json",
+          "database": config.database,
+        },
+      ]
+    },
     // {
     //   "id": "daylight-landcover",
     //     "needs": ["daylight-data"],

@@ -99,10 +99,10 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
       var end = System.currentTimeMillis();
       var duration = end - start;
       if (duration > 60 * 1000) {
-        logger.debug("Relation #{} processed in {} ms", relation.id(), duration);
+        logger.debug("Relation #{} processed in {} ms", relation.getId(), duration);
       }
     } catch (Exception e) {
-      logger.debug("Unable to build the geometry for relation #" + relation.id(), e);
+      logger.debug("Unable to build the geometry for relation #" + relation.getId(), e);
       relation.setGeometry(GEOMETRY_FACTORY_WGS84.createEmpty(0));
     }
   }

@@ -46,7 +46,7 @@ class PostgresRelationRepositoryTest extends PostgresRepositoryTest {
   @Tag("integration")
   void insert() throws RepositoryException {
     relationRepository.put(Constants.RELATION_2);
-    assertEquals(Constants.RELATION_2, relationRepository.get(Constants.RELATION_2.id()));
+    assertEquals(Constants.RELATION_2, relationRepository.get(Constants.RELATION_2.getId()));
   }
 
   @Test
@@ -56,15 +56,15 @@ class PostgresRelationRepositoryTest extends PostgresRepositoryTest {
         Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
     relationRepository.put(relations);
     assertIterableEquals(relations, relationRepository
-        .get(relations.stream().map(e -> e.id()).collect(Collectors.toList())));
+        .get(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   void delete() throws RepositoryException {
     relationRepository.put(Constants.RELATION_2);
-    relationRepository.delete(Constants.RELATION_2.id());
-    assertNull(relationRepository.get(Constants.RELATION_2.id()));
+    relationRepository.delete(Constants.RELATION_2.getId());
+    assertNull(relationRepository.get(Constants.RELATION_2.getId()));
   }
 
   @Test
@@ -73,9 +73,9 @@ class PostgresRelationRepositoryTest extends PostgresRepositoryTest {
     List<Relation> relations =
         Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
     relationRepository.put(relations);
-    relationRepository.delete(relations.stream().map(e -> e.id()).collect(Collectors.toList()));
+    relationRepository.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null), relationRepository
-        .get(relations.stream().map(e -> e.id()).collect(Collectors.toList())));
+        .get(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -85,6 +85,6 @@ class PostgresRelationRepositoryTest extends PostgresRepositoryTest {
         Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
     relationRepository.copy(relations);
     assertIterableEquals(relations, relationRepository
-        .get(relations.stream().map(e -> e.id()).collect(Collectors.toList())));
+        .get(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

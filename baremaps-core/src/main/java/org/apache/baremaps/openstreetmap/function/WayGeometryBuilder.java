@@ -66,7 +66,7 @@ public class WayGeometryBuilder implements Consumer<Way> {
         }
       }
     } catch (Exception e) {
-      logger.debug("Unable to build the geometry for way #" + way.id(), e);
+      logger.debug("Unable to build the geometry for way #" + way.getId(), e);
       way.setGeometry(GEOMETRY_FACTORY_WGS84.createEmpty(0));
     }
   }
