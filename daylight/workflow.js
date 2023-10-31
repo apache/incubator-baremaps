@@ -120,12 +120,6 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "./layers/coastline/simplify.sql",
-          "database": config.database,
-          "parallel": true,
-        },
-        {
-          "type": "ExecuteSql",
           "file": "./layers/coastline/index.sql",
           "database": config.database,
         },
