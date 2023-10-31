@@ -9,8 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
-import {withSortKeys, asLayerObject} from "../../utils/utils.js";
-import theme from "../../theme.js";
+import {withSortKeys, asLayerObject} from "../../../basemap/utils/utils.js";
+import theme from "../../../basemap/theme.js";
 
 let directives = [
     {

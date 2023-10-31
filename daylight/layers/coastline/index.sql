@@ -8,15 +8,4 @@
 -- or implied. See the License for the specific language governing permissions and limitations under
 -- the License.
 CREATE INDEX IF NOT EXISTS osm_coastline_index ON osm_coastline USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z12_index ON osm_coastline_z12 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z11_index ON osm_coastline_z11 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z10_index ON osm_coastline_z10 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z9_index ON osm_coastline_z9 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z8_index ON osm_coastline_z8 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z7_index ON osm_coastline_z7 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z6_index ON osm_coastline_z6 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z5_index ON osm_coastline_z5 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z4_index ON osm_coastline_z4 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z3_index ON osm_coastline_z3 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z2_index ON osm_coastline_z2 USING SPGIST (geom);
-CREATE INDEX IF NOT EXISTS osm_coastline_z1_index ON osm_coastline_z1 USING SPGIST (geom);
+CREATE INDEX IF NOT EXISTS osm_coastline_simplified_index ON osm_coastline_simplified USING SPGIST (geom);

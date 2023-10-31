@@ -9,3 +9,6 @@
 -- the License.
 CREATE MATERIALIZED VIEW osm_coastline AS
 SELECT row_number() OVER () as id, '{"ocean":"water"}'::jsonb as tags, st_setsrid(geometry, 3857) AS geom FROM water_polygons_shp;
+
+CREATE MATERIALIZED VIEW osm_coastline_simplified AS
+SELECT id, tags, st_simplifypreservetopology(geom, 300) as geom FROM osm_coastline WHERE ST_Area(geom) > 300000;

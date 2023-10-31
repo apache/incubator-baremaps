@@ -14,13 +14,13 @@ export default {
     "queries": [
         {
             "minzoom": 0,
-            "maxzoom": 12,
-            "sql": "SELECT id, tags, geom FROM osm_coastline_z$zoom"
+            "maxzoom": 10,
+            "sql": "SELECT id, tags, st_union(geom) FROM osm_coastline_simplified"
         },
         {
-            "minzoom": 12,
+            "minzoom": 10,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_coastline"
+            "sql": "SELECT id, tags, st_union(geom) FROM osm_coastline"
         }
     ]
 }
