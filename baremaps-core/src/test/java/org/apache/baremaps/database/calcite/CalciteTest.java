@@ -108,6 +108,7 @@ public class CalciteTest {
           	ST_MakeEnvelope(0, 0, 4096, 4096),
           	4096, 0, true))
           	""";
+
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery(sql)) {
         assertTrue(resultSet.next());
