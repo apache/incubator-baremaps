@@ -46,6 +46,9 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
+    var geometryFactory = new GeometryFactory();
+    var wktReader = new WKTReader(geometryFactory);
+    var projectionTransformer = new ProjectionTransformer(4326, 3857);
 
     // Initialize the repositories
     var nodeRepository = new PostgresNodeRepository(datasource);
@@ -54,10 +57,6 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
     nodeRepository.create();
     wayRepository.create();
     relationRepository.create();
-
-    var geometryFactory = new GeometryFactory();
-    var wktReader = new WKTReader(geometryFactory);
-    var projectionTransformer = new ProjectionTransformer(4326, 3857);
 
     // Process the file
     var objectMapper = new ObjectMapper();
