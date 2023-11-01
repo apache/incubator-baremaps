@@ -67,33 +67,63 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
         case "node" -> {
           var node = nodeRepository.get(feature.id());
           if (node != null) {
-            var tags = new HashMap<>(node.getTags());
-            tags.putAll(feature.tags());
+            // Merge the tags
+            var tags = new HashMap<>(feature.tags());
+            if (node.getTags() != null) {
+              tags.putAll(node.getTags());
+            }
             node.setTags(tags);
-            var geometry = projectionTransformer.transform(wktReader.read(feature.wkt()));
-            node.setGeometry(geometry);
+
+            // Set the geometry
+            var wkt = feature.wkt();
+            if (wkt != null) {
+              var geometry = projectionTransformer.transform(wktReader.read(wkt));
+              node.setGeometry(geometry);
+            }
+
+            // Update the node
             nodeRepository.put(node);
           }
         }
         case "way" -> {
           var way = wayRepository.get(feature.id());
           if (way != null) {
-            var tags = new HashMap<>(way.getTags());
-            tags.putAll(feature.tags());
+            // Merge the tags
+            var tags = new HashMap<>(feature.tags());
+            if (way.getTags() != null) {
+              tags.putAll(way.getTags());
+            }
             way.setTags(tags);
-            var geometry = projectionTransformer.transform(wktReader.read(feature.wkt()));
-            way.setGeometry(geometry);
+
+            // Set the geometry
+            var wkt = feature.wkt();
+            if (wkt != null) {
+              var geometry = projectionTransformer.transform(wktReader.read(wkt));
+              way.setGeometry(geometry);
+            }
+
+            // Update the way
             wayRepository.put(way);
           }
         }
         case "relation" -> {
           var relation = relationRepository.get(feature.id());
           if (relation != null) {
-            var tags = new HashMap<>(relation.getTags());
-            tags.putAll(feature.tags());
+            // Merge the tags
+            var tags = new HashMap<>(feature.tags());
+            if (relation.getTags() != null) {
+              tags.putAll(relation.getTags());
+            }
             relation.setTags(tags);
-            var geometry = projectionTransformer.transform(wktReader.read(feature.wkt()));
-            relation.setGeometry(geometry);
+
+            // Set the geometry
+            var wkt = feature.wkt();
+            if (wkt != null) {
+              var geometry = projectionTransformer.transform(wktReader.read(wkt));
+              relation.setGeometry(geometry);
+            }
+
+            // Update the relation
             relationRepository.put(relation);
           }
         }
