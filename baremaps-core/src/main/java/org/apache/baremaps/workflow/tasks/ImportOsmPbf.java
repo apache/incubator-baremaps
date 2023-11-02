@@ -46,10 +46,13 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmPbf(Path file, Object database, Integer databaseSrid,
-    Boolean replaceExisting)
-    implements
-      Task {
+public record ImportOsmPbf(
+    Path file,
+    Path cache,
+    Boolean cleanCache,
+    Object database,
+    Integer databaseSrid,
+    Boolean replaceExisting) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmPbf.class);
 
@@ -73,26 +76,18 @@ public record ImportOsmPbf(Path file, Object database, Integer databaseSrid,
       wayRepository.create();
       relationRepository.create();
     }
-    var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
+    var cacheDir = cache != null ? cache : Files.createTempDirectory(Paths.get("."), "cache_");
 
-    DataMap<Long, Coordinate> coordinateMap;
-    if (Files.size(path) > 1 << 30) {
-      var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-      coordinateMap = new MemoryAlignedDataMap<>(
-          new LonLatDataType(),
-          new MemoryMappedDirectory(coordinateDir));
-    } else {
-      var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-      var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
-      coordinateMap =
-          new MonotonicDataMap<>(
-              new MemoryAlignedDataList<>(
-                  new PairDataType<>(new LongDataType(), new LongDataType()),
-                  new MemoryMappedDirectory(coordinateKeysDir)),
-              new AppendOnlyBuffer<>(
-                  new LonLatDataType(),
-                  new MemoryMappedDirectory(coordinateValuesDir)));
-    }
+    var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
+    var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
+    var coordinateMap =
+        new MonotonicDataMap<>(
+            new MemoryAlignedDataList<>(
+                new PairDataType<>(new LongDataType(), new LongDataType()),
+                new MemoryMappedDirectory(coordinateKeysDir)),
+            new AppendOnlyBuffer<>(
+                new LonLatDataType(),
+                new MemoryMappedDirectory(coordinateValuesDir)));
 
     var referenceKeysDir = Files.createDirectory(cacheDir.resolve("reference_keys"));
     var referenceValuesDir = Files.createDirectory(cacheDir.resolve("reference_vals"));
@@ -115,7 +110,9 @@ public record ImportOsmPbf(Path file, Object database, Integer databaseSrid,
         relationRepository,
         databaseSrid);
 
-    FileUtils.deleteRecursively(cacheDir);
+    if (cleanCache) {
+      FileUtils.deleteRecursively(cacheDir);
+    }
   }
 
   public static void execute(
