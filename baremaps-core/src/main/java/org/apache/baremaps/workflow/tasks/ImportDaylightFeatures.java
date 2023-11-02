@@ -74,13 +74,6 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
             }
             node.setTags(tags);
 
-            // Set the geometry
-            var wkt = feature.wkt();
-            if (wkt != null) {
-              var geometry = projectionTransformer.transform(wktReader.read(wkt));
-              node.setGeometry(geometry);
-            }
-
             // Update the node
             nodeRepository.put(node);
           }
@@ -95,13 +88,6 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
             }
             way.setTags(tags);
 
-            // Set the geometry
-            var wkt = feature.wkt();
-            if (wkt != null) {
-              var geometry = projectionTransformer.transform(wktReader.read(wkt));
-              way.setGeometry(geometry);
-            }
-
             // Update the way
             wayRepository.put(way);
           }
@@ -115,13 +101,6 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
               tags.putAll(relation.getTags());
             }
             relation.setTags(tags);
-
-            // Set the geometry
-            var wkt = feature.wkt();
-            if (wkt != null) {
-              var geometry = projectionTransformer.transform(wktReader.read(wkt));
-              relation.setGeometry(geometry);
-            }
 
             // Update the relation
             relationRepository.put(relation);
