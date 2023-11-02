@@ -37,43 +37,35 @@ import org.apache.baremaps.utils.Compression;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmChange(Path file, Object database, Integer srid,
+public record ImportOsmChange(
+    Path file,
+    Path cache,
+    Object database,
+    Integer srid,
     Compression compression) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmChange.class);
-
-  public ImportOsmChange(Path file, Object database, Integer srid) {
-    this(file, database, srid, Compression.detect(file));
-  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
     var path = file.toAbsolutePath();
 
-    var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
-    DataMap<Long, Coordinate> coordinateMap;
-    if (Files.size(path) > 1 << 30) {
-      var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-      coordinateMap = new MemoryAlignedDataMap<>(
-          new LonLatDataType(),
-          new MemoryMappedDirectory(coordinateDir));
-    } else {
-      var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-      var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
-      coordinateMap =
-          new MonotonicDataMap<>(
-              new MemoryAlignedDataList<>(
-                  new PairDataType<>(new LongDataType(), new LongDataType()),
-                  new MemoryMappedDirectory(coordinateKeysDir)),
-              new AppendOnlyBuffer<>(
-                  new LonLatDataType(),
-                  new MemoryMappedDirectory(coordinateValuesDir)));
-    }
+    var cacheDir = cache != null ? cache : Files.createTempDirectory(Paths.get("."), "cache_");
+
+    var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
+    var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
+    var coordinateMap =
+        new MonotonicDataMap<>(
+            new MemoryAlignedDataList<>(
+                new PairDataType<>(new LongDataType(), new LongDataType()),
+                new MemoryMappedDirectory(coordinateKeysDir)),
+            new AppendOnlyBuffer<>(
+                new LonLatDataType(),
+                new MemoryMappedDirectory(coordinateValuesDir)));
 
     var referenceKeysDir = Files.createDirectory(cacheDir.resolve("reference_keys"));
     var referenceValuesDir = Files.createDirectory(cacheDir.resolve("reference_vals"));
@@ -94,7 +86,9 @@ public record ImportOsmChange(Path file, Object database, Integer srid,
     var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
     var buildGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
-    var prepareGeometries = coordinateMapBuilder.andThen(referenceMapBuilder).andThen(buildGeometry)
+    var prepareGeometries = coordinateMapBuilder
+        .andThen(referenceMapBuilder)
+        .andThen(buildGeometry)
         .andThen(reprojectGeometry);
     var prepareChange = consumeThenReturn(new ChangeEntitiesHandler(prepareGeometries));
     var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);

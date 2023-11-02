@@ -33,7 +33,7 @@ class ImportOsmPbfTest extends PostgresContainerTest {
     var file = TestFiles.resolve("data.osm.pbf");
     var jdbcUrl = jdbcUrl();
     var srid = 3857;
-    var task = new ImportOsmPbf(file, jdbcUrl, srid, true);
+    var task = new ImportOsmPbf(file, null, true, jdbcUrl, srid, true);
     task.execute(new WorkflowContext());
   }
 }
