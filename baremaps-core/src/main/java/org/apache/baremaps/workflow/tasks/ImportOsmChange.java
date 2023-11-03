@@ -56,16 +56,10 @@ public record ImportOsmChange(
 
     var cacheDir = cache != null ? cache : Files.createTempDirectory(Paths.get("."), "cache_");
 
-    var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-    var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
-    var coordinateMap =
-        new MonotonicDataMap<>(
-            new MemoryAlignedDataList<>(
-                new PairDataType<>(new LongDataType(), new LongDataType()),
-                new MemoryMappedDirectory(coordinateKeysDir)),
-            new AppendOnlyBuffer<>(
-                new LonLatDataType(),
-                new MemoryMappedDirectory(coordinateValuesDir)));
+    var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinates"));
+    var coordinateMap = new MemoryAlignedDataMap<>(
+            new LonLatDataType(),
+            new MemoryMappedDirectory(coordinateDir));;
 
     var referenceKeysDir = Files.createDirectory(cacheDir.resolve("reference_keys"));
     var referenceValuesDir = Files.createDirectory(cacheDir.resolve("reference_vals"));
