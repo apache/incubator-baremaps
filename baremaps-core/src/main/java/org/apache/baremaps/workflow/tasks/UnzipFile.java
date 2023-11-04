@@ -22,17 +22,8 @@ import java.nio.file.*;
 import java.util.zip.ZipFile;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.baremaps.workflow.WorkflowException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public record UnzipFile(Path file, Path directory) implements Task {
-
-  private static final long THRESHOLD_ENTRIES = 10000;
-  private static final long THRESHOLD_SIZE = 10l << 30;
-  private static final double THRESHOLD_RATIO = 100;
-
-  private static final Logger logger = LoggerFactory.getLogger(UnzipFile.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
@@ -41,11 +32,13 @@ public record UnzipFile(Path file, Path directory) implements Task {
 
     try (var zipFile = new ZipFile(filePath.toFile())) {
       var entries = zipFile.entries();
-      long totalSizeArchive = 0;
-      long totalEntryArchive = 0;
 
       while (entries.hasMoreElements()) {
         var ze = entries.nextElement();
+        if (ze.isDirectory()) {
+          continue;
+        }
+
         var path = directoryPath.resolve(ze.getName());
 
         var file = path.toFile().getCanonicalFile();
@@ -61,29 +54,10 @@ public record UnzipFile(Path file, Path directory) implements Task {
         try (var input = new BufferedInputStream(zipFile.getInputStream(ze));
             var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
 
-          totalEntryArchive++;
-
-          int nBytes = -1;
+          int nBytes;
           byte[] buffer = new byte[4096];
-          long totalSizeEntry = 0;
-
           while ((nBytes = input.read(buffer)) > 0) {
             output.write(buffer, 0, nBytes);
-            totalSizeEntry += nBytes;
-            totalSizeArchive += nBytes;
-
-            double compressionRatio = (double) totalSizeEntry / (double) ze.getCompressedSize();
-            if (compressionRatio > THRESHOLD_RATIO) {
-              throw new WorkflowException("Archive compression ratio is too high");
-            }
-          }
-
-          if (totalSizeArchive > THRESHOLD_SIZE) {
-            throw new IOException("Archive is too large");
-          }
-
-          if (totalEntryArchive > THRESHOLD_ENTRIES) {
-            throw new IOException("Archive contains too many entries");
           }
         }
       }
