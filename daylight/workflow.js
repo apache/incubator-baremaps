@@ -107,16 +107,16 @@ export default {
                     "file": "data/preferred-localization.tsv",
                     "database": config.database,
                 },
-                // {
-                //     "type": "DownloadUrl",
-                //     "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.32/important-features-v1.32.json",
-                //     "path": "data/important-features.json"
-                // },
-                // {
-                //     "type": "ImportDaylightFeatures",
-                //     "file": "data/important-features.json",
-                //     "database": config.database,
-                // },
+                {
+                    "type": "DownloadUrl",
+                    "url": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/important-features-v1.33.json",
+                    "path": "data/important-features.json"
+                },
+                {
+                    "type": "ImportDaylightFeatures",
+                    "file": "data/important-features.json",
+                    "database": config.database,
+                },
                 {
                     "type": "DownloadUrl",
                     "url": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.shp",
