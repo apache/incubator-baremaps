@@ -75,7 +75,7 @@ class ImportMonacoTest extends PostgresRepositoryTest {
     while (replicationSequenceNumber < 3075) {
       new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository, wayRepository,
           relationRepository, 3857, 14).call();
-      UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+      UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
           wayRepository, relationRepository, 3857);
       long nextReplicationSequenceNumber =
           headerRepository.selectLatest().getReplicationSequenceNumber();

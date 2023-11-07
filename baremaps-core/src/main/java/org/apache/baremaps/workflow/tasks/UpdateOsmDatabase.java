@@ -49,9 +49,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UpdateOpenStreetMap(Object database, Integer databaseSrid) implements Task {
+public record UpdateOsmDatabase(Object database, Integer databaseSrid) implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(UpdateOpenStreetMap.class);
+  private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
