@@ -94,7 +94,7 @@ class ImportUpdateDataTest extends PostgresRepositoryTest {
     assertNotNull(way);
 
     // Update the database
-    UpdateOpenStreetMap.execute(new PostgresCoordinateMap(dataSource()),
+    UpdateOsmDatabase.execute(new PostgresCoordinateMap(dataSource()),
         new PostgresReferenceMap(dataSource()), headerRepository, nodeRepository, wayRepository,
         relationRepository, 3857);
 

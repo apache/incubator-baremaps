@@ -52,7 +52,7 @@ export default {
                     "path": "data/roads.osc.gz"
                 },
                 {
-                    "type": "ImportOsmChange",
+                    "type": "ImportOsmOsc",
                     "file": "data/roads.osc.gz",
                     "cache": "cache/",
                     "cleanCache": false,
@@ -66,7 +66,7 @@ export default {
                     "path": "data/admin.osc.gz"
                 },
                 {
-                    "type": "ImportOsmChange",
+                    "type": "ImportOsmOsc",
                     "file": "data/admin.osc.gz",
                     "cache": "cache/",
                     "cleanCache": false,

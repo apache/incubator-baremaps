@@ -40,14 +40,14 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmChange(
+public record ImportOsmOsc(
     Path file,
     Path cache,
     Object database,
     Integer srid,
     Compression compression) implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImportOsmChange.class);
+  private static final Logger logger = LoggerFactory.getLogger(ImportOsmOsc.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
