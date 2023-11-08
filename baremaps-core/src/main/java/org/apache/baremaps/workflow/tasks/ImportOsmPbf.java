@@ -79,10 +79,24 @@ public record ImportOsmPbf(
 
     var cacheDir = cache != null ? cache : Files.createTempDirectory(Paths.get("."), "cache_");
 
-    var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinates"));
-    var coordinateMap = new MemoryAlignedDataMap<>(
-        new LonLatDataType(),
-        new MemoryMappedDirectory(coordinateDir));
+    DataMap<Long, Coordinate> coordinateMap;
+    if (Files.size(path) > 1 << 30) {
+      var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinates"));
+      coordinateMap = new MemoryAlignedDataMap<>(
+          new LonLatDataType(),
+          new MemoryMappedDirectory(coordinateDir));
+    } else {
+      var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
+      var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
+      coordinateMap =
+          new MonotonicDataMap<>(
+              new MemoryAlignedDataList<>(
+                  new PairDataType<>(new LongDataType(), new LongDataType()),
+                  new MemoryMappedDirectory(coordinateKeysDir)),
+              new AppendOnlyBuffer<>(
+                  new LonLatDataType(),
+                  new MemoryMappedDirectory(coordinateValuesDir)));
+    }
 
     var referenceKeysDir = Files.createDirectories(cacheDir.resolve("reference_keys"));
     var referenceValuesDir = Files.createDirectories(cacheDir.resolve("reference_vals"));

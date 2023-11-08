@@ -40,7 +40,6 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
       @JsonProperty("tags") Map<String, Object> tags,
       @JsonProperty("wkt") String wkt,
       @JsonProperty("category") String category) {
-
   }
 
   @Override

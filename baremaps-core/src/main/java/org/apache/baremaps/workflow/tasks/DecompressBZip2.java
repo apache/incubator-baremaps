@@ -31,14 +31,14 @@ public record DecompressBZip2(Path source, Path target) implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var sourcePath = source.toAbsolutePath();
-    try (var zis =
-        new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(sourcePath)))) {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+        var compressedInputStream = new BZip2CompressorInputStream(bufferedInputStream)) {
       var targetPath = target.toAbsolutePath();
       if (!Files.exists(targetPath)) {
         Files.createDirectories(targetPath.getParent());
         Files.createFile(targetPath);
       }
-      Files.copy(zis, targetPath, StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(compressedInputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
       throw new WorkflowException(e);
     }

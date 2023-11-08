@@ -49,29 +49,18 @@ public record DecompressFile(Path source, Path target, Compression compression) 
     var sourcePath = source.toAbsolutePath();
     var targetPath = target.toAbsolutePath();
     switch (compression) {
-      case zip:
-        decompressZip(sourcePath, targetPath);
-        break;
-      case targz:
-        decompressTarGz(sourcePath, targetPath);
-        break;
-      case tarbz2:
-        decompressTarBz2(sourcePath, targetPath);
-        break;
-      case gzip:
-        decompressGzip(sourcePath, targetPath);
-        break;
-      case bzip2:
-        decompressBzip2(sourcePath, targetPath);
-        break;
+      case zip -> decompressZip(sourcePath, targetPath);
+      case targz -> decompressTarGz(sourcePath, targetPath);
+      case tarbz2 -> decompressTarBz2(sourcePath, targetPath);
+      case gzip -> decompressGzip(sourcePath, targetPath);
+      case bzip2 -> decompressBzip2(sourcePath, targetPath);
     }
-
   }
 
   public static void decompressBzip2(Path sourcePath, Path targetPath) throws IOException {
-    try (var zis =
-        new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(sourcePath)))) {
-      Files.copy(zis, targetPath, StandardCopyOption.REPLACE_EXISTING);
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+        var bzip2InputStream = new BZip2CompressorInputStream(bufferedInputStream)) {
+      Files.copy(bzip2InputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
     }
   }
 
@@ -82,10 +71,9 @@ public record DecompressFile(Path source, Path target, Compression compression) 
   }
 
   public static void decompressTarGz(Path sourcePath, Path targetPath) throws IOException {
-    try (
-        GZIPInputStream gzipInputStream =
-            new GZIPInputStream(new BufferedInputStream(Files.newInputStream(sourcePath)));
-        TarArchiveInputStream tarInputStream = new TarArchiveInputStream(gzipInputStream)) {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+        var gzipInputStream = new GZIPInputStream(bufferedInputStream);
+        var tarInputStream = new TarArchiveInputStream(gzipInputStream)) {
       TarArchiveEntry entry;
       while ((entry = (TarArchiveEntry) tarInputStream.getNextEntry()) != null) {
         var path = targetPath.resolve(entry.getName());
@@ -107,10 +95,9 @@ public record DecompressFile(Path source, Path target, Compression compression) 
   }
 
   public static void decompressTarBz2(Path sourcePath, Path targetPath) throws IOException {
-    try (
-        BZip2CompressorInputStream gzipInputStream = new BZip2CompressorInputStream(
-            new BufferedInputStream(Files.newInputStream(sourcePath)));
-        TarArchiveInputStream tarInputStream = new TarArchiveInputStream(gzipInputStream)) {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+        var bzip2InputStream = new BZip2CompressorInputStream(bufferedInputStream);
+        var tarInputStream = new TarArchiveInputStream(bzip2InputStream)) {
       TarArchiveEntry entry;
       while ((entry = (TarArchiveEntry) tarInputStream.getNextEntry()) != null) {
         var path = targetPath.resolve(entry.getName());
