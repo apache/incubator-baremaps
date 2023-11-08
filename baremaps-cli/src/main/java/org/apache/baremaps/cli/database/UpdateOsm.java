@@ -28,7 +28,7 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 @Command(name = "update-osm", description = "Update OpenStreetMap data in Postgres.")
-public class UpdateOpenStreetMap implements Callable<Integer> {
+public class UpdateOsm implements Callable<Integer> {
 
   @Mixin
   private Options options;

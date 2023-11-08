@@ -28,7 +28,7 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 @Command(name = "import-osm", description = "Import OpenStreetMap data in Postgres.")
-public class ImportOsmPbf implements Callable<Integer> {
+public class ImportOsm implements Callable<Integer> {
 
   @Mixin
   private Options options;

@@ -23,7 +23,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "database", description = "Database commands.",
-    subcommands = {ExecuteSql.class, ImportOsmPbf.class, UpdateOpenStreetMap.class},
+    subcommands = {ExecuteSql.class, ImportOsm.class, UpdateOsm.class},
     sortOptions = false)
 public class Database implements Runnable {
 
