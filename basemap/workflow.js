@@ -406,6 +406,36 @@ export default {
       ]
     },
     {
+      "id": "openstreetmap-leisure",
+      "needs": [
+        "openstreetmap-polygon"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/leisure/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/leisure/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/leisure/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/leisure/index.sql",
+          "database": config.database,
+          "parallel": true
+        },
+      ]
+    },
+    {
       "id": "openstreetmap-waterway",
       "needs": [
           "openstreetmap-linestring"
