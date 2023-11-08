@@ -4,11 +4,6 @@
     <module name="baremaps-cli" />
     <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.json" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/transformation" />
-    <extension name="coverage">
-      <pattern>
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
