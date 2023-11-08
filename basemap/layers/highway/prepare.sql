@@ -23,7 +23,7 @@ WITH
                 tags -> 'construction' AS construction,
                 geom AS geom
         FROM osm_linestring
-        WHERE tags ->> 'highway' IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary',  'tertiary_link', 'unclassified', 'residential', 'construction')
+        WHERE tags ->> 'highway' IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link', 'unclassified', 'residential', 'construction')
     ),
     -- Cluster the linestrings by highway type
     clustered AS (

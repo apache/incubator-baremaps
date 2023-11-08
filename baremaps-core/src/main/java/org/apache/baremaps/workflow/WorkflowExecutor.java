@@ -210,28 +210,39 @@ public class WorkflowExecutor implements AutoCloseable {
    */
   private void logStepMeasures() {
     logger.info("----------------------------------------");
+
     var workflowStart = stepMeasures.stream()
-        .mapToLong(measures -> measures.stepMeasures.stream()
-            .mapToLong(measure -> measure.start)
-            .min().getAsLong())
-        .min().getAsLong();
+        .flatMapToLong(measures -> measures.stepMeasures.stream()
+            .mapToLong(measure -> measure.start))
+        .min();
+
     var workflowEnd = stepMeasures.stream()
-        .mapToLong(measures -> measures.stepMeasures.stream()
-            .mapToLong(measure -> measure.end)
-            .max().getAsLong())
-        .max().getAsLong();
-    var workflowDuration = Duration.ofMillis(workflowEnd - workflowStart);
-    logger.info("Workflow graph: {}", this.graph);
-    logger.info("  Duration: {}", formatDuration(workflowDuration));
+        .flatMapToLong(measures -> measures.stepMeasures.stream()
+            .mapToLong(measure -> measure.end))
+        .max();
+
+    if (workflowStart.isPresent() && workflowEnd.isPresent()) {
+      var workflowDuration = Duration.ofMillis(workflowEnd.getAsLong() - workflowStart.getAsLong());
+      logger.info("Workflow graph: {}", this.graph);
+      logger.info("  Duration: {}", formatDuration(workflowDuration));
+    } else {
+      logger.info("Workflow graph: {}", this.graph);
+      logger.info("  Duration: unknown");
+    }
 
     for (var stepMeasure : this.stepMeasures) {
-      var stepStart =
-          stepMeasure.stepMeasures.stream().mapToLong(measure -> measure.start).min().getAsLong();
-      var stepEnd =
-          stepMeasure.stepMeasures.stream().mapToLong(measure -> measure.end).max().getAsLong();
-      var stepDuration = Duration.ofMillis(stepEnd - stepStart);
-      logger.info("Step: {}, Duration: {} ms", stepMeasure.step.getId(),
-          formatDuration(stepDuration));
+      var stepStart = stepMeasure.stepMeasures.stream()
+          .mapToLong(measure -> measure.start).min();
+      var stepEnd = stepMeasure.stepMeasures.stream()
+          .mapToLong(measure -> measure.end).max();
+
+      if (stepStart.isPresent() && stepEnd.isPresent()) {
+        var stepDuration = Duration.ofMillis(stepEnd.getAsLong() - stepStart.getAsLong());
+        logger.info("Step: {}, Duration: {} ms", stepMeasure.step.getId(),
+            formatDuration(stepDuration));
+      } else {
+        logger.info("Step: {}, Duration: unknown", stepMeasure.step.getId());
+      }
 
       for (var taskMeasure : stepMeasure.stepMeasures) {
         var taskDuration = Duration.ofMillis(taskMeasure.end - taskMeasure.start);
@@ -251,24 +262,28 @@ public class WorkflowExecutor implements AutoCloseable {
   private static String formatDuration(Duration duration) {
     var builder = new StringBuilder();
     var days = duration.toDays();
-    if (days > 0) {
-      builder.append(days).append(" days ");
-    }
-    final long hrs = duration.toHours() - Duration.ofDays(duration.toDays()).toHours();
-    if (hrs > 0) {
-      builder.append(hrs).append(" hrs ");
-    }
-    final long min = duration.toMinutes() - Duration.ofHours(duration.toHours()).toMinutes();
-    if (min > 0) {
-      builder.append(min).append(" min ");
-    }
-    final long sec = duration.toSeconds() - Duration.ofMinutes(duration.toMinutes()).toSeconds();
-    if (sec > 0) {
-      builder.append(sec).append(" s ");
-    }
-    final long ms = duration.toMillis() - Duration.ofSeconds(duration.toSeconds()).toMillis();
-    if (ms > 0) {
-      builder.append(ms).append(" ms ");
+    if (duration.isZero()) {
+      builder.append("0 ms");
+    } else {
+      if (days > 0) {
+        builder.append(days).append(" days ");
+      }
+      final long hrs = duration.toHours() - Duration.ofDays(duration.toDays()).toHours();
+      if (hrs > 0) {
+        builder.append(hrs).append(" hrs ");
+      }
+      final long min = duration.toMinutes() - Duration.ofHours(duration.toHours()).toMinutes();
+      if (min > 0) {
+        builder.append(min).append(" min ");
+      }
+      final long sec = duration.toSeconds() - Duration.ofMinutes(duration.toMinutes()).toSeconds();
+      if (sec > 0) {
+        builder.append(sec).append(" s ");
+      }
+      final long ms = duration.toMillis() - Duration.ofSeconds(duration.toSeconds()).toMillis();
+      if (ms > 0) {
+        builder.append(ms).append(" ms ");
+      }
     }
     return builder.toString();
   }

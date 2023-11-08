@@ -19,23 +19,19 @@ package org.apache.baremaps.cli.database;
 
 
 
-import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.baremaps.workflow.tasks.UpdateOsmDatabase;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "import-osm", description = "Import OpenStreetMap data in Postgres.")
-public class ImportOpenStreetMap implements Callable<Integer> {
+@Command(name = "update-osm", description = "Update OpenStreetMap data in Postgres.")
+public class UpdateOsm implements Callable<Integer> {
 
   @Mixin
   private Options options;
-
-  @Option(names = {"--file"}, paramLabel = "FILE",
-      description = "The PBF file to import in the database.", required = true)
-  private Path file;
 
   @Option(names = {"--database"}, paramLabel = "DATABASE",
       description = "The JDBC url of Postgres.", required = true)
@@ -47,8 +43,8 @@ public class ImportOpenStreetMap implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new org.apache.baremaps.workflow.tasks.ImportOpenStreetMap(file.toAbsolutePath(),
-        database, srid).execute(new WorkflowContext());
+    new UpdateOsmDatabase(database, srid)
+        .execute(new WorkflowContext());
     return 0;
   }
 }

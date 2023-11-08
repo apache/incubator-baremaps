@@ -18,7 +18,7 @@
       ],
       "tasks": [
         {
-          "type": "ImportOpenStreetMap",
+          "type": "ImportOsmPbf",
           "file": "greater-london-latest.osm.pbf",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
           "databaseSrid": 3857

@@ -49,19 +49,19 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UpdateOpenStreetMap(Object database, Integer databaseSrid) implements Task {
+public record UpdateOsmDatabase(Object database, Integer databaseSrid) implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(UpdateOpenStreetMap.class);
+  private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
-    DataMap<Long, Coordinate> coordinateMap = new PostgresCoordinateMap(datasource);
-    DataMap<Long, List<Long>> referenceMap = new PostgresReferenceMap(datasource);
-    HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
-    Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
-    Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
-    Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
+    var coordinateMap = new PostgresCoordinateMap(datasource);
+    var referenceMap = new PostgresReferenceMap(datasource);
+    var headerRepository = new PostgresHeaderRepository(datasource);
+    var nodeRepository = new PostgresNodeRepository(datasource);
+    var wayRepository = new PostgresWayRepository(datasource);
+    var relationRepository = new PostgresRelationRepository(datasource);
     execute(
         coordinateMap,
         referenceMap,

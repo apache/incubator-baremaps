@@ -277,6 +277,10 @@ public class ShapefileByteReader extends CommonByteReader {
     }
 
     switch (shapefileGeometryType) {
+      case NullShape:
+        loadNullRow(row);
+        break;
+
       case Point:
         loadPointRow(row);
         break;
@@ -294,6 +298,15 @@ public class ShapefileByteReader extends CommonByteReader {
     }
 
     getByteBuffer().order(ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Load null row.
+   *
+   * @param row the row to fill.
+   */
+  private void loadNullRow(DataRow row) {
+    row.set(GEOMETRY_NAME, null);
   }
 
   /**

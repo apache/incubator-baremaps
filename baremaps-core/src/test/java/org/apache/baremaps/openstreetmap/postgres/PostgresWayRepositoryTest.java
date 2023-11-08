@@ -46,7 +46,7 @@ class PostgresWayRepositoryTest extends PostgresRepositoryTest {
   @Tag("integration")
   void insert() throws RepositoryException {
     wayRepository.put(Constants.WAY_0);
-    assertEquals(Constants.WAY_0, wayRepository.get(Constants.WAY_0.id()));
+    assertEquals(Constants.WAY_0, wayRepository.get(Constants.WAY_0.getId()));
   }
 
   @Test
@@ -55,15 +55,15 @@ class PostgresWayRepositoryTest extends PostgresRepositoryTest {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.put(ways);
     assertIterableEquals(ways,
-        wayRepository.get(ways.stream().map(e -> e.id()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   void delete() throws RepositoryException {
     wayRepository.put(Constants.WAY_0);
-    wayRepository.delete(Constants.WAY_0.id());
-    assertNull(wayRepository.get(Constants.WAY_0.id()));
+    wayRepository.delete(Constants.WAY_0.getId());
+    assertNull(wayRepository.get(Constants.WAY_0.getId()));
   }
 
   @Test
@@ -71,9 +71,9 @@ class PostgresWayRepositoryTest extends PostgresRepositoryTest {
   void deleteAll() throws RepositoryException {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.put(ways);
-    wayRepository.delete(ways.stream().map(e -> e.id()).collect(Collectors.toList()));
+    wayRepository.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null),
-        wayRepository.get(ways.stream().map(e -> e.id()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -82,6 +82,6 @@ class PostgresWayRepositoryTest extends PostgresRepositoryTest {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.copy(ways);
     assertIterableEquals(ways,
-        wayRepository.get(ways.stream().map(e -> e.id()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

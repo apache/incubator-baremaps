@@ -58,7 +58,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    ImportOpenStreetMap.execute(LIECHTENSTEIN_OSM_PBF, coordinateMap, referenceMap,
+    ImportOsmPbf.execute(LIECHTENSTEIN_OSM_PBF, coordinateMap, referenceMap,
         headerRepository,
         nodeRepository, wayRepository, relationRepository, 3857);
 
@@ -75,7 +75,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
         wayRepository, relationRepository, 3857, 14).call().size());
 
     // Update the database
-    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+    UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository,
         relationRepository, 3857);
     assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
@@ -83,7 +83,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
     assertEquals(2, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository, relationRepository, 3857, 14).call().size());
 
-    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+    UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository,
         relationRepository, 3857);
     assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
@@ -91,7 +91,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
     assertEquals(0, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository, relationRepository, 3857, 14).call().size());
 
-    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+    UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository,
         relationRepository, 3857);
     assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());

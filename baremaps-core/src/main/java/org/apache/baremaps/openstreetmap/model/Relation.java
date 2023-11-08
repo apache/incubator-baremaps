@@ -28,7 +28,14 @@ import org.locationtech.jts.geom.Geometry;
 /** Represents a relation element in an OpenStreetMap dataset. */
 public final class Relation extends Element {
 
-  private final List<Member> members;
+  private List<Member> members;
+
+  /**
+   * Constructs an OpenStreetMap {@code Relation}.
+   */
+  public Relation() {
+    super();
+  }
 
   /**
    * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
@@ -38,7 +45,7 @@ public final class Relation extends Element {
    * @param tags the tags
    * @param members the members
    */
-  public Relation(long id, Info info, Map<String, Object> tags, List<Member> members) {
+  public Relation(Long id, Info info, Map<String, Object> tags, List<Member> members) {
     super(id, info, tags);
     this.members = members;
   }
@@ -52,7 +59,7 @@ public final class Relation extends Element {
    * @param members the members
    * @param geometry the geometry
    */
-  public Relation(long id, Info info, Map<String, Object> tags, List<Member> members,
+  public Relation(Long id, Info info, Map<String, Object> tags, List<Member> members,
       Geometry geometry) {
     super(id, info, tags, geometry);
     this.members = members;

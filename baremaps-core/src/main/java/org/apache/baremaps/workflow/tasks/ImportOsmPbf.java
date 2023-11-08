@@ -46,11 +46,15 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOpenStreetMap(Path file, Object database, Integer databaseSrid)
-    implements
-      Task {
+public record ImportOsmPbf(
+    Path file,
+    Path cache,
+    Boolean cleanCache,
+    Object database,
+    Integer databaseSrid,
+    Boolean replaceExisting) implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
+  private static final Logger logger = LoggerFactory.getLogger(ImportOsmPbf.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
@@ -62,21 +66,22 @@ public record ImportOpenStreetMap(Path file, Object database, Integer databaseSr
     var wayRepository = new PostgresWayRepository(dataSource);
     var relationRepository = new PostgresRelationRepository(dataSource);
 
-    headerRepository.drop();
-    nodeRepository.drop();
-    wayRepository.drop();
-    relationRepository.drop();
+    if (replaceExisting) {
+      headerRepository.drop();
+      nodeRepository.drop();
+      wayRepository.drop();
+      relationRepository.drop();
+      headerRepository.create();
+      nodeRepository.create();
+      wayRepository.create();
+      relationRepository.create();
+    }
 
-    headerRepository.create();
-    nodeRepository.create();
-    wayRepository.create();
-    relationRepository.create();
-
-    var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
+    var cacheDir = cache != null ? cache : Files.createTempDirectory(Paths.get("."), "cache_");
 
     DataMap<Long, Coordinate> coordinateMap;
     if (Files.size(path) > 1 << 30) {
-      var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
+      var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinates"));
       coordinateMap = new MemoryAlignedDataMap<>(
           new LonLatDataType(),
           new MemoryMappedDirectory(coordinateDir));
@@ -93,8 +98,8 @@ public record ImportOpenStreetMap(Path file, Object database, Integer databaseSr
                   new MemoryMappedDirectory(coordinateValuesDir)));
     }
 
-    var referenceKeysDir = Files.createDirectory(cacheDir.resolve("reference_keys"));
-    var referenceValuesDir = Files.createDirectory(cacheDir.resolve("reference_vals"));
+    var referenceKeysDir = Files.createDirectories(cacheDir.resolve("reference_keys"));
+    var referenceValuesDir = Files.createDirectories(cacheDir.resolve("reference_vals"));
     var referenceMap =
         new MonotonicDataMap<>(
             new MemoryAlignedDataList<>(
@@ -114,7 +119,9 @@ public record ImportOpenStreetMap(Path file, Object database, Integer databaseSr
         relationRepository,
         databaseSrid);
 
-    FileUtils.deleteRecursively(cacheDir);
+    if (cleanCache) {
+      FileUtils.deleteRecursively(cacheDir);
+    }
   }
 
   public static void execute(

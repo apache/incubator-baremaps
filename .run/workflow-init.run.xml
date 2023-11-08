@@ -3,11 +3,6 @@
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
     <option name="PROGRAM_PARAMETERS" value="workflow init --file sample-workflow.json" />
-    <extension name="coverage">
-      <pattern>
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

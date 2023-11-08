@@ -57,7 +57,7 @@ class ImportMonacoTest extends PostgresRepositoryTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    ImportOpenStreetMap.execute(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,
+    ImportOsmPbf.execute(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,
         referenceMap, headerRepository, nodeRepository, wayRepository, relationRepository, 3857);
 
     assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
@@ -75,7 +75,7 @@ class ImportMonacoTest extends PostgresRepositoryTest {
     while (replicationSequenceNumber < 3075) {
       new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository, wayRepository,
           relationRepository, 3857, 14).call();
-      UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+      UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
           wayRepository, relationRepository, 3857);
       long nextReplicationSequenceNumber =
           headerRepository.selectLatest().getReplicationSequenceNumber();

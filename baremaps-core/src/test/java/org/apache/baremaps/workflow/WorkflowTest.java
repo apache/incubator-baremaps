@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.workflow.tasks.DownloadUrl;
 import org.apache.baremaps.workflow.tasks.ImportGeoPackage;
-import org.apache.baremaps.workflow.tasks.ImportOpenStreetMap;
+import org.apache.baremaps.workflow.tasks.ImportOsmPbf;
 import org.apache.baremaps.workflow.tasks.ImportShapefile;
 import org.apache.baremaps.workflow.tasks.UnzipFile;
 import org.junit.jupiter.api.Disabled;
@@ -103,8 +103,9 @@ class WorkflowTest extends PostgresContainerTest {
             List.of(new DownloadUrl("https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
                 Paths.get("downloads/liechtenstein.osm.pbf")))),
         new Step("import-osmpbf", List.of("fetch-osmpbf"),
-            List.of(new ImportOpenStreetMap(Paths.get("downloads/liechtenstein.osm.pbf"), jdbcUrl(),
-                3857))),
+            List.of(new ImportOsmPbf(Paths.get("downloads/liechtenstein.osm.pbf"), null, true,
+                jdbcUrl(),
+                3857, true))),
         new Step("fetch-shapefile", List.of(), List.of(new DownloadUrl(
             "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
             Paths.get("downloads/simplified-water-polygons-split-3857.zip")))),

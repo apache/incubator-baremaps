@@ -62,6 +62,8 @@ public class PostgresWayRepository implements WayRepository {
 
   private final String delete;
 
+  private final String deleteIn;
+
   private final String copy;
 
   /**
@@ -93,14 +95,14 @@ public class PostgresWayRepository implements WayRepository {
       String tagsColumn, String nodesColumn, String geometryColumn) {
     this.dataSource = dataSource;
     this.createTable = String.format("""
-        CREATE TABLE %1$s (
-          %2$s bigint PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS %1$s (
+          %2$s int8 PRIMARY KEY,
           %3$s int,
           %4$s int,
           %5$s timestamp without time zone,
-          %6$s bigint,
+          %6$s int8,
           %7$s jsonb,
-          %8$s bigint[],
+          %8$s int8[],
           %9$s geometry
         )""", tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn, nodesColumn, geometryColumn);
@@ -127,6 +129,7 @@ public class PostgresWayRepository implements WayRepository {
         %9$s = excluded.%9$s""", tableName, idColumn, versionColumn, uidColumn, timestampColumn,
         changesetColumn, tagsColumn, nodesColumn, geometryColumn);
     this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
     this.copy = String.format(
         "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY", tableName,
         idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
@@ -197,7 +200,7 @@ public class PostgresWayRepository implements WayRepository {
         Map<Long, Way> values = new HashMap<>();
         while (result.next()) {
           Way value = getValue(result);
-          values.put(value.id(), value);
+          values.put(value.getId(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -256,13 +259,9 @@ public class PostgresWayRepository implements WayRepository {
       return;
     }
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(delete)) {
-      for (Long key : keys) {
-        statement.clearParameters();
-        statement.setObject(1, key);
-        statement.execute();
-      }
-      statement.executeBatch();
+        PreparedStatement statement = connection.prepareStatement(deleteIn)) {
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
     }
@@ -279,7 +278,7 @@ public class PostgresWayRepository implements WayRepository {
         writer.writeHeader();
         for (Way value : values) {
           writer.startRow(8);
-          writer.writeLong(value.id());
+          writer.writeLong(value.getId());
           writer.writeInteger(value.getInfo().getVersion());
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
@@ -313,7 +312,7 @@ public class PostgresWayRepository implements WayRepository {
 
   private void setValue(PreparedStatement statement, Way value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.id());
+    statement.setObject(1, value.getId());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());

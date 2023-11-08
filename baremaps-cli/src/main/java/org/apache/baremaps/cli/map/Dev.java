@@ -79,8 +79,9 @@ public class Dev implements Callable<Integer> {
     var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStoreSupplier = (Supplier<TileStore>) () -> {
       try {
+        var config = configReader.read(this.tilesetPath);
         var tilesetObject =
-            objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
+            objectMapper.readValue(config, Tileset.class);
         return new PostgresTileStore(datasource, tilesetObject);
       } catch (IOException e) {
         throw new RuntimeException(e);

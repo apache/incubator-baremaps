@@ -27,9 +27,16 @@ import org.locationtech.jts.geom.Geometry;
 /** Represents a node element in an OpenStreetMap dataset. */
 public final class Node extends Element {
 
-  private final double lon;
+  private Double lon;
 
-  private final double lat;
+  private Double lat;
+
+  /**
+   * Constructs an OpenStreetMap {@code Node}.
+   */
+  public Node() {
+    super();
+  }
 
   /**
    * Constructs an OpenStreetMap {@code Node} with the specified parameters.
@@ -40,7 +47,7 @@ public final class Node extends Element {
    * @param lon the longitude
    * @param lat the latitude
    */
-  public Node(long id, Info info, Map<String, Object> tags, double lon, double lat) {
+  public Node(Long id, Info info, Map<String, Object> tags, Double lon, Double lat) {
     super(id, info, tags);
     this.lon = lon;
     this.lat = lat;
@@ -56,7 +63,7 @@ public final class Node extends Element {
    * @param lat the latitude
    * @param geometry the geometry
    */
-  public Node(long id, Info info, Map<String, Object> tags, double lon, double lat,
+  public Node(Long id, Info info, Map<String, Object> tags, Double lon, Double lat,
       Geometry geometry) {
     super(id, info, tags, geometry);
     this.lon = lon;
@@ -68,8 +75,17 @@ public final class Node extends Element {
    *
    * @return the longitude
    */
-  public double getLon() {
+  public Double getLon() {
     return lon;
+  }
+
+  /**
+   * Sets the longitude.
+   *
+   * @param lon the longitude
+   */
+  public void setLon(Double lon) {
+    this.lon = lon;
   }
 
   /**
@@ -77,8 +93,17 @@ public final class Node extends Element {
    *
    * @return the latitude
    */
-  public double getLat() {
+  public Double getLat() {
     return lat;
+  }
+
+  /**
+   * Sets the latitude.
+   *
+   * @param lat the latitude
+   */
+  public void setLat(Double lat) {
+    this.lat = lat;
   }
 
   /** {@inheritDoc} */

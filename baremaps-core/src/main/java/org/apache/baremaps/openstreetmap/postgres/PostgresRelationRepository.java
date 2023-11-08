@@ -58,6 +58,8 @@ public class PostgresRelationRepository implements RelationRepository {
 
   private final String delete;
 
+  private final String deleteIn;
+
   private final String copy;
 
   /**
@@ -92,7 +94,7 @@ public class PostgresRelationRepository implements RelationRepository {
       String geometryColumn) {
     this.dataSource = dataSource;
     this.createTable = String.format("""
-        CREATE TABLE %1$s (
+        CREATE TABLE IF NOT EXISTS %1$s (
           %2$s bigint PRIMARY KEY,
           %3$s int,
           %4$s int,
@@ -130,6 +132,7 @@ public class PostgresRelationRepository implements RelationRepository {
         %11$s = excluded.%11$s""", tableName, idColumn, versionColumn, uidColumn, timestampColumn,
         changesetColumn, tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
     this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
     this.copy = String.format(
         "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) FROM STDIN BINARY",
         tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
@@ -200,7 +203,7 @@ public class PostgresRelationRepository implements RelationRepository {
         Map<Long, Relation> values = new HashMap<>();
         while (result.next()) {
           Relation value = getValue(result);
-          values.put(value.id(), value);
+          values.put(value.getId(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -259,13 +262,9 @@ public class PostgresRelationRepository implements RelationRepository {
       return;
     }
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(delete)) {
-      for (Long key : keys) {
-        statement.clearParameters();
-        statement.setObject(1, key);
-        statement.addBatch();
-      }
-      statement.executeBatch();
+        PreparedStatement statement = connection.prepareStatement(deleteIn)) {
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
     }
@@ -283,7 +282,7 @@ public class PostgresRelationRepository implements RelationRepository {
         writer.writeHeader();
         for (Relation value : values) {
           writer.startRow(10);
-          writer.writeLong(value.id());
+          writer.writeLong(value.getId());
           writer.writeInteger(value.getInfo().getVersion());
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
@@ -324,7 +323,7 @@ public class PostgresRelationRepository implements RelationRepository {
 
   private void setValue(PreparedStatement statement, Relation value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.id());
+    statement.setObject(1, value.getId());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());
