@@ -64,7 +64,7 @@ import country_label from '../basemap/layers/point/country_label.js';
 import point_label from '../basemap/layers/point/point_label.js';
 
 import coastline from './layers/coastline/style.js';
-import landcover from './layers/landcover/style.js';
+// import landcover from './layers/landcover/style.js';
 
 export default {
     "version": 8,

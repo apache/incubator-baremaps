@@ -26,11 +26,8 @@ import java.util.Map;
 import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
-import org.apache.baremaps.utils.ProjectionTransformer;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.WKTReader;
 
 public record ImportDaylightFeatures(Path file, Object database) implements Task {
 
@@ -45,9 +42,6 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
-    var geometryFactory = new GeometryFactory();
-    var wktReader = new WKTReader(geometryFactory);
-    var projectionTransformer = new ProjectionTransformer(4326, 3857);
 
     // Initialize the repositories
     var nodeRepository = new PostgresNodeRepository(datasource);
