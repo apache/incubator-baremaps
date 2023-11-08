@@ -110,6 +110,7 @@ limitations under the License.
     <version.lib.slf4j>2.0.9</version.lib.slf4j>
     <version.lib.sqlite>3.43.2.1</version.lib.sqlite>
     <version.lib.testcontainers>1.19.1</version.lib.testcontainers>
+    <version.lib.wdtk>0.14.6</version.lib.wdtk>
     <version.lucene>9.4.2</version.lucene>
     <version.lucene-spatial>9.4.2</version.lucene-spatial>
     <version.plugin.jacoco-maven-plugin>0.8.11</version.plugin.jacoco-maven-plugin>
@@ -529,6 +530,31 @@ limitations under the License.
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.wikidata.wdtk</groupId>
+      <artifactId>wdtk-datamodel</artifactId>
+      <version>${version.lib.wdtk}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wikidata.wdtk</groupId>
+      <artifactId>wdtk-dumpfiles</artifactId>
+      <version>${version.lib.wdtk}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wikidata.wdtk</groupId>
+      <artifactId>wdtk-rdf</artifactId>
+      <version>${version.lib.wdtk}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wikidata.wdtk</groupId>
+      <artifactId>wdtk-util</artifactId>
+      <version>${version.lib.wdtk}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wikidata.wdtk</groupId>
+      <artifactId>wdtk-wikibaseapi</artifactId>
+      <version>${version.lib.wdtk}</version>
     </dependency>
     <dependency>
       <groupId>org.wololo</groupId>

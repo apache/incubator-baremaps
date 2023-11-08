@@ -1,0 +1,14 @@
+{
+  "steps": [
+    {
+      "id": "natural_earth_vector",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "ImportWikidata",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
+        }
+      ]
+    }
+  ]
+}

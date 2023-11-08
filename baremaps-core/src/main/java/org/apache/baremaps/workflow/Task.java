@@ -51,7 +51,8 @@ import org.apache.baremaps.workflow.tasks.*;
     @JsonSubTypes.Type(value = CreateIplocIndex.class, name = "CreateIplocIndex"),
     @JsonSubTypes.Type(value = ImportDaylightTranslations.class,
         name = "ImportDaylightTranslations"),
-    @JsonSubTypes.Type(value = ImportDaylightFeatures.class, name = "ImportDaylightFeatures")
+    @JsonSubTypes.Type(value = ImportDaylightFeatures.class, name = "ImportDaylightFeatures"),
+    @JsonSubTypes.Type(value = ImportWikidata.class, name = "ImportWikidata")
 })
 public interface Task {
 
