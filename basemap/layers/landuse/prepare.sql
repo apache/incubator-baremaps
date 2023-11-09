@@ -19,7 +19,7 @@ SELECT
 FROM osm_polygon
 WHERE geom IS NOT NULL
   AND st_area(geom) > 78270 / power(2, 12) * 100
-  AND tags ->> 'landuse' IN ('residential', 'farmland', 'forest', 'meadow', 'orchard', 'vineyard', 'salt_pond', 'water');
+  AND tags ->> 'landuse' IN ('commercial', 'construction', 'industrial', 'residential', 'retail', 'farmland', 'forest', 'meadow', 'greenhouse_horticulture', 'meadow', 'orchard', 'plant_nursery','vineyard', 'basin', 'salt_pond', 'brownfield', 'cemetery', 'grass', 'greenfield', 'landfill', 'military', 'quarry', 'railway');
 CREATE INDEX IF NOT EXISTS osm_landuse_filtered_geom_idx ON osm_landuse_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_landuse_filtered_tags_idx ON osm_landuse_filtered (landuse);
 
