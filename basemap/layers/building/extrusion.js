@@ -25,7 +25,7 @@ export default {
     layout: {
         visibility: 'visible',
     },
-    minzoom: 16,
+    minzoom: 15,
     paint: {
         "fill-extrusion-color": [
             "case",
@@ -37,27 +37,27 @@ export default {
             'interpolate',
             ['linear'],
             ['zoom'],
-            16,
+            15,
             0,
-            17,
+            16,
             ['get', "extrusion:base"]
         ],
         "fill-extrusion-height": [
             'interpolate',
             ['linear'],
             ['zoom'],
-            16,
+            15,
             0,
-            17,
+            16,
             ['get', "extrusion:height"]
         ],
         "fill-extrusion-opacity": [
             'interpolate',
             ['linear'],
             ['zoom'],
-            16,
+            15,
             0,
-            17,
+            16,
             0.8
         ]
     },

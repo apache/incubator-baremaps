@@ -36,7 +36,7 @@ export default {
                                                                        THEN tags ->> 'building:height'
                                                                    WHEN tags ->> 'building:levels' ~ '^[0-9\\\\\\\\.]+$'
                                                                        THEN tags ->> 'building:levels'
-                                                                   ELSE '2' END)::real * 3),
+                                                                   ELSE '2' END)::real * 3) as tags,
                     geom 
                 FROM osm_ways 
                 WHERE tags ? 'building'`,
@@ -59,7 +59,7 @@ export default {
                                                                        THEN tags ->> 'building:height'
                                                                    WHEN tags ->> 'building:levels' ~ '^[0-9\\\\\\\\.]+$'
                                                                        THEN tags ->> 'building:levels'
-                                                                   ELSE '2' END)::real * 3),
+                                                                   ELSE '2' END)::real * 3) as tags,
                     geom 
                 FROM osm_relations 
                 WHERE tags ? 'building'`,

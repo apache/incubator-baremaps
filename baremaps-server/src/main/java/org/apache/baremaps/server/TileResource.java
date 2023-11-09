@@ -29,6 +29,8 @@ import javax.ws.rs.core.Response;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A resource that provides access to the tiles.
@@ -36,6 +38,8 @@ import org.apache.baremaps.tilestore.TileStoreException;
 @Singleton
 @javax.ws.rs.Path("/")
 public class TileResource {
+
+  private static final Logger logger = LoggerFactory.getLogger(TileResource.class);
 
   public static final String TILE_ENCODING = "gzip";
 
@@ -68,6 +72,7 @@ public class TileResource {
         return Response.status(204).build();
       }
     } catch (TileStoreException ex) {
+      logger.error("Error while reading tile.", ex);
       return Response.status(404).build();
     }
   }

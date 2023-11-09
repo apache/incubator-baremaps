@@ -29,5 +29,12 @@ export default {
         'fill-antialias': false,
         'fill-color': theme.buildingShapeFillColor,
         'fill-outline-color': theme.buildingShapeFillOutlineColor,
+        'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            13, 0,
+            13.5, 1
+        ]
     },
 }
