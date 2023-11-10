@@ -22,47 +22,51 @@ export default {
             minzoom: 13,
             maxzoom: 20,
             sql: `
-                SELECT 
-                    id, 
+                SELECT
+                    id,
                     tags
                         || jsonb_build_object('extrusion:base', (CASE
-                                                                     WHEN tags ? 'building:min_height'
-                                                                         THEN tags ->> 'building:min_height'
-                                                                     WHEN tags ->> 'building:min_level' ~ '^[0-9\\\\\\\\.]+$'
-                                                                         THEN tags ->> 'building:min_level'
-                                                                     ELSE '0' END)::real * 3)
+                            WHEN tags ? 'building:min_height'
+                                THEN (tags ->> 'building:min_height')::real
+                            WHEN tags ->> 'building:min_level' ~ '^[0-9.]+$'
+                                THEN (tags ->> 'building:min_level')::real * 3
+                            ELSE 0 END))
                         || jsonb_build_object('extrusion:height', (CASE
-                                                                   WHEN tags ? 'building:height'
-                                                                       THEN tags ->> 'building:height'
-                                                                   WHEN tags ->> 'building:levels' ~ '^[0-9\\\\\\\\.]+$'
-                                                                       THEN tags ->> 'building:levels'
-                                                                   ELSE '2' END)::real * 3) as tags,
-                    geom 
-                FROM osm_ways 
-                WHERE tags ? 'building'`,
+                            WHEN tags ? 'height'
+                               THEN (SUBSTRING(tags ->> 'height' FROM '^[0-9]+'))::real
+                            WHEN tags ? 'building:height'
+                               THEN (tags ->> 'building:height')::real
+                            WHEN tags ->> 'building:levels' ~ '^[0-9.]+$'
+                               THEN (tags ->> 'building:levels')::real * 3
+                            ELSE 6 END)) as tags,
+                    geom
+                FROM osm_ways
+                WHERE (tags ? 'building' OR tags ? 'building:part') AND ((NOT tags ? 'layer') OR (tags ->> 'layer')::real >= 0)`,
         },
         {
             minzoom: 13,
             maxzoom: 20,
             sql: `
-                SELECT 
-                    id, 
-                    tags 
+                SELECT
+                    id,
+                    tags
                         || jsonb_build_object('extrusion:base', (CASE
-                                                                      WHEN tags ? 'building:min_height'
-                                                                          THEN tags ->> 'building:min_height'
-                                                                      WHEN tags ->> 'building:min_level' ~ '^[0-9\\\\\\\\.]+$'
-                                                                          THEN tags ->> 'building:min_level'
-                                                                      ELSE '0' END)::real * 3)
+                            WHEN tags ? 'building:min_height'
+                                THEN (tags ->> 'building:min_height')::real
+                            WHEN tags ->> 'building:min_level' ~ '^[0-9.]+$'
+                                THEN (tags ->> 'building:min_level')::real * 3
+                            ELSE 0 END))
                         || jsonb_build_object('extrusion:height', (CASE
-                                                                   WHEN tags ? 'building:height'
-                                                                       THEN tags ->> 'building:height'
-                                                                   WHEN tags ->> 'building:levels' ~ '^[0-9\\\\\\\\.]+$'
-                                                                       THEN tags ->> 'building:levels'
-                                                                   ELSE '2' END)::real * 3) as tags,
-                    geom 
-                FROM osm_relations 
-                WHERE tags ? 'building'`,
+                            WHEN tags ? 'height'
+                                THEN (SUBSTRING(tags ->> 'height' FROM '^[0-9]+'))::real
+                            WHEN tags ? 'building:height'
+                                THEN (tags ->> 'building:height')::real
+                            WHEN tags ->> 'building:levels' ~ '^[0-9.]+$'
+                                THEN (tags ->> 'building:levels')::real * 3
+                            ELSE 6 END)) as tags,
+                    geom
+                FROM osm_relations
+                WHERE (tags ? 'building' OR tags ? 'building:part') AND ((NOT tags ? 'layer') OR (tags ->> 'layer')::real >= 0)`,
         },
     ],
 }
