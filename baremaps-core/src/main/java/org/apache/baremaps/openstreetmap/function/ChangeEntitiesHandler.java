@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Entity;
 
-/** Represents an operation on the entities of changes of different types. */
+/** Represents an operation on the entities of a change. */
 public class ChangeEntitiesHandler implements Consumer<Change> {
 
   private final Consumer<Entity> consumer;

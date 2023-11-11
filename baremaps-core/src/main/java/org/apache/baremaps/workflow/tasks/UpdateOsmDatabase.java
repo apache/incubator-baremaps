@@ -77,6 +77,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid) implement
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
       int srid) throws Exception {
+
     var header = headerRepository.selectLatest();
     var replicationUrl = header.getReplicationUrl();
     var sequenceNumber = header.getReplicationSequenceNumber() + 1;
@@ -85,12 +86,12 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid) implement
     var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
     var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
     var prepareChange = consumeThenReturn(prepareGeometries);
-    var saveChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
+    var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
 
     var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
+      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
 
     var stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");

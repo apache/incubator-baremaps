@@ -348,6 +348,36 @@ export default {
       ]
     },
     {
+      "id": "openstreetmap-waterway",
+      "needs": [
+        "openstreetmap-linestring"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/index.sql",
+          "database": config.database,
+          "parallel": true
+        },
+      ]
+    },
+    {
       "id": "openstreetmap-natural",
       "needs": ["openstreetmap-polygon"],
       "tasks": [
@@ -430,36 +460,6 @@ export default {
         {
           "type": "ExecuteSql",
           "file": "layers/leisure/index.sql",
-          "database": config.database,
-          "parallel": true
-        },
-      ]
-    },
-    {
-      "id": "openstreetmap-waterway",
-      "needs": [
-          "openstreetmap-linestring"
-      ],
-      "tasks": [
-        {
-          "type": "ExecuteSql",
-          "file": "layers/waterway/clean.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "layers/waterway/prepare.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "layers/waterway/simplify.sql",
-          "database": config.database,
-          "parallel": true,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "layers/waterway/index.sql",
           "database": config.database,
           "parallel": true
         },
