@@ -27,16 +27,6 @@ export default {
     },
     minzoom: 15,
     paint: {
-        "fill-extrusion-color": theme.buildingShapeFillColor,
-        // Having muliple colors for building parts results in z-fighting
-        // https://github.com/maplibre/maplibre-gl-js/issues/3157
-        // https://github.com/maplibre/maplibre-gl-js/issues/3187
-        // "fill-extrusion-color": [
-        //     "case",
-        //     ["has", "building:colour"],
-        //     ["get", "building:colour"],
-        //     theme.buildingShapeFillColor,
-        // ],
         "fill-extrusion-base": [
             'interpolate',
             ['linear'],
@@ -63,6 +53,16 @@ export default {
             0,
             16,
             0.8
-        ]
+        ],
+        "fill-extrusion-color": theme.buildingShapeFillColor,
+        // Having muliple colors for building parts results in z-fighting
+        // https://github.com/maplibre/maplibre-gl-js/issues/3157
+        // https://github.com/maplibre/maplibre-gl-js/issues/3187
+        // "fill-extrusion-color": [
+        //     "case",
+        //     ["has", "building:colour"],
+        //     ["get", "building:colour"],
+        //     theme.buildingShapeFillColor,
+        // ],
     },
 }

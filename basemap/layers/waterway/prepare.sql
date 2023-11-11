@@ -23,6 +23,7 @@ WITH
                 geom AS geom
         FROM osm_linestring
         WHERE tags ->> 'waterway' IN ('river', 'stream', 'canal', 'drain', 'ditch')
+        AND NOT tags ? 'intermittent'
     ),
     -- Cluster the linestrings
     clustered AS (
