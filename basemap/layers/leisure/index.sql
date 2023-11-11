@@ -12,6 +12,7 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+
 CREATE INDEX IF NOT EXISTS osm_leisure_geom_z1_index ON osm_leisure_z1 USING SPGIST (geom);
 CREATE INDEX IF NOT EXISTS osm_leisure_geom_z2_index ON osm_leisure_z2 USING SPGIST (geom);
 CREATE INDEX IF NOT EXISTS osm_leisure_geom_z3_index ON osm_leisure_z3 USING SPGIST (geom);

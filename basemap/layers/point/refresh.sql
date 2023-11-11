@@ -13,5 +13,16 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-CREATE INDEX IF NOT EXISTS osm_linestring_tags_index ON osm_linestring USING gin (tags);
-CREATE INDEX IF NOT EXISTS osm_linestring_geom_index ON osm_linestring USING gist (geom);
+REFRESH MATERIALIZED VIEW osm_point_z13;
+REFRESH MATERIALIZED VIEW osm_point_z12;
+REFRESH MATERIALIZED VIEW osm_point_z11;
+REFRESH MATERIALIZED VIEW osm_point_z10;
+REFRESH MATERIALIZED VIEW osm_point_z9;
+REFRESH MATERIALIZED VIEW osm_point_z8;
+REFRESH MATERIALIZED VIEW osm_point_z7;
+REFRESH MATERIALIZED VIEW osm_point_z6;
+REFRESH MATERIALIZED VIEW osm_point_z5;
+REFRESH MATERIALIZED VIEW osm_point_z4;
+REFRESH MATERIALIZED VIEW osm_point_z3;
+REFRESH MATERIALIZED VIEW osm_point_z2;
+REFRESH MATERIALIZED VIEW osm_point_z1;
