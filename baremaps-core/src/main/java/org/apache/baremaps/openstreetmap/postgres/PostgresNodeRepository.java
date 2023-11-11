@@ -69,7 +69,8 @@ public class PostgresNodeRepository implements NodeRepository {
    * @param dataSource
    */
   public PostgresNodeRepository(DataSource dataSource) {
-    this(dataSource, "osm_nodes", "id", "version", "uid", "timestamp", "changeset", "tags", "lon",
+    this(dataSource, "public", "osm_nodes", "id", "version", "uid", "timestamp", "changeset",
+        "tags", "lon",
         "lat", "geom");
   }
 
@@ -77,7 +78,8 @@ public class PostgresNodeRepository implements NodeRepository {
    * Constructs a {@code PostgresNodeRepository} with custom parameters.
    *
    * @param dataSource
-   * @param tableName
+   * @param schema
+   * @param table
    * @param idColumn
    * @param versionColumn
    * @param uidColumn
@@ -88,9 +90,10 @@ public class PostgresNodeRepository implements NodeRepository {
    * @param latitudeColumn
    * @param geometryColumn
    */
-  public PostgresNodeRepository(DataSource dataSource, String tableName, String idColumn,
+  public PostgresNodeRepository(DataSource dataSource, String schema, String table, String idColumn,
       String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
       String tagsColumn, String longitudeColumn, String latitudeColumn, String geometryColumn) {
+    var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""
         CREATE TABLE IF NOT EXISTS %1$s
@@ -104,17 +107,19 @@ public class PostgresNodeRepository implements NodeRepository {
             %8$s float,
             %9$s float,
             %10$s geometry(point)
-        )""", tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        )""", fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn, longitudeColumn, latitudeColumn, geometryColumn);
-    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", tableName);
-    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", fullTableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", fullTableName);
     this.select = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ?",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
     this.selectIn = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
     this.insert = String.format(
         "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) "
@@ -123,13 +128,15 @@ public class PostgresNodeRepository implements NodeRepository {
             + "%4$s = excluded.%4$s, " + "%5$s = excluded.%5$s, " + "%6$s = excluded.%6$s, "
             + "%7$s = excluded.%7$s, " + "%8$s = excluded.%8$s, " + "%9$s = excluded.%9$s, "
             + "%10$s = excluded.%10$s",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
-    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", fullTableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", fullTableName, idColumn);
     this.copy = String.format(
         "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
   }
 

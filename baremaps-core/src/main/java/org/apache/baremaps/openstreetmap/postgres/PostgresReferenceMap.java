@@ -34,60 +34,79 @@ import org.apache.baremaps.database.collection.DataMap;
  */
 public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
 
-  public static final String SELECT_CONTAINS_KEY = """
-      SELECT 1
-      FROM osm_ways
-      WHERE id = ? LIMIT 1""";
-
-  public static final String SELECT_CONTAINS_VALUE = """
-      SELECT 1
-      FROM osm_ways
-      WHERE nodes = ? LIMIT 1""";
-
-  private static final String SELECT_IN = """
-      SELECT id, nodes
-      FROM osm_ways
-      WHERE id
-      WHERE id = ANY (?)""";
-
-  private static final String SELECT_BY_ID = """
-      SELECT nodes
-      FROM osm_ways
-      WHERE id = ?""";
-
-  private static final String SELECT_SIZE = """
-      SELECT count()
-      FROM osm_ways
-      """;
-
-  private static final String SELECT_KEYS = """
-      SELECT id
-      FROM osm_ways
-      """;
-
-  private static final String SELECT_VALUES = """
-      SELECT nodes
-      FROM osm_ways
-      """;
-
-  private static final String SELECT_ENTRIES = """
-      SELECT id, nodes
-      FROM osm_ways
-      """;
-
   private final DataSource dataSource;
+
+  public final String selectContainsKey;
+
+  public final String selectContainsValue;
+
+  private final String selectIn;
+
+  private final String selectById;
+
+  private final String selectSize;
+
+  private final String selectKeys;
+
+  private final String selectValues;
+
+  private final String selectEntries;
 
   /**
    * Constructs a {@code PostgresReferenceMap}.
    */
   public PostgresReferenceMap(DataSource dataSource) {
+    this(dataSource, "public", "osm_ways");
+  }
+
+  /**
+   * Constructs a {@code PostgresReferenceMap}.
+   */
+  public PostgresReferenceMap(DataSource dataSource, String schema, String table) {
     this.dataSource = dataSource;
+    var fullTableName = String.format("%s.%s", schema, table);
+    this.selectContainsKey = String.format("""
+        SELECT 1
+        FROM %1$s
+        WHERE id = ? LIMIT 1
+        """, fullTableName);
+    this.selectContainsValue = String.format("""
+        SELECT 1
+        FROM %1$s
+        WHERE nodes = ? LIMIT 1
+        """, fullTableName);
+    this.selectIn = String.format("""
+        SELECT id, nodes
+        FROM %1$s
+        WHERE id = ANY (?)
+        """, fullTableName);
+    this.selectById = String.format("""
+        SELECT nodes
+        FROM %1$s
+        WHERE id = ?
+        """, fullTableName);
+    this.selectSize = String.format("""
+        SELECT count()
+        FROM %1$s
+        """, fullTableName);
+    this.selectKeys = String.format("""
+        SELECT id
+        FROM %1$s
+        """, fullTableName);
+    this.selectValues = String.format("""
+        SELECT nodes
+        FROM %1$s
+        """, fullTableName);
+    this.selectEntries = String.format("""
+        SELECT id, nodes
+        FROM %1$s
+        """, fullTableName);
   }
 
   @Override
   public long sizeAsLong() {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_SIZE)) {
+        PreparedStatement statement = connection.prepareStatement(selectSize)) {
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           return result.getLong(1);
@@ -103,7 +122,7 @@ public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
   @Override
   public boolean containsKey(Object key) {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_CONTAINS_KEY)) {
+        PreparedStatement statement = connection.prepareStatement(selectContainsKey)) {
       statement.setLong(1, (Long) key);
       try (ResultSet result = statement.executeQuery()) {
         return result.next();
@@ -116,7 +135,7 @@ public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
   @Override
   public boolean containsValue(Object value) {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_CONTAINS_VALUE)) {
+        PreparedStatement statement = connection.prepareStatement(selectContainsValue)) {
       statement.setArray(1, connection.createArrayOf("int8", (Long[]) value));
       try (ResultSet result = statement.executeQuery()) {
         return result.next();
@@ -132,7 +151,7 @@ public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
   @Override
   public List<Long> get(Object key) {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID)) {
+        PreparedStatement statement = connection.prepareStatement(selectById)) {
       statement.setLong(1, (Long) key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
@@ -153,7 +172,7 @@ public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
   @Override
   public List<List<Long>> getAll(List<Long> keys) {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
+        PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
         Map<Long, List<Long>> referenceMap = new HashMap<>();
@@ -173,7 +192,7 @@ public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
   @Override
   protected Iterator<Long> keyIterator() {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_KEYS)) {
+        PreparedStatement statement = connection.prepareStatement(selectKeys)) {
       ResultSet result = statement.executeQuery();
       return new PostgresIterator<>(result, this::key);
     } catch (SQLException e) {
@@ -192,7 +211,7 @@ public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
   @Override
   protected Iterator<List<Long>> valueIterator() {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_VALUES)) {
+        PreparedStatement statement = connection.prepareStatement(selectValues)) {
       ResultSet result = statement.executeQuery();
       return new PostgresIterator<>(result, this::value);
     } catch (SQLException e) {
@@ -212,7 +231,7 @@ public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
   @Override
   protected Iterator<Entry<Long, List<Long>>> entryIterator() {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_ENTRIES)) {
+        PreparedStatement statement = connection.prepareStatement(selectEntries)) {
       ResultSet result = statement.executeQuery();
       return new PostgresIterator<>(result, this::entry);
     } catch (SQLException e) {

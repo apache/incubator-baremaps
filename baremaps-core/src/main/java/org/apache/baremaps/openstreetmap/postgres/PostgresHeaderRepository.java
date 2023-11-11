@@ -66,7 +66,8 @@ public class PostgresHeaderRepository implements HeaderRepository {
    * @param dataSource
    */
   public PostgresHeaderRepository(DataSource dataSource) {
-    this(dataSource, "osm_headers", "replication_sequence_number", "replication_timestamp",
+    this(dataSource, "public", "osm_headers", "replication_sequence_number",
+        "replication_timestamp",
         "replication_url", "source", "writing_program");
   }
 
@@ -74,16 +75,18 @@ public class PostgresHeaderRepository implements HeaderRepository {
    * Constructs a {@code PostgresHeaderRepository} with custom parameters.
    *
    * @param dataSource
-   * @param tableName
+   * @param schema
+   * @param table
    * @param replicationSequenceNumberColumn
    * @param replicationTimestampColumn
    * @param replicationUrlColumn
    * @param sourceColumn
    * @param writingProgramColumn
    */
-  public PostgresHeaderRepository(DataSource dataSource, String tableName,
+  public PostgresHeaderRepository(DataSource dataSource, String schema, String table,
       String replicationSequenceNumberColumn, String replicationTimestampColumn,
       String replicationUrlColumn, String sourceColumn, String writingProgramColumn) {
+    var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""
         CREATE TABLE IF NOT EXISTS %1$s (
@@ -92,20 +95,21 @@ public class PostgresHeaderRepository implements HeaderRepository {
           %4$s text,
           %5$s text,
           %6$s text
-        )""", tableName, replicationSequenceNumberColumn, replicationTimestampColumn,
+        )""", fullTableName, replicationSequenceNumberColumn, replicationTimestampColumn,
         replicationUrlColumn, sourceColumn, writingProgramColumn);
-    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", tableName);
-    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", fullTableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", fullTableName);
     this.selectLatest =
-        String.format("SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s ORDER BY %2$s DESC", tableName,
+        String.format("SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s ORDER BY %2$s DESC",
+            fullTableName,
             replicationSequenceNumberColumn, replicationTimestampColumn, replicationUrlColumn,
             sourceColumn, writingProgramColumn);
     this.select = String.format("SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ?",
-        tableName, replicationSequenceNumberColumn, replicationTimestampColumn,
+        fullTableName, replicationSequenceNumberColumn, replicationTimestampColumn,
         replicationUrlColumn, sourceColumn, writingProgramColumn);
     this.selectIn =
         String.format("SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ANY (?)",
-            tableName, replicationSequenceNumberColumn, replicationTimestampColumn,
+            fullTableName, replicationSequenceNumberColumn, replicationTimestampColumn,
             replicationUrlColumn, sourceColumn, writingProgramColumn);
     this.insert = String.format("""
         INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s)
@@ -114,12 +118,12 @@ public class PostgresHeaderRepository implements HeaderRepository {
         %3$s = excluded.%3$s,
         %4$s = excluded.%4$s,
         %5$s = excluded.%5$s,
-        %6$s = excluded.%6$s""", tableName, replicationSequenceNumberColumn,
+        %6$s = excluded.%6$s""", fullTableName, replicationSequenceNumberColumn,
         replicationTimestampColumn, replicationUrlColumn, sourceColumn, writingProgramColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName,
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", fullTableName,
         replicationSequenceNumberColumn);
     this.copy = String.format("COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) FROM STDIN BINARY",
-        tableName, replicationSequenceNumberColumn, replicationTimestampColumn,
+        fullTableName, replicationSequenceNumberColumn, replicationTimestampColumn,
         replicationUrlColumn, sourceColumn, writingProgramColumn);
   }
 
