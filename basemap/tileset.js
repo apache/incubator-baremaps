@@ -64,6 +64,6 @@ export default {
     power,
     railway,
     route,
-    //waterway,
+    waterway,
   ]
 }

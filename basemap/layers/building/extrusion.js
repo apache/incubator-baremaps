@@ -17,24 +17,52 @@
 import theme from "../../theme.js";
 
 export default {
-    id: 'building',
-    type: 'fill',
+    id: 'building-extrusion',
+    type: 'fill-extrusion',
     source: 'baremaps',
     'source-layer': 'building',
     filter: ['!=', ['get', 'building'], 'no'],
     layout: {
         visibility: 'visible',
     },
+    minzoom: 15,
     paint: {
-        'fill-antialias': false,
-        'fill-color': theme.buildingShapeFillColor,
-        'fill-outline-color': theme.buildingShapeFillOutlineColor,
-        'fill-opacity': [
+        "fill-extrusion-base": [
             'interpolate',
             ['linear'],
             ['zoom'],
-            13, 0,
-            13.5, 1
-        ]
+            15,
+            0,
+            16,
+            ['get', "extrusion:base"]
+        ],
+        "fill-extrusion-height": [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            15,
+            0,
+            16,
+            ['get', "extrusion:height"]
+        ],
+        "fill-extrusion-opacity": [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            15,
+            0,
+            16,
+            0.8
+        ],
+        "fill-extrusion-color": theme.buildingShapeFillColor,
+        // Having muliple colors for building parts results in z-fighting
+        // https://github.com/maplibre/maplibre-gl-js/issues/3157
+        // https://github.com/maplibre/maplibre-gl-js/issues/3187
+        // "fill-extrusion-color": [
+        //     "case",
+        //     ["has", "building:colour"],
+        //     ["get", "building:colour"],
+        //     theme.buildingShapeFillColor,
+        // ],
     },
 }

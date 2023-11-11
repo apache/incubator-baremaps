@@ -53,6 +53,7 @@ import highway_label from './layers/highway/highway_label.js';
 import ocean_overlay from './layers/ocean/overlay.js';
 import route_line from "./layers/route/style.js"
 import building_shape from "./layers/building/shape.js";
+import building_extrusion from "./layers/building/extrusion.js";
 import building_number from "./layers/building/number.js";
 import man_made_bridge from "./layers/man_made/bridge.js";
 import man_made_pier_line from "./layers/man_made/pier_line.js";
@@ -121,6 +122,7 @@ export default {
         natural_trunk,
         boundary_line,
         waterway_label,
+        building_extrusion,
         icon,
         point_label,
         country_label,
