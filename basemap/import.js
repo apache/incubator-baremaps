@@ -132,6 +132,7 @@ export default {
           "database": config.database,
           "databaseSrid": 3857,
           "replaceExisting": true,
+          "cleanCache": true,
         },
       ]
     },

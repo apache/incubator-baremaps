@@ -261,19 +261,12 @@ public class PostgresDataSchema implements DataSchema {
       case LONG -> new LongValueHandler<Long>();
       case FLOAT -> new FloatValueHandler<Float>();
       case DOUBLE -> new DoubleValueHandler<Double>();
-      case GEOMETRY -> new GeometryValueHandler();
-      case POINT -> new GeometryValueHandler();
-      case MULTIPOINT -> new GeometryValueHandler();
-      case LINESTRING -> new GeometryValueHandler();
-      case MULTILINESTRING -> new GeometryValueHandler();
-      case POLYGON -> new GeometryValueHandler();
-      case MULTIPOLYGON -> new GeometryValueHandler();
-      case GEOMETRYCOLLECTION -> new GeometryValueHandler();
       case INET4_ADDRESS -> new Inet4AddressValueHandler();
       case INET6_ADDRESS -> new Inet6AddressValueHandler();
       case LOCAL_DATE -> new LocalDateValueHandler();
       case LOCAL_TIME -> new LocalTimeValueHandler();
       case LOCAL_DATE_TIME -> new LocalDateTimeValueHandler();
+      case GEOMETRY, POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, MULTIPOLYGON, GEOMETRYCOLLECTION -> new GeometryValueHandler();
       default -> throw new IllegalArgumentException("Unsupported type: " + type);
     };
   }

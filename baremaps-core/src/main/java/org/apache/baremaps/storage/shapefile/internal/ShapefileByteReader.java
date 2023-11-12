@@ -327,10 +327,10 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param row the row to fill.
    */
   private void loadPolygonRow(DataRow row) {
-    double xmin = getByteBuffer().getDouble();
-    double ymin = getByteBuffer().getDouble();
-    double xmax = getByteBuffer().getDouble();
-    double ymax = getByteBuffer().getDouble();
+    /* double xmin = */ getByteBuffer().getDouble();
+    /* double ymin = */ getByteBuffer().getDouble();
+    /* double xmax = */ getByteBuffer().getDouble();
+    /* double ymax = */ getByteBuffer().getDouble();
 
     int numParts = getByteBuffer().getInt();
     int numPoints = getByteBuffer().getInt();
