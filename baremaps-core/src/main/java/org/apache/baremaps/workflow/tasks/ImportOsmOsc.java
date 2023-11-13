@@ -42,6 +42,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Import an OSM OSC file into a database.
+ */
 @JsonTypeName("ImportOsmOsc")
 public class ImportOsmOsc implements Task {
 
@@ -53,10 +56,22 @@ public class ImportOsmOsc implements Task {
   private Integer srid;
   private Compression compression;
 
+  /**
+   * Constructs an {@code ImportOsmOsc}.
+   */
   public ImportOsmOsc() {
 
   }
 
+  /**
+   * Constructs an {@code ImportOsmOsc}.
+   *
+   * @param file the OSM OSC file
+   * @param cache the cache directory
+   * @param database the database
+   * @param srid the database SRID
+   * @param compression the compression
+   */
   public ImportOsmOsc(Path file, Path cache, Object database, Integer srid,
       Compression compression) {
     this.file = file;
@@ -66,46 +81,99 @@ public class ImportOsmOsc implements Task {
     this.compression = compression;
   }
 
+  /**
+   * Returns the OSM OSC file.
+   * 
+   * @return the OSM OSC file
+   */
   public Path getFile() {
     return file;
   }
 
+  /**
+   * Sets the OSM OSC file.
+   * 
+   * @param file
+   */
   public void setFile(Path file) {
     this.file = file;
   }
 
+  /**
+   * Returns the cache directory.
+   * 
+   * @return the cache directory
+   */
   public Path getCache() {
     return cache;
   }
 
+  /**
+   * Sets the cache directory.
+   * 
+   * @param cache the cache directory
+   */
   public void setCache(Path cache) {
     this.cache = cache;
   }
 
+  /**
+   * Returns the database.
+   * 
+   * @return the database
+   */
   public Object getDatabase() {
     return database;
   }
 
+  /**
+   * Sets the database.
+   * 
+   * @param database the database
+   */
   public void setDatabase(Object database) {
     this.database = database;
   }
 
+  /**
+   * Returns the database SRID.
+   * 
+   * @return the database SRID
+   */
   public Integer getSrid() {
     return srid;
   }
 
+  /**
+   * Sets the database SRID.
+   * 
+   * @param srid the database SRID
+   */
   public void setSrid(Integer srid) {
     this.srid = srid;
   }
 
+  /**
+   * Returns the compression.
+   * 
+   * @return the compression
+   */
   public Compression getCompression() {
     return compression;
   }
 
+  /**
+   * Sets the compression.
+   * 
+   * @param compression the compression
+   */
   public void setCompression(Compression compression) {
     this.compression = compression;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);

@@ -23,6 +23,9 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Execute a bash command.
+ */
 @JsonTypeName("ExecuteCommand")
 public class ExecuteCommand implements Task {
 
@@ -30,22 +33,44 @@ public class ExecuteCommand implements Task {
 
   private String command;
 
+  /**
+   * Constructs an {@code ExecuteCommand}.
+   */
   public ExecuteCommand() {}
 
+  /**
+   * Constructs an {@code ExecuteCommand}.
+   *
+   * @param command the bash command
+   */
   public ExecuteCommand(String command) {
     this.command = command;
   }
 
+  /**
+   * Returns the bash command.
+   *
+   * @return the bash command
+   */
   public String getCommand() {
     return command;
   }
 
+  /**
+   * Sets the bash command.
+   *
+   * @param command the bash command
+   */
   public void setCommand(String command) {
     this.command = command;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     new ProcessBuilder().command("/bin/sh", "-c", command).start().waitFor();
   }
+
 }

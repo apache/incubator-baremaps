@@ -23,6 +23,9 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Log a message.
+ */
 @JsonTypeName("LogMessage")
 public class LogMessage implements Task {
 
@@ -30,22 +33,43 @@ public class LogMessage implements Task {
 
   private String message;
 
+  /**
+   * Constructs an {@code LogMessage}.
+   */
   public LogMessage() {
 
   }
 
+  /**
+   * Constructs an {@code LogMessage}.
+   *
+   * @param message the message
+   */
   public LogMessage(String message) {
     this.message = message;
   }
 
+  /**
+   * Returns the message.
+   *
+   * @return the message
+   */
   public String getMessage() {
     return message;
   }
 
+  /**
+   * Sets the message.
+   *
+   * @param message the message
+   */
   public void setMessage(String message) {
     this.message = message;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info(message);

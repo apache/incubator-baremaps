@@ -37,7 +37,7 @@ class WorkflowTest extends PostgresContainerTest {
   void naturalearthGeoPackage() {
     var workflow = new Workflow(List.of(new Step("fetch-geopackage", List.of(), List.of(
         new DownloadUrl("https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-            Paths.get("natural_earth_vector.gpkg.zip")),
+            Paths.get("natural_earth_vector.gpkg.zip"), false),
         new UnzipFile(Paths.get("natural_earth_vector.gpkg.zip"),
             Paths.get("natural_earth_vector")),
         new ImportGeoPackage(Paths.get("natural_earth_vector/packages/natural_earth_vector.gpkg"),
@@ -52,7 +52,7 @@ class WorkflowTest extends PostgresContainerTest {
     var workflow = new Workflow(List.of(new Step("fetch-geopackage", List.of(),
         List.of(
             new DownloadUrl("https://osmdata.openstreetmap.de/download/coastlines-split-4326.zip",
-                Paths.get("coastlines-split-4326.zip")),
+                Paths.get("coastlines-split-4326.zip"), false),
             new UnzipFile(Paths.get("coastlines-split-4326.zip"),
                 Paths.get("coastlines-split-4326")),
             new ImportShapefile(Paths.get("coastlines-split-4326/coastlines-split-4326/lines.shp"),
@@ -84,7 +84,7 @@ class WorkflowTest extends PostgresContainerTest {
   void workflow() {
     var workflow = new Workflow(List.of(new Step("fetch-geopackage", List.of(), List.of(
         new DownloadUrl("https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-            Paths.get("downloads/import_db.gpkg")),
+            Paths.get("downloads/import_db.gpkg"), false),
         new ImportShapefile(Paths.get("downloads/import_db.gpkg"), jdbcUrl(), 4326, 3857)))));
     new WorkflowExecutor(workflow).execute();
   }
@@ -95,20 +95,20 @@ class WorkflowTest extends PostgresContainerTest {
     var workflow = new Workflow(List.of(
         new Step("fetch-geopackage", List.of(),
             List.of(new DownloadUrl("https://tiles.baremaps.com/samples/import_db.gpkg",
-                Paths.get("downloads/import_db.gpkg")))),
+                Paths.get("downloads/import_db.gpkg"), false))),
         new Step("import-geopackage", List.of("fetch-geopackage"),
             List.of(new ImportGeoPackage(Paths.get("downloads/import_db.gpkg"), jdbcUrl(), 4326,
                 3857))),
         new Step("fetch-osmpbf", List.of(),
             List.of(new DownloadUrl("https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
-                Paths.get("downloads/liechtenstein.osm.pbf")))),
+                Paths.get("downloads/liechtenstein.osm.pbf"), false))),
         new Step("import-osmpbf", List.of("fetch-osmpbf"),
             List.of(new ImportOsmPbf(Paths.get("downloads/liechtenstein.osm.pbf"), null, true,
                 jdbcUrl(),
                 3857, true))),
         new Step("fetch-shapefile", List.of(), List.of(new DownloadUrl(
             "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
-            Paths.get("downloads/simplified-water-polygons-split-3857.zip")))),
+            Paths.get("downloads/simplified-water-polygons-split-3857.zip"), false))),
         new Step("unzip-shapefile", List.of("fetch-shapefile"),
             List.of(
                 new UnzipFile(Paths.get("downloads/simplified-water-polygons-split-3857.zip"),
@@ -116,7 +116,8 @@ class WorkflowTest extends PostgresContainerTest {
         new Step("fetch-projection", List.of("unzip-shapefile"),
             List.of(new DownloadUrl("https://spatialreference.org/ref/sr-org/epsg3857/prj/",
                 Paths.get(
-                    "archives/simplified-water-polygons-split-3857/simplified_water_polygons.prj")))),
+                    "archives/simplified-water-polygons-split-3857/simplified_water_polygons.prj"),
+                false))),
         new Step("import-shapefile", List.of("fetch-projection"),
             List.of(new ImportShapefile(
                 Paths.get(

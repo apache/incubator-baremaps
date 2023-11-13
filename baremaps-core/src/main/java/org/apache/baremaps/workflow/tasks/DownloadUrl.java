@@ -30,6 +30,9 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Downloads a file from a URL.
+ */
 @JsonTypeName("DownloadUrl")
 public class DownloadUrl implements Task {
 
@@ -47,12 +50,18 @@ public class DownloadUrl implements Task {
 
   private Boolean replaceExisting;
 
+  /**
+   * Constructs an {@code DownloadUrl}.
+   */
   public DownloadUrl() {}
 
-  public DownloadUrl(String url, Path path) {
-    this(url, path, false);
-  }
-
+  /**
+   * Constructs an {@code DownloadUrl}.
+   *
+   * @param url the url
+   * @param path the path
+   * @param replaceExisting whether to replace existing files
+   */
   public DownloadUrl(String url, Path path, boolean replaceExisting) {
     this.url = url;
     this.path = path;

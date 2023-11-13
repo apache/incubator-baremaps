@@ -21,6 +21,9 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.BufferedInputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.database.collection.DataMap;
@@ -47,6 +50,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Update an OSM database based on the header data stored in the database.
+ */
 @JsonTypeName("UpdateOsmDatabase")
 public class UpdateOsmDatabase implements Task {
 
@@ -58,27 +64,56 @@ public class UpdateOsmDatabase implements Task {
 
   private String replicationUrl;
 
+  /**
+   * Constructs an {@code UpdateOsmDatabase}.
+   */
   public UpdateOsmDatabase() {
 
   }
 
+  /**
+   * Constructs an {@code UpdateOsmDatabase}.
+   *
+   * @param database the database
+   * @param databaseSrid the database SRID
+   */
   public UpdateOsmDatabase(Object database, Integer databaseSrid) {
     this.database = database;
     this.databaseSrid = databaseSrid;
   }
 
+  /**
+   * Returns the database.
+   *
+   * @return the database
+   */
   public Object getDatabase() {
     return database;
   }
 
+  /**
+   * Sets the database.
+   *
+   * @param database the database
+   */
   public void setDatabase(Object database) {
     this.database = database;
   }
 
+  /**
+   * Returns the database SRID.
+   *
+   * @return the database SRID
+   */
   public Integer getDatabaseSrid() {
     return databaseSrid;
   }
 
+  /**
+   * Sets the database SRID.
+   *
+   * @param databaseSrid the database SRID
+   */
   public void setDatabaseSrid(Integer databaseSrid) {
     this.databaseSrid = databaseSrid;
   }
@@ -91,6 +126,9 @@ public class UpdateOsmDatabase implements Task {
         this.replicationUrl = replicationUrl;
     }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
@@ -111,6 +149,18 @@ public class UpdateOsmDatabase implements Task {
         replicationUrl);
   }
 
+  /**
+   * Executes the task.
+   *
+   * @param coordinateMap the coordinate map
+   * @param referenceMap the reference map
+   * @param headerRepository the header repository
+   * @param nodeRepository the node repository
+   * @param wayRepository the way repository
+   * @param relationRepository the relation repository
+   * @param databaseSrid the SRID
+   * @throws Exception if something went wrong
+   */
   public static void execute(DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
@@ -160,4 +210,20 @@ public class UpdateOsmDatabase implements Task {
     }
   }
 
+  /**
+   * Returns the URL of the file with the given sequence number.
+   * 
+   * @param replicationUrl the replication URL
+   * @param sequenceNumber the sequence number
+   * @param extension the file extension
+   * @return the URL of the file
+   * @throws MalformedURLException if the URL is malformed
+   */
+  public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
+      throws MalformedURLException {
+    var s = String.format("%09d", sequenceNumber);
+    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+        s.substring(6, 9), extension);
+    return URI.create(uri).toURL();
+  }
 }

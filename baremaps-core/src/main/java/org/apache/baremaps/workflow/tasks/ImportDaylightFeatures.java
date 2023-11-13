@@ -32,6 +32,9 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Import daylight features.
+ */
 @JsonTypeName("ImportDaylightFeatures")
 public class ImportDaylightFeatures implements Task {
 
@@ -49,31 +52,63 @@ public class ImportDaylightFeatures implements Task {
 
   private Object database;
 
+  /**
+   * Constructs an {@code ImportDaylightFeatures}.
+   */
   public ImportDaylightFeatures() {
 
   }
 
+  /**
+   * Constructs an {@code ImportDaylightFeatures}.
+   *
+   * @param file the daylight file
+   * @param database the database
+   */
   public ImportDaylightFeatures(Path file, Object database) {
     this.file = file;
     this.database = database;
   }
 
+  /**
+   * Returns the daylight file.
+   *
+   * @return the daylight file
+   */
   public Path getFile() {
     return file;
   }
 
+  /**
+   * Sets the daylight file.
+   *
+   * @param file
+   */
   public void setFile(Path file) {
     this.file = file;
   }
 
+  /**
+   * Returns the database.
+   *
+   * @return
+   */
   public Object getDatabase() {
     return database;
   }
 
+  /**
+   * Sets the database.
+   *
+   * @param database
+   */
   public void setDatabase(Object database) {
     this.database = database;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
@@ -95,42 +130,33 @@ public class ImportDaylightFeatures implements Task {
         case "node" -> {
           var node = nodeRepository.get(feature.id());
           if (node != null) {
-            // Merge the tags
             var tags = new HashMap<>(feature.tags());
             if (node.getTags() != null) {
               tags.putAll(node.getTags());
             }
             node.setTags(tags);
-
-            // Update the node
             nodeRepository.put(node);
           }
         }
         case "way" -> {
           var way = wayRepository.get(feature.id());
           if (way != null) {
-            // Merge the tags
             var tags = new HashMap<>(feature.tags());
             if (way.getTags() != null) {
               tags.putAll(way.getTags());
             }
             way.setTags(tags);
-
-            // Update the way
             wayRepository.put(way);
           }
         }
         case "relation" -> {
           var relation = relationRepository.get(feature.id());
           if (relation != null) {
-            // Merge the tags
             var tags = new HashMap<>(feature.tags());
             if (relation.getTags() != null) {
               tags.putAll(relation.getTags());
             }
             relation.setTags(tags);
-
-            // Update the relation
             relationRepository.put(relation);
           }
         }

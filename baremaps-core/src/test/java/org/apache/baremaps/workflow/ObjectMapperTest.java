@@ -39,7 +39,7 @@ public class ObjectMapperTest {
             new Step("download", List.of(),
                 List.of(new DownloadUrl(
                     "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-                    Paths.get("liechtenstein-latest.osm.pbf")))),
+                    Paths.get("liechtenstein-latest.osm.pbf"), false))),
             new Step("import", List.of("download"),
                 List.of(new ImportOsmPbf(Paths.get("liechtenstein-latest.osm.pbf"),
                     null,

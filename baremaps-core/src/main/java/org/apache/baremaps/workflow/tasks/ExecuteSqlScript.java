@@ -27,6 +27,9 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Execute a SQL script (multiple statements).
+ */
 @JsonTypeName("ExecuteSqlScript")
 public class ExecuteSqlScript implements Task {
 
@@ -36,31 +39,63 @@ public class ExecuteSqlScript implements Task {
 
   private Path file;
 
+  /**
+   * Constructs an {@code ExecuteSqlScript}.
+   */
   public ExecuteSqlScript() {
 
   }
 
+  /**
+   * Constructs an {@code ExecuteSqlScript}.
+   *
+   * @param database the database
+   * @param file the SQL file
+   */
   public ExecuteSqlScript(Object database, Path file) {
     this.database = database;
     this.file = file;
   }
 
+  /**
+   * Returns the database.
+   *
+   * @return the database
+   */
   public Object getDatabase() {
     return database;
   }
 
+  /**
+   * Sets the database.
+   *
+   * @param database the database
+   */
   public void setDatabase(Object database) {
     this.database = database;
   }
 
+  /**
+   * Returns the SQL file.
+   *
+   * @return the SQL file
+   */
   public Path getFile() {
     return file;
   }
 
+  /**
+   * Sets the SQL file.
+   *
+   * @param file the SQL file
+   */
   public void setFile(Path file) {
     this.file = file;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var script = Files.readString(file);

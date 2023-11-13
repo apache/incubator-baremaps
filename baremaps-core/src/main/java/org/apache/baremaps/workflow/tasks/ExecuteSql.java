@@ -30,6 +30,9 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Execute a SQL query (single statement).
+ */
 @JsonTypeName("ExecuteSql")
 public class ExecuteSql implements Task {
 
@@ -39,42 +42,85 @@ public class ExecuteSql implements Task {
 
   private Path file;
 
-  private boolean parallel;
+  private Boolean parallel;
 
+  /**
+   * Constructs an {@code ExecuteSql}.
+   */
   public ExecuteSql() {
 
   }
 
-  public ExecuteSql(Object database, Path file, boolean parallel) {
+  /**
+   * Constructs an {@code ExecuteSql}.
+   *
+   * @param database the database
+   * @param file the SQL file
+   * @param parallel whether to execute the queries in parallel
+   */
+  public ExecuteSql(Object database, Path file, Boolean parallel) {
     this.database = database;
     this.file = file;
     this.parallel = parallel;
   }
 
+  /**
+   * Returns the database.
+   *
+   * @return the database
+   */
   public Object getDatabase() {
     return database;
   }
 
+  /**
+   * Sets the database.
+   *
+   * @param database the database
+   */
   public void setDatabase(Object database) {
     this.database = database;
   }
 
+  /**
+   * Returns the SQL file.
+   *
+   * @return the SQL file
+   */
   public Path getFile() {
     return file;
   }
 
+  /**
+   * Sets the SQL file.
+   *
+   * @param file the SQL file
+   */
   public void setFile(Path file) {
     this.file = file;
   }
 
+  /**
+   * Returns whether to execute the queries in parallel.
+   *
+   * @return whether to execute the queries in parallel
+   */
   public boolean isParallel() {
     return parallel;
   }
 
+  /**
+   * Sets whether to execute the queries in parallel.
+   *
+   * @param parallel whether to execute the queries in parallel
+   */
   public void setParallel(boolean parallel) {
     this.parallel = parallel;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var script = clean(Files.readString(file));

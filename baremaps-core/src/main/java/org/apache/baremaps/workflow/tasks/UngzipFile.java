@@ -29,6 +29,9 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Ungzip a file.
+ */
 @JsonTypeName("UngzipFile")
 public class UngzipFile implements Task {
 
@@ -37,31 +40,63 @@ public class UngzipFile implements Task {
   private Path file;
   private Path directory;
 
+  /**
+   * Constructs an {@code UngzipFile}.
+   */
   public UngzipFile() {
 
   }
 
+  /**
+   * Constructs an {@code UngzipFile}.
+   *
+   * @param file the file
+   * @param directory the directory
+   */
   public UngzipFile(Path file, Path directory) {
     this.file = file;
     this.directory = directory;
   }
 
+  /**
+   * Returns the file.
+   *
+   * @return the file
+   */
   public Path getFile() {
     return file;
   }
 
+  /**
+   * Sets the file.
+   *
+   * @param file the file
+   */
   public void setFile(Path file) {
     this.file = file;
   }
 
+  /**
+   * Returns the directory.
+   *
+   * @return the directory
+   */
   public Path getDirectory() {
     return directory;
   }
 
+  /**
+   * Sets the directory.
+   *
+   * @param directory the directory
+   */
   public void setDirectory(Path directory) {
     this.directory = directory;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var filePath = file.toAbsolutePath();
