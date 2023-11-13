@@ -24,6 +24,7 @@ export default {
             "tasks": [
                 {
                     "type": "UpdateOsmDatabase",
+                    "replicationUrl": "https://planet.osm.org/replication/hour/",
                     "database": config.database,
                     "databaseSrid": 3857,
                 },

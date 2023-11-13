@@ -49,7 +49,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UpdateOsmDatabase(Object database, Integer databaseSrid) implements Task {
+public record UpdateOsmDatabase(Object database, Integer databaseSrid, String replicationUrl) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
 
@@ -69,21 +69,22 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid) implement
         nodeRepository,
         wayRepository,
         relationRepository,
-        databaseSrid);
+        databaseSrid,
+            replicationUrl);
   }
 
   public static void execute(DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
-      int srid) throws Exception {
+      Integer databaseSrid,
+      String replicationUrl) throws Exception {
 
     var header = headerRepository.selectLatest();
-    var replicationUrl = header.getReplicationUrl();
     var sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
     var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
-    var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
+    var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
     var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
     var prepareChange = consumeThenReturn(prepareGeometries);
     var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
