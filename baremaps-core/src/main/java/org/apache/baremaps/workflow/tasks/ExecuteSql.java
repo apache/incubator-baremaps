@@ -29,9 +29,49 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ExecuteSql(Object database, Path file, boolean parallel) implements Task {
+public class ExecuteSql implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExecuteSql.class);
+
+  private Object database;
+
+  private Path file;
+
+  private boolean parallel;
+
+  public ExecuteSql() {
+
+  }
+
+  public ExecuteSql(Object database, Path file, boolean parallel) {
+    this.database = database;
+    this.file = file;
+    this.parallel = parallel;
+  }
+
+  public Object getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(Object database) {
+    this.database = database;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public boolean isParallel() {
+    return parallel;
+  }
+
+  public void setParallel(boolean parallel) {
+    this.parallel = parallel;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

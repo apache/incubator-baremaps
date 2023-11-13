@@ -28,9 +28,37 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UngzipFile(Path file, Path directory) implements Task {
+public class UngzipFile implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UngzipFile.class);
+
+  private Path file;
+  private Path directory;
+
+  public UngzipFile() {
+
+  }
+
+  public UngzipFile(Path file, Path directory) {
+    this.file = file;
+    this.directory = directory;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public Path getDirectory() {
+    return directory;
+  }
+
+  public void setDirectory(Path directory) {
+    this.directory = directory;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

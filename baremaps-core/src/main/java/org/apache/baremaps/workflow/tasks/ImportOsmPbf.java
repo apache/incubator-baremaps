@@ -46,15 +46,78 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmPbf(
-    Path file,
-    Path cache,
-    Boolean cleanCache,
-    Object database,
-    Integer databaseSrid,
-    Boolean replaceExisting) implements Task {
+public class ImportOsmPbf implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmPbf.class);
+
+  private Path file;
+  private Path cache;
+  private Boolean cleanCache;
+  private Object database;
+  private Integer databaseSrid;
+  private Boolean replaceExisting;
+
+  public ImportOsmPbf() {
+
+  }
+
+  public ImportOsmPbf(Path file, Path cache, Boolean cleanCache, Object database,
+      Integer databaseSrid, Boolean replaceExisting) {
+    this.file = file;
+    this.cache = cache;
+    this.cleanCache = cleanCache;
+    this.database = database;
+    this.databaseSrid = databaseSrid;
+    this.replaceExisting = replaceExisting;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public Path getCache() {
+    return cache;
+  }
+
+  public void setCache(Path cache) {
+    this.cache = cache;
+  }
+
+  public Boolean getCleanCache() {
+    return cleanCache;
+  }
+
+  public void setCleanCache(Boolean cleanCache) {
+    this.cleanCache = cleanCache;
+  }
+
+  public Object getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(Object database) {
+    this.database = database;
+  }
+
+  public Integer getDatabaseSrid() {
+    return databaseSrid;
+  }
+
+  public void setDatabaseSrid(Integer databaseSrid) {
+    this.databaseSrid = databaseSrid;
+  }
+
+  public Boolean getReplaceExisting() {
+    return replaceExisting;
+  }
+
+  public void setReplaceExisting(Boolean replaceExisting) {
+    this.replaceExisting = replaceExisting;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

@@ -29,17 +29,57 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record DownloadUrl(String url, Path path, boolean replaceExisting) implements Task {
+public class DownloadUrl implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(DownloadUrl.class);
 
   private static final String PROTOCOL_FTP = "ftp";
+
   private static final String PROTOCOL_HTTP = "http";
+
   private static final String PROTOCOL_HTTPS = "https";
+
+  private String url;
+
+  private Path path;
+
+  private Boolean replaceExisting;
+
+  public DownloadUrl() {}
 
   public DownloadUrl(String url, Path path) {
     this(url, path, false);
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(DownloadUrl.class);
+  public DownloadUrl(String url, Path path, boolean replaceExisting) {
+    this.url = url;
+    this.path = path;
+    this.replaceExisting = replaceExisting;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public Path getPath() {
+    return path;
+  }
+
+  public void setPath(Path path) {
+    this.path = path;
+  }
+
+  public Boolean getReplaceExisting() {
+    return replaceExisting;
+  }
+
+  public void setReplaceExisting(Boolean replaceExisting) {
+    this.replaceExisting = replaceExisting;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

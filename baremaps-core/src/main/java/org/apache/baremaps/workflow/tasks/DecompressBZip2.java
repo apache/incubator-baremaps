@@ -25,8 +25,38 @@ import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public record DecompressBZip2(Path source, Path target) implements Task {
+public class DecompressBZip2 implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(DecompressBZip2.class);
+
+  private Path source;
+  private Path target;
+
+  public DecompressBZip2() {}
+
+  public DecompressBZip2(Path source, Path target) {
+    this.source = source;
+    this.target = target;
+  }
+
+  public Path getSource() {
+    return source;
+  }
+
+  public void setSource(Path source) {
+    this.source = source;
+  }
+
+  public Path getTarget() {
+    return target;
+  }
+
+  public void setTarget(Path target) {
+    this.target = target;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

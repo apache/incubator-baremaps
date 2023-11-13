@@ -36,12 +36,45 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;
 
-public record CreateIplocIndex(
-    Path geonamesIndexPath,
-    List<Path> nicPaths,
-    Path targetIplocIndexPath) implements Task {
+public class CreateIplocIndex implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
+
+  private Path geonamesIndexPath;
+  private List<Path> nicPaths;
+  private Path targetIplocIndexPath;
+
+  public CreateIplocIndex() {}
+
+  public CreateIplocIndex(Path geonamesIndexPath, List<Path> nicPaths, Path targetIplocIndexPath) {
+    this.geonamesIndexPath = geonamesIndexPath;
+    this.nicPaths = nicPaths;
+    this.targetIplocIndexPath = targetIplocIndexPath;
+  }
+
+  public Path getGeonamesIndexPath() {
+    return geonamesIndexPath;
+  }
+
+  public void setGeonamesIndexPath(Path geonamesIndexPath) {
+    this.geonamesIndexPath = geonamesIndexPath;
+  }
+
+  public List<Path> getNicPaths() {
+    return nicPaths;
+  }
+
+  public void setNicPaths(List<Path> nicPaths) {
+    this.nicPaths = nicPaths;
+  }
+
+  public Path getTargetIplocIndexPath() {
+    return targetIplocIndexPath;
+  }
+
+  public void setTargetIplocIndexPath(Path targetIplocIndexPath) {
+    this.targetIplocIndexPath = targetIplocIndexPath;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

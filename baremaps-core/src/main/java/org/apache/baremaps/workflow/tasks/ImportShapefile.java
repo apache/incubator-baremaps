@@ -29,11 +29,57 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportShapefile(Path file, Object database, Integer sourceSRID, Integer targetSRID)
-    implements
-      Task {
+public class ImportShapefile implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
+
+  private Path file;
+  private Object database;
+  private Integer sourceSRID;
+  private Integer targetSRID;
+
+  public ImportShapefile() {
+
+  }
+
+  public ImportShapefile(Path file, Object database, Integer sourceSRID, Integer targetSRID) {
+    this.file = file;
+    this.database = database;
+    this.sourceSRID = sourceSRID;
+    this.targetSRID = targetSRID;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public Object getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(Object database) {
+    this.database = database;
+  }
+
+  public Integer getSourceSRID() {
+    return sourceSRID;
+  }
+
+  public void setSourceSRID(Integer sourceSRID) {
+    this.sourceSRID = sourceSRID;
+  }
+
+  public Integer getTargetSRID() {
+    return targetSRID;
+  }
+
+  public void setTargetSRID(Integer targetSRID) {
+    this.targetSRID = targetSRID;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

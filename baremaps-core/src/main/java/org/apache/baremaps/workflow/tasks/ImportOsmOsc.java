@@ -41,14 +41,68 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOsmOsc(
-    Path file,
-    Path cache,
-    Object database,
-    Integer srid,
-    Compression compression) implements Task {
+public class ImportOsmOsc implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmOsc.class);
+
+  private Path file;
+  private Path cache;
+  private Object database;
+  private Integer srid;
+  private Compression compression;
+
+  public ImportOsmOsc() {
+
+  }
+
+  public ImportOsmOsc(Path file, Path cache, Object database, Integer srid,
+      Compression compression) {
+    this.file = file;
+    this.cache = cache;
+    this.database = database;
+    this.srid = srid;
+    this.compression = compression;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public Path getCache() {
+    return cache;
+  }
+
+  public void setCache(Path cache) {
+    this.cache = cache;
+  }
+
+  public Object getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(Object database) {
+    this.database = database;
+  }
+
+  public Integer getSrid() {
+    return srid;
+  }
+
+  public void setSrid(Integer srid) {
+    this.srid = srid;
+  }
+
+  public Compression getCompression() {
+    return compression;
+  }
+
+  public void setCompression(Compression compression) {
+    this.compression = compression;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

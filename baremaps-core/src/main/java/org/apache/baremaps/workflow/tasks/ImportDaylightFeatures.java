@@ -28,8 +28,12 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public record ImportDaylightFeatures(Path file, Object database) implements Task {
+public class ImportDaylightFeatures implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(ImportDaylightFeatures.class);
 
   record Feature(
       @JsonProperty("osm_type") String type,
@@ -37,6 +41,35 @@ public record ImportDaylightFeatures(Path file, Object database) implements Task
       @JsonProperty("tags") Map<String, Object> tags,
       @JsonProperty("wkt") String wkt,
       @JsonProperty("category") String category) {
+  }
+
+  private Path file;
+
+  private Object database;
+
+  public ImportDaylightFeatures() {
+
+  }
+
+  public ImportDaylightFeatures(Path file, Object database) {
+    this.file = file;
+    this.database = database;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public Object getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(Object database) {
+    this.database = database;
   }
 
   @Override

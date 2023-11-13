@@ -22,9 +22,25 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ExecuteCommand(String command) implements Task {
+public class ExecuteCommand implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExecuteCommand.class);
+
+  private String command;
+
+  public ExecuteCommand() {}
+
+  public ExecuteCommand(String command) {
+    this.command = command;
+  }
+
+  public String getCommand() {
+    return command;
+  }
+
+  public void setCommand(String command) {
+    this.command = command;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

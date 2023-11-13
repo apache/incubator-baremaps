@@ -48,14 +48,39 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Experimental feature.
- * 
+ *
  * @see org.apache.baremaps.geocoderosm
  */
-public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
-    implements
-      Task {
+public class CreateGeocoderOpenStreetMap implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeocoderOpenStreetMap.class);
+
+  private Path file;
+
+  private Path indexDirectory;
+
+  public CreateGeocoderOpenStreetMap() {}
+
+  public CreateGeocoderOpenStreetMap(Path file, Path indexDirectory) {
+    this.file = file;
+    this.indexDirectory = indexDirectory;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public Path getIndexDirectory() {
+    return indexDirectory;
+  }
+
+  public void setIndexDirectory(Path indexDirectory) {
+    this.indexDirectory = indexDirectory;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

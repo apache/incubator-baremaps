@@ -26,8 +26,12 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public record ImportDaylightTranslations(Path file, Object database) implements Task {
+public class ImportDaylightTranslations implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(ImportDaylightTranslations.class);
 
   record Group(String type, Long id, String name) {
 
@@ -48,6 +52,36 @@ public record ImportDaylightTranslations(Path file, Object database) implements 
       var val = parts[4];
       return new Line(type, id, name, key, val);
     }
+  }
+
+
+  private Path file;
+
+  private Object database;
+
+  public ImportDaylightTranslations() {
+
+  }
+
+  public ImportDaylightTranslations(Path file, Object database) {
+    this.file = file;
+    this.database = database;
+  }
+
+  public Path getFile() {
+    return file;
+  }
+
+  public void setFile(Path file) {
+    this.file = file;
+  }
+
+  public Object getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(Object database) {
+    this.database = database;
   }
 
   @Override

@@ -46,14 +46,48 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UpdateOsmDatabase(Object database, Integer databaseSrid,
-    String replicationUrl) implements Task {
+public class UpdateOsmDatabase implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
 
-  public UpdateOsmDatabase(Object database, Integer databaseSrid) {
-    this(database, databaseSrid, null);
+  private Object database;
+
+  private Integer databaseSrid;
+
+  private String replicationUrl;
+
+  public UpdateOsmDatabase() {
+
   }
+
+  public UpdateOsmDatabase(Object database, Integer databaseSrid) {
+    this.database = database;
+    this.databaseSrid = databaseSrid;
+  }
+
+  public Object getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(Object database) {
+    this.database = database;
+  }
+
+  public Integer getDatabaseSrid() {
+    return databaseSrid;
+  }
+
+  public void setDatabaseSrid(Integer databaseSrid) {
+    this.databaseSrid = databaseSrid;
+  }
+
+    public String getReplicationUrl() {
+        return replicationUrl;
+    }
+
+    public void setReplicationUrl(String replicationUrl) {
+        this.replicationUrl = replicationUrl;
+    }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

@@ -35,9 +35,38 @@ import org.slf4j.LoggerFactory;
 /**
  * A task that creates a geonames index.
  */
-public record CreateGeonamesIndex(Path dataFile, Path indexDirectory) implements Task {
+public class CreateGeonamesIndex implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeonamesIndex.class);
+
+  private Path dataFile;
+
+  private Path indexDirectory;
+
+  public CreateGeonamesIndex() {
+
+  }
+
+  public CreateGeonamesIndex(Path dataFile, Path indexDirectory) {
+    this.dataFile = dataFile;
+    this.indexDirectory = indexDirectory;
+  }
+
+  public Path getDataFile() {
+    return dataFile;
+  }
+
+  public void setDataFile(Path dataFile) {
+    this.dataFile = dataFile;
+  }
+
+  public Path getIndexDirectory() {
+    return indexDirectory;
+  }
+
+  public void setIndexDirectory(Path indexDirectory) {
+    this.indexDirectory = indexDirectory;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

@@ -32,7 +32,9 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record DecompressFile(Path source, Path target, Compression compression) implements Task {
+public class DecompressFile implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(DecompressFile.class);
 
   public enum Compression {
     zip,
@@ -42,7 +44,43 @@ public record DecompressFile(Path source, Path target, Compression compression) 
     bzip2;
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(UngzipFile.class);
+  private Path source;
+
+  private Path target;
+
+  private Compression compression;
+
+  public DecompressFile() {}
+
+  public DecompressFile(Path source, Path target, Compression compression) {
+    this.source = source;
+    this.target = target;
+    this.compression = compression;
+  }
+
+  public Path getSource() {
+    return source;
+  }
+
+  public void setSource(Path source) {
+    this.source = source;
+  }
+
+  public Path getTarget() {
+    return target;
+  }
+
+  public void setTarget(Path target) {
+    this.target = target;
+  }
+
+  public Compression getCompression() {
+    return compression;
+  }
+
+  public void setCompression(Compression compression) {
+    this.compression = compression;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

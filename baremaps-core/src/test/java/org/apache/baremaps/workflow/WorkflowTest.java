@@ -43,7 +43,7 @@ class WorkflowTest extends PostgresContainerTest {
         new ImportGeoPackage(Paths.get("natural_earth_vector/packages/natural_earth_vector.gpkg"),
             jdbcUrl(),
             4326, 3857)))));
-    new WorkflowExecutor(workflow).execute().join();
+    new WorkflowExecutor(workflow).execute();
   }
 
   @Test
@@ -58,7 +58,7 @@ class WorkflowTest extends PostgresContainerTest {
             new ImportShapefile(Paths.get("coastlines-split-4326/coastlines-split-4326/lines.shp"),
                 jdbcUrl(),
                 4326, 3857)))));
-    new WorkflowExecutor(workflow).execute().join();
+    new WorkflowExecutor(workflow).execute();
   }
 
   @Test
@@ -76,7 +76,7 @@ class WorkflowTest extends PostgresContainerTest {
                 "simplified-water-polygons-split-3857/simplified-water-polygons-split-3857/simplified_water_polygons.shp"),
             "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps", 3857,
             3857)))));
-    new WorkflowExecutor(workflow).execute().join();
+    new WorkflowExecutor(workflow).execute();
   }
 
   @Test
@@ -86,7 +86,7 @@ class WorkflowTest extends PostgresContainerTest {
         new DownloadUrl("https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
             Paths.get("downloads/import_db.gpkg")),
         new ImportShapefile(Paths.get("downloads/import_db.gpkg"), jdbcUrl(), 4326, 3857)))));
-    new WorkflowExecutor(workflow).execute().join();
+    new WorkflowExecutor(workflow).execute();
   }
 
   @Test
@@ -122,6 +122,6 @@ class WorkflowTest extends PostgresContainerTest {
                 Paths.get(
                     "archives/simplified-water-polygons-split-3857/simplified_water_polygons.shp"),
                 jdbcUrl(), 3857, 3857)))));
-    new WorkflowExecutor(workflow).execute().join();
+    new WorkflowExecutor(workflow).execute();
   }
 }

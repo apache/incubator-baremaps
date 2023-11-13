@@ -22,9 +22,27 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record LogMessage(String message) implements Task {
+public class LogMessage implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(LogMessage.class);
+
+  private String message;
+
+  public LogMessage() {
+
+  }
+
+  public LogMessage(String message) {
+    this.message = message;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

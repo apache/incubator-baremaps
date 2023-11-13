@@ -44,12 +44,9 @@ import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ExportVectorTiles(
-    Path tileset,
-    Path repository,
-    int batchArraySize,
-    int batchArrayIndex,
-    Format format) implements Task {
+public class ExportVectorTiles implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
 
   public enum Format {
     file,
@@ -57,7 +54,64 @@ public record ExportVectorTiles(
     pmtiles
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
+  private Path tileset;
+  private Path repository;
+  private Integer batchArraySize;
+  private Integer batchArrayIndex;
+  private Format format;
+
+  public ExportVectorTiles() {
+
+  }
+
+  public ExportVectorTiles(Path tileset, Path repository, Integer batchArraySize,
+      Integer batchArrayIndex, Format format) {
+    this.tileset = tileset;
+    this.repository = repository;
+    this.batchArraySize = batchArraySize;
+    this.batchArrayIndex = batchArrayIndex;
+    this.format = format;
+  }
+
+  public Path getTileset() {
+    return tileset;
+  }
+
+  public void setTileset(Path tileset) {
+    this.tileset = tileset;
+  }
+
+  public Path getRepository() {
+    return repository;
+  }
+
+  public void setRepository(Path repository) {
+    this.repository = repository;
+  }
+
+  public Integer getBatchArraySize() {
+    return batchArraySize;
+  }
+
+  public void setBatchArraySize(Integer batchArraySize) {
+    this.batchArraySize = batchArraySize;
+  }
+
+  public Integer getBatchArrayIndex() {
+    return batchArrayIndex;
+  }
+
+  public void setBatchArrayIndex(Integer batchArrayIndex) {
+    this.batchArrayIndex = batchArrayIndex;
+  }
+
+  public Format getFormat() {
+    return format;
+  }
+
+  public void setFormat(Format format) {
+    this.format = format;
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
