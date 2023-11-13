@@ -77,7 +77,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
     // Update the database
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository,
-        relationRepository, 3857);
+        relationRepository, 3857, null);
     assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(2, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
@@ -85,7 +85,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
 
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository,
-        relationRepository, 3857);
+        relationRepository, 3857, null);
     assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(0, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
@@ -93,7 +93,7 @@ class ImportUpdateLiechtensteinTest extends PostgresRepositoryTest {
 
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository,
-        relationRepository, 3857);
+        relationRepository, 3857, null);
     assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }
 }

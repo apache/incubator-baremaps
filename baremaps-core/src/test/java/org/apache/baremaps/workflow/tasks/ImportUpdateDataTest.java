@@ -96,7 +96,7 @@ class ImportUpdateDataTest extends PostgresRepositoryTest {
     // Update the database
     UpdateOsmDatabase.execute(new PostgresCoordinateMap(dataSource()),
         new PostgresReferenceMap(dataSource()), headerRepository, nodeRepository, wayRepository,
-        relationRepository, 3857);
+        relationRepository, 3857, null);
 
     // Check deletions
     assertNull(nodeRepository.get(0l));

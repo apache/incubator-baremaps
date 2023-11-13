@@ -49,9 +49,14 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UpdateOsmDatabase(Object database, Integer databaseSrid, String replicationUrl) implements Task {
+public record UpdateOsmDatabase(Object database, Integer databaseSrid,
+    String replicationUrl) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
+
+  public UpdateOsmDatabase(Object database, Integer databaseSrid) {
+    this(database, databaseSrid, null);
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
@@ -70,7 +75,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid, String re
         wayRepository,
         relationRepository,
         databaseSrid,
-            replicationUrl);
+        replicationUrl);
   }
 
   public static void execute(DataMap<Long, Coordinate> coordinateMap,
@@ -82,6 +87,10 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid, String re
 
     var header = headerRepository.selectLatest();
     var sequenceNumber = header.getReplicationSequenceNumber() + 1;
+
+    if (replicationUrl == null) {
+      replicationUrl = header.getReplicationUrl();
+    }
 
     var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);

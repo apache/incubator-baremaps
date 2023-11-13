@@ -76,7 +76,7 @@ class ImportMonacoTest extends PostgresRepositoryTest {
       new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository, wayRepository,
           relationRepository, 3857, 14).call();
       UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
-          wayRepository, relationRepository, 3857);
+          wayRepository, relationRepository, 3857, null);
       long nextReplicationSequenceNumber =
           headerRepository.selectLatest().getReplicationSequenceNumber();
       assertEquals(replicationSequenceNumber + 1, nextReplicationSequenceNumber);
