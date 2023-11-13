@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.nio.file.Path;
 import org.apache.baremaps.database.schema.DataTableAdapter;
 import org.apache.baremaps.database.schema.DataTableGeometryTransformer;
@@ -29,6 +30,7 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@JsonTypeName("ImportGeoPackage")
 public class ImportGeoPackage implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);

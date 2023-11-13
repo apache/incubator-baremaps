@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@JsonTypeName("ExecuteSql")
 public class ExecuteSql implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExecuteSql.class);

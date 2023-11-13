@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +29,7 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@JsonTypeName("UngzipFile")
 public class UngzipFile implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UngzipFile.class);

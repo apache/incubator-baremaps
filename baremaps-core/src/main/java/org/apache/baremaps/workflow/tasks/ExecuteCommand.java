@@ -17,11 +17,13 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@JsonTypeName("ExecuteCommand")
 public class ExecuteCommand implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExecuteCommand.class);

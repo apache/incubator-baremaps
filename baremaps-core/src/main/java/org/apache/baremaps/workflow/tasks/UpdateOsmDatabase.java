@@ -19,6 +19,7 @@ package org.apache.baremaps.workflow.tasks;
 
 import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.BufferedInputStream;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -46,6 +47,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@JsonTypeName("UpdateOsmDatabase")
 public class UpdateOsmDatabase implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);

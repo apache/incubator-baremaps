@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.*;
 import java.nio.file.*;
 import java.util.zip.ZipFile;
@@ -25,6 +26,7 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@JsonTypeName("UnzipFile")
 public class UnzipFile implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UnzipFile.class);

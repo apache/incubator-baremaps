@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;
 
+@JsonTypeName("CreateIplocIndex")
 public class CreateIplocIndex implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);

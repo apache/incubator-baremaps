@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see org.apache.baremaps.geocoderosm
  */
+@JsonTypeName("CreateGeocoderOpenStreetMap")
 public class CreateGeocoderOpenStreetMap implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeocoderOpenStreetMap.class);
