@@ -99,6 +99,8 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
     var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
 
     var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    logger.info("Updating the database with the changeset: {}", changeUrl);
+
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
