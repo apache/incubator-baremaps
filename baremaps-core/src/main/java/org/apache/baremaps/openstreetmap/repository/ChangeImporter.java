@@ -75,17 +75,14 @@ public class ChangeImporter implements Consumer<Change> {
         case CREATE, MODIFY -> {
           if (!nodes.isEmpty()) {
             logger.trace("Creating {} nodes", nodes.size());
-            nodeRepository.delete(nodeIds);
             nodeRepository.put(nodes);
           }
           if (!ways.isEmpty()) {
             logger.trace("Creating {} ways", ways.size());
-            wayRepository.delete(wayIds);
             wayRepository.put(ways);
           }
           if (!relations.isEmpty()) {
             logger.trace("Creating {} relations", relations.size());
-            relationRepository.delete(relationIds);
             relationRepository.put(relations);
           }
         }
