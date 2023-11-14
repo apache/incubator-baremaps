@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** A consumer for importing OpenStreetMap changes in a database. */
-public class ChangeImporter implements Consumer<Change> {
+public class PutChangeImporter implements Consumer<Change> {
 
-  private static final Logger logger = LoggerFactory.getLogger(ChangeImporter.class);
+  private static final Logger logger = LoggerFactory.getLogger(PutChangeImporter.class);
 
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -43,7 +43,7 @@ public class ChangeImporter implements Consumer<Change> {
    * @param wayRepository the way table
    * @param relationRepository the relation table
    */
-  public ChangeImporter(
+  public PutChangeImporter(
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository) {

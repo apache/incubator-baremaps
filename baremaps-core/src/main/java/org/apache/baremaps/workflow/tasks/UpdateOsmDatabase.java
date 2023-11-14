@@ -40,7 +40,7 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresReferenceMap;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.repository.*;
-import org.apache.baremaps.openstreetmap.repository.ChangeImporter;
+import org.apache.baremaps.openstreetmap.repository.PutChangeImporter;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.workflow.Task;
@@ -96,7 +96,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
     var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
     var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
     var prepareChange = consumeThenReturn(prepareGeometries);
-    var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
+    var importChange = new PutChangeImporter(nodeRepository, wayRepository, relationRepository);
 
     var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
     logger.info("Updating the database with the changeset: {}", changeUrl);
