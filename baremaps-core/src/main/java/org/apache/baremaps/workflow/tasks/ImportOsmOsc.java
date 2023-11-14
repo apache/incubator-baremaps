@@ -31,7 +31,7 @@ import org.apache.baremaps.database.type.PairDataType;
 import org.apache.baremaps.database.type.geometry.LonLatDataType;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.postgres.*;
-import org.apache.baremaps.openstreetmap.repository.ChangeImporter;
+import org.apache.baremaps.openstreetmap.repository.ChangeCopyImporter;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.utils.Compression;
 import org.apache.baremaps.utils.FileUtils;
@@ -100,7 +100,7 @@ public record ImportOsmOsc(
         .andThen(buildGeometry)
         .andThen(reprojectGeometry);
     var prepareChange = consumeThenReturn(new ChangeEntitiesHandler(prepareGeometries));
-    var importChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
+    var importChange = new ChangeCopyImporter(nodeRepository, wayRepository, relationRepository);
 
     try (var changeInputStream =
         new BufferedInputStream(compression.decompress(Files.newInputStream(path)))) {
