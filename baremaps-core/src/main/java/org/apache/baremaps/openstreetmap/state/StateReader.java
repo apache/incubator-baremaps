@@ -35,6 +35,10 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.baremaps.openstreetmap.model.State;
 
+/**
+ * Utility class for reading OSM state files.
+ * This code has been adapted from pyosmium (BSD 2-Clause "Simplified" License).
+ */
 public class StateReader {
 
   private final String replicationUrl;
@@ -177,12 +181,7 @@ public class StateReader {
   }
 
   public static void main(String... args) throws MalformedURLException {
-    var reader = new StateReader();
-    var state = reader.getStateFromTimestamp(LocalDateTime.now().minusDays(10));
-    System.out.println(state.get().getSequenceNumber());
-    System.out
-        .println(resolve(reader.replicationUrl, state.get().getSequenceNumber(), "state.txt"));
-    System.out.println(resolve(reader.replicationUrl, state.get().getSequenceNumber(), "osc.gz"));
+
   }
 
 }
