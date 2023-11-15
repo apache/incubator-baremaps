@@ -20,9 +20,6 @@ package org.apache.baremaps.workflow.tasks;
 import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.database.collection.DataMap;
@@ -86,11 +83,27 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
       String replicationUrl) throws Exception {
 
     var header = headerRepository.selectLatest();
-    var sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
+    // If the replicationUrl is not provided, use the one from the latest header.
     if (replicationUrl == null) {
       replicationUrl = header.getReplicationUrl();
     }
+
+    var stateReader = new StateReader("https://planet.osm.org/replication/hour", true);
+    var sequenceNumber = header.getReplicationSequenceNumber();
+
+    // If the replicationTimestamp is not provided, guess it from the replication timestamp.
+    if (sequenceNumber <= 0) {
+      var replicationTimestamp = header.getReplicationTimestamp();
+      var state = stateReader.getStateFromTimestamp(replicationTimestamp);
+      if (state.isPresent()) {
+        sequenceNumber = state.get().getSequenceNumber();
+      }
+    }
+
+    var nextSequenceNumber = sequenceNumber + 1;
+    var changeUrl = StateReader.resolve(replicationUrl, nextSequenceNumber, "osc.gz");
+    logger.info("Updating the database with the changeset: {}", changeUrl);
 
     var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
@@ -98,27 +111,17 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
     var prepareChange = consumeThenReturn(prepareGeometries);
     var importChange = new PutChangeImporter(nodeRepository, wayRepository, relationRepository);
 
-    var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    logger.info("Updating the database with the changeset: {}", changeUrl);
-
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
 
-    var stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");
+    var stateUrl = StateReader.resolve(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
-      var state = new StateReader().state(stateInputStream);
+      var state = new StateReader().readState(stateInputStream);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
           header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }
   }
 
-  public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws MalformedURLException {
-    var s = String.format("%09d", sequenceNumber);
-    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
-        s.substring(6, 9), extension);
-    return URI.create(uri).toURL();
-  }
 }

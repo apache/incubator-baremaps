@@ -23,14 +23,32 @@ import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.baremaps.openstreetmap.model.State;
 
 public class StateReader {
+
+  private final String replicationUrl;
+
+  private final boolean balancedSearch;
+
+  public StateReader() {
+    this("https://planet.osm.org/replication/hour", true);
+  }
+
+  public StateReader(String replicationUrl, boolean balancedSearch) {
+    this.replicationUrl = replicationUrl;
+    this.balancedSearch = balancedSearch;
+  }
 
   /**
    * Parse an OSM state file.
@@ -38,7 +56,7 @@ public class StateReader {
    * @param input the OpenStreetMap state file
    * @return the state
    */
-  public State state(InputStream input) throws IOException {
+  public State readState(InputStream input) throws IOException {
     InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
     Map<String, String> map = new HashMap<>();
     for (String line : CharStreams.readLines(reader)) {
@@ -52,4 +70,119 @@ public class StateReader {
     LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
     return new State(sequenceNumber, timestamp);
   }
+
+  public Optional<State> getStateFromTimestamp(LocalDateTime timestamp) {
+    var upper = getState(Optional.empty());
+    if (upper.isEmpty()) {
+      return Optional.empty();
+    }
+    if (timestamp.isAfter(upper.get().getTimestamp()) || upper.get().getSequenceNumber() <= 0) {
+      return upper;
+    }
+    var lower = Optional.<State>empty();
+    var lowerId = Optional.of(0L);
+    while (lower.isEmpty()) {
+      lower = getState(lowerId);
+      if (lower.isPresent() && lower.get().getTimestamp().isAfter(timestamp)) {
+        if (lower.get().getSequenceNumber() == 0
+            || lower.get().getSequenceNumber() + 1 >= upper.get().getSequenceNumber()) {
+          return lower;
+        }
+        upper = lower;
+        lower = Optional.empty();
+        lowerId = Optional.of(0L);
+      }
+      if (lower.isEmpty()) {
+        var newId = (lowerId.get() + upper.get().getSequenceNumber()) / 2;
+        if (newId <= lowerId.get()) {
+          return upper;
+        }
+        lowerId = Optional.of(newId);
+      }
+    }
+    long baseSplitId;
+    while (true) {
+      if (balancedSearch) {
+        baseSplitId = ((lower.get().getSequenceNumber() + upper.get().getSequenceNumber()) / 2);
+      } else {
+        var tsInt = upper.get().getTimestamp().toEpochSecond(ZoneOffset.UTC)
+            - lower.get().getTimestamp().toEpochSecond(ZoneOffset.UTC);
+        var seqInt = upper.get().getSequenceNumber() - lower.get().getSequenceNumber();
+        var goal = timestamp.getSecond() - lower.get().getTimestamp().getSecond();
+        baseSplitId = lower.get().getSequenceNumber() + (long) Math.ceil(goal * seqInt / tsInt);
+        if (baseSplitId >= upper.get().getSequenceNumber()) {
+          baseSplitId = upper.get().getSequenceNumber() - 1;
+        }
+      }
+      var split = getState(Optional.of(baseSplitId));
+      if (split.isEmpty()) {
+        var splitId = baseSplitId - 1;
+        while (split.isEmpty() && splitId > lower.get().getSequenceNumber()) {
+          split = getState(Optional.of(splitId));
+          splitId--;
+        }
+      }
+      if (split.isEmpty()) {
+        var splitId = baseSplitId + 1;
+        while (split.isEmpty() && splitId < upper.get().getSequenceNumber()) {
+          split = getState(Optional.of(splitId));
+          splitId++;
+        }
+      }
+      if (split.isEmpty()) {
+        return lower;
+      }
+      if (split.get().getTimestamp().isBefore(timestamp)) {
+        lower = split;
+      } else {
+        upper = split;
+      }
+      if (lower.get().getSequenceNumber() + 1 >= upper.get().getSequenceNumber()) {
+        return lower;
+      }
+    }
+  }
+
+  public Optional<State> getState(Optional<Long> sequenceNumber) {
+    for (int i = 0; i < 3; i++) {
+      try (var inputStream = getStateUrl(sequenceNumber).openStream()) {
+        var state = new StateReader().readState(inputStream);
+        return Optional.of(state);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return Optional.empty();
+  }
+
+  public URL getStateUrl(Optional<Long> sequenceNumber) throws MalformedURLException {
+    if (sequenceNumber.isPresent()) {
+
+      var s = String.format("%09d", sequenceNumber.get());
+      var uri =
+          String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+              s.substring(6, 9), "state.txt");
+      return URI.create(uri).toURL();
+    } else {
+      return new URL(replicationUrl + "/state.txt");
+    }
+  }
+
+  public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
+      throws MalformedURLException {
+    var s = String.format("%09d", sequenceNumber);
+    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+        s.substring(6, 9), extension);
+    return URI.create(uri).toURL();
+  }
+
+  public static void main(String... args) throws MalformedURLException {
+    var reader = new StateReader();
+    var state = reader.getStateFromTimestamp(LocalDateTime.now().minusDays(10));
+    System.out.println(state.get().getSequenceNumber());
+    System.out
+        .println(resolve(reader.replicationUrl, state.get().getSequenceNumber(), "state.txt"));
+    System.out.println(resolve(reader.replicationUrl, state.get().getSequenceNumber(), "osc.gz"));
+  }
+
 }
