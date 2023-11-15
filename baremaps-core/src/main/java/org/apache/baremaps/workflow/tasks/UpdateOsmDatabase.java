@@ -89,7 +89,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
       replicationUrl = header.getReplicationUrl();
     }
 
-    var stateReader = new StateReader("https://planet.osm.org/replication/hour", true);
+    var stateReader = new StateReader(replicationUrl, true);
     var sequenceNumber = header.getReplicationSequenceNumber();
 
     // If the replicationTimestamp is not provided, guess it from the replication timestamp.
