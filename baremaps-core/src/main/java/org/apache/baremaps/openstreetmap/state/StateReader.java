@@ -18,7 +18,6 @@
 package org.apache.baremaps.openstreetmap.state;
 
 
-
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +33,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.baremaps.openstreetmap.model.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for reading OSM state files. This code has been adapted from pyosmium (BSD 2-Clause
@@ -41,9 +42,13 @@ import org.apache.baremaps.openstreetmap.model.State;
  */
 public class StateReader {
 
-  private final String replicationUrl;
+  private static final Logger logger = LoggerFactory.getLogger(StateReader.class);
 
-  private final boolean balancedSearch;
+  private String replicationUrl;
+
+  private boolean balancedSearch;
+
+  private int retries = 2;
 
   public StateReader() {
     this("https://planet.osm.org/replication/hour", true);
@@ -148,12 +153,12 @@ public class StateReader {
   }
 
   public Optional<State> getState(Optional<Long> sequenceNumber) {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < retries + 1; i++) {
       try (var inputStream = getStateUrl(sequenceNumber).openStream()) {
         var state = new StateReader().readState(inputStream);
         return Optional.of(state);
       } catch (Exception e) {
-        e.printStackTrace();
+        logger.error("Error while reading state file", e);
       }
     }
     return Optional.empty();
