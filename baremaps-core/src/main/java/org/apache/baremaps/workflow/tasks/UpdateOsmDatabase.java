@@ -102,7 +102,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
     }
 
     var nextSequenceNumber = sequenceNumber + 1;
-    var changeUrl = StateReader.resolve(replicationUrl, nextSequenceNumber, "osc.gz");
+    var changeUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "osc.gz");
     logger.info("Updating the database with the changeset: {}", changeUrl);
 
     var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
@@ -116,7 +116,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
 
-    var stateUrl = StateReader.resolve(replicationUrl, nextSequenceNumber, "state.txt");
+    var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       var state = new StateReader().readState(stateInputStream);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),

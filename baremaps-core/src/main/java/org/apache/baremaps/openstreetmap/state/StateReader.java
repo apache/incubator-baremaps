@@ -44,19 +44,40 @@ public class StateReader {
 
   private static final Logger logger = LoggerFactory.getLogger(StateReader.class);
 
-  private String replicationUrl;
+  private final String replicationUrl;
 
-  private boolean balancedSearch;
+  private final boolean balancedSearch;
 
-  private int retries = 2;
+  private final int retries;
 
+  /**
+   * Constructs a {@code StateReader}.
+   */
   public StateReader() {
-    this("https://planet.osm.org/replication/hour", true);
+    this("https://planet.osm.org/replication/hour", true, 2);
   }
 
+  /**
+   * Constructs a {@code StateReader}.
+   *
+   * @param replicationUrl the replication URL
+   * @param balancedSearch whether to use a balanced search
+   */
   public StateReader(String replicationUrl, boolean balancedSearch) {
+    this(replicationUrl, balancedSearch, 2);
+  }
+
+  /**
+   * Constructs a {@code StateReader}.
+   *
+   * @param replicationUrl the replication URL
+   * @param balancedSearch whether to use a balanced search
+   * @param retries the number of retries
+   */
+  public StateReader(String replicationUrl, boolean balancedSearch, int retries) {
     this.replicationUrl = replicationUrl;
     this.balancedSearch = balancedSearch;
+    this.retries = retries;
   }
 
   /**
@@ -80,6 +101,12 @@ public class StateReader {
     return new State(sequenceNumber, timestamp);
   }
 
+  /**
+   * Get the state corresponding to the given timestamp.
+   *
+   * @param timestamp the timestamp
+   * @return the state
+   */
   public Optional<State> getStateFromTimestamp(LocalDateTime timestamp) {
     var upper = getState(Optional.empty());
     if (upper.isEmpty()) {
@@ -152,6 +179,12 @@ public class StateReader {
     }
   }
 
+  /**
+   * Get the state corresponding to the given sequence number.
+   *
+   * @param sequenceNumber the sequence number
+   * @return the state
+   */
   public Optional<State> getState(Optional<Long> sequenceNumber) {
     for (int i = 0; i < retries + 1; i++) {
       try (var inputStream = getStateUrl(sequenceNumber).openStream()) {
@@ -164,6 +197,13 @@ public class StateReader {
     return Optional.empty();
   }
 
+  /**
+   * Get the URL of the state file corresponding to the given sequence number.
+   *
+   * @param sequenceNumber the sequence number
+   * @return the URL
+   * @throws MalformedURLException if the URL is malformed
+   */
   public URL getStateUrl(Optional<Long> sequenceNumber) throws MalformedURLException {
     if (sequenceNumber.isPresent()) {
 
@@ -177,7 +217,16 @@ public class StateReader {
     }
   }
 
-  public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
+  /**
+   * Get the URL of a replication file.
+   *
+   * @param replicationUrl the replication URL
+   * @param sequenceNumber the sequence number
+   * @param extension the extension
+   * @return the URL
+   * @throws MalformedURLException if the URL is malformed
+   */
+  public URL getUrl(String replicationUrl, Long sequenceNumber, String extension)
       throws MalformedURLException {
     var s = String.format("%09d", sequenceNumber);
     var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
