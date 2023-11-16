@@ -209,21 +209,4 @@ public class UpdateOsmDatabase implements Task {
           header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }
   }
-
-  /**
-   * Returns the URL of the file with the given sequence number.
-   * 
-   * @param replicationUrl the replication URL
-   * @param sequenceNumber the sequence number
-   * @param extension the file extension
-   * @return the URL of the file
-   * @throws MalformedURLException if the URL is malformed
-   */
-  public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws MalformedURLException {
-    var s = String.format("%09d", sequenceNumber);
-    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
-        s.substring(6, 9), extension);
-    return URI.create(uri).toURL();
-  }
 }
