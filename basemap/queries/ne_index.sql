@@ -12,6 +12,7 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+
 CREATE INDEX IF NOT EXISTS ne_10m_admin_0_antarctic_claim_limit_lines_geom_index ON ne_10m_admin_0_antarctic_claim_limit_lines USING SPGIST(geom);
 CREATE INDEX IF NOT EXISTS ne_10m_admin_0_antarctic_claims_geom_index ON ne_10m_admin_0_antarctic_claims USING SPGIST(geom);
 CREATE INDEX IF NOT EXISTS ne_10m_admin_0_boundary_lines_disputed_areas_geom_index ON ne_10m_admin_0_boundary_lines_disputed_areas USING SPGIST(geom);

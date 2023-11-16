@@ -12,6 +12,7 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+
 DROP MATERIALIZED VIEW IF EXISTS osm_landuse_filtered CASCADE;
 DROP MATERIALIZED VIEW IF EXISTS osm_landuse_clustered CASCADE;
 DROP MATERIALIZED VIEW IF EXISTS osm_landuse_grouped CASCADE;

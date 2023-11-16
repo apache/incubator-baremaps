@@ -64,7 +64,7 @@ class ImportUpdateDataTest extends PostgresRepositoryTest {
     ImportOsmPbf.execute(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,
         nodeRepository, wayRepository, relationRepository, 3857);
 
-    headerRepository.put(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),
+    headerRepository.put(new Header(1l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),
         "file:///" + SIMPLE_DATA_DIR, "", ""));
 
     // Check node importation
@@ -96,7 +96,7 @@ class ImportUpdateDataTest extends PostgresRepositoryTest {
     // Update the database
     UpdateOsmDatabase.execute(new PostgresCoordinateMap(dataSource()),
         new PostgresReferenceMap(dataSource()), headerRepository, nodeRepository, wayRepository,
-        relationRepository, 3857);
+        relationRepository, 3857, null);
 
     // Check deletions
     assertNull(nodeRepository.get(0l));

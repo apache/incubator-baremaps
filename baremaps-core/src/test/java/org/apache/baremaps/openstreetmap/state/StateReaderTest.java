@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.openstreetmap.function;
+package org.apache.baremaps.openstreetmap.state;
 
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
+import org.junit.Ignore;
+import org.junit.jupiter.api.Test;
 
-import java.util.function.Consumer;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Entity;
+class StateReaderTest {
 
-/** Represents an operation on the entities of a change. */
-public class ChangeEntitiesHandler implements Consumer<Change> {
-
-  private final Consumer<Entity> consumer;
-
-  /**
-   * Constructs a consumer that applies the specified consumer to all the entities of a {@code
-   * Change}.
-   *
-   * @param consumer
-   */
-  public ChangeEntitiesHandler(Consumer<Entity> consumer) {
-    this.consumer = consumer;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void accept(Change change) {
-    change.getEntities().forEach(consumer);
+  @Test
+  @Ignore
+  void getStateFromTimestamp() {
+    var reader = new StateReader();
+    var state = reader.getStateFromTimestamp(LocalDateTime.now().minusDays(10));
+    System.out.println(state.get().getSequenceNumber());
   }
 }

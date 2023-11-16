@@ -20,9 +20,6 @@ package org.apache.baremaps.workflow.tasks;
 import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.database.collection.DataMap;
@@ -40,7 +37,7 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresReferenceMap;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.repository.*;
-import org.apache.baremaps.openstreetmap.repository.ChangeImporter;
+import org.apache.baremaps.openstreetmap.repository.PutChangeImporter;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.workflow.Task;
@@ -49,9 +46,14 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UpdateOsmDatabase(Object database, Integer databaseSrid) implements Task {
+public record UpdateOsmDatabase(Object database, Integer databaseSrid,
+    String replicationUrl) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
+
+  public UpdateOsmDatabase(Object database, Integer databaseSrid) {
+    this(database, databaseSrid, null);
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
@@ -69,43 +71,57 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid) implement
         nodeRepository,
         wayRepository,
         relationRepository,
-        databaseSrid);
+        databaseSrid,
+        replicationUrl);
   }
 
   public static void execute(DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
-      int srid) throws Exception {
+      Integer databaseSrid,
+      String replicationUrl) throws Exception {
+
     var header = headerRepository.selectLatest();
-    var replicationUrl = header.getReplicationUrl();
-    var sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
-    var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
-    var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
-    var prepareChange = consumeThenReturn(prepareGeometries);
-    var saveChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
-
-    var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    try (var changeInputStream =
-        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
+    // If the replicationUrl is not provided, use the one from the latest header.
+    if (replicationUrl == null) {
+      replicationUrl = header.getReplicationUrl();
     }
 
-    var stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");
+    var stateReader = new StateReader(replicationUrl, true);
+    var sequenceNumber = header.getReplicationSequenceNumber();
+
+    // If the replicationTimestamp is not provided, guess it from the replication timestamp.
+    if (sequenceNumber <= 0) {
+      var replicationTimestamp = header.getReplicationTimestamp();
+      var state = stateReader.getStateFromTimestamp(replicationTimestamp);
+      if (state.isPresent()) {
+        sequenceNumber = state.get().getSequenceNumber();
+      }
+    }
+
+    var nextSequenceNumber = sequenceNumber + 1;
+    var changeUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "osc.gz");
+    logger.info("Updating the database with the changeset: {}", changeUrl);
+
+    var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
+    var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
+    var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
+    var prepareChange = consumeThenReturn(prepareGeometries);
+    var importChange = new PutChangeImporter(nodeRepository, wayRepository, relationRepository);
+
+    try (var changeInputStream =
+        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
+    }
+
+    var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
-      var state = new StateReader().state(stateInputStream);
+      var state = new StateReader().readState(stateInputStream);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
           header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }
   }
 
-  public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws MalformedURLException {
-    var s = String.format("%09d", sequenceNumber);
-    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
-        s.substring(6, 9), extension);
-    return URI.create(uri).toURL();
-  }
 }

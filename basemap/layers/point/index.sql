@@ -12,6 +12,7 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+
 CREATE INDEX IF NOT EXISTS osm_point_geom_z13_index ON osm_point_z13 USING gist (geom);
 CREATE INDEX IF NOT EXISTS osm_point_geom_z12_index ON osm_point_z12 USING gist (geom);
 CREATE INDEX IF NOT EXISTS osm_point_geom_z11_index ON osm_point_z11 USING gist (geom);

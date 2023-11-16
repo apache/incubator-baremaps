@@ -45,7 +45,7 @@ public class DataCollectionAdapter<S, T> extends AbstractDataCollection<T> {
    * {@inheritDoc}
    */
   @Override
-  public Iterator iterator() {
+  public Iterator<T> iterator() {
     return collection.stream().map(this.transformer).iterator();
   }
 

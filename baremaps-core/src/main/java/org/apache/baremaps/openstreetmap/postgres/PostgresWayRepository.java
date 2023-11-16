@@ -42,9 +42,13 @@ import org.apache.baremaps.utils.GeometryUtils;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Provides an implementation of the {@code WayRepository} baked by Postgres. */
 public class PostgresWayRepository implements WayRepository {
+
+  private static final Logger logger = LoggerFactory.getLogger(PostgresWayRepository.class);
 
   private final DataSource dataSource;
 
@@ -72,7 +76,8 @@ public class PostgresWayRepository implements WayRepository {
    * @param dataSource the datasource
    */
   public PostgresWayRepository(DataSource dataSource) {
-    this(dataSource, "osm_ways", "id", "version", "uid", "timestamp", "changeset", "tags", "nodes",
+    this(dataSource, "public", "osm_ways", "id", "version", "uid", "timestamp", "changeset", "tags",
+        "nodes",
         "geom");
   }
 
@@ -80,7 +85,8 @@ public class PostgresWayRepository implements WayRepository {
    * Constructs a {@code PostgresWayRepository} with custom parameters.
    *
    * @param dataSource
-   * @param tableName
+   * @param schema
+   * @param table
    * @param idColumn
    * @param versionColumn
    * @param uidColumn
@@ -90,9 +96,10 @@ public class PostgresWayRepository implements WayRepository {
    * @param nodesColumn
    * @param geometryColumn
    */
-  public PostgresWayRepository(DataSource dataSource, String tableName, String idColumn,
+  public PostgresWayRepository(DataSource dataSource, String schema, String table, String idColumn,
       String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
       String tagsColumn, String nodesColumn, String geometryColumn) {
+    var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""
         CREATE TABLE IF NOT EXISTS %1$s (
@@ -104,17 +111,19 @@ public class PostgresWayRepository implements WayRepository {
           %7$s jsonb,
           %8$s int8[],
           %9$s geometry
-        )""", tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        )""", fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn, nodesColumn, geometryColumn);
-    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", tableName);
-    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", fullTableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", fullTableName);
     this.select = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ?",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         nodesColumn, geometryColumn);
     this.selectIn = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ANY (?)",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         nodesColumn, geometryColumn);
     this.insert = String.format("""
         INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s)
@@ -126,12 +135,13 @@ public class PostgresWayRepository implements WayRepository {
         %6$s = excluded.%6$s,
         %7$s = excluded.%7$s,
         %8$s = excluded.%8$s,
-        %9$s = excluded.%9$s""", tableName, idColumn, versionColumn, uidColumn, timestampColumn,
+        %9$s = excluded.%9$s""", fullTableName, idColumn, versionColumn, uidColumn, timestampColumn,
         changesetColumn, tagsColumn, nodesColumn, geometryColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
-    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", fullTableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", fullTableName, idColumn);
     this.copy = String.format(
-        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY", tableName,
+        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY",
+        fullTableName,
         idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
         nodesColumn, geometryColumn);
   }
@@ -141,6 +151,7 @@ public class PostgresWayRepository implements WayRepository {
   public void create() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(createTable)) {
+      logger.trace("Creating table: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -152,6 +163,7 @@ public class PostgresWayRepository implements WayRepository {
   public void drop() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(dropTable)) {
+      logger.trace("Dropping table: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -163,6 +175,7 @@ public class PostgresWayRepository implements WayRepository {
   public void truncate() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(truncateTable)) {
+      logger.trace("Truncating table: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -175,6 +188,7 @@ public class PostgresWayRepository implements WayRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(select)) {
       statement.setObject(1, key);
+      logger.trace("Selecting way: {}", statement);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           return getValue(result);
@@ -196,6 +210,7 @@ public class PostgresWayRepository implements WayRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      logger.trace("Selecting ways: {}", statement);
       try (ResultSet result = statement.executeQuery()) {
         Map<Long, Way> values = new HashMap<>();
         while (result.next()) {
@@ -215,6 +230,7 @@ public class PostgresWayRepository implements WayRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setValue(statement, value);
+      logger.trace("Inserting way: {}", statement);
       statement.execute();
     } catch (SQLException | JsonProcessingException e) {
       throw new RepositoryException(e);
@@ -232,6 +248,7 @@ public class PostgresWayRepository implements WayRepository {
       for (Way value : values) {
         statement.clearParameters();
         setValue(statement, value);
+        logger.trace("Inserting way: {}", statement);
         statement.addBatch();
       }
       statement.executeBatch();
@@ -246,6 +263,7 @@ public class PostgresWayRepository implements WayRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       statement.setObject(1, key);
+      logger.trace("Deleting way: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -261,6 +279,7 @@ public class PostgresWayRepository implements WayRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(deleteIn)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      logger.trace("Deleting ways: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);

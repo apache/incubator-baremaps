@@ -13,10 +13,17 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-SELECT oid::regclass::text  AS objectname
-     , relkind   AS objecttype
-     , reltuples AS entries
-     , pg_size_pretty(pg_table_size(oid)) AS size  -- depending - see below
-FROM   pg_class
-WHERE  relkind IN ('r', 'i', 'm')
-ORDER  BY pg_table_size(oid) DESC;
+REFRESH MATERIALIZED VIEW osm_waterway;
+
+REFRESH MATERIALIZED VIEW osm_waterway_z12;
+REFRESH MATERIALIZED VIEW osm_waterway_z11;
+REFRESH MATERIALIZED VIEW osm_waterway_z10;
+REFRESH MATERIALIZED VIEW osm_waterway_z9;
+REFRESH MATERIALIZED VIEW osm_waterway_z8;
+REFRESH MATERIALIZED VIEW osm_waterway_z7;
+REFRESH MATERIALIZED VIEW osm_waterway_z6;
+REFRESH MATERIALIZED VIEW osm_waterway_z5;
+REFRESH MATERIALIZED VIEW osm_waterway_z4;
+REFRESH MATERIALIZED VIEW osm_waterway_z3;
+REFRESH MATERIALIZED VIEW osm_waterway_z2;
+REFRESH MATERIALIZED VIEW osm_waterway_z1;

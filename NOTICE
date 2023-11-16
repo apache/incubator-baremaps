@@ -39,6 +39,13 @@ The derived files are:
 - baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicDataMap.java
 - baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicFixedSizeDataMap.java
 
+This product includes code derived from pyosmium.
+BSD 2-Clause "Simplified" License.
+Please visit the following URL for the full text of the pyosmium license:
+https://github.com/osmcode/pyosmium/blob/master/LICENSE.TXT
+The derived files are:
+- baremaps-core/src/main/java/org/apache/baremaps/openstreetmap/state/StateReader.java
+
 This product includes test data derived from OpenStreetMap.
 Open Data Commons Open Database License (ODbL).
 Please visit the following URL for the full text of the ODbL license:

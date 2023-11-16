@@ -68,7 +68,8 @@ public class PostgresRelationRepository implements RelationRepository {
    * @param dataSource
    */
   public PostgresRelationRepository(DataSource dataSource) {
-    this(dataSource, "osm_relations", "id", "version", "uid", "timestamp", "changeset", "tags",
+    this(dataSource, "public", "osm_relations", "id", "version", "uid", "timestamp", "changeset",
+        "tags",
         "member_refs", "member_types", "member_roles", "geom");
   }
 
@@ -76,7 +77,8 @@ public class PostgresRelationRepository implements RelationRepository {
    * Constructs a {@code PostgresRelationRepository} with custom parameters.
    *
    * @param dataSource
-   * @param tableName
+   * @param schema
+   * @param table
    * @param idColumn
    * @param versionColumn
    * @param uidColumn
@@ -88,10 +90,12 @@ public class PostgresRelationRepository implements RelationRepository {
    * @param memberRoles
    * @param geometryColumn
    */
-  public PostgresRelationRepository(DataSource dataSource, String tableName, String idColumn,
+  public PostgresRelationRepository(DataSource dataSource, String schema, String table,
+      String idColumn,
       String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
       String tagsColumn, String memberRefs, String memberTypes, String memberRoles,
       String geometryColumn) {
+    var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""
         CREATE TABLE IF NOT EXISTS %1$s (
@@ -105,17 +109,19 @@ public class PostgresRelationRepository implements RelationRepository {
           %9$s int[],
           %10$s text[],
           %11$s geometry
-        )""", tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        )""", fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
-    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", tableName);
-    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", fullTableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", fullTableName);
     this.select = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ?",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         memberRefs, memberTypes, memberRoles, geometryColumn);
     this.selectIn = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ANY (?)",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         memberRefs, memberTypes, memberRoles, geometryColumn);
     this.insert = String.format("""
         INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s)
@@ -129,13 +135,15 @@ public class PostgresRelationRepository implements RelationRepository {
         %8$s = excluded.%8$s,
         %9$s = excluded.%9$s,
         %10$s = excluded.%10$s,
-        %11$s = excluded.%11$s""", tableName, idColumn, versionColumn, uidColumn, timestampColumn,
+        %11$s = excluded.%11$s""", fullTableName, idColumn, versionColumn, uidColumn,
+        timestampColumn,
         changesetColumn, tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
-    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", tableName, idColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", fullTableName, idColumn);
+    this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", fullTableName, idColumn);
     this.copy = String.format(
         "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) FROM STDIN BINARY",
-        tableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn, tagsColumn,
+        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
+        tagsColumn,
         memberRefs, memberTypes, memberRoles, geometryColumn);
   }
 

@@ -123,7 +123,7 @@ class OpenStreetMapTest {
   @Test
   void monacoStateTxt() throws URISyntaxException, IOException {
     try (InputStream inputStream = Files.newInputStream(MONACO_STATE_TXT)) {
-      State state = new StateReader().state(inputStream);
+      State state = new StateReader().readState(inputStream);
       assertEquals(2788, state.getSequenceNumber());
       assertEquals(LocalDateTime.parse("2020-11-10T21:42:03"), state.getTimestamp());
     }

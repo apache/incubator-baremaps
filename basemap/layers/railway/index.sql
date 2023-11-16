@@ -12,6 +12,7 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+
 CREATE INDEX IF NOT EXISTS osm_railway_geom_z12_index ON osm_railway_z12 USING SPGIST (geom);
 CREATE INDEX IF NOT EXISTS osm_railway_geom_z11_index ON osm_railway_z11 USING SPGIST (geom);
 CREATE INDEX IF NOT EXISTS osm_railway_geom_z10_index ON osm_railway_z10 USING SPGIST (geom);
