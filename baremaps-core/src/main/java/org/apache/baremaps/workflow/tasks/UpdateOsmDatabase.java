@@ -21,9 +21,6 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.BufferedInputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.database.collection.DataMap;
@@ -118,13 +115,13 @@ public class UpdateOsmDatabase implements Task {
     this.databaseSrid = databaseSrid;
   }
 
-    public String getReplicationUrl() {
-        return replicationUrl;
-    }
+  public String getReplicationUrl() {
+    return replicationUrl;
+  }
 
-    public void setReplicationUrl(String replicationUrl) {
-        this.replicationUrl = replicationUrl;
-    }
+  public void setReplicationUrl(String replicationUrl) {
+    this.replicationUrl = replicationUrl;
+  }
 
   /**
    * {@inheritDoc}
