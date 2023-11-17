@@ -77,9 +77,10 @@ export default {"steps": [
                 force: true
             },
             {
-                type: "UnzipFile",
-                file: "downloads/geonames-allcountries.zip",
-                directory: "archives"
+                type: "DecompressFile",
+                source: "downloads/geonames-allcountries.zip",
+                target: "archives",
+                compression: "zip"
             },
             {
                 type: "CreateGeonamesIndex",

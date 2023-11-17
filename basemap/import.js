@@ -44,9 +44,10 @@ export default {
           "path": "data/natural_earth_vector.gpkg.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "data/natural_earth_vector.gpkg.zip",
-          "directory": "data/natural_earth_vector"
+          "type": "DecompressFile",
+          "source": "data/natural_earth_vector.gpkg.zip",
+          "target": "data/natural_earth_vector",
+          "compression": "zip"
         },
         {
           "type": "ImportGeoPackage",
@@ -73,9 +74,10 @@ export default {
           "path": "data/water-polygons-split-3857.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "data/water-polygons-split-3857.zip",
-          "directory": "data"
+          "type": "DecompressFile",
+          "source": "data/water-polygons-split-3857.zip",
+          "target": "data",
+          "compression": "zip"
         },
         {
           "type": "ImportShapefile",
@@ -96,9 +98,10 @@ export default {
           "path": "data/simplified-water-polygons-split-3857.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "data/simplified-water-polygons-split-3857.zip",
-          "directory": "data"
+          "type": "DecompressFile",
+          "source": "data/simplified-water-polygons-split-3857.zip",
+          "target": "data",
+          "compression": "zip"
         },
         {
           "type": "ImportShapefile",

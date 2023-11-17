@@ -10,9 +10,10 @@
           "path": "natural_earth_vector.gpkg.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "natural_earth_vector.gpkg.zip",
-          "directory": "natural_earth_vector"
+          "type": "DecompressFile",
+          "source": "natural_earth_vector.gpkg.zip",
+          "target": "natural_earth_vector",
+          "compression": "zip"
         },
         {
           "type": "ImportGeoPackage",

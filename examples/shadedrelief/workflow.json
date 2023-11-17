@@ -10,9 +10,10 @@
           "path": "shadedrelief.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "shadedrelief.zip",
-          "directory": "shadedrelief"
+          "type": "DecompressFile",
+          "source": "shadedrelief.zip",
+          "target": "shadedrelief",
+          "compression": "zip"
         }
       ]
     }

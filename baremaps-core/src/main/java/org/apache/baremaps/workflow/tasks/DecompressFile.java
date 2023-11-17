@@ -181,7 +181,8 @@ public class DecompressFile implements Task {
         var entry = entries.nextElement();
         var path = target.resolve(entry.getName());
         Files.createDirectories(path.getParent());
-        Files.write(path, new byte[] {}, StandardOpenOption.CREATE,
+        Files.write(path, new byte[] {},
+            StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING);
         try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
             var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
