@@ -64,13 +64,6 @@ public class ImportOsmPbf implements Task {
 
   /**
    * Constructs an {@code ImportOsmPbf}.
-   */
-  public ImportOsmPbf() {
-
-  }
-
-  /**
-   * Constructs an {@code ImportOsmPbf}.
    *
    * @param file the OSM PBF file
    * @param cache the cache directory
@@ -86,114 +79,6 @@ public class ImportOsmPbf implements Task {
     this.cleanCache = cleanCache;
     this.database = database;
     this.databaseSrid = databaseSrid;
-    this.replaceExisting = replaceExisting;
-  }
-
-  /**
-   * Returns the OSM PBF file.
-   *
-   * @return the OSM PBF file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the OSM PBF file.
-   *
-   * @param file the OSM PBF file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns the cache directory.
-   *
-   * @return the cache directory
-   */
-  public Path getCache() {
-    return cache;
-  }
-
-  /**
-   * Sets the cache directory.
-   *
-   * @param cache the cache directory
-   */
-  public void setCache(Path cache) {
-    this.cache = cache;
-  }
-
-  /**
-   * Returns whether to clean the cache directory.
-   *
-   * @return whether to clean the cache directory
-   */
-  public Boolean getCleanCache() {
-    return cleanCache;
-  }
-
-  /**
-   * Sets whether to clean the cache directory.
-   *
-   * @param cleanCache whether to clean the cache directory
-   */
-  public void setCleanCache(Boolean cleanCache) {
-    this.cleanCache = cleanCache;
-  }
-
-  /**
-   * Returns the database.
-   *
-   * @return the database
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   *
-   * @param database the database
-   */
-  public void setDatabase(Object database) {
-    this.database = database;
-  }
-
-  /**
-   * Returns the database SRID.
-   *
-   * @return the database SRID
-   */
-  public Integer getDatabaseSrid() {
-    return databaseSrid;
-  }
-
-  /**
-   * Sets the database SRID.
-   *
-   * @param databaseSrid the database SRID
-   */
-  public void setDatabaseSrid(Integer databaseSrid) {
-    this.databaseSrid = databaseSrid;
-  }
-
-  /**
-   * Returns whether to replace the existing tables.
-   *
-   * @return whether to replace the existing tables
-   */
-  public Boolean getReplaceExisting() {
-    return replaceExisting;
-  }
-
-  /**
-   * Sets whether to replace the existing tables.
-   *
-   * @param replaceExisting whether to replace the existing tables
-   */
-  public void setReplaceExisting(Boolean replaceExisting) {
     this.replaceExisting = replaceExisting;
   }
 

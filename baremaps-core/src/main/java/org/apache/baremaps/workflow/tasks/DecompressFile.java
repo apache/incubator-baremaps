@@ -59,11 +59,6 @@ public class DecompressFile implements Task {
 
   /**
    * Constructs a {@code DecompressFile}.
-   */
-  public DecompressFile() {}
-
-  /**
-   * Constructs a {@code DecompressFile}.
    *
    * @param source the source file
    * @param target the target file
@@ -72,60 +67,6 @@ public class DecompressFile implements Task {
   public DecompressFile(Path source, Path target, Compression compression) {
     this.source = source;
     this.target = target;
-    this.compression = compression;
-  }
-
-  /**
-   * Returns the source file.
-   * 
-   * @return the source file
-   */
-  public Path getSource() {
-    return source;
-  }
-
-  /**
-   * Sets the source file.
-   * 
-   * @param source the source file
-   */
-  public void setSource(Path source) {
-    this.source = source;
-  }
-
-  /**
-   * Returns the target file.
-   * 
-   * @return the target file
-   */
-  public Path getTarget() {
-    return target;
-  }
-
-  /**
-   * Sets the target file.
-   * 
-   * @param target the target file
-   */
-  public void setTarget(Path target) {
-    this.target = target;
-  }
-
-  /**
-   * Returns the compression format.
-   * 
-   * @return the compression format
-   */
-  public Compression getCompression() {
-    return compression;
-  }
-
-  /**
-   * Sets the compression format.
-   * 
-   * @param compression the compression format
-   */
-  public void setCompression(Compression compression) {
     this.compression = compression;
   }
 

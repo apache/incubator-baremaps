@@ -45,13 +45,6 @@ public class ImportShapefile implements Task {
 
   /**
    * Constructs an {@code ImportShapefile}.
-   */
-  public ImportShapefile() {
-
-  }
-
-  /**
-   * Constructs an {@code ImportShapefile}.
    *
    * @param file the shapefile file
    * @param database the database
@@ -62,78 +55,6 @@ public class ImportShapefile implements Task {
     this.file = file;
     this.database = database;
     this.sourceSRID = sourceSRID;
-    this.targetSRID = targetSRID;
-  }
-
-  /**
-   * Returns the shapefile file.
-   *
-   * @return the shapefile file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the shapefile file.
-   *
-   * @param file the shapefile file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns the database.
-   *
-   * @return the database
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   *
-   * @param database the database
-   */
-  public void setDatabase(Object database) {
-    this.database = database;
-  }
-
-  /**
-   * Returns the source SRID.
-   *
-   * @return the source SRID
-   */
-  public Integer getSourceSRID() {
-    return sourceSRID;
-  }
-
-  /**
-   * Sets the source SRID.
-   *
-   * @param sourceSRID the source SRID
-   */
-  public void setSourceSRID(Integer sourceSRID) {
-    this.sourceSRID = sourceSRID;
-  }
-
-  /**
-   * Returns the target SRID.
-   *
-   * @return the target SRID
-   */
-  public Integer getTargetSRID() {
-    return targetSRID;
-  }
-
-  /**
-   * Sets the target SRID.
-   *
-   * @param targetSRID the target SRID
-   */
-  public void setTargetSRID(Integer targetSRID) {
     this.targetSRID = targetSRID;
   }
 

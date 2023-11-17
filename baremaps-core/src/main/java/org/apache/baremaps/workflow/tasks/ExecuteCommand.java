@@ -35,33 +35,10 @@ public class ExecuteCommand implements Task {
 
   /**
    * Constructs an {@code ExecuteCommand}.
-   */
-  public ExecuteCommand() {}
-
-  /**
-   * Constructs an {@code ExecuteCommand}.
    *
    * @param command the bash command
    */
   public ExecuteCommand(String command) {
-    this.command = command;
-  }
-
-  /**
-   * Returns the bash command.
-   *
-   * @return the bash command
-   */
-  public String getCommand() {
-    return command;
-  }
-
-  /**
-   * Sets the bash command.
-   *
-   * @param command the bash command
-   */
-  public void setCommand(String command) {
     this.command = command;
   }
 

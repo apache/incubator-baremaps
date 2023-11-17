@@ -54,55 +54,12 @@ public class ImportDaylightFeatures implements Task {
 
   /**
    * Constructs an {@code ImportDaylightFeatures}.
-   */
-  public ImportDaylightFeatures() {
-
-  }
-
-  /**
-   * Constructs an {@code ImportDaylightFeatures}.
    *
    * @param file the daylight file
    * @param database the database
    */
   public ImportDaylightFeatures(Path file, Object database) {
     this.file = file;
-    this.database = database;
-  }
-
-  /**
-   * Returns the daylight file.
-   *
-   * @return the daylight file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the daylight file.
-   *
-   * @param file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns the database.
-   *
-   * @return
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   *
-   * @param database
-   */
-  public void setDatabase(Object database) {
     this.database = database;
   }
 

@@ -63,56 +63,12 @@ public class ExportVectorTiles implements Task {
   private Integer batchArrayIndex;
   private Format format;
 
-  public ExportVectorTiles() {
-
-  }
-
   public ExportVectorTiles(Path tileset, Path repository, Integer batchArraySize,
       Integer batchArrayIndex, Format format) {
     this.tileset = tileset;
     this.repository = repository;
     this.batchArraySize = batchArraySize;
     this.batchArrayIndex = batchArrayIndex;
-    this.format = format;
-  }
-
-  public Path getTileset() {
-    return tileset;
-  }
-
-  public void setTileset(Path tileset) {
-    this.tileset = tileset;
-  }
-
-  public Path getRepository() {
-    return repository;
-  }
-
-  public void setRepository(Path repository) {
-    this.repository = repository;
-  }
-
-  public Integer getBatchArraySize() {
-    return batchArraySize;
-  }
-
-  public void setBatchArraySize(Integer batchArraySize) {
-    this.batchArraySize = batchArraySize;
-  }
-
-  public Integer getBatchArrayIndex() {
-    return batchArrayIndex;
-  }
-
-  public void setBatchArrayIndex(Integer batchArrayIndex) {
-    this.batchArrayIndex = batchArrayIndex;
-  }
-
-  public Format getFormat() {
-    return format;
-  }
-
-  public void setFormat(Format format) {
     this.format = format;
   }
 

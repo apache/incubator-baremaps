@@ -52,11 +52,6 @@ public class DownloadUrl implements Task {
 
   /**
    * Constructs an {@code DownloadUrl}.
-   */
-  public DownloadUrl() {}
-
-  /**
-   * Constructs an {@code DownloadUrl}.
    *
    * @param url the url
    * @param path the path
@@ -65,30 +60,6 @@ public class DownloadUrl implements Task {
   public DownloadUrl(String url, Path path, boolean replaceExisting) {
     this.url = url;
     this.path = path;
-    this.replaceExisting = replaceExisting;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
-  public Path getPath() {
-    return path;
-  }
-
-  public void setPath(Path path) {
-    this.path = path;
-  }
-
-  public Boolean getReplaceExisting() {
-    return replaceExisting;
-  }
-
-  public void setReplaceExisting(Boolean replaceExisting) {
     this.replaceExisting = replaceExisting;
   }
 

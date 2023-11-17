@@ -58,13 +58,6 @@ public class ImportOsmOsc implements Task {
 
   /**
    * Constructs an {@code ImportOsmOsc}.
-   */
-  public ImportOsmOsc() {
-
-  }
-
-  /**
-   * Constructs an {@code ImportOsmOsc}.
    *
    * @param file the OSM OSC file
    * @param cache the cache directory
@@ -78,96 +71,6 @@ public class ImportOsmOsc implements Task {
     this.cache = cache;
     this.database = database;
     this.srid = srid;
-    this.compression = compression;
-  }
-
-  /**
-   * Returns the OSM OSC file.
-   * 
-   * @return the OSM OSC file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the OSM OSC file.
-   * 
-   * @param file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns the cache directory.
-   * 
-   * @return the cache directory
-   */
-  public Path getCache() {
-    return cache;
-  }
-
-  /**
-   * Sets the cache directory.
-   * 
-   * @param cache the cache directory
-   */
-  public void setCache(Path cache) {
-    this.cache = cache;
-  }
-
-  /**
-   * Returns the database.
-   * 
-   * @return the database
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   * 
-   * @param database the database
-   */
-  public void setDatabase(Object database) {
-    this.database = database;
-  }
-
-  /**
-   * Returns the database SRID.
-   * 
-   * @return the database SRID
-   */
-  public Integer getSrid() {
-    return srid;
-  }
-
-  /**
-   * Sets the database SRID.
-   * 
-   * @param srid the database SRID
-   */
-  public void setSrid(Integer srid) {
-    this.srid = srid;
-  }
-
-  /**
-   * Returns the compression.
-   * 
-   * @return the compression
-   */
-  public Compression getCompression() {
-    return compression;
-  }
-
-  /**
-   * Sets the compression.
-   * 
-   * @param compression the compression
-   */
-  public void setCompression(Compression compression) {
     this.compression = compression;
   }
 

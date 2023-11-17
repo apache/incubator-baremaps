@@ -45,13 +45,6 @@ public class ImportGeoPackage implements Task {
 
   /**
    * Constructs an {@code ImportGeoPackage}.
-   */
-  public ImportGeoPackage() {
-
-  }
-
-  /**
-   * Constructs an {@code ImportGeoPackage}.
    *
    * @param file the GeoPackage file
    * @param database the database
@@ -62,78 +55,6 @@ public class ImportGeoPackage implements Task {
     this.file = file;
     this.database = database;
     this.sourceSRID = sourceSRID;
-    this.targetSRID = targetSRID;
-  }
-
-  /**
-   * Returns the GeoPackage file.
-   *
-   * @return the GeoPackage file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the GeoPackage file.
-   *
-   * @param file the GeoPackage file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns the database.
-   *
-   * @return the database
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   *
-   * @param database the database
-   */
-  public void setDatabase(Object database) {
-    this.database = database;
-  }
-
-  /**
-   * Returns the source SRID.
-   *
-   * @return the source SRID
-   */
-  public Integer getSourceSRID() {
-    return sourceSRID;
-  }
-
-  /**
-   * Sets the source SRID.
-   *
-   * @param sourceSRID the source SRID
-   */
-  public void setSourceSRID(Integer sourceSRID) {
-    this.sourceSRID = sourceSRID;
-  }
-
-  /**
-   * Returns the target SRID.
-   *
-   * @return the target SRID
-   */
-  public Integer getTargetSRID() {
-    return targetSRID;
-  }
-
-  /**
-   * Sets the target SRID.
-   *
-   * @param targetSRID the target SRID
-   */
-  public void setTargetSRID(Integer targetSRID) {
     this.targetSRID = targetSRID;
   }
 

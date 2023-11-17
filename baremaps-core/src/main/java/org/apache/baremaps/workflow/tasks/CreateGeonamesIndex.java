@@ -45,28 +45,8 @@ public class CreateGeonamesIndex implements Task {
 
   private Path indexDirectory;
 
-  public CreateGeonamesIndex() {
-
-  }
-
   public CreateGeonamesIndex(Path dataFile, Path indexDirectory) {
     this.dataFile = dataFile;
-    this.indexDirectory = indexDirectory;
-  }
-
-  public Path getDataFile() {
-    return dataFile;
-  }
-
-  public void setDataFile(Path dataFile) {
-    this.dataFile = dataFile;
-  }
-
-  public Path getIndexDirectory() {
-    return indexDirectory;
-  }
-
-  public void setIndexDirectory(Path indexDirectory) {
     this.indexDirectory = indexDirectory;
   }
 

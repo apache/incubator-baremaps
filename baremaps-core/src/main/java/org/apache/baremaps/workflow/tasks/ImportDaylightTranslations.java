@@ -66,55 +66,12 @@ public class ImportDaylightTranslations implements Task {
 
   /**
    * Constructs an {@code ImportDaylightTranslations}.
-   */
-  public ImportDaylightTranslations() {
-
-  }
-
-  /**
-   * Constructs an {@code ImportDaylightTranslations}.
    *
    * @param file the daylight file
    * @param database the database
    */
   public ImportDaylightTranslations(Path file, Object database) {
     this.file = file;
-    this.database = database;
-  }
-
-  /**
-   * Returns the daylight file.
-   *
-   * @return the daylight file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the daylight file.
-   *
-   * @param file the daylight file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns the database.
-   *
-   * @return the database
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   *
-   * @param database the database
-   */
-  public void setDatabase(Object database) {
     this.database = database;
   }
 

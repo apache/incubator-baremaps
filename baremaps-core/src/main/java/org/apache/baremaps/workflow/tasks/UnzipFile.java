@@ -39,55 +39,12 @@ public class UnzipFile implements Task {
 
   /**
    * Constructs an {@code UnzipFile}.
-   */
-  public UnzipFile() {
-
-  }
-
-  /**
-   * Constructs an {@code UnzipFile}.
    *
    * @param file the file
    * @param directory the directory
    */
   public UnzipFile(Path file, Path directory) {
     this.file = file;
-    this.directory = directory;
-  }
-
-  /**
-   * Returns the file.
-   *
-   * @return the file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the file.
-   *
-   * @param file the file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns the directory.
-   *
-   * @return the directory
-   */
-  public Path getDirectory() {
-    return directory;
-  }
-
-  /**
-   * Sets the directory.
-   *
-   * @param directory the directory
-   */
-  public void setDirectory(Path directory) {
     this.directory = directory;
   }
 

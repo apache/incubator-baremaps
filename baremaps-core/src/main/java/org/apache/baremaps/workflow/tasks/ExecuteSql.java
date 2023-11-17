@@ -46,13 +46,6 @@ public class ExecuteSql implements Task {
 
   /**
    * Constructs an {@code ExecuteSql}.
-   */
-  public ExecuteSql() {
-
-  }
-
-  /**
-   * Constructs an {@code ExecuteSql}.
    *
    * @param database the database
    * @param file the SQL file
@@ -61,60 +54,6 @@ public class ExecuteSql implements Task {
   public ExecuteSql(Object database, Path file, Boolean parallel) {
     this.database = database;
     this.file = file;
-    this.parallel = parallel;
-  }
-
-  /**
-   * Returns the database.
-   *
-   * @return the database
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   *
-   * @param database the database
-   */
-  public void setDatabase(Object database) {
-    this.database = database;
-  }
-
-  /**
-   * Returns the SQL file.
-   *
-   * @return the SQL file
-   */
-  public Path getFile() {
-    return file;
-  }
-
-  /**
-   * Sets the SQL file.
-   *
-   * @param file the SQL file
-   */
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  /**
-   * Returns whether to execute the queries in parallel.
-   *
-   * @return whether to execute the queries in parallel
-   */
-  public boolean isParallel() {
-    return parallel;
-  }
-
-  /**
-   * Sets whether to execute the queries in parallel.
-   *
-   * @param parallel whether to execute the queries in parallel
-   */
-  public void setParallel(boolean parallel) {
     this.parallel = parallel;
   }
 

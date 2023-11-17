@@ -35,35 +35,10 @@ public class LogMessage implements Task {
 
   /**
    * Constructs an {@code LogMessage}.
-   */
-  public LogMessage() {
-
-  }
-
-  /**
-   * Constructs an {@code LogMessage}.
    *
    * @param message the message
    */
   public LogMessage(String message) {
-    this.message = message;
-  }
-
-  /**
-   * Returns the message.
-   *
-   * @return the message
-   */
-  public String getMessage() {
-    return message;
-  }
-
-  /**
-   * Sets the message.
-   *
-   * @param message the message
-   */
-  public void setMessage(String message) {
     this.message = message;
   }
 

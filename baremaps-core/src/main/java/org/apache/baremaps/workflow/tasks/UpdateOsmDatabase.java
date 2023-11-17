@@ -63,63 +63,13 @@ public class UpdateOsmDatabase implements Task {
 
   /**
    * Constructs an {@code UpdateOsmDatabase}.
-   */
-  public UpdateOsmDatabase() {
-
-  }
-
-  /**
-   * Constructs an {@code UpdateOsmDatabase}.
    *
    * @param database the database
    * @param databaseSrid the database SRID
    */
-  public UpdateOsmDatabase(Object database, Integer databaseSrid) {
+  public UpdateOsmDatabase(Object database, Integer databaseSrid, String replicationUrl) {
     this.database = database;
     this.databaseSrid = databaseSrid;
-  }
-
-  /**
-   * Returns the database.
-   *
-   * @return the database
-   */
-  public Object getDatabase() {
-    return database;
-  }
-
-  /**
-   * Sets the database.
-   *
-   * @param database the database
-   */
-  public void setDatabase(Object database) {
-    this.database = database;
-  }
-
-  /**
-   * Returns the database SRID.
-   *
-   * @return the database SRID
-   */
-  public Integer getDatabaseSrid() {
-    return databaseSrid;
-  }
-
-  /**
-   * Sets the database SRID.
-   *
-   * @param databaseSrid the database SRID
-   */
-  public void setDatabaseSrid(Integer databaseSrid) {
-    this.databaseSrid = databaseSrid;
-  }
-
-  public String getReplicationUrl() {
-    return replicationUrl;
-  }
-
-  public void setReplicationUrl(String replicationUrl) {
     this.replicationUrl = replicationUrl;
   }
 

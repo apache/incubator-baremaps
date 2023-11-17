@@ -61,26 +61,8 @@ public class CreateGeocoderOpenStreetMap implements Task {
 
   private Path indexDirectory;
 
-  public CreateGeocoderOpenStreetMap() {}
-
   public CreateGeocoderOpenStreetMap(Path file, Path indexDirectory) {
     this.file = file;
-    this.indexDirectory = indexDirectory;
-  }
-
-  public Path getFile() {
-    return file;
-  }
-
-  public void setFile(Path file) {
-    this.file = file;
-  }
-
-  public Path getIndexDirectory() {
-    return indexDirectory;
-  }
-
-  public void setIndexDirectory(Path indexDirectory) {
     this.indexDirectory = indexDirectory;
   }
 

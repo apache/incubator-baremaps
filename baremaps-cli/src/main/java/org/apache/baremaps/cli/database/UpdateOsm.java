@@ -41,9 +41,13 @@ public class UpdateOsm implements Callable<Integer> {
       description = "The projection used by the database.")
   private int srid = 3857;
 
+  @Option(names = {"--replication-url"}, paramLabel = "REPLICATION_URL",
+          description = "The replication url of the OpenStreetMap server.")
+  private String replicationUrl = "https://planet.osm.org/replication/hour";
+
   @Override
   public Integer call() throws Exception {
-    new UpdateOsmDatabase(database, srid)
+    new UpdateOsmDatabase(database, srid, replicationUrl)
         .execute(new WorkflowContext());
     return 0;
   }
