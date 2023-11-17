@@ -40,8 +40,8 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-          "path": "data/natural_earth_vector.gpkg.zip"
+          "source": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
+          "target": "data/natural_earth_vector.gpkg.zip"
         },
         {
           "type": "DecompressFile",
@@ -70,8 +70,8 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip",
-          "path": "data/water-polygons-split-3857.zip"
+          "source": "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip",
+          "target": "data/water-polygons-split-3857.zip"
         },
         {
           "type": "DecompressFile",
@@ -94,8 +94,8 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
-          "path": "data/simplified-water-polygons-split-3857.zip"
+          "source": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
+          "target": "data/simplified-water-polygons-split-3857.zip"
         },
         {
           "type": "DecompressFile",
@@ -142,8 +142,8 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": config.osmPbfUrl,
-          "path": "data/data.osm.pbf"
+          "source": config.osmPbfUrl,
+          "target": "data/data.osm.pbf"
         },
         {
           "type": "ImportOsmPbf",

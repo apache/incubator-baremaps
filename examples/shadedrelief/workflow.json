@@ -6,8 +6,8 @@
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "http://www.shadedrelief.com/ne-draft/World-Base-Map-Shapefiles.zip",
-          "path": "shadedrelief.zip"
+          "source": "http://www.shadedrelief.com/ne-draft/World-Base-Map-Shapefiles.zip",
+          "target": "shadedrelief.zip"
         },
         {
           "type": "DecompressFile",

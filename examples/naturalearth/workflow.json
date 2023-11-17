@@ -6,8 +6,8 @@
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-          "path": "natural_earth_vector.gpkg.zip"
+          "source": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
+          "target": "natural_earth_vector.gpkg.zip"
         },
         {
           "type": "DecompressFile",

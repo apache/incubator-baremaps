@@ -61,8 +61,8 @@ export default {"steps": [
             ...nics.flatMap(nic => [
                 {
                     type: "DownloadUrl",
-                    url: nic.url,
-                    path: `downloads/${nic.filename}.gz`
+                    source: nic.url,
+                    target: `downloads/${nic.filename}.gz`
                 },
                 {
                     type: "DecompressFile",
@@ -73,8 +73,8 @@ export default {"steps": [
             ]),
             {
                 type: "DownloadUrl",
-                url: "https://download.geonames.org/export/dump/allCountries.zip",
-                path: "downloads/geonames-allcountries.zip",
+                source: "https://download.geonames.org/export/dump/allCountries.zip",
+                target: "downloads/geonames-allcountries.zip",
                 force: true
             },
             {

@@ -44,43 +44,43 @@ public class DownloadUrl implements Task {
 
   private static final String PROTOCOL_HTTPS = "https";
 
-  private String url;
+  private String source;
 
-  private Path path;
+  private Path target;
 
   private Boolean replaceExisting;
 
   /**
    * Constructs an {@code DownloadUrl}.
    *
-   * @param url the url
-   * @param path the path
+   * @param source the url
+   * @param target the path
    * @param replaceExisting whether to replace existing files
    */
-  public DownloadUrl(String url, Path path, boolean replaceExisting) {
-    this.url = url;
-    this.path = path;
+  public DownloadUrl(String source, Path target, boolean replaceExisting) {
+    this.source = source;
+    this.target = target;
     this.replaceExisting = replaceExisting;
   }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var targetUrl = new URL(url);
-    var targetPath = path.toAbsolutePath();
+    var sourceURL = new URL(source);
+    var targetPath = target.toAbsolutePath();
 
     if (Files.exists(targetPath) && !replaceExisting) {
-      logger.info("Skipping download of {} to {}", url, path);
+      logger.info("Skipping download of {} to {}", source, target);
       return;
     }
 
-    if (isHttp(targetUrl)) {
-      var get = (HttpURLConnection) targetUrl.openConnection();
+    if (isHttp(sourceURL)) {
+      var get = (HttpURLConnection) sourceURL.openConnection();
       get.setInstanceFollowRedirects(true);
       get.setRequestMethod("GET");
       urlDownloadToFile(get, targetPath);
       get.disconnect();
-    } else if (isFtp(targetUrl)) {
-      urlDownloadToFile(targetUrl.openConnection(), targetPath);
+    } else if (isFtp(sourceURL)) {
+      urlDownloadToFile(sourceURL.openConnection(), targetPath);
     } else {
       throw new IllegalArgumentException("Unsupported URL protocol (supported: http(s)/ftp)");
     }

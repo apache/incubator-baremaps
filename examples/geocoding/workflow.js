@@ -18,7 +18,7 @@ const geonamesUrl = "https://download.geonames.org/export/dump/allCountries.zip"
 
 // Fetch and unzip Geonames
 const FetchAndUnzipGeonames = {id: "fetch-geonames-allcountries", needs: [], tasks: [
-    {type: "DownloadUrl", url: geonamesUrl, path: "downloads/geonames-allcountries.zip", force: true},
+    {type: "DownloadUrl", source: geonamesUrl, target: "downloads/geonames-allcountries.zip", replaceExisting: true},
     {type: "DecompressFile", source: "downloads/geonames-allcountries.zip", target: "archives", compression: "zip"}
 ]};
 
