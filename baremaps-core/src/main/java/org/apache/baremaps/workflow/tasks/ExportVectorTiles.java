@@ -59,16 +59,11 @@ public class ExportVectorTiles implements Task {
 
   private Path tileset;
   private Path repository;
-  private Integer batchArraySize;
-  private Integer batchArrayIndex;
   private Format format;
 
-  public ExportVectorTiles(Path tileset, Path repository, Integer batchArraySize,
-      Integer batchArrayIndex, Format format) {
+  public ExportVectorTiles(Path tileset, Path repository, Format format) {
     this.tileset = tileset;
     this.repository = repository;
-    this.batchArraySize = batchArraySize;
-    this.batchArrayIndex = batchArrayIndex;
     this.format = format;
   }
 
