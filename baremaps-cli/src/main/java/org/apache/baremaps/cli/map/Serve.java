@@ -54,7 +54,10 @@ public class Serve implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(names = {"--cache"}, paramLabel = "CACHE", description = "The caffeine cache directive.")
+  @Option(names = {"--cache"}, paramLabel = "CACHE", description = {
+      "The caffeine specification of the cache. " +
+          "For instance, 'maximumWeight=1073741824,expireAfterAccess=1h' " +
+          "sets a 1GB cache whose entries expires after one hour."})
   private String cache = "";
 
   @Option(names = {"--tileset"}, paramLabel = "TILESET", description = "The tileset file.",
