@@ -24,6 +24,7 @@ import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.baremaps.workflow.tasks.DecompressFile.Compression;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -32,13 +33,13 @@ class ImportShapefileTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void execute() throws Exception {
-    var zip = TestFiles.resolve("monaco-shapefile.zip");
-    var directory = Files.createTempDirectory("tmp_");
-    var unzip = new UnzipFile(zip, directory);
-    unzip.execute(new WorkflowContext());
-    var task = new ImportShapefile(directory.resolve("gis_osm_buildings_a_free_1.shp"),
+    var source = TestFiles.resolve("monaco-shapefile.zip");
+    var target = Files.createTempDirectory("tmp_");
+    var decompressFile = new DecompressFile(source, target, Compression.zip);
+    decompressFile.execute(new WorkflowContext());
+    var importShapefile = new ImportShapefile(target.resolve("gis_osm_buildings_a_free_1.shp"),
         jdbcUrl(), 4326, 3857);
-    task.execute(new WorkflowContext());
-    FileUtils.deleteRecursively(directory);
+    importShapefile.execute(new WorkflowContext());
+    FileUtils.deleteRecursively(target);
   }
 }

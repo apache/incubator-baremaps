@@ -22,11 +22,8 @@ package org.apache.baremaps.workflow;
 import java.nio.file.Paths;
 import java.util.List;
 import org.apache.baremaps.testing.PostgresContainerTest;
-import org.apache.baremaps.workflow.tasks.DownloadUrl;
-import org.apache.baremaps.workflow.tasks.ImportGeoPackage;
-import org.apache.baremaps.workflow.tasks.ImportOsmPbf;
-import org.apache.baremaps.workflow.tasks.ImportShapefile;
-import org.apache.baremaps.workflow.tasks.UnzipFile;
+import org.apache.baremaps.workflow.tasks.*;
+import org.apache.baremaps.workflow.tasks.DecompressFile.Compression;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -38,8 +35,8 @@ class WorkflowTest extends PostgresContainerTest {
     var workflow = new Workflow(List.of(new Step("fetch-geopackage", List.of(), List.of(
         new DownloadUrl("https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
             Paths.get("natural_earth_vector.gpkg.zip"), false),
-        new UnzipFile(Paths.get("natural_earth_vector.gpkg.zip"),
-            Paths.get("natural_earth_vector")),
+        new DecompressFile(Paths.get("natural_earth_vector.gpkg.zip"),
+            Paths.get("natural_earth_vector"), Compression.zip),
         new ImportGeoPackage(Paths.get("natural_earth_vector/packages/natural_earth_vector.gpkg"),
             jdbcUrl(),
             4326, 3857)))));
@@ -53,8 +50,8 @@ class WorkflowTest extends PostgresContainerTest {
         List.of(
             new DownloadUrl("https://osmdata.openstreetmap.de/download/coastlines-split-4326.zip",
                 Paths.get("coastlines-split-4326.zip"), false),
-            new UnzipFile(Paths.get("coastlines-split-4326.zip"),
-                Paths.get("coastlines-split-4326")),
+            new DecompressFile(Paths.get("coastlines-split-4326.zip"),
+                Paths.get("coastlines-split-4326"), Compression.zip),
             new ImportShapefile(Paths.get("coastlines-split-4326/coastlines-split-4326/lines.shp"),
                 jdbcUrl(),
                 4326, 3857)))));
@@ -111,8 +108,8 @@ class WorkflowTest extends PostgresContainerTest {
             Paths.get("downloads/simplified-water-polygons-split-3857.zip"), false))),
         new Step("unzip-shapefile", List.of("fetch-shapefile"),
             List.of(
-                new UnzipFile(Paths.get("downloads/simplified-water-polygons-split-3857.zip"),
-                    Paths.get("archives")))),
+                new DecompressFile(Paths.get("downloads/simplified-water-polygons-split-3857.zip"),
+                    Paths.get("archives"), Compression.zip))),
         new Step("fetch-projection", List.of("unzip-shapefile"),
             List.of(new DownloadUrl("https://spatialreference.org/ref/sr-org/epsg3857/prj/",
                 Paths.get(
