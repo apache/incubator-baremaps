@@ -42,7 +42,7 @@ public class UpdateOsm implements Callable<Integer> {
   private int srid = 3857;
 
   @Option(names = {"--replication-url"}, paramLabel = "REPLICATION_URL",
-          description = "The replication url of the OpenStreetMap server.")
+      description = "The replication url of the OpenStreetMap server.")
   private String replicationUrl = "https://planet.osm.org/replication/hour";
 
   @Override

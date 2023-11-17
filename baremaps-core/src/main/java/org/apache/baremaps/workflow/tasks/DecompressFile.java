@@ -133,11 +133,7 @@ public class DecompressFile implements Task {
           Files.createDirectories(path.getParent());
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
-            int bytesRead;
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = tarInputStream.read(buffer)) != -1) {
-              outputStream.write(buffer, 0, bytesRead);
-            }
+            tarInputStream.transferTo(outputStream);
           }
         }
       }
@@ -164,11 +160,7 @@ public class DecompressFile implements Task {
           Files.createDirectories(path.getParent());
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
-            int bytesRead;
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = tarInputStream.read(buffer)) != -1) {
-              outputStream.write(buffer, 0, bytesRead);
-            }
+            tarInputStream.transferTo(outputStream);
           }
         }
       }
@@ -193,11 +185,7 @@ public class DecompressFile implements Task {
             StandardOpenOption.TRUNCATE_EXISTING);
         try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
             var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
-          int nBytes = -1;
-          byte[] buffer = new byte[4096];
-          while ((nBytes = input.read(buffer)) > 0) {
-            output.write(buffer, 0, nBytes);
-          }
+          input.transferTo(output);
         }
       }
     }
