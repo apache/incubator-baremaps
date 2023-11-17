@@ -65,9 +65,10 @@ export default {"steps": [
                     path: `downloads/${nic.filename}.gz`
                 },
                 {
-                    type: "UngzipFile",
-                    file: `downloads/${nic.filename}.gz`,
-                    directory: "archives"
+                    type: "DecompressFile",
+                    source: `downloads/${nic.filename}.gz`,
+                    target: "archives",
+                    compression: "gzip"
                 }
             ]),
             {
