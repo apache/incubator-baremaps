@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,7 +42,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Import an OSM PBF file into a database.
  */
-@JsonTypeName("ImportOsmPbf")
 public class ImportOsmPbf implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmPbf.class);

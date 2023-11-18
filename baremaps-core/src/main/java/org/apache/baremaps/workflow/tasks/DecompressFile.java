@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +36,6 @@ import org.slf4j.LoggerFactory;
  * Decompresses a file based on a given compression format. The supported formats are zip, targz,
  * tarbz2, gzip and bzip2.
  */
-@JsonTypeName("DecompressFile")
 public class DecompressFile implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(DecompressFile.class);

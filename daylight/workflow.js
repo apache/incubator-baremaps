@@ -52,10 +52,9 @@ export default {
                 {
                     "type": "ImportOsmOsc",
                     "file": "data/roads.osc.gz",
-                    "cache": "cache/",
                     "compression": "gzip",
                     "database": config.database,
-                    "srid": 3857
+                    "databaseSrid": 3857
                 },
                 {
                     "type": "DownloadUrl",
@@ -65,10 +64,9 @@ export default {
                 {
                     "type": "ImportOsmOsc",
                     "file": "data/admin.osc.gz",
-                    "cache": "cache/",
                     "compression": "gzip",
                     "database": config.database,
-                    "srid": 3857
+                    "databaseSrid": 3857
                 },
                 {
                     "type": "DownloadUrl",

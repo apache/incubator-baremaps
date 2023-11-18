@@ -18,7 +18,6 @@
 package org.apache.baremaps.workflow.tasks;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -35,7 +34,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Import daylight features.
  */
-@JsonTypeName("ImportDaylightFeatures")
 public class ImportDaylightFeatures implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportDaylightFeatures.class);

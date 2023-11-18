@@ -38,7 +38,7 @@ class ImportShapefileTest extends PostgresContainerTest {
     var decompressFile = new DecompressFile(source, target, Compression.zip);
     decompressFile.execute(new WorkflowContext());
     var importShapefile = new ImportShapefile(target.resolve("gis_osm_buildings_a_free_1.shp"),
-        jdbcUrl(), 4326, 3857);
+        4326, jdbcUrl(), 3857);
     importShapefile.execute(new WorkflowContext());
     FileUtils.deleteRecursively(target);
   }

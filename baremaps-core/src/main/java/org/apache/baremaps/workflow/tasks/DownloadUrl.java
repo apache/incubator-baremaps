@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Downloads a file from a URL.
  */
-@JsonTypeName("DownloadUrl")
 public class DownloadUrl implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(DownloadUrl.class);

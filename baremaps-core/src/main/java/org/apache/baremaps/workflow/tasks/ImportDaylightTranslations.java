@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Import daylight translations.
  */
-@JsonTypeName("ImportDaylightTranslations")
 public class ImportDaylightTranslations implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportDaylightTranslations.class);

@@ -19,11 +19,9 @@ package org.apache.baremaps.workflow.tasks;
 
 import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.apache.baremaps.database.collection.*;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.postgres.*;
 import org.apache.baremaps.openstreetmap.repository.CopyChangeImporter;
@@ -37,33 +35,28 @@ import org.slf4j.LoggerFactory;
 /**
  * Import an OSM OSC file into a database.
  */
-@JsonTypeName("ImportOsmOsc")
 public class ImportOsmOsc implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOsmOsc.class);
 
   private Path file;
-  private Path cache;
-  private Object database;
-  private Integer srid;
   private Compression compression;
+  private Object database;
+  private Integer databaseSrid;
 
   /**
    * Constructs an {@code ImportOsmOsc}.
    *
    * @param file the OSM OSC file
-   * @param cache the cache directory
-   * @param database the database
-   * @param srid the database SRID
    * @param compression the compression
+   * @param database the database
+   * @param databaseSrid the database SRID
    */
-  public ImportOsmOsc(Path file, Path cache, Object database, Integer srid,
-      Compression compression) {
+  public ImportOsmOsc(Path file, Compression compression, Object database, Integer databaseSrid) {
     this.file = file;
-    this.cache = cache;
-    this.database = database;
-    this.srid = srid;
     this.compression = compression;
+    this.database = database;
+    this.databaseSrid = databaseSrid;
   }
 
   /**
@@ -85,7 +78,7 @@ public class ImportOsmOsc implements Task {
     var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
     var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
     var buildGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
-    var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
+    var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
     var prepareGeometries = coordinateMapBuilder
         .andThen(referenceMapBuilder)
         .andThen(buildGeometry)

@@ -19,7 +19,6 @@ package org.apache.baremaps.workflow.tasks;
 
 import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.BufferedInputStream;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -50,15 +49,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Update an OSM database based on the header data stored in the database.
  */
-@JsonTypeName("UpdateOsmDatabase")
 public class UpdateOsmDatabase implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
 
   private Object database;
-
   private Integer databaseSrid;
-
   private String replicationUrl;
 
   /**
@@ -115,6 +111,7 @@ public class UpdateOsmDatabase implements Task {
       Integer databaseSrid,
       String replicationUrl) throws Exception {
 
+    // Get the latest header from the database
     var header = headerRepository.selectLatest();
 
     // If the replicationUrl is not provided, use the one from the latest header.
@@ -122,6 +119,7 @@ public class UpdateOsmDatabase implements Task {
       replicationUrl = header.getReplicationUrl();
     }
 
+    // Get the sequence number of the latest header
     var stateReader = new StateReader(replicationUrl, true);
     var sequenceNumber = header.getReplicationSequenceNumber();
 
@@ -134,21 +132,23 @@ public class UpdateOsmDatabase implements Task {
       }
     }
 
+    // Increment the sequence number and get the changeset url
     var nextSequenceNumber = sequenceNumber + 1;
     var changeUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "osc.gz");
     logger.info("Updating the database with the changeset: {}", changeUrl);
 
+    // Process the changeset and update the database
     var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
     var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
     var prepareChange = consumeThenReturn(prepareGeometries);
     var importChange = new PutChangeImporter(nodeRepository, wayRepository, relationRepository);
-
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
 
+    // Add the new header to the database
     var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       var state = new StateReader().readState(stateInputStream);

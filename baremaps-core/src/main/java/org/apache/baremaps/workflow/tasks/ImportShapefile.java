@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.nio.file.Path;
 import org.apache.baremaps.database.schema.DataTableAdapter;
 import org.apache.baremaps.database.schema.DataTableGeometryTransformer;
@@ -33,28 +32,27 @@ import org.slf4j.LoggerFactory;
 /**
  * Import a shapefile into a database.
  */
-@JsonTypeName("ImportShapefile")
 public class ImportShapefile implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
 
   private Path file;
-  private Object database;
   private Integer fileSrid;
+  private Object database;
   private Integer databaseSrid;
 
   /**
    * Constructs an {@code ImportShapefile}.
    *
    * @param file the shapefile file
-   * @param database the database
    * @param fileSrid the source SRID
+   * @param database the database
    * @param databaseSrid the target SRID
    */
-  public ImportShapefile(Path file, Object database, Integer fileSrid, Integer databaseSrid) {
+  public ImportShapefile(Path file, Integer fileSrid, Object database, Integer databaseSrid) {
     this.file = file;
-    this.database = database;
     this.fileSrid = fileSrid;
+    this.database = database;
     this.databaseSrid = databaseSrid;
   }
 

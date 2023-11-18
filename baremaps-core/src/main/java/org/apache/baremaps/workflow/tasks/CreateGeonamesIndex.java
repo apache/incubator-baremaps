@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +35,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A task that creates a geonames index.
  */
-@JsonTypeName("CreateGeonamesIndex")
 public class CreateGeonamesIndex implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeonamesIndex.class);

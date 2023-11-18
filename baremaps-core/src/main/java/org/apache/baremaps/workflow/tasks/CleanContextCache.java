@@ -17,11 +17,9 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 
-@JsonTypeName("CleanContextCache")
 public class CleanContextCache implements Task {
 
   @Override

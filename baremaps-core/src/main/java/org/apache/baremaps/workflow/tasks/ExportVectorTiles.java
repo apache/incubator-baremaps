@@ -19,7 +19,6 @@ package org.apache.baremaps.workflow.tasks;
 
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -46,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-@JsonTypeName("ExportVectorTiles")
 public class ExportVectorTiles implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
