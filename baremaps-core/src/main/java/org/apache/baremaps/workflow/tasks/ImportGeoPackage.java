@@ -42,6 +42,13 @@ public class ImportGeoPackage implements Task {
   private Integer databaseSrid;
 
   /**
+   * Constructs a {@code ImportGeoPackage}.
+   */
+  public ImportGeoPackage() {
+
+  }
+
+  /**
    * Constructs an {@code ImportGeoPackage}.
    *
    * @param file the GeoPackage file

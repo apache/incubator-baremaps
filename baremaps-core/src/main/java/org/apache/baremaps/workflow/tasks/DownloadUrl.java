@@ -46,7 +46,14 @@ public class DownloadUrl implements Task {
 
   private Path target;
 
-  private Boolean replaceExisting;
+  private boolean replaceExisting = true;
+
+  /**
+   * Constructs a {@code DownloadUrl}.
+   */
+  public DownloadUrl() {
+
+  }
 
   /**
    * Constructs an {@code DownloadUrl}.

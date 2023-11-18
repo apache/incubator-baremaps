@@ -43,6 +43,13 @@ public class ExecuteSql implements Task {
   private Boolean parallel;
 
   /**
+   * Constructs a {@code ExecuteSql}.
+   */
+  public ExecuteSql() {
+
+  }
+
+  /**
    * Constructs an {@code ExecuteSql}.
    *
    * @param database the database

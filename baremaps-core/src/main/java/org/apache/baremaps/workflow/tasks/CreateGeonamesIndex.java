@@ -40,14 +40,29 @@ public class CreateGeonamesIndex implements Task {
   private static final Logger logger = LoggerFactory.getLogger(CreateGeonamesIndex.class);
 
   private Path dataFile;
-
   private Path indexDirectory;
 
+  /**
+   * Constructs a {@code CreateGeonamesIndex}.
+   */
+  public CreateGeonamesIndex() {
+
+  }
+
+  /**
+   * Constructs a {@code CreateGeonamesIndex}.
+   * 
+   * @param dataFile the path to the data file
+   * @param indexDirectory the path to the index directory
+   */
   public CreateGeonamesIndex(Path dataFile, Path indexDirectory) {
     this.dataFile = dataFile;
     this.indexDirectory = indexDirectory;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var directory = MMapDirectory.open(indexDirectory);

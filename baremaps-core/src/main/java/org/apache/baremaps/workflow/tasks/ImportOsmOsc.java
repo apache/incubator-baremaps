@@ -45,6 +45,13 @@ public class ImportOsmOsc implements Task {
   private Integer databaseSrid;
 
   /**
+   * Constructs a {@code ImportOsmOsc}.
+   */
+  public ImportOsmOsc() {
+
+  }
+
+  /**
    * Constructs an {@code ImportOsmOsc}.
    *
    * @param file the OSM OSC file

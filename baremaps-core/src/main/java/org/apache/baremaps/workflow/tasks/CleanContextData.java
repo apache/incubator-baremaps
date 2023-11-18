@@ -20,7 +20,15 @@ package org.apache.baremaps.workflow.tasks;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 
+/**
+ * Clean the context data.
+ */
 public class CleanContextData implements Task {
+
+  /**
+   * Constructs an {@code CleanContextData}.
+   */
+  public CleanContextData() {}
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

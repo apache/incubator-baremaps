@@ -20,8 +20,19 @@ package org.apache.baremaps.workflow.tasks;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 
+/**
+ * Clean the context cache.
+ */
 public class CleanContextCache implements Task {
 
+  /**
+   * Constructs an {@code CleanContextCache}.
+   */
+  public CleanContextCache() {}
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     context.cleanCache();

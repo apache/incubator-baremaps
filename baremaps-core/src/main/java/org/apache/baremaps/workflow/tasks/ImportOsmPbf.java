@@ -52,6 +52,13 @@ public class ImportOsmPbf implements Task {
   private Boolean replaceExisting;
 
   /**
+   * Constructs a {@code ImportOsmPbf}.
+   */
+  public ImportOsmPbf() {
+
+  }
+
+  /**
    * Constructs an {@code ImportOsmPbf}.
    *
    * @param file the OSM PBF file

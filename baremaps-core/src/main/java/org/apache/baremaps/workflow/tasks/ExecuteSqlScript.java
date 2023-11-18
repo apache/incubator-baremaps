@@ -38,6 +38,13 @@ public class ExecuteSqlScript implements Task {
   private Path file;
 
   /**
+   * Constructs a {@code ExecuteSqlScript}.
+   */
+  public ExecuteSqlScript() {
+
+  }
+
+  /**
    * Constructs an {@code ExecuteSqlScript}.
    *
    * @param database the database

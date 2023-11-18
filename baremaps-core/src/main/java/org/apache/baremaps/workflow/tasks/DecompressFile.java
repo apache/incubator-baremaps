@@ -57,6 +57,13 @@ public class DecompressFile implements Task {
 
   /**
    * Constructs a {@code DecompressFile}.
+   */
+  public DecompressFile() {
+
+  }
+
+  /**
+   * Constructs a {@code DecompressFile}.
    *
    * @param source the source file
    * @param target the target file

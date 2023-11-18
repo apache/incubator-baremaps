@@ -75,16 +75,16 @@ public class WorkflowContext {
     }
   }
 
-  public DataMap<Long, Coordinate> getAlignedCoordinateMap() {
-    var coordinateDir = cacheDir.resolve("coordinates");
+  public DataMap<Long, Coordinate> getAlignedCoordinateMap() throws IOException {
+    var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinates"));
     return new MemoryAlignedDataMap<>(
         new LonLatDataType(),
         new MemoryMappedDirectory(coordinateDir));
   }
 
-  public DataMap<Long, Coordinate> getMonotonicCoordinateMap() {
-    var coordinateKeysDir = cacheDir.resolve("coordinate_keys");
-    var coordinateValuesDir = cacheDir.resolve("coordinate_values");
+  public DataMap<Long, Coordinate> getMonotonicCoordinateMap() throws IOException {
+    var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
+    var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_values"));
     return new MonotonicDataMap<>(
         new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),
@@ -98,9 +98,9 @@ public class WorkflowContext {
     return getMonotonicReferenceMap();
   }
 
-  public DataMap<Long, List<Long>> getMonotonicReferenceMap() {
-    var referenceKeysDir = cacheDir.resolve("reference_keys");
-    var referenceValuesDir = cacheDir.resolve("reference_vals");
+  public DataMap<Long, List<Long>> getMonotonicReferenceMap() throws IOException {
+    var referenceKeysDir = Files.createDirectories(cacheDir.resolve("reference_keys"));
+    var referenceValuesDir = Files.createDirectories(cacheDir.resolve("reference_vals"));
     return new MonotonicDataMap<>(
         new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),

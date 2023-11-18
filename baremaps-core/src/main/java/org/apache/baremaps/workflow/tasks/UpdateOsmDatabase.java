@@ -58,6 +58,13 @@ public class UpdateOsmDatabase implements Task {
   private String replicationUrl;
 
   /**
+   * Constructs a {@code UpdateOsmDatabase}.
+   */
+  public UpdateOsmDatabase() {
+
+  }
+
+  /**
    * Constructs an {@code UpdateOsmDatabase}.
    *
    * @param database the database

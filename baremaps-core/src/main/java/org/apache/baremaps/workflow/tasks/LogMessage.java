@@ -32,6 +32,13 @@ public class LogMessage implements Task {
   private String message;
 
   /**
+   * Constructs a {@code LogMessage}.
+   */
+  public LogMessage() {
+
+  }
+
+  /**
    * Constructs an {@code LogMessage}.
    *
    * @param message the message

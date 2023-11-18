@@ -42,6 +42,13 @@ public class ImportShapefile implements Task {
   private Integer databaseSrid;
 
   /**
+   * Constructs a {@code ImportShapefile}.
+   */
+  public ImportShapefile() {
+
+  }
+
+  /**
    * Constructs an {@code ImportShapefile}.
    *
    * @param file the shapefile file

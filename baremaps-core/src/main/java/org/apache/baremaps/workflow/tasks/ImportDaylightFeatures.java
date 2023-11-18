@@ -52,6 +52,13 @@ public class ImportDaylightFeatures implements Task {
 
   /**
    * Constructs an {@code ImportDaylightFeatures}.
+   */
+  public ImportDaylightFeatures() {
+
+  }
+
+  /**
+   * Constructs an {@code ImportDaylightFeatures}.
    *
    * @param file the daylight file
    * @param database the database

@@ -35,36 +35,6 @@ export default {
         ]
     },
     {
-      "id": "natural-earth",
-      "needs": [],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "source": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-          "target": "data/natural_earth_vector.gpkg.zip"
-        },
-        {
-          "type": "DecompressFile",
-          "source": "data/natural_earth_vector.gpkg.zip",
-          "target": "data/natural_earth_vector",
-          "compression": "zip"
-        },
-        {
-          "type": "ImportGeoPackage",
-          "file": "data/natural_earth_vector/packages/natural_earth_vector.gpkg",
-          "database": config.database,
-          "fileSrid": 4326,
-          "databaseSrid": 3857
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/ne_index.sql",
-          "database": config.database,
-          "parallel": true,
-        }
-      ]
-    },
-    {
       "id": "openstreetmap-water-polygons",
       "needs": [],
       "tasks": [

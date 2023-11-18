@@ -44,12 +44,29 @@ public class CreateIplocIndex implements Task {
   private List<Path> nicPaths;
   private Path targetIplocIndexPath;
 
+  /**
+   * Constructs a {@code CreateIplocIndex}.
+   */
+  public CreateIplocIndex() {
+
+  }
+
+  /**
+   * Constructs a {@code CreateIplocIndex}.
+   *
+   * @param geonamesIndexPath the path to the geonames index
+   * @param nicPaths the paths to the nic files
+   * @param targetIplocIndexPath the path to the target iploc index
+   */
   public CreateIplocIndex(Path geonamesIndexPath, List<Path> nicPaths, Path targetIplocIndexPath) {
     this.geonamesIndexPath = geonamesIndexPath;
     this.nicPaths = nicPaths;
     this.targetIplocIndexPath = targetIplocIndexPath;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     try (var directory = MMapDirectory.open(geonamesIndexPath);

@@ -32,6 +32,13 @@ public class ExecuteCommand implements Task {
   private String command;
 
   /**
+   * Constructs a {@code ExecuteCommand}.
+   */
+  public ExecuteCommand() {
+
+  }
+
+  /**
    * Constructs an {@code ExecuteCommand}.
    *
    * @param command the bash command

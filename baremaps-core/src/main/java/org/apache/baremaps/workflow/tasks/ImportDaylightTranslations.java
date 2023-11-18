@@ -57,10 +57,16 @@ public class ImportDaylightTranslations implements Task {
     }
   }
 
-
   private Path file;
 
   private Object database;
+
+  /**
+   * Constructs an {@code ImportDaylightTranslations}.
+   */
+  public ImportDaylightTranslations() {
+
+  }
 
   /**
    * Constructs an {@code ImportDaylightTranslations}.
