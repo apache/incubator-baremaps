@@ -19,8 +19,8 @@
           "type": "ImportGeoPackage",
           "file": "natural_earth_vector/packages/natural_earth_vector.gpkg",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "sourceSRID": 4326,
-          "targetSRID": 3857
+          "fileSrid": 4326,
+          "databaseSrid": 3857
         },
         {
           "type": "ExecuteSql",

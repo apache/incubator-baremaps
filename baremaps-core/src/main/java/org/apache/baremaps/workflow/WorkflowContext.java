@@ -19,15 +19,49 @@ package org.apache.baremaps.workflow;
 
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
+import org.apache.baremaps.database.collection.*;
+import org.apache.baremaps.database.memory.MemoryMappedDirectory;
+import org.apache.baremaps.database.type.LongDataType;
+import org.apache.baremaps.database.type.LongListDataType;
+import org.apache.baremaps.database.type.PairDataType;
+import org.apache.baremaps.database.type.geometry.LonLatDataType;
+import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
+import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
+import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
+import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
+import org.apache.baremaps.openstreetmap.repository.HeaderRepository;
+import org.apache.baremaps.openstreetmap.repository.NodeRepository;
+import org.apache.baremaps.openstreetmap.repository.RelationRepository;
+import org.apache.baremaps.openstreetmap.repository.WayRepository;
+import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.utils.PostgresUtils;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * A context that is passed to the tasks of a workflow and used to share data between tasks.
  */
 public class WorkflowContext {
+
+  private final Path dataDir;
+
+  private final Path cacheDir;
+
+  public WorkflowContext() {
+    this(Paths.get("./data"), Paths.get("./cache"));
+  }
+
+  public WorkflowContext(Path dataDir, Path cacheDir) {
+    this.dataDir = dataDir;
+    this.cacheDir = cacheDir;
+  }
 
   private Map<Object, DataSource> dataSources = new ConcurrentHashMap<>() {};
 
@@ -41,4 +75,54 @@ public class WorkflowContext {
     return dataSources.computeIfAbsent(database, PostgresUtils::createDataSourceFromObject);
   }
 
+  public DataMap<Long, Coordinate> getCoordinateMap(Path path) throws IOException {
+    if (Files.size(path) > 1 << 30) {
+      return getAlignedCoordinateMap();
+    } else {
+      return getMonotonicCoordinateMap();
+    }
+  }
+
+  public DataMap<Long, Coordinate> getAlignedCoordinateMap() {
+    var coordinateDir = cacheDir.resolve("coordinates");
+    return new MemoryAlignedDataMap<>(
+        new LonLatDataType(),
+        new MemoryMappedDirectory(coordinateDir));
+  }
+
+  public DataMap<Long, Coordinate> getMonotonicCoordinateMap() {
+    var coordinateKeysDir = cacheDir.resolve("coordinate_keys");
+    var coordinateValuesDir = cacheDir.resolve("coordinate_values");
+    return new MonotonicDataMap<>(
+        new MemoryAlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new MemoryMappedDirectory(coordinateKeysDir)),
+        new AppendOnlyBuffer<>(
+            new LonLatDataType(),
+            new MemoryMappedDirectory(coordinateValuesDir)));
+  }
+
+  public DataMap<Long, List<Long>> getReferenceMap(Path path) throws IOException {
+    return getMonotonicReferenceMap();
+  }
+
+  public DataMap<Long, List<Long>> getMonotonicReferenceMap() {
+    var referenceKeysDir = cacheDir.resolve("reference_keys");
+    var referenceValuesDir = cacheDir.resolve("reference_vals");
+    return new MonotonicDataMap<>(
+        new MemoryAlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new MemoryMappedDirectory(referenceKeysDir)),
+        new AppendOnlyBuffer<>(
+            new LongListDataType(),
+            new MemoryMappedDirectory(referenceValuesDir)));
+  }
+
+  public void cleanCache() throws IOException {
+    FileUtils.deleteRecursively(cacheDir);
+  }
+
+  public void cleanData() throws IOException {
+    FileUtils.deleteRecursively(dataDir);
+  }
 }

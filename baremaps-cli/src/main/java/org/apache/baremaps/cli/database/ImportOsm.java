@@ -49,8 +49,6 @@ public class ImportOsm implements Callable<Integer> {
   public Integer call() throws Exception {
     new org.apache.baremaps.workflow.tasks.ImportOsmPbf(
         file.toAbsolutePath(),
-        null,
-        true,
         database,
         srid,
         true).execute(new WorkflowContext());

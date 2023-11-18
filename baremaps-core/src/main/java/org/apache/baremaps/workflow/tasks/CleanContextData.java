@@ -17,23 +17,15 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-
-
-import org.apache.baremaps.testing.PostgresContainerTest;
-import org.apache.baremaps.testing.TestFiles;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 
-class ImportOsmPbfTest extends PostgresContainerTest {
+@JsonTypeName("CleanContextData")
+public class CleanContextData implements Task {
 
-  @Test
-  @Tag("integration")
-  void execute() throws Exception {
-    var file = TestFiles.resolve("data.osm.pbf");
-    var jdbcUrl = jdbcUrl();
-    var srid = 3857;
-    var task = new ImportOsmPbf(file, jdbcUrl, srid, true);
-    task.execute(new WorkflowContext());
+  @Override
+  public void execute(WorkflowContext context) throws Exception {
+    context.cleanData();
   }
 }

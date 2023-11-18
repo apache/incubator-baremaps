@@ -40,22 +40,22 @@ public class ImportShapefile implements Task {
 
   private Path file;
   private Object database;
-  private Integer sourceSRID;
-  private Integer targetSRID;
+  private Integer fileSrid;
+  private Integer databaseSrid;
 
   /**
    * Constructs an {@code ImportShapefile}.
    *
    * @param file the shapefile file
    * @param database the database
-   * @param sourceSRID the source SRID
-   * @param targetSRID the target SRID
+   * @param fileSrid the source SRID
+   * @param databaseSrid the target SRID
    */
-  public ImportShapefile(Path file, Object database, Integer sourceSRID, Integer targetSRID) {
+  public ImportShapefile(Path file, Object database, Integer fileSrid, Integer databaseSrid) {
     this.file = file;
     this.database = database;
-    this.sourceSRID = sourceSRID;
-    this.targetSRID = targetSRID;
+    this.fileSrid = fileSrid;
+    this.databaseSrid = databaseSrid;
   }
 
   /**
@@ -69,7 +69,7 @@ public class ImportShapefile implements Task {
       var dataSource = context.getDataSource(database);
       var postgresDataStore = new PostgresDataSchema(dataSource);
       var rowTransformer = new DataTableGeometryTransformer(shapefileDataTable,
-          new ProjectionTransformer(sourceSRID, targetSRID));
+          new ProjectionTransformer(fileSrid, databaseSrid));
       var transformedDataTable = new DataTableAdapter(shapefileDataTable, rowTransformer);
       postgresDataStore.add(transformedDataTable);
     } catch (Exception e) {

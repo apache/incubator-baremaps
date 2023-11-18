@@ -53,8 +53,8 @@ export default {
           "type": "ImportGeoPackage",
           "file": "data/natural_earth_vector/packages/natural_earth_vector.gpkg",
           "database": config.database,
-          "sourceSRID": 4326,
-          "targetSRID": 3857
+          "fileSrid": 4326,
+          "databaseSrid": 3857
         },
         {
           "type": "ExecuteSql",
@@ -83,8 +83,8 @@ export default {
           "type": "ImportShapefile",
           "file": "data/water-polygons-split-3857/water_polygons.shp",
           "database": config.database,
-          "sourceSRID": 3857,
-          "targetSRID": 3857
+          "fileSrid": 3857,
+          "databaseSrid": 3857
         },
       ]
     },
@@ -107,8 +107,8 @@ export default {
           "type": "ImportShapefile",
           "file": "data/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
           "database": config.database,
-          "sourceSRID": 3857,
-          "targetSRID": 3857
+          "fileSrid": 3857,
+          "databaseSrid": 3857
         },
       ]
     },
@@ -151,7 +151,6 @@ export default {
           "database": config.database,
           "databaseSrid": 3857,
           "replaceExisting": true,
-          "cleanCache": true,
         },
       ]
     },

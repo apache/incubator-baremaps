@@ -27,7 +27,6 @@ export default {
                     "type": "ImportOsmPbf",
                     "file": "data/data.osm.pbf",
                     "cache": "cache/",
-                    "cleanCache": false,
                     "database": config.database,
                     "databaseSrid": 3857,
                     "replaceExisting": true,
@@ -41,7 +40,6 @@ export default {
                     "type": "ImportOsmPbf",
                     "file": "data/buildings.osm.pbf",
                     "cache": "building_cache/",
-                    "cleanCache": true,
                     "database": config.database,
                     "databaseSrid": 3857,
                     "replaceExisting": false,
@@ -55,7 +53,6 @@ export default {
                     "type": "ImportOsmOsc",
                     "file": "data/roads.osc.gz",
                     "cache": "cache/",
-                    "cleanCache": false,
                     "compression": "gzip",
                     "database": config.database,
                     "srid": 3857
@@ -69,7 +66,6 @@ export default {
                     "type": "ImportOsmOsc",
                     "file": "data/admin.osc.gz",
                     "cache": "cache/",
-                    "cleanCache": false,
                     "compression": "gzip",
                     "database": config.database,
                     "srid": 3857
@@ -89,8 +85,8 @@ export default {
                     "type": "ImportShapefile",
                     "file": "data/coastlines/water_polygons.shp",
                     "database": config.database,
-                    "sourceSRID": 4326,
-                    "targetSRID": 3857
+                    "fileSrid": 4326,
+                    "databaseSrid": 3857
                 },
                 {
                     "type": "ExecuteSql",
@@ -141,8 +137,8 @@ export default {
                     "type": "ImportShapefile",
                     "file": "data/landcover/low.shp",
                     "database": config.database,
-                    "sourceSRID": 4326,
-                    "targetSRID": 3857
+                    "fileSrid": 4326,
+                    "databaseSrid": 3857
                 },
             ]
         },

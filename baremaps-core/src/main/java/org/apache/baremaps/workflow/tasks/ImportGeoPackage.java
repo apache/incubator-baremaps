@@ -40,22 +40,22 @@ public class ImportGeoPackage implements Task {
 
   private Path file;
   private Object database;
-  private Integer sourceSRID;
-  private Integer targetSRID;
+  private Integer fileSrid;
+  private Integer databaseSrid;
 
   /**
    * Constructs an {@code ImportGeoPackage}.
    *
    * @param file the GeoPackage file
    * @param database the database
-   * @param sourceSRID the source SRID
-   * @param targetSRID the target SRID
+   * @param fileSrid the source SRID
+   * @param databaseSrid the target SRID
    */
-  public ImportGeoPackage(Path file, Object database, Integer sourceSRID, Integer targetSRID) {
+  public ImportGeoPackage(Path file, Object database, Integer fileSrid, Integer databaseSrid) {
     this.file = file;
     this.database = database;
-    this.sourceSRID = sourceSRID;
-    this.targetSRID = targetSRID;
+    this.fileSrid = fileSrid;
+    this.databaseSrid = databaseSrid;
   }
 
   /**
@@ -69,7 +69,7 @@ public class ImportGeoPackage implements Task {
       var postgresDataStore = new PostgresDataSchema(dataSource);
       for (var name : geoPackageDataStore.list()) {
         var geoPackageTable = geoPackageDataStore.get(name);
-        var projectionTransformer = new ProjectionTransformer(sourceSRID, targetSRID);
+        var projectionTransformer = new ProjectionTransformer(fileSrid, databaseSrid);
         var rowTransformer =
             new DataTableGeometryTransformer(geoPackageTable, projectionTransformer);
         var transformedDataTable =

@@ -13,8 +13,8 @@
         "username":  "%s",
         "password": "%s"
       },
-      "sourceSRID": 4326,
-      "targetSRID": 3857
+      "fileSrid": 4326,
+      "databaseSrid": 3857
     }
   ]
 }
