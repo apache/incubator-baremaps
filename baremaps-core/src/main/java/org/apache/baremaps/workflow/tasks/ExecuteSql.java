@@ -40,7 +40,7 @@ public class ExecuteSql implements Task {
 
   private Path file;
 
-  private Boolean parallel;
+  private boolean parallel = false;
 
   /**
    * Constructs a {@code ExecuteSql}.
@@ -56,7 +56,7 @@ public class ExecuteSql implements Task {
    * @param file the SQL file
    * @param parallel whether to execute the queries in parallel
    */
-  public ExecuteSql(Object database, Path file, Boolean parallel) {
+  public ExecuteSql(Object database, Path file, boolean parallel) {
     this.database = database;
     this.file = file;
     this.parallel = parallel;

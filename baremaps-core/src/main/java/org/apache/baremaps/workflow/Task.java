@@ -53,7 +53,6 @@ import org.apache.baremaps.workflow.tasks.*;
     @Type(value = LogMessage.class, name = "LogMessage"),
     @Type(value = UpdateOsmDatabase.class, name = "UpdateOsmDatabase"),
 })
-
 public interface Task {
 
   /**
