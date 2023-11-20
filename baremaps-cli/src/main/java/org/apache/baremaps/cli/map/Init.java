@@ -50,6 +50,10 @@ public class Init implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
+    if (style == null && tileset == null) {
+      logger.info("No configuration file specified.");
+      return 0;
+    }
     if (style != null) {
       Style styleObject = new Style();
       styleObject.setName("Baremaps");
