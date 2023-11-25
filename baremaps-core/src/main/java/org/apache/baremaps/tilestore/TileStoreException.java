@@ -37,4 +37,14 @@ public class TileStoreException extends Exception {
   public TileStoreException(Throwable cause) {
     super(cause);
   }
+
+  /**
+   * Constructs a {@code BlobStoreException} with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
+  public TileStoreException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

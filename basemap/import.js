@@ -19,6 +19,22 @@ import config from "./config.js";
 export default {
   "steps": [
     {
+      "id": "initialize-database",
+        "needs": [],
+        "tasks": [
+          {
+            "type": "ExecuteSqlScript",
+            "file": "queries/assertions.sql",
+            "database": config.database,
+          },
+          {
+            "type": "ExecuteSqlScript",
+            "file": "queries/functions.sql",
+            "database": config.database,
+          },
+        ]
+    },
+    {
       "id": "natural-earth",
       "needs": [],
       "tasks": [

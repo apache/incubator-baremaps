@@ -82,6 +82,7 @@ public record ExportVectorTiles(
           TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
       var tileCoordStream =
           StreamUtils.stream(tileCoordIterator).peek(new ProgressLogger<>(count, 5000));
+
       var bufferedTileEntryStream = StreamUtils.bufferInCompletionOrder(tileCoordStream, tile -> {
         try {
           return new TileEntry(tile, sourceTileStore.read(tile));
@@ -89,6 +90,7 @@ public record ExportVectorTiles(
           throw new RuntimeException(e);
         }
       }, 1000);
+
       var partitionedTileEntryStream = StreamUtils.partition(bufferedTileEntryStream, 1000);
       partitionedTileEntryStream.forEach(batch -> {
         try {
@@ -120,7 +122,7 @@ public record ExportVectorTiles(
         return tilesStore;
       case pmtiles:
         Files.deleteIfExists(repository);
-        var tileStore = new PMTilesStore(repository);
+        var tileStore = new PMTilesStore(repository, source);
         return tileStore;
       default:
         throw new IllegalArgumentException("Unsupported format");

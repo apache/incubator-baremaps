@@ -28,19 +28,37 @@ import java.util.*;
 
 public class PMTilesWriter {
 
-  private final Path path;
+  private Path path;
 
   private Map<String, Object> metadata = new HashMap<>();
 
-  private final List<Entry> entries;
+  private List<Entry> entries;
 
-  private final Map<Long, Long> tileHashToOffset;
+  private Map<Long, Long> tileHashToOffset;
 
   private Long lastTileHash = null;
 
   private Path tilePath;
 
   private boolean clustered = true;
+
+  private int minZoom = 0;
+
+  private int maxZoom = 14;
+
+  private double minLon = -180;
+
+  private double minLat = -90;
+
+  private double maxLon = 180;
+
+  private double maxLat = 90;
+
+  private int centerZoom = 3;
+
+  private double centerLat = 0;
+
+  private double centerLon = 0;
 
   public PMTilesWriter(Path path) throws IOException {
     this(path, new ArrayList<>(), new HashMap<>());
@@ -51,14 +69,14 @@ public class PMTilesWriter {
     this.path = path;
     this.entries = entries;
     this.tileHashToOffset = tileHashToOffset;
-    this.tilePath = Files.createTempFile(path.getParent(), "tiles", ".tmp");
+    this.tilePath = Files.createTempFile(path.getParent(), "tiles_", ".tmp");
   }
 
-  public void writeMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
   }
 
-  public void writeTile(int z, int x, int y, byte[] bytes) throws IOException {
+  public void setTile(int z, int x, int y, byte[] bytes) throws IOException {
     // Write the tile
     var tileId = PMTiles.zxyToTileId(z, x, y);
     var tileLength = bytes.length;
@@ -93,7 +111,43 @@ public class PMTilesWriter {
     }
   }
 
-  public void finalize() throws IOException {
+  public void setMinZoom(int minZoom) {
+    this.minZoom = minZoom;
+  }
+
+  public void setMaxZoom(int maxZoom) {
+    this.maxZoom = maxZoom;
+  }
+
+  public void setMinLon(double minLon) {
+    this.minLon = minLon;
+  }
+
+  public void setMinLat(double minLat) {
+    this.minLat = minLat;
+  }
+
+  public void setMaxLon(double maxLon) {
+    this.maxLon = maxLon;
+  }
+
+  public void setMaxLat(double maxLat) {
+    this.maxLat = maxLat;
+  }
+
+  public void setCenterZoom(int centerZoom) {
+    this.centerZoom = centerZoom;
+  }
+
+  public void setCenterLat(double centerLat) {
+    this.centerLat = centerLat;
+  }
+
+  public void setCenterLon(double centerLon) {
+    this.centerLon = centerLon;
+  }
+
+  public void write() throws IOException {
     // Sort the entries by tile id
     if (!clustered) {
       entries.sort(Comparator.comparingLong(Entry::getTileId));
@@ -130,15 +184,15 @@ public class PMTilesWriter {
     header.setTilesOffset(tilesOffset);
     header.setTilesLength(tilesLength);
 
-    header.setMinZoom(1);
-    header.setMaxZoom(14);
-    header.setMinLon(-180);
-    header.setMinLat(-90);
-    header.setMaxLon(180);
-    header.setMaxLat(90);
-    header.setCenterZoom(14);
-    header.setCenterLat(46.5197);
-    header.setCenterLon(6.6323);
+    header.setMinZoom(minZoom);
+    header.setMaxZoom(maxZoom);
+    header.setMinLon(minLon);
+    header.setMinLat(minLat);
+    header.setMaxLon(maxLon);
+    header.setMaxLat(maxLat);
+    header.setCenterZoom(centerZoom);
+    header.setCenterLat(centerLat);
+    header.setCenterLon(centerLon);
 
     try (var output = new LittleEndianDataOutputStream(new FileOutputStream(path.toFile()))) {
       PMTiles.serializeHeader(output, header);

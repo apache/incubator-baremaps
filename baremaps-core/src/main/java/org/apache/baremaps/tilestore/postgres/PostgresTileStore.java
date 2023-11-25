@@ -99,6 +99,9 @@ public class PostgresTileStore implements TileStore {
           byte[] bytes = resultSet.getBytes(1);
           gzip.write(bytes);
         }
+      } catch (Exception e) {
+        throw new TileStoreException(String.format("Failed to execute statement: %s", statement),
+            e);
       }
 
       // Log slow queries (> 10s)
@@ -154,7 +157,8 @@ public class PostgresTileStore implements TileStore {
           }
 
           // Add the sql to the layer sql
-          var querySql = query.getSql()
+          var querySql = query.getSql().trim()
+              .replaceAll("\\s+", " ")
               .replace(";", "")
               .replace("?", "??")
               .replace("$zoom", String.valueOf(zoom));
