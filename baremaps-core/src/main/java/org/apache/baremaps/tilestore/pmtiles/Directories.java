@@ -15,36 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.tilestore;
+package org.apache.baremaps.tilestore.pmtiles;
 
-/** Signals that an exception occurred in a {@code TileStore}. */
-public class TileStoreException extends Exception {
+class Directories {
 
-  /**
-   * Constructs an {@code BlobStoreException} with the specified detail message.
-   *
-   * @param message the message
-   */
-  public TileStoreException(String message) {
-    super(message);
+  private final byte[] root;
+  private final byte[] leaves;
+  private final int numLeaves;
+
+  public Directories(byte[] root, byte[] leaves, int numLeaves) {
+    this.root = root;
+    this.leaves = leaves;
+    this.numLeaves = numLeaves;
   }
 
-  /**
-   * Constructs a {@code BlobStoreException} with the specified cause.
-   *
-   * @param cause the cause
-   */
-  public TileStoreException(Throwable cause) {
-    super(cause);
+  public byte[] getRoot() {
+    return root;
   }
 
-  /**
-   * Constructs a {@code BlobStoreException} with the specified detail message and cause.
-   *
-   * @param message the message
-   * @param cause the cause
-   */
-  public TileStoreException(String message, Throwable cause) {
-    super(message, cause);
+  public byte[] getLeaves() {
+    return leaves;
+  }
+
+  public int getNumLeaves() {
+    return numLeaves;
   }
 }

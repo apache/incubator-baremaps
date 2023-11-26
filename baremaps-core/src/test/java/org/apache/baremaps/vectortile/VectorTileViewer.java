@@ -49,7 +49,7 @@ public class VectorTileViewer {
     }
   }
 
-  static class TilePanel extends JPanel {
+  public static class TilePanel extends JPanel {
 
     private final Tile tile;
 

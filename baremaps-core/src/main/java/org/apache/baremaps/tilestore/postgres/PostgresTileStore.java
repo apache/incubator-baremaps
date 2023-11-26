@@ -99,6 +99,9 @@ public class PostgresTileStore implements TileStore {
           byte[] bytes = resultSet.getBytes(1);
           gzip.write(bytes);
         }
+      } catch (Exception e) {
+        throw new TileStoreException(String.format("Failed to execute statement: %s", statement),
+            e);
       }
 
       // Log slow queries (> 10s)
@@ -125,7 +128,7 @@ public class PostgresTileStore implements TileStore {
   protected static Query prepareQuery(Tileset tileset, int zoom) {
     // Initialize a builder for the tile sql
     var tileSql = new StringBuilder();
-    tileSql.append("SELECT (");
+    tileSql.append("SELECT ");
 
     // Iterate over the layers and keep track of the number of layers and parameters included in the
     // final sql
@@ -136,7 +139,7 @@ public class PostgresTileStore implements TileStore {
 
       // Initialize a builder for the layer sql
       var layerSql = new StringBuilder();
-      var layerHead = "(WITH mvtGeom AS (";
+      var layerHead = String.format("(SELECT ST_AsMVT(mvtGeom.*, '%s') FROM (", layer.getId());
       layerSql.append(layerHead);
 
       // Iterate over the queries and keep track of the number of queries included in the final
@@ -154,7 +157,8 @@ public class PostgresTileStore implements TileStore {
           }
 
           // Add the sql to the layer sql
-          var querySql = query.getSql()
+          var querySql = query.getSql().trim()
+              .replaceAll("\\s+", " ")
               .replace(";", "")
               .replace("?", "??")
               .replace("$zoom", String.valueOf(zoom));
@@ -171,8 +175,7 @@ public class PostgresTileStore implements TileStore {
       }
 
       // Add the tail of the layer sql
-      var layerQueryTail =
-          String.format(") SELECT ST_AsMVT(mvtGeom.*, '%s') FROM mvtGeom)", layer.getId());
+      var layerQueryTail = ") AS mvtGeom)";
       layerSql.append(layerQueryTail);
 
       // Only include the layer sql if queries were included for this layer
@@ -192,7 +195,7 @@ public class PostgresTileStore implements TileStore {
     }
 
     // Add the tail of the tile sql
-    var tileQueryTail = ") mvtTile";
+    var tileQueryTail = " mvtTile";
     tileSql.append(tileQueryTail);
 
     // Format the sql query
@@ -215,5 +218,10 @@ public class PostgresTileStore implements TileStore {
   @Override
   public void delete(TileCoord tileCoord) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
+  }
+
+  @Override
+  public void close() throws Exception {
+    // do nothing
   }
 }

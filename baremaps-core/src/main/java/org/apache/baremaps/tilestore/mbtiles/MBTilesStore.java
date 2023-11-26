@@ -219,4 +219,9 @@ public class MBTilesStore implements TileStore {
   private static int reverseY(int y, int z) {
     return (int) (Math.pow(2.0, z) - 1 - y);
   }
+
+  @Override
+  public void close() throws Exception {
+    // Do nothing
+  }
 }
