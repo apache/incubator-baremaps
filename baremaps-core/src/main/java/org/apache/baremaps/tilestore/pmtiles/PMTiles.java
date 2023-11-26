@@ -332,8 +332,8 @@ public class PMTiles {
   public static Directories buildRootLeaves(List<Entry> entries, int leafSize) throws IOException {
     var rootEntries = new ArrayList<Entry>();
     var numLeaves = 0;
-    byte[] leavesBytes = null;
-    byte[] rootBytes = null;
+    byte[] leavesBytes;
+    byte[] rootBytes;
 
     try (var leavesOutput = new ByteArrayOutputStream();
         var leavesDataOutput = new LittleEndianDataOutputStream(leavesOutput)) {

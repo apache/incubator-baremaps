@@ -194,8 +194,6 @@ class PMTilesTest {
     var output = new LittleEndianDataOutputStream(array);
     PMTiles.serializeHeader(output, header);
 
-    var array2 = array.toByteArray();
-
     var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
     var header2 = PMTiles.deserializeHeader(input);
 

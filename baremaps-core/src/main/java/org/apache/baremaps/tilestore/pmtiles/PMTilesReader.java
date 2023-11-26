@@ -52,13 +52,12 @@ public class PMTilesReader {
   public List<Entry> getRootDirectory() {
     if (rootEntries == null) {
       var header = getHeader();
-      rootEntries =
-          getDirectory(header.getRootDirectoryOffset(), (int) header.getRootDirectoryLength());
+      rootEntries = getDirectory(header.getRootDirectoryOffset());
     }
     return rootEntries;
   }
 
-  public List<Entry> getDirectory(long offset, int length) {
+  public List<Entry> getDirectory(long offset) {
     var header = getHeader();
     try (var input = Files.newInputStream(path)) {
       input.skip(offset);
