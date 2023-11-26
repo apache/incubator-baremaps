@@ -175,7 +175,7 @@ public class PostgresTileStore implements TileStore {
       }
 
       // Add the tail of the layer sql
-      var layerQueryTail = ") AS mvtgeom)";
+      var layerQueryTail = ") AS mvtGeom)";
       layerSql.append(layerQueryTail);
 
       // Only include the layer sql if queries were included for this layer
@@ -195,7 +195,7 @@ public class PostgresTileStore implements TileStore {
     }
 
     // Add the tail of the tile sql
-    var tileQueryTail = " mvttile";
+    var tileQueryTail = " AS mvtTile";
     tileSql.append(tileQueryTail);
 
     // Format the sql query
