@@ -45,15 +45,6 @@ export default {
             16,
             ['get', "extrusion:height"]
         ],
-        "fill-extrusion-opacity": [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            15,
-            0,
-            16,
-            0.8
-        ],
         "fill-extrusion-color": theme.buildingShapeFillColor,
         // Having muliple colors for building parts results in z-fighting
         // https://github.com/maplibre/maplibre-gl-js/issues/3157

@@ -33,6 +33,7 @@ import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.tilestore.*;
 import org.apache.baremaps.tilestore.file.FileTileStore;
 import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
+import org.apache.baremaps.tilestore.pmtiles.PMTilesStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
@@ -52,7 +53,8 @@ public record ExportVectorTiles(
 
   public enum Format {
     file,
-    mbtiles
+    mbtiles,
+    pmtiles
   }
 
   private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
@@ -64,40 +66,43 @@ public record ExportVectorTiles(
     var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var datasource = context.getDataSource(tileset.getDatabase());
 
-    var sourceTileStore = sourceTileStore(tileset, datasource);
-    var targetTileStore = targetTileStore(tileset);
+    try (var sourceTileStore = sourceTileStore(tileset, datasource);
+        var targetTileStore = targetTileStore(tileset)) {
 
-    var envelope = tileset.getBounds().size() == 4
-        ? new Envelope(
-            tileset.getBounds().get(0), tileset.getBounds().get(2),
-            tileset.getBounds().get(1), tileset.getBounds().get(3))
-        : new Envelope(-180, 180, -85.0511, 85.0511);
+      var envelope = tileset.getBounds().size() == 4
+          ? new Envelope(
+              tileset.getBounds().get(0), tileset.getBounds().get(2),
+              tileset.getBounds().get(1), tileset.getBounds().get(3))
+          : new Envelope(-180, 180, -85.0511, 85.0511);
 
-    var count = TileCoord.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
-    var start = System.currentTimeMillis();
+      var count = TileCoord.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
+      var start = System.currentTimeMillis();
 
-    var tileCoordIterator =
-        TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
-    var tileCoordStream =
-        StreamUtils.stream(tileCoordIterator).peek(new ProgressLogger<>(count, 5000));
-    var bufferedTileEntryStream = StreamUtils.bufferInCompletionOrder(tileCoordStream, tile -> {
-      try {
-        return new TileEntry(tile, sourceTileStore.read(tile));
-      } catch (TileStoreException e) {
-        throw new RuntimeException(e);
-      }
-    }, 1000);
-    var partitionedTileEntryStream = StreamUtils.partition(bufferedTileEntryStream, 1000);
-    partitionedTileEntryStream.forEach(batch -> {
-      try {
-        targetTileStore.write(batch);
-      } catch (TileStoreException e) {
-        throw new RuntimeException(e);
-      }
-    });
+      var tileCoordIterator =
+          TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
+      var tileCoordStream =
+          StreamUtils.stream(tileCoordIterator).peek(new ProgressLogger<>(count, 5000));
 
-    var stop = System.currentTimeMillis();
-    logger.info("Exported {} tiles in {}s", count, (stop - start) / 1000);
+      var bufferedTileEntryStream = StreamUtils.bufferInCompletionOrder(tileCoordStream, tile -> {
+        try {
+          return new TileEntry(tile, sourceTileStore.read(tile));
+        } catch (TileStoreException e) {
+          throw new RuntimeException(e);
+        }
+      }, 1000);
+
+      var partitionedTileEntryStream = StreamUtils.partition(bufferedTileEntryStream, 1000);
+      partitionedTileEntryStream.forEach(batch -> {
+        try {
+          targetTileStore.write(batch);
+        } catch (TileStoreException e) {
+          throw new RuntimeException(e);
+        }
+      });
+
+      var stop = System.currentTimeMillis();
+      logger.info("Exported {} tiles in {}s", count, (stop - start) / 1000);
+    }
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
@@ -115,6 +120,10 @@ public record ExportVectorTiles(
         tilesStore.initializeDatabase();
         tilesStore.writeMetadata(metadata(source));
         return tilesStore;
+      case pmtiles:
+        Files.deleteIfExists(repository);
+        var tileStore = new PMTilesStore(repository, source);
+        return tileStore;
       default:
         throw new IllegalArgumentException("Unsupported format");
     }

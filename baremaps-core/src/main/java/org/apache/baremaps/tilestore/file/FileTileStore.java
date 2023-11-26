@@ -77,4 +77,9 @@ public class FileTileStore implements TileStore {
   public Path resolve(TileCoord tileCoord) {
     return path.resolve(String.format("%s/%s/%s.mvt", tileCoord.z(), tileCoord.x(), tileCoord.y()));
   }
+
+  @Override
+  public void close() {
+    // Do nothing
+  }
 }

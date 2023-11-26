@@ -127,7 +127,7 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
     @Override
     public <T> void registerCompletion(CompletableFuture<T> future,
         Consumer<CompletableFuture<T>> resultConsumer) {
-      future.thenAccept(result -> resultConsumer.accept(future));
+      future.whenComplete((result, error) -> resultConsumer.accept(future));
     }
   }
 

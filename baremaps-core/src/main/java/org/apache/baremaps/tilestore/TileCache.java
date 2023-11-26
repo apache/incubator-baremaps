@@ -84,4 +84,10 @@ public class TileCache implements TileStore {
     tileStore.delete(tileCoord);
     cache.invalidate(tileCoord);
   }
+
+  @Override
+  public void close() throws Exception {
+    tileStore.close();
+    cache.cleanUp();
+  }
 }
