@@ -119,7 +119,7 @@ export default {
           "type": "ImportOsmPbf",
           "file": "data/data.osm.pbf",
           "database": config.database,
-          "databaseSrid": 3857,
+          "databaseSrid": 4326,
           "replaceExisting": true,
         },
         {

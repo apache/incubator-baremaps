@@ -68,7 +68,12 @@ limitations under the License.
     </dependency>
     <dependency>
       <groupId>de.javagl</groupId>
+      <artifactId>jgltf-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>de.javagl</groupId>
       <artifactId>jgltf-model-builder</artifactId>
+      <version>${version.lib.jgltf}</version>
     </dependency>
     <dependency>
       <groupId>it.unimi.dsi</groupId>

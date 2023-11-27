@@ -1,13 +1,18 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.apache.baremaps.tdtiles;
@@ -20,9 +25,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.tile.*;
-import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.apache.baremaps.tdtiles.building.Building;
+import org.apache.baremaps.tilestore.TileStoreException;
+import org.apache.baremaps.utils.GeometryUtils;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +39,7 @@ public class TdTilesStore {
 
   private static final Logger logger = LoggerFactory.getLogger(TdTilesStore.class);
   private static final String QUERY =
-      "select st_asbinary(geom), tags -> 'buildings:height', tags -> 'height', tags -> 'buildings:levels'  from osm_ways where tags ? 'building' and st_intersects( st_force3d(geom,0), st_makeenvelope(%1$s, %2$s, %3$s, %4$s, 4326)) LIMIT %5$s";
+      "select st_asbinary(geom), tags -> 'buildings:height', tags -> 'height', tags -> 'buildings:levels'  from osm_ways where tags ? 'building' and st_intersects(geom, st_makeenvelope(%1$s, %2$s, %3$s, %4$s, 4326)) LIMIT %5$s";
 
 
   private final DataSource datasource;
@@ -50,9 +55,12 @@ public class TdTilesStore {
 
       String sql = String.format(QUERY, ymin * 180 / (float) Math.PI, xmin * 180 / (float) Math.PI,
           ymax * 180 / (float) Math.PI, xmax * 180 / (float) Math.PI, limit);
+
       logger.debug("Executing query: {}", sql);
+      System.out.println(sql);
 
       List<Building> buildings = new ArrayList<>();
+
 
       try (ResultSet resultSet = statement.executeQuery(sql)) {
         while (resultSet.next()) {
