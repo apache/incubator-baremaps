@@ -18,8 +18,10 @@
 package org.apache.baremaps.stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
@@ -31,4 +33,44 @@ class StreamUtilsTest {
     List<List<Integer>> partitions = StreamUtils.partition(list.stream(), 10).toList();
     assertEquals(partitions.size(), 10);
   }
+
+  @Test
+  void bufferInSourceOrder() {
+    List<Integer> l1 = IntStream.range(0, 100).boxed().toList();
+    List<Integer> l2 = StreamUtils.bufferInSourceOrder(l1.stream(), i -> i, 10).toList();
+    assertEquals(l2.size(), l1.size());
+    assertEquals(l2, l1);
+  }
+
+  @Test
+  void bufferInSourceOrderWithException() {
+    assertThrows(StreamException.class, () -> {
+      List<Integer> l1 = IntStream.range(0, 100).boxed().toList();
+      Function<Integer, Integer> throwException = i -> {
+        throw new RuntimeException();
+      };
+      StreamUtils.bufferInSourceOrder(l1.stream(), throwException, 10).sorted().toList();
+    });
+  }
+
+  @Test
+  void bufferInCompletionOrder() {
+    List<Integer> l1 = IntStream.range(0, 100).boxed().toList();
+    List<Integer> l2 =
+        StreamUtils.bufferInCompletionOrder(l1.stream(), i -> i, 10).sorted().toList();
+    assertEquals(l2.size(), l1.size());
+    assertEquals(l2, l1);
+  }
+
+  @Test
+  void bufferInCompletionOrderWithException() {
+    assertThrows(StreamException.class, () -> {
+      List<Integer> l1 = IntStream.range(0, 100).boxed().toList();
+      Function<Integer, Integer> throwException = i -> {
+        throw new RuntimeException();
+      };
+      StreamUtils.bufferInCompletionOrder(l1.stream(), throwException, 10).sorted().toList();
+    });
+  }
+
 }

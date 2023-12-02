@@ -153,7 +153,7 @@ public class PostgresTileStore implements TileStore {
 
           // Add a union between queries
           if (queryCount > 0) {
-            layerSql.append("UNION ");
+            layerSql.append("UNION ALL ");
           }
 
           // Add the sql to the layer sql
@@ -164,7 +164,7 @@ public class PostgresTileStore implements TileStore {
               .replace("$zoom", String.valueOf(zoom));
           var querySqlWithParams = String.format(
               "SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags, t.id " +
-                  "FROM (%s) AS t WHERE t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))",
+                  "FROM (%s) AS t WHERE t.geom IS NOT NULL AND t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))",
               querySql);
           layerSql.append(querySqlWithParams);
 
@@ -195,7 +195,7 @@ public class PostgresTileStore implements TileStore {
     }
 
     // Add the tail of the tile sql
-    var tileQueryTail = " mvtTile";
+    var tileQueryTail = " AS mvtTile";
     tileSql.append(tileQueryTail);
 
     // Format the sql query
