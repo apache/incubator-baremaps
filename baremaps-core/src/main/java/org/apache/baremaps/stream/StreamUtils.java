@@ -151,7 +151,10 @@ public class StreamUtils {
     return buffer(asyncStream, completionOrder, bufferSize).map(f -> {
       try {
         return f.get();
-      } catch (InterruptedException | ExecutionException e) {
+      } catch (ExecutionException e) {
+        throw new StreamException(e);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
         throw new StreamException(e);
       }
     });
