@@ -21,7 +21,10 @@ export default {
     type: 'fill-extrusion',
     source: 'baremaps',
     'source-layer': 'building',
-    filter: ['!=', ['get', 'building'], 'no'],
+    filter: ['all',
+        ['!=', ['get', 'building'], 'no'],
+        ['!=', ['get', 'building:part'], 'no']
+    ],
     layout: {
         visibility: 'visible',
     },
