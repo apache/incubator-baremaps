@@ -40,7 +40,7 @@ class PostgresTileStoreTest {
             List.of(new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table")))));
     var query = PostgresTileStore.prepareQuery(tileset, 10);
     assertEquals(
-        "SELECT (SELECT ST_AsMVT(mvtGeom.*, 'a') FROM (SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags, t.id FROM (SELECT id, tags, geom FROM table) AS t WHERE t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) AS mvtGeom) || (SELECT ST_AsMVT(mvtGeom.*, 'b') FROM (SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags, t.id FROM (SELECT id, tags, geom FROM table) AS t WHERE t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) AS mvtGeom) mvtTile",
+        "SELECT (SELECT ST_AsMVT(mvtGeom.*, 'a') FROM (SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags - 'id' AS tags, t.id AS id FROM (SELECT id, tags, geom FROM table) AS t WHERE t.geom IS NOT NULL AND t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) AS mvtGeom) || (SELECT ST_AsMVT(mvtGeom.*, 'b') FROM (SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags - 'id' AS tags, t.id AS id FROM (SELECT id, tags, geom FROM table) AS t WHERE t.geom IS NOT NULL AND t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) AS mvtGeom) AS mvtTile",
         query.sql());
   }
 }
