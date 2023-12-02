@@ -153,7 +153,7 @@ public class PostgresTileStore implements TileStore {
 
           // Add a union between queries
           if (queryCount > 0) {
-            layerSql.append("UNION ");
+            layerSql.append("UNION ALL ");
           }
 
           // Add the sql to the layer sql
