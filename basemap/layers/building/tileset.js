@@ -27,6 +27,8 @@ export default {
                     tags
                         || jsonb_build_object('extrusion:base',
                             CASE
+                                WHEN tags ? 'min_height'
+                                    THEN convert_to_number(tags ->> 'min_height', 0)
                                 WHEN tags ? 'building:min_height'
                                     THEN convert_to_number(tags ->> 'building:min_height', 0)
                                 WHEN tags ? 'building:min_level'
@@ -56,6 +58,8 @@ export default {
                     tags
                         || jsonb_build_object('extrusion:base',
                             CASE
+                                WHEN tags ? 'min_height'
+                                    THEN convert_to_number(tags ->> 'min_height', 0)
                                 WHEN tags ? 'building:min_height'
                                     THEN convert_to_number(tags ->> 'building:min_height', 0)
                                 WHEN tags ? 'building:min_level'
