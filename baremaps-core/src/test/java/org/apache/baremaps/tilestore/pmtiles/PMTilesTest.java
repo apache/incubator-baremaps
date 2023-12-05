@@ -20,7 +20,6 @@ package org.apache.baremaps.tilestore.pmtiles;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.io.LittleEndianDataInputStream;
-import com.google.common.io.LittleEndianDataOutputStream;
 import com.google.common.math.LongMath;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,15 +58,13 @@ class PMTilesTest {
   void encodeVarInt() throws IOException {
     for (long i = 0; i < 1000; i++) {
       var array = new ByteArrayOutputStream();
-      var output = new LittleEndianDataOutputStream(array);
-      PMTiles.writeVarInt(output, i);
+      PMTiles.writeVarInt(array, i);
       var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
       assertEquals(i, PMTiles.readVarInt(input));
     }
     for (long i = Long.MAX_VALUE - 1000; i < Long.MAX_VALUE; i++) {
       var array = new ByteArrayOutputStream();
-      var output = new LittleEndianDataOutputStream(array);
-      PMTiles.writeVarInt(output, i);
+      PMTiles.writeVarInt(array, i);
       var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
       assertEquals(i, PMTiles.readVarInt(input));
     }
@@ -190,9 +187,7 @@ class PMTilesTest {
         0);
 
     var array = new ByteArrayOutputStream();
-
-    var output = new LittleEndianDataOutputStream(array);
-    PMTiles.serializeHeader(output, header);
+    array.write(PMTiles.serializeHeader(header));
 
     var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
     var header2 = PMTiles.deserializeHeader(input);
@@ -259,7 +254,7 @@ class PMTilesTest {
   @Test
   void buildRootLeaves() throws IOException {
     var entries = List.of(new Entry(100, 1, 1, 0));
-    var directories = PMTiles.buildRootLeaves(entries, 1);
+    var directories = PMTiles.buildRootLeaves(entries, 1, Compression.None);
     assertEquals(directories.getNumLeaves(), 1);
 
   }
@@ -269,7 +264,7 @@ class PMTilesTest {
     var random = new Random(3857);
     var entries = new ArrayList<Entry>();
     entries.add(new Entry(0, 0, 100, 1));
-    var directories = PMTiles.optimizeDirectories(entries, 100);
+    var directories = PMTiles.optimizeDirectories(entries, 100, Compression.None);
     assertFalse(directories.getLeaves().length > 0);
     assertEquals(0, directories.getNumLeaves());
 
@@ -280,7 +275,7 @@ class PMTilesTest {
       entries.add(new Entry(i, offset, randTileSize, 1));
       offset += randTileSize;
     }
-    directories = PMTiles.optimizeDirectories(entries, 1024);
+    directories = PMTiles.optimizeDirectories(entries, 1024, Compression.None);
     assertFalse(directories.getRoot().length > 1024);
     assertFalse(directories.getNumLeaves() == 0);
     assertFalse(directories.getLeaves().length == 0);

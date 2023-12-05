@@ -19,7 +19,7 @@ package org.apache.baremaps.tilestore.pmtiles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.Hashing;
-import com.google.common.io.LittleEndianDataOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +27,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class PMTilesWriter {
+
+  private Compression compression = Compression.Gzip;
 
   private Path path;
 
@@ -153,9 +155,16 @@ public class PMTilesWriter {
       entries.sort(Comparator.comparingLong(Entry::getTileId));
     }
 
-    var metadataBytes = new ObjectMapper().writeValueAsBytes(metadata);
+    var directories = PMTiles.optimizeDirectories(entries, 16247, compression);
 
-    var directories = PMTiles.optimizeDirectories(entries, 16247);
+    byte[] metadataBytes;
+    try (var metadataOutput = new ByteArrayOutputStream()) {
+      try (var compressedMetadataOutput = compression.compress(metadataOutput)) {
+        new ObjectMapper().writeValue(compressedMetadataOutput, metadata);
+      }
+      metadataBytes = metadataOutput.toByteArray();
+    }
+
     var rootOffset = 127;
     var rootLength = directories.getRoot().length;
     var metadataOffset = rootOffset + rootLength;
@@ -172,8 +181,8 @@ public class PMTilesWriter {
     header.setNumTileContents(numTiles);
     header.setClustered(true);
 
-    header.setInternalCompression(Compression.None);
-    header.setTileCompression(Compression.Gzip);
+    header.setInternalCompression(compression);
+    header.setTileCompression(compression);
     header.setTileType(TileType.mvt);
     header.setRootOffset(rootOffset);
     header.setRootLength(rootLength);
@@ -194,8 +203,8 @@ public class PMTilesWriter {
     header.setCenterLat(centerLat);
     header.setCenterLon(centerLon);
 
-    try (var output = new LittleEndianDataOutputStream(new FileOutputStream(path.toFile()))) {
-      PMTiles.serializeHeader(output, header);
+    try (var output = new FileOutputStream(path.toFile())) {
+      output.write(PMTiles.serializeHeader(header));
       output.write(directories.getRoot());
       output.write(metadataBytes);
       output.write(directories.getLeaves());
