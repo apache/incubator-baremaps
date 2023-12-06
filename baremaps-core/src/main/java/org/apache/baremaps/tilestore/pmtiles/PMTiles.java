@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.tilestore.pmtiles;
 
-import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.math.LongMath;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -182,34 +181,40 @@ public class PMTiles {
 
   private static final int HEADER_SIZE_BYTES = 127;
 
-  public static Header deserializeHeader(LittleEndianDataInputStream input) throws IOException {
-    input.skipBytes(7);
+  public static Header deserializeHeader(InputStream input) throws IOException {
+    byte[] bytes = new byte[HEADER_SIZE_BYTES];
+    var num = input.read(bytes);
+    if (num != HEADER_SIZE_BYTES) {
+      throw new IOException("Invalid header size");
+    }
+    var buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+    buffer.position(7);
     return new Header(
-        input.readByte(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readLong(),
-        input.readByte() == 1,
-        Compression.values()[input.readByte()],
-        Compression.values()[input.readByte()],
-        TileType.values()[input.readByte()],
-        input.readByte(),
-        input.readByte(),
-        (double) input.readInt() / 10000000,
-        (double) input.readInt() / 10000000,
-        (double) input.readInt() / 10000000,
-        (double) input.readInt() / 10000000,
-        input.readByte(),
-        (double) input.readInt() / 10000000,
-        (double) input.readInt() / 10000000);
+        buffer.get(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.getLong(),
+        buffer.get() == 1,
+        Compression.values()[buffer.get()],
+        Compression.values()[buffer.get()],
+        TileType.values()[buffer.get()],
+        buffer.get(),
+        buffer.get(),
+        (double) buffer.getInt() / 10000000,
+        (double) buffer.getInt() / 10000000,
+        (double) buffer.getInt() / 10000000,
+        (double) buffer.getInt() / 10000000,
+        buffer.get(),
+        (double) buffer.getInt() / 10000000,
+        (double) buffer.getInt() / 10000000);
   }
 
   public static byte[] serializeHeader(Header header) {
@@ -278,7 +283,7 @@ public class PMTiles {
     output.write(buffer.array(), 0, buffer.limit());
   }
 
-  public static List<Entry> deserializeEntries(LittleEndianDataInputStream buffer)
+  public static List<Entry> deserializeEntries(InputStream buffer)
       throws IOException {
     long numEntries = readVarInt(buffer);
     List<Entry> entries = new ArrayList<>((int) numEntries);
