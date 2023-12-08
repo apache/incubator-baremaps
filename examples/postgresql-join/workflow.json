@@ -1,0 +1,15 @@
+{
+  "steps": [
+    {
+      "id": "postgresql-join",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "ExecuteSqlScript",
+          "file": "./init.sql",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
+        }
+      ]
+    }
+  ]
+}
