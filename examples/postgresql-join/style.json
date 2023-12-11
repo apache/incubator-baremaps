@@ -1,0 +1,41 @@
+{
+  "version": 8,
+  "sources": {
+    "baremaps": {
+      "type": "vector",
+      "url": "http://localhost:9000/tiles.json"
+    }
+  },
+  "center": [
+    2.6231,
+    48.8404
+  ],
+  "zoom": 10,
+  "layers": [
+    {
+      "id": "trees",
+      "type": "circle",
+      "source": "baremaps",
+      "source-layer": "trees",
+      "minzoom": 0,
+      "maxzoom": 20,
+      "paint": {
+        "circle-radius": 6,
+        "circle-color": [
+          "match",
+          ["get", "type"],
+          "Oak", "#33a02c",
+          "Maple", "#1f78b4",
+          "Pine", "#e31a1c",
+          "Birch", "#ff7f00",
+          "Spruce", "#6a3d9a",
+          "Poplar", "#fdbf6f",
+          "Cypress", "#cab2d6",
+          "Cedar", "#ffff99",
+          "#000000"
+        ]
+      }
+    }
+  ]
+}
+

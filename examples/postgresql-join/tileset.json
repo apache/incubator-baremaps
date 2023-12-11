@@ -1,0 +1,26 @@
+{
+  "tilejson": "2.1.0",
+  "tiles": [
+    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+  ],
+  "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+  "bounds": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "vector_layers": [
+    {
+      "id": "trees",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 20,
+          "sql": "SELECT pt.id::integer as id, jsonb_build_object('type', tt.type, 'size', pt.size) as tags, pt.geom as geom FROM baremaps.point_trees pt JOIN baremaps.tree_type tt ON pt.tree_type_id = tt.id"
+        }
+      ]
+    }
+  ]
+}
+
