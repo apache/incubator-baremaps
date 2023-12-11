@@ -1,7 +1,7 @@
-CREATE EXTENSION postgis;
+CREATE EXTENSION IF NOT EXISTS postgis;
 
 -- Drop and create schema
-DROP SCHEMA IF EXISTS baremaps;
+DROP SCHEMA IF EXISTS baremaps CASCADE;
 CREATE SCHEMA baremaps;
 
 -- Create table baremaps.tree_type

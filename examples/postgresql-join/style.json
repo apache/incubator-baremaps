@@ -3,16 +3,21 @@
   "sources": {
     "baremaps": {
       "type": "vector",
-      "url":"./tileset.json"
+      "url": "http://localhost:9000/tiles.json"
     }
   },
+  "center": [
+    2.6231,
+    48.8404
+  ],
+  "zoom": 10,
   "layers": [
     {
       "id": "trees",
       "type": "circle",
-      "source": "trees",
+      "source": "baremaps",
       "source-layer": "trees",
-      "minzoom": 13,
+      "minzoom": 0,
       "maxzoom": 20,
       "paint": {
         "circle-radius": 6,
@@ -24,9 +29,10 @@
           "Pine", "#e31a1c",
           "Birch", "#ff7f00",
           "Spruce", "#6a3d9a",
-          "Poplar", "#fdbf6f",  
+          "Poplar", "#fdbf6f",
           "Cypress", "#cab2d6",
-          "Cedar", "#ffff99"
+          "Cedar", "#ffff99",
+          "#000000"
         ]
       }
     }
