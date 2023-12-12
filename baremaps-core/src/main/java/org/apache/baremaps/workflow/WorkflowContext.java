@@ -29,9 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.collection.*;
 import org.apache.baremaps.database.memory.MemoryMappedDirectory;
-import org.apache.baremaps.database.type.LongDataType;
-import org.apache.baremaps.database.type.LongListDataType;
-import org.apache.baremaps.database.type.PairDataType;
+import org.apache.baremaps.database.type.*;
 import org.apache.baremaps.database.type.geometry.LonLatDataType;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.utils.PostgresUtils;
@@ -69,45 +67,36 @@ public class WorkflowContext {
 
   public DataMap<Long, Coordinate> getCoordinateMap(Path path) throws IOException {
     if (Files.size(path) > 1 << 30) {
-      return getAlignedCoordinateMap();
+      return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
     } else {
-      return getMonotonicCoordinateMap();
+      return getMonotonicDataMap("coordinates", new LonLatDataType());
     }
   }
 
-  public DataMap<Long, Coordinate> getAlignedCoordinateMap() throws IOException {
-    var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinates"));
+  public DataMap<Long, List<Long>> getReferenceMap(Path path) throws IOException {
+    return getMonotonicDataMap("references", new LongListDataType());
+  }
+
+  public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
+      throws IOException {
+    var coordinateDir = Files.createDirectories(cacheDir.resolve(name));
     return new MemoryAlignedDataMap<>(
-        new LonLatDataType(),
+        dataType,
         new MemoryMappedDirectory(coordinateDir));
   }
 
-  public DataMap<Long, Coordinate> getMonotonicCoordinateMap() throws IOException {
-    var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-    var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_values"));
+  public <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)
+      throws IOException {
+    var mapDir = Files.createDirectories(cacheDir.resolve(name));
+    var keysDir = Files.createDirectories(mapDir.resolve("keys"));
+    var valuesDir = Files.createDirectories(mapDir.resolve("values"));
     return new MonotonicDataMap<>(
         new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),
-            new MemoryMappedDirectory(coordinateKeysDir)),
+            new MemoryMappedDirectory(keysDir)),
         new AppendOnlyBuffer<>(
-            new LonLatDataType(),
-            new MemoryMappedDirectory(coordinateValuesDir)));
-  }
-
-  public DataMap<Long, List<Long>> getReferenceMap(Path path) throws IOException {
-    return getMonotonicReferenceMap();
-  }
-
-  public DataMap<Long, List<Long>> getMonotonicReferenceMap() throws IOException {
-    var referenceKeysDir = Files.createDirectories(cacheDir.resolve("reference_keys"));
-    var referenceValuesDir = Files.createDirectories(cacheDir.resolve("reference_vals"));
-    return new MonotonicDataMap<>(
-        new MemoryAlignedDataList<>(
-            new PairDataType<>(new LongDataType(), new LongDataType()),
-            new MemoryMappedDirectory(referenceKeysDir)),
-        new AppendOnlyBuffer<>(
-            new LongListDataType(),
-            new MemoryMappedDirectory(referenceValuesDir)));
+            dataType,
+            new MemoryMappedDirectory(valuesDir)));
   }
 
   public void cleanCache() throws IOException {
