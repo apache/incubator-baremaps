@@ -113,7 +113,8 @@ public class DecompressFile implements Task {
    * @throws IOException if an I/O error occurs
    */
   protected static void decompressGzip(Path source, Path target) throws IOException {
-    try (var zis = new GZIPInputStream(new BufferedInputStream(Files.newInputStream(source)))) {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
+        var zis = new GZIPInputStream(bufferedInputStream)) {
       Files.copy(zis, target, StandardCopyOption.REPLACE_EXISTING);
     }
   }
