@@ -29,12 +29,43 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportShapefile(Path file, Object database, Integer sourceSRID, Integer targetSRID)
-    implements
-      Task {
+/**
+ * Import a shapefile into a database.
+ */
+public class ImportShapefile implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
 
+  private Path file;
+  private Integer fileSrid;
+  private Object database;
+  private Integer databaseSrid;
+
+  /**
+   * Constructs a {@code ImportShapefile}.
+   */
+  public ImportShapefile() {
+
+  }
+
+  /**
+   * Constructs an {@code ImportShapefile}.
+   *
+   * @param file the shapefile file
+   * @param fileSrid the source SRID
+   * @param database the database
+   * @param databaseSrid the target SRID
+   */
+  public ImportShapefile(Path file, Integer fileSrid, Object database, Integer databaseSrid) {
+    this.file = file;
+    this.fileSrid = fileSrid;
+    this.database = database;
+    this.databaseSrid = databaseSrid;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
@@ -43,7 +74,7 @@ public record ImportShapefile(Path file, Object database, Integer sourceSRID, In
       var dataSource = context.getDataSource(database);
       var postgresDataStore = new PostgresDataSchema(dataSource);
       var rowTransformer = new DataTableGeometryTransformer(shapefileDataTable,
-          new ProjectionTransformer(sourceSRID, targetSRID));
+          new ProjectionTransformer(fileSrid, databaseSrid));
       var transformedDataTable = new DataTableAdapter(shapefileDataTable, rowTransformer);
       postgresDataStore.add(transformedDataTable);
     } catch (Exception e) {

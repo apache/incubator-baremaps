@@ -6,8 +6,8 @@
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-          "path": "liechtenstein-latest.osm.pbf"
+          "source": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
+          "target": "liechtenstein-latest.osm.pbf"
         }
       ]
     },

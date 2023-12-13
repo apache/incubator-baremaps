@@ -6,20 +6,21 @@
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-          "path": "natural_earth_vector.gpkg.zip"
+          "source": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
+          "target": "natural_earth_vector.gpkg.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "natural_earth_vector.gpkg.zip",
-          "directory": "natural_earth_vector"
+          "type": "DecompressFile",
+          "source": "natural_earth_vector.gpkg.zip",
+          "target": "natural_earth_vector",
+          "compression": "zip"
         },
         {
           "type": "ImportGeoPackage",
           "file": "natural_earth_vector/packages/natural_earth_vector.gpkg",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "sourceSRID": 4326,
-          "targetSRID": 3857
+          "fileSrid": 4326,
+          "databaseSrid": 3857
         },
         {
           "type": "ExecuteSql",

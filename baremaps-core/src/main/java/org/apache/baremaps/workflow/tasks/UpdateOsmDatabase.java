@@ -46,15 +46,39 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UpdateOsmDatabase(Object database, Integer databaseSrid,
-    String replicationUrl) implements Task {
+/**
+ * Update an OSM database based on the header data stored in the database.
+ */
+public class UpdateOsmDatabase implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UpdateOsmDatabase.class);
 
-  public UpdateOsmDatabase(Object database, Integer databaseSrid) {
-    this(database, databaseSrid, null);
+  private Object database;
+  private Integer databaseSrid;
+  private String replicationUrl;
+
+  /**
+   * Constructs a {@code UpdateOsmDatabase}.
+   */
+  public UpdateOsmDatabase() {
+
   }
 
+  /**
+   * Constructs an {@code UpdateOsmDatabase}.
+   *
+   * @param database the database
+   * @param databaseSrid the database SRID
+   */
+  public UpdateOsmDatabase(Object database, Integer databaseSrid, String replicationUrl) {
+    this.database = database;
+    this.databaseSrid = databaseSrid;
+    this.replicationUrl = replicationUrl;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
@@ -75,6 +99,18 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
         replicationUrl);
   }
 
+  /**
+   * Executes the task.
+   *
+   * @param coordinateMap the coordinate map
+   * @param referenceMap the reference map
+   * @param headerRepository the header repository
+   * @param nodeRepository the node repository
+   * @param wayRepository the way repository
+   * @param relationRepository the relation repository
+   * @param databaseSrid the SRID
+   * @throws Exception if something went wrong
+   */
   public static void execute(DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
@@ -82,6 +118,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
       Integer databaseSrid,
       String replicationUrl) throws Exception {
 
+    // Get the latest header from the database
     var header = headerRepository.selectLatest();
 
     // If the replicationUrl is not provided, use the one from the latest header.
@@ -89,6 +126,7 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
       replicationUrl = header.getReplicationUrl();
     }
 
+    // Get the sequence number of the latest header
     var stateReader = new StateReader(replicationUrl, true);
     var sequenceNumber = header.getReplicationSequenceNumber();
 
@@ -101,21 +139,23 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
       }
     }
 
+    // Increment the sequence number and get the changeset url
     var nextSequenceNumber = sequenceNumber + 1;
     var changeUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "osc.gz");
     logger.info("Updating the database with the changeset: {}", changeUrl);
 
+    // Process the changeset and update the database
     var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
     var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
     var prepareChange = consumeThenReturn(prepareGeometries);
     var importChange = new PutChangeImporter(nodeRepository, wayRepository, relationRepository);
-
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
 
+    // Add the new header to the database
     var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       var state = new StateReader().readState(stateInputStream);
@@ -123,5 +163,4 @@ public record UpdateOsmDatabase(Object database, Integer databaseSrid,
           header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }
   }
-
 }

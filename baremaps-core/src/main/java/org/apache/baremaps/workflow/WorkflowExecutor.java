@@ -105,17 +105,24 @@ public class WorkflowExecutor implements AutoCloseable {
   /**
    * Executes the workflow.
    */
-  public CompletableFuture<Void> execute() {
+  public void execute() {
+    try {
+      executeAsync().join();
+      logStepMeasures();
+    } catch (Exception e) {
+      logger.error("Error while executing the workflow", e);
+    }
+  }
+
+  public CompletableFuture<Void> executeAsync() {
     // Create futures for each end step
     var endSteps = graph.nodes().stream()
         .filter(this::isEndStep)
-        .map(this::getFutureStep)
+        .map(this::getStep)
         .toArray(CompletableFuture[]::new);
 
-    // Create a future that logs the stepMeasures when all the futures are completed
-    var future = CompletableFuture.allOf(endSteps).thenRun(this::logStepMeasures);
-
-    return future;
+    // Wait for all the end steps to complete
+    return CompletableFuture.allOf(endSteps);
   }
 
   /**
@@ -125,8 +132,8 @@ public class WorkflowExecutor implements AutoCloseable {
    * @param step the step id
    * @return the future step
    */
-  private CompletableFuture<Void> getFutureStep(String step) {
-    return futures.computeIfAbsent(step, this::createFutureStep);
+  private CompletableFuture<Void> getStep(String step) {
+    return futures.computeIfAbsent(step, this::createStep);
   }
 
   /**
@@ -135,10 +142,10 @@ public class WorkflowExecutor implements AutoCloseable {
    * @param stepId the step id
    * @return the future step
    */
-  private CompletableFuture<Void> createFutureStep(String stepId) {
+  private CompletableFuture<Void> createStep(String stepId) {
     // Initialize the future step with the previous future step
     // as it depends on its completion.
-    var future = getPreviousFutureStep(stepId);
+    var future = getPreviousStep(stepId);
 
     // Time the execution of the tasks
     var measures = new ArrayList<TaskMeasure>();
@@ -182,7 +189,7 @@ public class WorkflowExecutor implements AutoCloseable {
    * @param stepId the step id
    * @return the future step
    */
-  private CompletableFuture<Void> getPreviousFutureStep(String stepId) {
+  private CompletableFuture<Void> getPreviousStep(String stepId) {
     var predecessors = graph.predecessors(stepId).stream().toList();
 
     // If the step has no predecessor,
@@ -194,13 +201,13 @@ public class WorkflowExecutor implements AutoCloseable {
     // If the step has one predecessor,
     // return the future step associated to it.
     if (predecessors.size() == 1) {
-      return getFutureStep(predecessors.get(0));
+      return getStep(predecessors.get(0));
     }
 
     // If the step has multiple predecessors,
     // return a future step that completes when all the predecessors complete.
     var futurePredecessors = predecessors.stream()
-        .map(this::getFutureStep)
+        .map(this::getStep)
         .toArray(CompletableFuture[]::new);
     return CompletableFuture.allOf(futurePredecessors);
   }

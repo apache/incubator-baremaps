@@ -73,16 +73,16 @@ public class GeometryUtils {
   /**
    * Creates a coordinate transform with the provided SRIDs.
    *
-   * @param sourceSRID the source SRID
-   * @param targetSRID the target SRID
+   * @param sourceSrid the source SRID
+   * @param targetSrid the target SRID
    * @return the coordinate transform
    */
-  public static CoordinateTransform coordinateTransform(Integer sourceSRID, Integer targetSRID) {
+  public static CoordinateTransform coordinateTransform(Integer sourceSrid, Integer targetSrid) {
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem sourceCRS =
-        crsFactory.createFromName(String.format("EPSG:%d", sourceSRID));
+        crsFactory.createFromName(String.format("EPSG:%d", sourceSrid));
     CoordinateReferenceSystem targetCRS =
-        crsFactory.createFromName(String.format("EPSG:%d", targetSRID));
+        crsFactory.createFromName(String.format("EPSG:%d", targetSrid));
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     return coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }

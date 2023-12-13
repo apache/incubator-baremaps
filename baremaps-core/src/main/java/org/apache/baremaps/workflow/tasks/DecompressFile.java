@@ -32,8 +32,17 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record DecompressFile(Path source, Path target, Compression compression) implements Task {
+/**
+ * Decompresses a file based on a given compression format. The supported formats are zip, targz,
+ * tarbz2, gzip and bzip2.
+ */
+public class DecompressFile implements Task {
 
+  private static final Logger logger = LoggerFactory.getLogger(DecompressFile.class);
+
+  /**
+   * The compression format.
+   */
   public enum Compression {
     zip,
     targz,
@@ -42,8 +51,33 @@ public record DecompressFile(Path source, Path target, Compression compression) 
     bzip2;
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(UngzipFile.class);
+  private Path source;
+  private Path target;
+  private Compression compression;
 
+  /**
+   * Constructs a {@code DecompressFile}.
+   */
+  public DecompressFile() {
+
+  }
+
+  /**
+   * Constructs a {@code DecompressFile}.
+   *
+   * @param source the source file
+   * @param target the target file
+   * @param compression the compression format (zip, targz, tarbz2, gzip or bzip2)
+   */
+  public DecompressFile(Path source, Path target, Compression compression) {
+    this.source = source;
+    this.target = target;
+    this.compression = compression;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var sourcePath = source.toAbsolutePath();
@@ -57,83 +91,108 @@ public record DecompressFile(Path source, Path target, Compression compression) 
     }
   }
 
-  public static void decompressBzip2(Path sourcePath, Path targetPath) throws IOException {
-    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+  /**
+   * Decompresses a bzip2 file.
+   * 
+   * @param source the source file
+   * @param target the target file
+   * @throws IOException if an I/O error occurs
+   */
+  protected static void decompressBzip2(Path source, Path target) throws IOException {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var bzip2InputStream = new BZip2CompressorInputStream(bufferedInputStream)) {
-      Files.copy(bzip2InputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(bzip2InputStream, target, StandardCopyOption.REPLACE_EXISTING);
     }
   }
 
-  public static void decompressGzip(Path sourcePath, Path targetPath) throws IOException {
-    try (var zis = new GZIPInputStream(new BufferedInputStream(Files.newInputStream(sourcePath)))) {
-      Files.copy(zis, targetPath, StandardCopyOption.REPLACE_EXISTING);
+  /**
+   * Decompresses a gzip file.
+   * 
+   * @param source the source file
+   * @param target the target file
+   * @throws IOException if an I/O error occurs
+   */
+  protected static void decompressGzip(Path source, Path target) throws IOException {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
+        var zis = new GZIPInputStream(bufferedInputStream)) {
+      Files.copy(zis, target, StandardCopyOption.REPLACE_EXISTING);
     }
   }
 
-  public static void decompressTarGz(Path sourcePath, Path targetPath) throws IOException {
-    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+  /**
+   * Decompresses a tar.gz file.
+   * 
+   * @param source the source file
+   * @param target the target file
+   * @throws IOException if an I/O error occurs
+   */
+  protected static void decompressTarGz(Path source, Path target) throws IOException {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var gzipInputStream = new GZIPInputStream(bufferedInputStream);
         var tarInputStream = new TarArchiveInputStream(gzipInputStream)) {
       TarArchiveEntry entry;
       while ((entry = (TarArchiveEntry) tarInputStream.getNextEntry()) != null) {
-        var path = targetPath.resolve(entry.getName());
+        var path = target.resolve(entry.getName());
         if (entry.isDirectory()) {
           Files.createDirectories(path);
         } else {
           Files.createDirectories(path.getParent());
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
-            int bytesRead;
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = tarInputStream.read(buffer)) != -1) {
-              outputStream.write(buffer, 0, bytesRead);
-            }
+            tarInputStream.transferTo(outputStream);
           }
         }
       }
     }
   }
 
-  public static void decompressTarBz2(Path sourcePath, Path targetPath) throws IOException {
-    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
+  /**
+   * Decompresses a tar.bz2 file.
+   * 
+   * @param source the source file
+   * @param target the target file
+   * @throws IOException if an I/O error occurs
+   */
+  protected static void decompressTarBz2(Path source, Path target) throws IOException {
+    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var bzip2InputStream = new BZip2CompressorInputStream(bufferedInputStream);
         var tarInputStream = new TarArchiveInputStream(bzip2InputStream)) {
       TarArchiveEntry entry;
       while ((entry = (TarArchiveEntry) tarInputStream.getNextEntry()) != null) {
-        var path = targetPath.resolve(entry.getName());
+        var path = target.resolve(entry.getName());
         if (entry.isDirectory()) {
           Files.createDirectories(path);
         } else {
           Files.createDirectories(path.getParent());
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
-            int bytesRead;
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = tarInputStream.read(buffer)) != -1) {
-              outputStream.write(buffer, 0, bytesRead);
-            }
+            tarInputStream.transferTo(outputStream);
           }
         }
       }
     }
   }
 
-  public static void decompressZip(Path sourcePath, Path targetPath) throws IOException {
-    try (var zipFile = new ZipFile(sourcePath.toFile())) {
+  /**
+   * Decompresses a zip file.
+   * 
+   * @param source the source file
+   * @param target the target file
+   * @throws IOException if an I/O error occurs
+   */
+  protected static void decompressZip(Path source, Path target) throws IOException {
+    try (var zipFile = new ZipFile(source.toFile())) {
       var entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         var entry = entries.nextElement();
-        var path = targetPath.resolve(entry.getName());
+        var path = target.resolve(entry.getName());
         Files.createDirectories(path.getParent());
-        Files.write(path, new byte[] {}, StandardOpenOption.CREATE,
+        Files.write(path, new byte[] {},
+            StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING);
         try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
             var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
-          int nBytes = -1;
-          byte[] buffer = new byte[4096];
-          while ((nBytes = input.read(buffer)) > 0) {
-            output.write(buffer, 0, nBytes);
-          }
+          input.transferTo(output);
         }
       }
     }

@@ -17,30 +17,21 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import java.io.BufferedInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.baremaps.workflow.WorkflowException;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
-public record DecompressBZip2(Path source, Path target) implements Task {
+/**
+ * Clean the context data.
+ */
+public class CleanContextData implements Task {
+
+  /**
+   * Constructs an {@code CleanContextData}.
+   */
+  public CleanContextData() {}
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var sourcePath = source.toAbsolutePath();
-    try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(sourcePath));
-        var compressedInputStream = new BZip2CompressorInputStream(bufferedInputStream)) {
-      var targetPath = target.toAbsolutePath();
-      if (!Files.exists(targetPath)) {
-        Files.createDirectories(targetPath.getParent());
-        Files.createFile(targetPath);
-      }
-      Files.copy(compressedInputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-    } catch (Exception e) {
-      throw new WorkflowException(e);
-    }
+    context.cleanData();
   }
 }

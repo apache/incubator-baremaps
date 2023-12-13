@@ -19,15 +19,39 @@ package org.apache.baremaps.workflow;
 
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
+import org.apache.baremaps.database.collection.*;
+import org.apache.baremaps.database.memory.MemoryMappedDirectory;
+import org.apache.baremaps.database.type.*;
+import org.apache.baremaps.database.type.geometry.LonLatDataType;
+import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.utils.PostgresUtils;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * A context that is passed to the tasks of a workflow and used to share data between tasks.
  */
 public class WorkflowContext {
+
+  private final Path dataDir;
+
+  private final Path cacheDir;
+
+  public WorkflowContext() {
+    this(Paths.get("./data"), Paths.get("./cache"));
+  }
+
+  public WorkflowContext(Path dataDir, Path cacheDir) {
+    this.dataDir = dataDir;
+    this.cacheDir = cacheDir;
+  }
 
   private Map<Object, DataSource> dataSources = new ConcurrentHashMap<>() {};
 
@@ -41,4 +65,45 @@ public class WorkflowContext {
     return dataSources.computeIfAbsent(database, PostgresUtils::createDataSourceFromObject);
   }
 
+  public DataMap<Long, Coordinate> getCoordinateMap(Path path) throws IOException {
+    if (Files.size(path) > 1 << 30) {
+      return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
+    } else {
+      return getMonotonicDataMap("coordinates", new LonLatDataType());
+    }
+  }
+
+  public DataMap<Long, List<Long>> getReferenceMap(Path path) throws IOException {
+    return getMonotonicDataMap("references", new LongListDataType());
+  }
+
+  public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
+      throws IOException {
+    var coordinateDir = Files.createDirectories(cacheDir.resolve(name));
+    return new MemoryAlignedDataMap<>(
+        dataType,
+        new MemoryMappedDirectory(coordinateDir));
+  }
+
+  public <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)
+      throws IOException {
+    var mapDir = Files.createDirectories(cacheDir.resolve(name));
+    var keysDir = Files.createDirectories(mapDir.resolve("keys"));
+    var valuesDir = Files.createDirectories(mapDir.resolve("values"));
+    return new MonotonicDataMap<>(
+        new MemoryAlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new MemoryMappedDirectory(keysDir)),
+        new AppendOnlyBuffer<>(
+            dataType,
+            new MemoryMappedDirectory(valuesDir)));
+  }
+
+  public void cleanCache() throws IOException {
+    FileUtils.deleteRecursively(cacheDir);
+  }
+
+  public void cleanData() throws IOException {
+    FileUtils.deleteRecursively(dataDir);
+  }
 }

@@ -19,22 +19,21 @@ package org.apache.baremaps.workflow.tasks;
 
 
 
-import java.nio.file.Files;
+import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
-import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class UngzipFileTest {
+class ImportOsmPbfTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void run() throws Exception {
-    var gzip = TestFiles.resolve("ripe/sample.txt.gz");
-    var directory = Files.createTempDirectory("tmp_");
-    var task = new UngzipFile(gzip, directory);
+  void execute() throws Exception {
+    var file = TestFiles.resolve("data.osm.pbf");
+    var jdbcUrl = jdbcUrl();
+    var srid = 3857;
+    var task = new ImportOsmPbf(file, jdbcUrl, srid, true);
     task.execute(new WorkflowContext());
-    FileUtils.deleteRecursively(directory);
   }
 }

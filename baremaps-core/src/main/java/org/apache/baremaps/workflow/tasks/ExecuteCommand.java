@@ -22,12 +22,37 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ExecuteCommand(String command) implements Task {
+/**
+ * Execute a bash command.
+ */
+public class ExecuteCommand implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExecuteCommand.class);
 
+  private String command;
+
+  /**
+   * Constructs a {@code ExecuteCommand}.
+   */
+  public ExecuteCommand() {
+
+  }
+
+  /**
+   * Constructs an {@code ExecuteCommand}.
+   *
+   * @param command the bash command
+   */
+  public ExecuteCommand(String command) {
+    this.command = command;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     new ProcessBuilder().command("/bin/sh", "-c", command).start().waitFor();
   }
+
 }

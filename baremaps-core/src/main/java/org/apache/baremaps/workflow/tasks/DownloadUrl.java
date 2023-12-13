@@ -29,36 +29,63 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record DownloadUrl(String url, Path path, boolean replaceExisting) implements Task {
-
-  private static final String PROTOCOL_FTP = "ftp";
-  private static final String PROTOCOL_HTTP = "http";
-  private static final String PROTOCOL_HTTPS = "https";
-
-  public DownloadUrl(String url, Path path) {
-    this(url, path, false);
-  }
+/**
+ * Downloads a file from a URL.
+ */
+public class DownloadUrl implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(DownloadUrl.class);
 
+  private static final String PROTOCOL_FTP = "ftp";
+
+  private static final String PROTOCOL_HTTP = "http";
+
+  private static final String PROTOCOL_HTTPS = "https";
+
+  private String source;
+
+  private Path target;
+
+  private boolean replaceExisting = true;
+
+  /**
+   * Constructs a {@code DownloadUrl}.
+   */
+  public DownloadUrl() {
+
+  }
+
+  /**
+   * Constructs an {@code DownloadUrl}.
+   *
+   * @param source the url
+   * @param target the path
+   * @param replaceExisting whether to replace existing files
+   */
+  public DownloadUrl(String source, Path target, boolean replaceExisting) {
+    this.source = source;
+    this.target = target;
+    this.replaceExisting = replaceExisting;
+  }
+
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var targetUrl = new URL(url);
-    var targetPath = path.toAbsolutePath();
+    var sourceURL = new URL(source);
+    var targetPath = target.toAbsolutePath();
 
     if (Files.exists(targetPath) && !replaceExisting) {
-      logger.info("Skipping download of {} to {}", url, path);
+      logger.info("Skipping download of {} to {}", source, target);
       return;
     }
 
-    if (isHttp(targetUrl)) {
-      var get = (HttpURLConnection) targetUrl.openConnection();
+    if (isHttp(sourceURL)) {
+      var get = (HttpURLConnection) sourceURL.openConnection();
       get.setInstanceFollowRedirects(true);
       get.setRequestMethod("GET");
       urlDownloadToFile(get, targetPath);
       get.disconnect();
-    } else if (isFtp(targetUrl)) {
-      urlDownloadToFile(targetUrl.openConnection(), targetPath);
+    } else if (isFtp(sourceURL)) {
+      urlDownloadToFile(sourceURL.openConnection(), targetPath);
     } else {
       throw new IllegalArgumentException("Unsupported URL protocol (supported: http(s)/ftp)");
     }

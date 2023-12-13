@@ -35,54 +35,26 @@ export default {
         ]
     },
     {
-      "id": "natural-earth",
-      "needs": [],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-          "path": "data/natural_earth_vector.gpkg.zip"
-        },
-        {
-          "type": "UnzipFile",
-          "file": "data/natural_earth_vector.gpkg.zip",
-          "directory": "data/natural_earth_vector"
-        },
-        {
-          "type": "ImportGeoPackage",
-          "file": "data/natural_earth_vector/packages/natural_earth_vector.gpkg",
-          "database": config.database,
-          "sourceSRID": 4326,
-          "targetSRID": 3857
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/ne_index.sql",
-          "database": config.database,
-          "parallel": true,
-        }
-      ]
-    },
-    {
       "id": "openstreetmap-water-polygons",
       "needs": [],
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip",
-          "path": "data/water-polygons-split-3857.zip"
+          "source": "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip",
+          "target": "data/water-polygons-split-3857.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "data/water-polygons-split-3857.zip",
-          "directory": "data"
+          "type": "DecompressFile",
+          "source": "data/water-polygons-split-3857.zip",
+          "target": "data",
+          "compression": "zip"
         },
         {
           "type": "ImportShapefile",
           "file": "data/water-polygons-split-3857/water_polygons.shp",
           "database": config.database,
-          "sourceSRID": 3857,
-          "targetSRID": 3857
+          "fileSrid": 3857,
+          "databaseSrid": 3857
         },
       ]
     },
@@ -92,20 +64,21 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
-          "path": "data/simplified-water-polygons-split-3857.zip"
+          "source": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
+          "target": "data/simplified-water-polygons-split-3857.zip"
         },
         {
-          "type": "UnzipFile",
-          "file": "data/simplified-water-polygons-split-3857.zip",
-          "directory": "data"
+          "type": "DecompressFile",
+          "source": "data/simplified-water-polygons-split-3857.zip",
+          "target": "data",
+          "compression": "zip"
         },
         {
           "type": "ImportShapefile",
           "file": "data/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
           "database": config.database,
-          "sourceSRID": 3857,
-          "targetSRID": 3857
+          "fileSrid": 3857,
+          "databaseSrid": 3857
         },
       ]
     },
@@ -139,8 +112,8 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": config.osmPbfUrl,
-          "path": "data/data.osm.pbf"
+          "source": config.osmPbfUrl,
+          "target": "data/data.osm.pbf"
         },
         {
           "type": "ImportOsmPbf",
@@ -148,7 +121,6 @@ export default {
           "database": config.database,
           "databaseSrid": 3857,
           "replaceExisting": true,
-          "cleanCache": true,
         },
       ]
     },

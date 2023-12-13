@@ -29,7 +29,7 @@ echo ""
 
 rm -fr data tiles tiles.mbtiles
 
-baremaps workflow execute --file workflow.js
+baremaps workflow execute --file import.js
 
 echo ""
 echo "--------------------------------------------------------------------"

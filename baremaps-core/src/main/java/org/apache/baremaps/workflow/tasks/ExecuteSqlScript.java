@@ -23,9 +23,41 @@ import java.sql.SQLException;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public record ExecuteSqlScript(Object database, Path file) implements Task {
+/**
+ * Execute a SQL script (multiple statements).
+ */
+public class ExecuteSqlScript implements Task {
 
+  private static final Logger logger = LoggerFactory.getLogger(ExecuteSqlScript.class);
+
+  private Object database;
+
+  private Path file;
+
+  /**
+   * Constructs a {@code ExecuteSqlScript}.
+   */
+  public ExecuteSqlScript() {
+
+  }
+
+  /**
+   * Constructs an {@code ExecuteSqlScript}.
+   *
+   * @param database the database
+   * @param file the SQL file
+   */
+  public ExecuteSqlScript(Object database, Path file) {
+    this.database = database;
+    this.file = file;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var script = Files.readString(file);

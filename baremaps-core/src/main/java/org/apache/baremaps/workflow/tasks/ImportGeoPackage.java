@@ -29,12 +29,43 @@ import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportGeoPackage(Path file, Object database, Integer sourceSRID, Integer targetSRID)
-    implements
-      Task {
+/**
+ * Import a GeoPackage into a database.
+ */
+public class ImportGeoPackage implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);
 
+  private Path file;
+  private Integer fileSrid;
+  private Object database;
+  private Integer databaseSrid;
+
+  /**
+   * Constructs a {@code ImportGeoPackage}.
+   */
+  public ImportGeoPackage() {
+
+  }
+
+  /**
+   * Constructs an {@code ImportGeoPackage}.
+   *
+   * @param file the GeoPackage file
+   * @param fileSrid the source SRID
+   * @param database the database
+   * @param databaseSrid the target SRID
+   */
+  public ImportGeoPackage(Path file, Integer fileSrid, Object database, Integer databaseSrid) {
+    this.file = file;
+    this.fileSrid = fileSrid;
+    this.database = database;
+    this.databaseSrid = databaseSrid;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
@@ -43,7 +74,7 @@ public record ImportGeoPackage(Path file, Object database, Integer sourceSRID, I
       var postgresDataStore = new PostgresDataSchema(dataSource);
       for (var name : geoPackageDataStore.list()) {
         var geoPackageTable = geoPackageDataStore.get(name);
-        var projectionTransformer = new ProjectionTransformer(sourceSRID, targetSRID);
+        var projectionTransformer = new ProjectionTransformer(fileSrid, databaseSrid);
         var rowTransformer =
             new DataTableGeometryTransformer(geoPackageTable, projectionTransformer);
         var transformedDataTable =

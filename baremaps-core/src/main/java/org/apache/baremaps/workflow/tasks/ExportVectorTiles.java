@@ -44,12 +44,12 @@ import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ExportVectorTiles(
-    Path tileset,
-    Path repository,
-    int batchArraySize,
-    int batchArrayIndex,
-    Format format) implements Task {
+/**
+ * Export vector tiles from a tileset.
+ */
+public class ExportVectorTiles implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
 
   public enum Format {
     file,
@@ -57,8 +57,33 @@ public record ExportVectorTiles(
     pmtiles
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
+  private Path tileset;
+  private Path repository;
+  private Format format;
 
+  /**
+   * Constructs a {@code ExportVectorTiles}.
+   */
+  public ExportVectorTiles() {
+
+  }
+
+  /**
+   * Constructs a {@code ExportVectorTiles}.
+   *
+   * @param tileset the tileset
+   * @param repository the repository
+   * @param format the format
+   */
+  public ExportVectorTiles(Path tileset, Path repository, Format format) {
+    this.tileset = tileset;
+    this.repository = repository;
+    this.format = format;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var configReader = new ConfigReader();

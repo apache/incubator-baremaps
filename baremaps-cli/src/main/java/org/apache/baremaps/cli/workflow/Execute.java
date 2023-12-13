@@ -50,7 +50,7 @@ public class Execute implements Callable<Integer> {
     var configReader = new ConfigReader();
     var workflow = mapper.readValue(configReader.read(file.toAbsolutePath()), Workflow.class);
     try (var executor = new WorkflowExecutor(workflow)) {
-      executor.execute().get();
+      executor.execute();
     }
     logger.info("Finished executing the workflow {}", file);
     return 0;

@@ -49,7 +49,7 @@ class DownloadUrlTest {
     var file = directory.resolve("file");
     // TODO: do not use a 3rd party server, replaces test URL to a baremaps owned test resource.
     var task = new DownloadUrl("ftp://whois.in.bell.ca/bell.db.gz",
-        file);
+        file, false);
     task.execute(new WorkflowContext());
     assertTrue(file.toFile().length() > 50, "file is less than 50 bytes");
     FileUtils.deleteRecursively(directory);
@@ -62,7 +62,7 @@ class DownloadUrlTest {
     var file = directory.resolve("file");
     assertThrows(IllegalArgumentException.class, () -> {
       var task = new DownloadUrl("file://not-existing-file-243jhks",
-          file);
+          file, false);
       task.execute(new WorkflowContext());
     }, "Unsupported protocol throws IOException");
     FileUtils.deleteRecursively(directory);
@@ -74,7 +74,7 @@ class DownloadUrlTest {
     var directory = Files.createTempDirectory("tmp_");
     var file = directory.resolve("README.md");
     var task = new DownloadUrl("https://raw.githubusercontent.com/baremaps/baremaps/main/README.md",
-        file.toAbsolutePath());
+        file.toAbsolutePath(), false);
     task.execute(new WorkflowContext());
     assertTrue(Files.readString(file).contains("Baremaps"));
     FileUtils.deleteRecursively(directory);

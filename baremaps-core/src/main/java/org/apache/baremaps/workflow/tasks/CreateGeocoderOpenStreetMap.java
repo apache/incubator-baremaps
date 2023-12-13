@@ -20,23 +20,12 @@ package org.apache.baremaps.workflow.tasks;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import org.apache.baremaps.database.collection.AppendOnlyBuffer;
 import org.apache.baremaps.database.collection.DataMap;
-import org.apache.baremaps.database.collection.MemoryAlignedDataList;
-import org.apache.baremaps.database.collection.MemoryAlignedDataMap;
-import org.apache.baremaps.database.collection.MonotonicDataMap;
-import org.apache.baremaps.database.memory.MemoryMappedDirectory;
-import org.apache.baremaps.database.type.LongDataType;
-import org.apache.baremaps.database.type.LongListDataType;
-import org.apache.baremaps.database.type.PairDataType;
-import org.apache.baremaps.database.type.geometry.LonLatDataType;
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoderosm.GeocoderOsmConsumerEntity;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.stream.StreamUtils;
-import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.index.IndexWriter;
@@ -48,52 +37,38 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Experimental feature.
- * 
+ *
  * @see org.apache.baremaps.geocoderosm
  */
-public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
-    implements
-      Task {
+public class CreateGeocoderOpenStreetMap implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeocoderOpenStreetMap.class);
 
+  private Path file;
+  private Path indexDirectory;
+
+  /**
+   * Constructs an {@code CreateGeocoderOpenStreetMap}.
+   */
+  public CreateGeocoderOpenStreetMap() {}
+
+  /**
+   * Constructs an {@code CreateGeocoderOpenStreetMap}.
+   * 
+   * @param file the OSM PBF file
+   * @param indexDirectory the index directory
+   */
+  public CreateGeocoderOpenStreetMap(Path file, Path indexDirectory) {
+    this.file = file;
+    this.indexDirectory = indexDirectory;
+  }
+
   @Override
   public void execute(WorkflowContext context) throws Exception {
-
     var path = file.toAbsolutePath();
 
-
-    var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
-
-    DataMap<Long, Coordinate> coordinateMap;
-    if (Files.size(path) > 1 << 30) {
-      var coordinateDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-      coordinateMap = new MemoryAlignedDataMap<>(
-          new LonLatDataType(),
-          new MemoryMappedDirectory(coordinateDir));
-    } else {
-      var coordinateKeysDir = Files.createDirectories(cacheDir.resolve("coordinate_keys"));
-      var coordinateValuesDir = Files.createDirectories(cacheDir.resolve("coordinate_vals"));
-      coordinateMap =
-          new MonotonicDataMap<>(
-              new MemoryAlignedDataList<>(
-                  new PairDataType<>(new LongDataType(), new LongDataType()),
-                  new MemoryMappedDirectory(coordinateKeysDir)),
-              new AppendOnlyBuffer<>(
-                  new LonLatDataType(),
-                  new MemoryMappedDirectory(coordinateValuesDir)));
-    }
-
-    var referenceKeysDir = Files.createDirectory(cacheDir.resolve("reference_keys"));
-    var referenceValuesDir = Files.createDirectory(cacheDir.resolve("reference_vals"));
-    var referenceMap =
-        new MonotonicDataMap<>(
-            new MemoryAlignedDataList<>(
-                new PairDataType<>(new LongDataType(), new LongDataType()),
-                new MemoryMappedDirectory(referenceKeysDir)),
-            new AppendOnlyBuffer<>(
-                new LongListDataType(),
-                new MemoryMappedDirectory(referenceValuesDir)));
+    var coordinateMap = context.getCoordinateMap(path);
+    var referenceMap = context.getReferenceMap(path);
 
     var directory = FSDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
@@ -106,7 +81,6 @@ public record CreateGeocoderOpenStreetMap(Path file, Path indexDirectory)
           referenceMap,
           importer);
     }
-    FileUtils.deleteRecursively(cacheDir);
   }
 
   public static void execute(

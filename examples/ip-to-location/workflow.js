@@ -61,25 +61,27 @@ export default {"steps": [
             ...nics.flatMap(nic => [
                 {
                     type: "DownloadUrl",
-                    url: nic.url,
-                    path: `downloads/${nic.filename}.gz`
+                    source: nic.url,
+                    target: `downloads/${nic.filename}.gz`
                 },
                 {
-                    type: "UngzipFile",
-                    file: `downloads/${nic.filename}.gz`,
-                    directory: "archives"
+                    type: "DecompressFile",
+                    source: `downloads/${nic.filename}.gz`,
+                    target: "archives",
+                    compression: "gzip"
                 }
             ]),
             {
                 type: "DownloadUrl",
-                url: "https://download.geonames.org/export/dump/allCountries.zip",
-                path: "downloads/geonames-allcountries.zip",
+                source: "https://download.geonames.org/export/dump/allCountries.zip",
+                target: "downloads/geonames-allcountries.zip",
                 force: true
             },
             {
-                type: "UnzipFile",
-                file: "downloads/geonames-allcountries.zip",
-                directory: "archives"
+                type: "DecompressFile",
+                source: "downloads/geonames-allcountries.zip",
+                target: "archives",
+                compression: "zip"
             },
             {
                 type: "CreateGeonamesIndex",

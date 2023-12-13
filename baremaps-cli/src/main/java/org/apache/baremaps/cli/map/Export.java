@@ -50,14 +50,6 @@ public class Export implements Callable<Integer> {
   @Option(names = {"--tiles"}, paramLabel = "TILES", description = "The tiles to export.")
   private URI tiles;
 
-  @Option(names = {"--batch-array-size"}, paramLabel = "BATCH_ARRAY_SIZE",
-      description = "The size of the batch array.")
-  private int batchArraySize = 1;
-
-  @Option(names = {"--batch-array-index"}, paramLabel = "READER",
-      description = "The index of the batch in the array.")
-  private int batchArrayIndex = 0;
-
   @Option(names = {"--format"}, paramLabel = "FORMAT",
       description = "The format of the repository.")
   private ExportVectorTiles.Format format = ExportVectorTiles.Format.file;
@@ -65,7 +57,7 @@ public class Export implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     new ExportVectorTiles(tileset.toAbsolutePath(),
-        repository.toAbsolutePath(), batchArraySize, batchArrayIndex, format)
+        repository.toAbsolutePath(), format)
             .execute(new WorkflowContext());
     return 0;
   }
