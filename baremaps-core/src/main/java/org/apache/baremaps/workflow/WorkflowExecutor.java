@@ -107,19 +107,22 @@ public class WorkflowExecutor implements AutoCloseable {
    */
   public void execute() {
     try {
-      // Create futures for each end step
-      var endSteps = graph.nodes().stream()
-          .filter(this::isEndStep)
-          .map(this::getStep)
-          .toArray(CompletableFuture[]::new);
-
-      // Wait for all the end steps to complete
-      CompletableFuture.allOf(endSteps).join();
+      executeAsync().join();
       logStepMeasures();
-
     } catch (Exception e) {
       logger.error("Error while executing the workflow", e);
     }
+  }
+
+  public CompletableFuture<Void> executeAsync() {
+    // Create futures for each end step
+    var endSteps = graph.nodes().stream()
+        .filter(this::isEndStep)
+        .map(this::getStep)
+        .toArray(CompletableFuture[]::new);
+
+    // Wait for all the end steps to complete
+    return CompletableFuture.allOf(endSteps);
   }
 
   /**
