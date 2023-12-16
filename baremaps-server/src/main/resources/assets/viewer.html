@@ -21,6 +21,7 @@ limitations under the License.
   <script src='/maplibre-gl-inspect.js'></script>
   <script src='/maplibre-gl-tile-boundaries.js'></script>
   <script src='/maplibre-custom-controls.js'></script>
+  <script src='/maplibre-gl-framerate.js'></script>
   <link href='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css' rel='stylesheet' />
   <link href='/maplibre-gl-inspect.css' rel='stylesheet' />
   <link href='/maplibre-gl-tile-boundaries.css' rel='stylesheet' />
@@ -109,7 +110,11 @@ limitations under the License.
     bearing: map.getBearing(),
     hash: false,
     interactive: false,
-  })
+  });
+
+  // Add the framerate control to the map
+  const fps = new maplibregl.FrameRateControl();
+  map.addControl(fps);
 
   // Add the navigation control to the map
   map.addControl(new maplibregl.NavigationControl());
