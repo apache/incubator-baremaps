@@ -18,10 +18,7 @@
 package org.apache.baremaps.storage.postgres;
 
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -104,14 +101,7 @@ public class PostgresDataTable extends AbstractDataTable {
     var query = insert(rowType);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(query)) {
-      for (int i = 1; i <= rowType.columns().size(); i++) {
-        var value = row.get(rowType.columns().get(i - 1).name());
-        if (value instanceof Geometry geometry) {
-          statement.setBytes(i, GeometryUtils.serialize(geometry));
-        } else {
-          statement.setObject(i, value);
-        }
-      }
+      setParameters(statement, row);
       return statement.executeUpdate() > 0;
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -126,20 +116,31 @@ public class PostgresDataTable extends AbstractDataTable {
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(insert(rowType))) {
       for (var row : rows) {
-        for (int i = 1; i <= rowType.columns().size(); i++) {
-          var value = row.get(rowType.columns().get(i - 1).name());
-          if (value instanceof Geometry geometry) {
-            statement.setBytes(i, GeometryUtils.serialize(geometry));
-          } else {
-            statement.setObject(i, value);
-          }
-        }
+        setParameters(statement, row);
         statement.addBatch();
       }
       statement.executeBatch();
       return true;
     } catch (SQLException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Set the parameters of a prepared statement with the values of a row.
+   * 
+   * @param statement the prepared statement
+   * @param row the row
+   * @throws SQLException if an SQL error occurs
+   */
+  private void setParameters(PreparedStatement statement, DataRow row) throws SQLException {
+    for (int i = 1; i <= rowType.columns().size(); i++) {
+      var value = row.get(rowType.columns().get(i - 1).name());
+      if (value instanceof Geometry geometry) {
+        statement.setBytes(i, GeometryUtils.serialize(geometry));
+      } else {
+        statement.setObject(i, value);
+      }
     }
   }
 
