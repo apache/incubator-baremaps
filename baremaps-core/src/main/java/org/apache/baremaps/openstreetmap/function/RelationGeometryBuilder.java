@@ -93,7 +93,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
         relation.setGeometry(polygon);
       } else if (polygons.size() > 1) {
         MultiPolygon multiPolygon =
-                GEOMETRY_FACTORY_WGS84.createMultiPolygon(polygons.toArray(new Polygon[0]));
+            GEOMETRY_FACTORY_WGS84.createMultiPolygon(polygons.toArray(new Polygon[0]));
         relation.setGeometry(multiPolygon);
       }
 

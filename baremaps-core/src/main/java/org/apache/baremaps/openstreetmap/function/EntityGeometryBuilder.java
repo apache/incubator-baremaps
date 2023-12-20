@@ -19,7 +19,6 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
