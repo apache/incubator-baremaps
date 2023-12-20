@@ -123,8 +123,13 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
           it.remove();
         }
       }
-      Polygon polygon =
-          GEOMETRY_FACTORY_WGS84.createPolygon(shell, holes.toArray(new LinearRing[0]));
+      Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(shell, holes.toArray(new LinearRing[0]));
+
+      // Fix invalid polygons with a buffer (e.g. self-intersecting)
+      if (!polygon.isValid()) {
+        polygon = (Polygon) polygon.buffer(0);
+      }
+
       polygons.add(polygon);
     }
     return polygons;
