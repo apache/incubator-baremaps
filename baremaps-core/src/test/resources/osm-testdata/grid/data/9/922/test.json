@@ -1,0 +1,28 @@
+{
+    "test_id": 922,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, extra tags on inner ring made from a single way.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 922900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((9.21 1.21,9.21 1.29,9.29 1.29,9.29 1.21,9.21 1.21),(9.23 1.23,9.23 1.27,9.27 1.27,9.27 1.23,9.23 1.23)))",
+                "tags": {
+                    "test:section": "mp-tags",
+                    "test:id": "922",
+                    "natural": "wood"
+                }
+            },
+            {
+                "from_id": 922801,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((9.23 1.23,9.23 1.27,9.27 1.27,9.27 1.23,9.23 1.23)))",
+                "tags": {
+                    "test:section": "mp-tags",
+                    "test:id": "922",
+                    "natural": "water"
+                }
+            }
+        ]
+    }
+}

@@ -65,13 +65,14 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
       Map<String, Object> tags = relation.getTags();
 
       // Filter out type that are not multipolygon or boundary geometries
+      // TODO: filter out at the stream level
       if (!("multipolygon".equals(tags.get("type"))
           || "boundary".equals(tags.get("type")))) {
         return;
       }
 
       // Filter coastline geometries
-      // TODO: document motivation for filtering out.
+      // TODO: filter out at the stream level
       if ("coastline".equals(tags.get("natural"))) {
         return;
       }
@@ -92,7 +93,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
         relation.setGeometry(polygon);
       } else if (polygons.size() > 1) {
         MultiPolygon multiPolygon =
-            GEOMETRY_FACTORY_WGS84.createMultiPolygon(polygons.toArray(new Polygon[0]));
+                GEOMETRY_FACTORY_WGS84.createMultiPolygon(polygons.toArray(new Polygon[0]));
         relation.setGeometry(multiPolygon);
       }
 
@@ -117,7 +118,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
       Iterator<Polygon> it = innerPolygons.iterator();
       while (it.hasNext()) {
         Polygon innerPolygon = it.next();
-        if (prepared.containsProperly(innerPolygon)) {
+        if (prepared.contains(innerPolygon)) {
           holes.add(innerPolygon.getExteriorRing());
           it.remove();
         }
@@ -177,8 +178,19 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
   private LineString createLine(Member member) {
     try {
       List<Long> refs = referenceMap.get(member.getRef());
-      List<Coordinate> coords = refs.stream().map(coordinateMap::get).toList();
-      Coordinate[] array = coords.toArray(new Coordinate[coords.size()]);
+
+      // Build the coordinate list and remove duplicates.
+      List<Coordinate> list = new ArrayList<>();
+      Coordinate previous = null;
+      for (Long id : refs) {
+        Coordinate coordinate = coordinateMap.get(id);
+        if (coordinate != null && !coordinate.equals(previous)) {
+          list.add(coordinate);
+          previous = coordinate;
+        }
+      }
+
+      Coordinate[] array = list.toArray(new Coordinate[0]);
       return GEOMETRY_FACTORY_WGS84.createLineString(array);
     } catch (Exception e) {
       throw new StreamException(e);

@@ -1,0 +1,19 @@
+{
+    "test_id": 950,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, type boundary.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 950900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((9.01 1.51,9.01 1.59,9.09 1.59,9.09 1.51,9.01 1.51),(9.03 1.53,9.03 1.57,9.07 1.57,9.07 1.53,9.03 1.53)))",
+                "tags": {
+                    "test:section": "mp-tags",
+                    "test:id": "950",
+                    "boundary": "administrative",
+                    "admin_level": "2"
+                }
+            }
+        ]
+    }
+}

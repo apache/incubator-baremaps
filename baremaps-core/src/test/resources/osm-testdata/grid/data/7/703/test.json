@@ -1,0 +1,18 @@
+{
+    "test_id": 703,
+    "description": "Valid multipolygon relation with two ways making up an outer ring.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 703900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.34 1.01,7.31 1.01,7.31 1.02,7.33 1.03,7.33 1.04,7.32 1.04,7.32 1.05,7.34 1.05,7.34 1.01)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "703"
+                }
+            }
+        ]
+    }
+}

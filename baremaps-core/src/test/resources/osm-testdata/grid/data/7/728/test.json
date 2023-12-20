@@ -1,0 +1,18 @@
+{
+    "test_id": 728,
+    "description": "Multipolygon with one simple outer ring and a node member.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 728900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.85 1.23,7.86 1.22,7.87 1.22,7.87 1.24,7.86 1.25,7.83 1.25,7.82 1.26,7.84 1.23,7.85 1.23)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "728"
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "test_id": 768,
+    "description": "Multipolygon with two overlapping ways.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 768900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ]
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "test_id": 742,
+    "description": "Invalid multipolygon because of a 'spike'.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 742900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "fix": [
+            {
+                "from_id": 742900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.21 1.41,7.21 1.43,7.23 1.43,7.23 1.41,7.21 1.41)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "742"
+                }
+            }
+        ]
+    }
+}

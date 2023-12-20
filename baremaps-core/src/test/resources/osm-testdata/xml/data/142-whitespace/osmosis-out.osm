@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="Osmosis 0.43.1">
+  <node id="1" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="user name" changeset="1" lat="11" lon="10">
+    <tag k="key with space" v="value with space"/>
+  </node>
+  <node id="2" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="line&#xA;feed" changeset="1" lat="12" lon="10">
+    <tag k="key with&#xA;linefeed" v="value with&#xA;linefeed"/>
+  </node>
+  <node id="3" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="carriage&#xD;return" changeset="1" lat="13" lon="10">
+    <tag k="key with&#xD;carriage&#xD;return" v="value with&#xD;carriage&#xD;return"/>
+  </node>
+  <node id="4" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="tab&#x9;ulator" changeset="1" lat="14" lon="10">
+    <tag k="key with&#x9;tab" v="value with&#x9;tab"/>
+  </node>
+  <node id="5" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="unencoded linefeed" changeset="1" lat="15" lon="10">
+    <tag k="key with unencoded linefeed" v="value with unencoded linefeed"/>
+  </node>
+  <relation id="21" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="foo">
+    <member type="node" ref="1" role="role with whitespace"/>
+    <member type="node" ref="2" role="role with&#xA;linefeed"/>
+    <member type="node" ref="3" role="role with&#xD;carriage&#xD;return"/>
+    <member type="node" ref="4" role="role with&#x9;tab"/>
+    <member type="node" ref="5" role="role with unencoded linefeed"/>
+  </relation>
+</osm>

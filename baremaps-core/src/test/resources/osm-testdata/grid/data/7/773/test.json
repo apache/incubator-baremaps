@@ -1,0 +1,13 @@
+{
+    "test_id": 773,
+    "description": "Multipolygon with two inner rings touching in single point, but no common node there.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 773900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ]
+    }
+}

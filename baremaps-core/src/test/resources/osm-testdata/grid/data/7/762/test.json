@@ -1,0 +1,18 @@
+{
+    "test_id": 762,
+    "description": "Touching outer rings.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 762900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.21 1.67,7.27 1.67,7.27 1.61,7.21 1.61,7.21 1.67),(7.25 1.65,7.23 1.65,7.23 1.63,7.25 1.63,7.25 1.65)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "762"
+                }
+            }
+        ]
+    }
+}

@@ -19,10 +19,11 @@ package org.apache.baremaps.openstreetmap.function;
 
 import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.Node;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.*;
 
 /**
  * A consumer that builds and sets a node geometry via side effects.

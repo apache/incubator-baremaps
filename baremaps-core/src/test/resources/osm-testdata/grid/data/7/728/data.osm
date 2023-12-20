@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="728000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.85" lat="1.23"/>
+    <node id="728001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.86" lat="1.22"/>
+    <node id="728002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.87" lat="1.22"/>
+    <node id="728003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.87" lat="1.24"/>
+    <node id="728004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.86" lat="1.25"/>
+    <node id="728005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.83" lat="1.25"/>
+    <node id="728006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.82" lat="1.26"/>
+    <node id="728007" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.84" lat="1.23"/>
+    <node id="728008" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.89" lat="1.29"/>
+    <way id="728800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="728000"/>
+        <nd ref="728001"/>
+        <nd ref="728002"/>
+        <nd ref="728003"/>
+        <nd ref="728004"/>
+        <nd ref="728005"/>
+        <nd ref="728006"/>
+        <nd ref="728007"/>
+        <nd ref="728000"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="728"/>
+    </way>
+    <relation id="728900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="728800" role="outer"/>
+        <member type="node" ref="728008" role=""/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="728"/>
+        <tag k="landuse" v="forest"/>
+    </relation>
+</osm>

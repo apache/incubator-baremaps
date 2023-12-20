@@ -1,0 +1,18 @@
+{
+    "test_id": 700,
+    "description": "Polygon with one closed way.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 700800,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((7.01 1.01,7.01 1.04,7.04 1.04,7.04 1.01,7.01 1.01)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "700",
+                    "area": "yes"
+                }
+            }
+        ]
+    }
+}

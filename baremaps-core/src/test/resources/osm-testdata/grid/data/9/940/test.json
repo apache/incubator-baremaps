@@ -1,0 +1,38 @@
+{
+    "test_id": 940,
+    "description": "Multipolygon with touching inner rings that are tagged themselves.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 940900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((9.01 1.41,9.01 1.47,9.06 1.47,9.06 1.41,9.01 1.41),(9.02 1.42,9.02 1.45,9.04 1.45,9.05 1.45,9.05 1.42,9.03 1.42,9.02 1.42)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-tags",
+                    "test:id": "940"
+                }
+            },
+            {
+                "from_id": 940801,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((9.02 1.42,9.02 1.45,9.04 1.45,9.04 1.44,9.03 1.44,9.03 1.42,9.02 1.42)))",
+                "tags": {
+                    "landuse": "grass",
+                    "test:section": "mp-tags",
+                    "test:id": "940"
+                }
+            },
+            {
+                "from_id": 940802,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((9.03 1.42,9.03 1.44,9.04 1.44,9.04 1.45,9.05 1.45,9.05 1.42,9.03 1.42)))",
+                "tags": {
+                    "natural": "water",
+                    "test:section": "mp-tags",
+                    "test:id": "940"
+                }
+            }
+        ]
+    }
+}

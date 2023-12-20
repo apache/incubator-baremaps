@@ -1,0 +1,18 @@
+{
+    "test_id": 761,
+    "description": "Faking inner ring with outer going back on itself (with way).",
+    "areas": {
+        "default": [
+            {
+                "from_id": 761800,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((7.11 1.67,7.17 1.67,7.17 1.61,7.11 1.61,7.11 1.67),(7.15 1.65,7.13 1.65,7.13 1.63,7.15 1.63,7.15 1.65)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "761",
+                    "area": "yes"
+                }
+            }
+        ]
+    }
+}

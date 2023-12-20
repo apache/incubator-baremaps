@@ -1,0 +1,25 @@
+{
+    "test_id": 754,
+    "description": "Inner ring touching outer, but not in node.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 754900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "fix": [
+            {
+                "from_id": 754900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.47 1.51,7.41 1.51,7.41 1.57,7.47 1.57,7.47 1.54,7.47 1.51),(7.45 1.56,7.47 1.54,7.45 1.52,7.43 1.54,7.45 1.56)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "754"
+                }
+            }
+        ]
+    }
+}

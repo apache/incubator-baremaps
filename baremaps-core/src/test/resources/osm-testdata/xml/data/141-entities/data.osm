@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+  <node id="1" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="TEST" changeset="1" lat="11" lon="10">
+    <tag k="less-than"    v="&lt;"/>
+    <tag k="greater-than" v="&gt;"/>
+    <tag k="apostrophe"   v="&apos;"/>
+    <tag k="ampersand"    v="&amp;"/>
+    <tag k="quote"        v="&quot;"/>
+  </node>
+</osm>

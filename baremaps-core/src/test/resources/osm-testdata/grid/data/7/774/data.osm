@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="774000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.42" lat="1.73"/>
+    <node id="774001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.42" lat="1.75"/>
+    <node id="774002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.44" lat="1.72"/>
+    <node id="774003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.44" lat="1.73"/>
+    <node id="774004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.44" lat="1.75"/>
+    <node id="774005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.44" lat="1.76"/>
+    <node id="774006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.45" lat="1.73"/>
+    <node id="774007" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.45" lat="1.75"/>
+    <node id="774008" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.47" lat="1.72"/>
+    <node id="774009" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.47" lat="1.76"/>
+    <way id="774800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="774000"/>
+        <nd ref="774001"/>
+        <nd ref="774004"/>
+        <nd ref="774003"/>
+        <nd ref="774000"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="774"/>
+    </way>
+    <way id="774801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="774004"/>
+        <nd ref="774005"/>
+        <nd ref="774009"/>
+        <nd ref="774008"/>
+        <nd ref="774002"/>
+        <nd ref="774003"/>
+        <nd ref="774006"/>
+        <nd ref="774007"/>
+        <nd ref="774004"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="774"/>
+    </way>
+    <relation id="774900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="774800" role=""/>
+        <member type="way" ref="774801" role=""/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="774"/>
+        <tag k="landuse" v="forest"/>
+    </relation>
+</osm>

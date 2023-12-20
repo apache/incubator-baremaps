@@ -19,6 +19,7 @@ package org.apache.baremaps.openstreetmap.store;
 
 
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.baremaps.database.collection.DataMap;
@@ -27,6 +28,10 @@ import org.jetbrains.annotations.Nullable;
 public class MockDataMap<K, T> extends DataMap<K, T> {
 
   private final Map<K, T> values;
+
+  public MockDataMap() {
+    this.values = new HashMap<>();
+  }
 
   public MockDataMap(Map<K, T> values) {
     this.values = values;

@@ -1,0 +1,19 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install
+        run: sudo gem install json
+        shell: bash
+      - uses: actions/checkout@v2
+      - name: Test
+        run: |
+          ruby bin/concat-test-json.rb grid/data/*/*/test.json >/tmp/tests.json
+          diff -u grid/data/tests.json /tmp/tests.json
+        shell: bash
+

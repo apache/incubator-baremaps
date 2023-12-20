@@ -19,6 +19,7 @@ package org.apache.baremaps.openstreetmap.function;
 
 import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
@@ -51,9 +52,20 @@ public class WayGeometryBuilder implements Consumer<Way> {
   @Override
   public void accept(Way way) {
     try {
-      List<Coordinate> list = way.getNodes().stream().map(coordinateMap::get).toList();
+      // Build the coordinate list and remove duplicates.
+      List<Coordinate> list = new ArrayList<>();
+      Coordinate previous = null;
+      for (Long id : way.getNodes()) {
+        Coordinate coordinate = coordinateMap.get(id);
+        if (coordinate != null && !coordinate.equals(previous)) {
+          list.add(coordinate);
+          previous = coordinate;
+        }
+      }
+
       Coordinate[] array = list.toArray(new Coordinate[list.size()]);
       LineString line = GEOMETRY_FACTORY_WGS84.createLineString(array);
+
       if (!line.isEmpty()) {
         // Ways can be open or closed depending on the geometry or the tags:
         // https://wiki.openstreetmap.org/wiki/Way

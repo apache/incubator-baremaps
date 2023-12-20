@@ -1,0 +1,18 @@
+{
+    "test_id": 749,
+    "description": "Valid multipolygon with two outer rings.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 749800,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((7.93 1.46,7.95 1.47,7.97 1.43,7.95 1.42,7.93 1.46)),((7.93 1.46,7.91 1.45,7.92 1.43,7.93999 1.44,7.93 1.46)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "749",
+                    "landuse": "forest"
+                }
+            }
+        ]
+    }
+}

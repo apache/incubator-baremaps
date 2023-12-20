@@ -1,0 +1,25 @@
+{
+    "test_id": 780,
+    "description": "Way with different nodes as start and endpoint, but same location of those nodes.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 780800,
+                "from_type": "way",
+                "wkt": "INVALID"
+            }
+        ],
+        "location": [
+            {
+                "from_id": 780800,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((7.05 1.85,7.05 1.81,7.01 1.81,7.01 1.85,7.05 1.85)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "780",
+                    "area": "yes"
+                }
+            }
+        ]
+    }
+}

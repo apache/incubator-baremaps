@@ -1,0 +1,4 @@
+{
+    "test_id": 304,
+    "description": "negative user ids are not allowed (but -1 could have been meant as anonymous user)"
+}

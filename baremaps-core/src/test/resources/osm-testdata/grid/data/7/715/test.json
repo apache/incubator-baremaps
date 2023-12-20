@@ -1,0 +1,25 @@
+{
+    "test_id": 715,
+    "description": "Invalid multipolygon relation: Two open rings.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 715900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "fixed": [
+            {
+                "from_id": 715900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.51 1.11,7.51 1.15,7.55 1.15,7.55 1.11,7.51 1.11)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "715",
+                    "landuse": "forest"
+                }
+            }
+        ]
+    }
+}

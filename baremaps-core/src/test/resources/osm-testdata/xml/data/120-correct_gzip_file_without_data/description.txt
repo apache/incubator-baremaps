@@ -1,0 +1,1 @@
+Valid XML file compressed with gzip that contains no data.

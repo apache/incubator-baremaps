@@ -1,0 +1,18 @@
+{
+    "test_id": 729,
+    "description": "Valid multipolygon with second outer ring in inner ring.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 729900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.91 1.21,7.91 1.29,7.99 1.29,7.99 1.21,7.91 1.21),(7.97 1.27,7.97 1.23,7.93 1.23,7.93 1.27,7.97 1.27)),((7.96 1.26,7.94 1.26,7.94 1.24,7.96 1.24,7.96 1.26)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "729"
+                }
+            }
+        ]
+    }
+}

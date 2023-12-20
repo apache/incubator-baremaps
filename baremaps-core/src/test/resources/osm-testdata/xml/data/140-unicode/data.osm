@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+  <node id="1" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="TEST" changeset="1" lat="11" lon="10">
+    <tag k="unicode_char" v="a"/>
+    <tag k="unicode_xml" v="&#x0061;"/>
+    <tag k="unicode_hex" v="U+0061"/>
+    <tag k="unicode_name" v="U+0061 LATIN SMALL LETTER A"/>
+    <tag k="unicode_utf8_length" v="1"/>
+  </node>
+  <node id="2" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="TEST" changeset="1" lat="12" lon="10">
+    <tag k="unicode_char" v="ä"/>
+    <tag k="unicode_xml" v="&#x00e4;"/>
+    <tag k="unicode_hex" v="U+00E4"/>
+    <tag k="unicode_name" v="LATIN SMALL LETTER A WITH DIAERESIS"/>
+    <tag k="unicode_utf8_length" v="2"/>
+  </node>
+  <node id="3" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="TEST" changeset="1" lat="13" lon="10">
+    <tag k="unicode_char" v="ボ"/>
+    <tag k="unicode_xml" v="&#x30DC;"/>
+    <tag k="unicode_hex" v="U+30DC"/>
+    <tag k="unicode_name" v="KATAKANA LETTER BO"/>
+    <tag k="unicode_utf8_length" v="3"/>
+  </node>
+  <node id="4" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="TEST" changeset="1" lat="14" lon="10">
+    <tag k="unicode_char" v="𝄞"/>
+    <tag k="unicode_xml" v="&#x1D11E;"/>
+    <tag k="unicode_hex" v="U+1D11E"/>
+    <tag k="unicode_name" v="MUSICAL SYMBOL G CLEF"/>
+    <tag k="unicode_utf8_length" v="4"/>
+  </node>
+  <node id="5" version="1" timestamp="2010-01-01T00:00:00Z" uid="1" user="TEST" changeset="1" lat="15" lon="10">
+    <tag k="unicode_char" v="🛫"/>
+    <tag k="unicode_xml" v="&#x1F6EB;"/>
+    <tag k="unicode_hex" v="U+1F6EB"/>
+    <tag k="unicode_name" v="AIRPLANE DEPARTURE"/>
+    <tag k="unicode_utf8_length" v="4"/>
+  </node>
+</osm>

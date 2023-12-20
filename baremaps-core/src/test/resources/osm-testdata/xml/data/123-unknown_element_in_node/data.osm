@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="36966060" version="25" timestamp="2012-12-09T06:54:34Z" uid="55843" user="flaktack" changeset="14209137" lat="-79.4063075" lon="0.3149312">
+        <nd ref="123"/>
+    </node>
+</osm>

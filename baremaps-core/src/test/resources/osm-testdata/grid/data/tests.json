@@ -1,0 +1,2091 @@
+[
+  {
+    "test_id": 100,
+    "description": "A single node"
+  },
+  {
+    "test_id": 101,
+    "description": "Four nodes"
+  },
+  {
+    "test_id": 102,
+    "description": "Two nodes at same location"
+  },
+  {
+    "test_id": 110,
+    "description": "Way with two nodes"
+  },
+  {
+    "test_id": 111,
+    "description": "Way with four nodes"
+  },
+  {
+    "test_id": 112,
+    "description": "Closed way with four nodes"
+  },
+  {
+    "test_id": 113,
+    "description": "Two separate ways"
+  },
+  {
+    "test_id": 114,
+    "description": "Two ways connected end-to-beginning"
+  },
+  {
+    "test_id": 115,
+    "description": "Two ways connected end-to-end"
+  },
+  {
+    "test_id": 116,
+    "description": "Three ways connected in a closed loop."
+  },
+  {
+    "test_id": 120,
+    "description": "Way without any nodes"
+  },
+  {
+    "test_id": 121,
+    "description": "Way with a single node"
+  },
+  {
+    "test_id": 122,
+    "description": "Same node twice in way"
+  },
+  {
+    "test_id": 123,
+    "description": "Way with two nodes at same position"
+  },
+  {
+    "test_id": 124,
+    "description": "Way with three nodes, first two nodes have the same position"
+  },
+  {
+    "test_id": 130,
+    "description": "Crossing ways without common node"
+  },
+  {
+    "test_id": 131,
+    "description": "Crossing ways with common node"
+  },
+  {
+    "test_id": 132,
+    "description": "Crossing ways without common node, but crossing node at same position"
+  },
+  {
+    "test_id": 133,
+    "description": "Self-crossing way without common node"
+  },
+  {
+    "test_id": 134,
+    "description": "Self-crossing way with common node"
+  },
+  {
+    "test_id": 300,
+    "description": "Normal node with uid and user name"
+  },
+  {
+    "test_id": 301,
+    "description": "Empty username on node should not happen"
+  },
+  {
+    "test_id": 302,
+    "description": "No uid and no user name means user is anonymous"
+  },
+  {
+    "test_id": 303,
+    "description": "uid 0 is the anonymous user"
+  },
+  {
+    "test_id": 304,
+    "description": "negative user ids are not allowed (but -1 could have been meant as anonymous user)"
+  },
+  {
+    "test_id": 305,
+    "description": "uid < 0 and username is inconsistent and definitely wrong"
+  },
+  {
+    "test_id": 306,
+    "description": "250 characters in username is okay"
+  },
+  {
+    "test_id": 307,
+    "description": "260 characters in username is too long"
+  },
+  {
+    "test_id": 700,
+    "description": "Polygon with one closed way.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 700800,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((7.01 1.01,7.01 1.04,7.04 1.04,7.04 1.01,7.01 1.01)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "700",
+            "area": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 701,
+    "description": "Valid multipolygon relation with two ways making up an outer ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 701900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.14 1.01,7.11 1.01,7.11 1.04,7.14 1.04,7.14 1.01)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "701"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 702,
+    "description": "Valid multipolygon relation with two ways making up an outer ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 702900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.24 1.01,7.21 1.01,7.21 1.02,7.23 1.03,7.23 1.04,7.21 1.04,7.21 1.05,7.24 1.05,7.24 1.01)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "702"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 703,
+    "description": "Valid multipolygon relation with two ways making up an outer ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 703900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.34 1.01,7.31 1.01,7.31 1.02,7.33 1.03,7.33 1.04,7.32 1.04,7.32 1.05,7.34 1.05,7.34 1.01)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "703"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 704,
+    "description": "Valid multipolygon relation with three ways making up an outer ring in the form of a cross.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 704900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.41 1.02,7.41 1.03,7.42 1.03,7.42 1.04,7.43 1.04,7.43 1.03,7.44 1.03,7.44 1.02,7.43 1.02,7.43 1.01,7.42 1.01,7.42 1.02,7.41 1.02)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "704"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 705,
+    "description": "Valid multipolygon relation with three ways making up an outer ring. Contains concave and convex parts.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 705900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.58 1.02,7.56 1.03,7.56 1.04,7.55 1.04,7.54 1.01,7.52 1.01,7.53 1.03,7.51 1.04,7.52 1.08,7.54 1.07,7.55 1.09,7.56 1.09,7.59 1.06,7.58 1.02)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "705"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 706,
+    "description": "Valid multipolygon relation with three ways making up two outer rings that touch in one point.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 706900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.61 1.04,7.62 1.06,7.65 1.05,7.64 1.03,7.63 1.02,7.61 1.04)),((7.64 1.03,7.67 1.03,7.67 1.01,7.64 1.01,7.64 1.03)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "706"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 707,
+    "description": "Valid multipolygon relation with three ways making up two separate outer rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 707900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.71 1.04,7.72 1.06,7.75 1.05,7.73 1.02,7.71 1.04)),((7.74 1.03,7.77 1.03,7.77 1.01,7.74 1.01,7.74 1.03)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "707"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 708,
+    "description": "Valid multipolygon relation with three ways making up two separate outer rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 708900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.81 1.03,7.82 1.06,7.85 1.06,7.86 1.03,7.85 1.03,7.84 1.05,7.83 1.05,7.82 1.02,7.81 1.03)),((7.83 1.04,7.84 1.04,7.84 1.02,7.87 1.02,7.87 1.03,7.88 1.03,7.88 1.01,7.83 1.01,7.83 1.04)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "708"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 709,
+    "description": "Valid multipolygon relation with four ways making up three outer rings touching in three points.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 709900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.91 1.04,7.92 1.06,7.95 1.05,7.94 1.03,7.93 1.02,7.91 1.04)),((7.94 1.03,7.97 1.03,7.97 1.01,7.94 1.01,7.94 1.03)),((7.95 1.05,7.97 1.03,7.98 1.08,7.95 1.05)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "709"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 710,
+    "description": "Invalid multipolygon relation: Three ways make up two outer rings, but the outer rings overlap.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 710900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 711,
+    "description": "Invalid multipolygon relation: Two ways, both containing one of the segments.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 711900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 711900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.11 1.11,7.11 1.14,7.14 1.14,7.14 1.11,7.11 1.11)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "711"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 714,
+    "description": "Invalid multipolygon relation: Open ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 714900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fixed": [
+        {
+          "from_id": 714900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.41 1.11,7.41 1.15,7.45 1.15,7.45 1.11,7.41 1.11)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "714",
+            "landuse": "forest"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 715,
+    "description": "Invalid multipolygon relation: Two open rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 715900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fixed": [
+        {
+          "from_id": 715900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.51 1.11,7.51 1.15,7.55 1.15,7.55 1.11,7.51 1.11)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "715",
+            "landuse": "forest"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 720,
+    "description": "Multipolygon with one outer and one inner ring. They are both oriented clockwise and have the correct role.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 720900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.05 1.21,7.01 1.21,7.01 1.25,7.05 1.25,7.05 1.21),(7.04 1.22,7.02 1.22,7.02 1.24,7.04 1.24,7.04 1.22)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "720"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 721,
+    "description": "Multipolygon with one outer and one inner ring. They are both oriented anti-clockwise and have the correct role.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 721900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.15 1.21,7.11 1.21,7.11 1.25,7.15 1.25,7.15 1.21),(7.14 1.22,7.12 1.22,7.12 1.24,7.14 1.24,7.14 1.22)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "721"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 722,
+    "description": "Multipolygon with one outer and one inner ring. The outer ring is oriented clockwise, the inner anti-clockwise. They have both the correct role.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 722900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.25 1.21,7.21 1.21,7.21 1.25,7.25 1.25,7.25 1.21),(7.24 1.22,7.22 1.22,7.22 1.24,7.24 1.24,7.24 1.22)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "722"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 723,
+    "description": "Multipolygon with one outer and one inner ring. The outer ring is oriented anti-clockwise, the inner clockwise. They have both the correct role.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 723900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.35 1.21,7.31 1.21,7.31 1.25,7.35 1.25,7.35 1.21),(7.34 1.22,7.32 1.22,7.32 1.24,7.34 1.24,7.34 1.22)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "723"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 724,
+    "description": "Multipolygon with one outer and one inner ring and a bit more complex geometry and nodes not in order.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 724900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.44 1.22,7.47 1.21,7.41 1.21,7.42 1.22,7.41 1.24,7.43 1.26,7.46 1.26,7.45 1.23,7.44 1.22),(7.43 1.22,7.42 1.24,7.44 1.25,7.45 1.24,7.43 1.22)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "724"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 725,
+    "description": "Valid multipolygon with one concave outer ring and no inner ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 725900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.53 1.21,7.54 1.21,7.52 1.23,7.54 1.25,7.53 1.25,7.51 1.23,7.53 1.21)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "725"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 726,
+    "description": "Valid multipolygon with one inner and one outer.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 726900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.62 1.23,7.63 1.23,7.63 1.22,7.67 1.23,7.67 1.27,7.64 1.27,7.64 1.26,7.63 1.26,7.62 1.23),(7.65 1.26,7.66 1.26,7.66 1.23,7.65 1.23,7.65 1.26)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "726"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 727,
+    "description": "Valid multipolygon with one inner and one outer.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 727900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.71 1.21,7.71 1.29,7.79 1.29,7.79 1.21,7.71 1.21),(7.72 1.23,7.73 1.23,7.73 1.22,7.77 1.23,7.77 1.27,7.74 1.27,7.74 1.26,7.73 1.26,7.72 1.23)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "727"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 728,
+    "description": "Multipolygon with one simple outer ring and a node member.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 728900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.85 1.23,7.86 1.22,7.87 1.22,7.87 1.24,7.86 1.25,7.83 1.25,7.82 1.26,7.84 1.23,7.85 1.23)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "728"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 729,
+    "description": "Valid multipolygon with second outer ring in inner ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 729900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.91 1.21,7.91 1.29,7.99 1.29,7.99 1.21,7.91 1.21),(7.97 1.27,7.97 1.23,7.93 1.23,7.93 1.27,7.97 1.27)),((7.96 1.26,7.94 1.26,7.94 1.24,7.96 1.24,7.96 1.26)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "729"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 730,
+    "description": "Valid multipolygon with one outer and three inner rings with correct roles.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 730900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.06 1.31,7.01 1.31,7.01 1.34,7.04 1.37,7.06 1.34,7.06 1.31),(7.02 1.33,7.03 1.33,7.03 1.32,7.02 1.32,7.02 1.33),(7.03 1.35,7.04 1.35,7.04 1.34,7.03 1.34,7.03 1.35),(7.05 1.33,7.04 1.33,7.04 1.32,7.05 1.32,7.05 1.33)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "730"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 731,
+    "description": "Valid complex multipolygon with one outer and two inner rings made up of several ways. Roles are tagged correctly.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 731900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.18 1.33,7.17 1.31,7.12 1.31,7.11 1.33,7.11 1.38,7.18 1.38,7.18 1.33),(7.17 1.32,7.12 1.32,7.12 1.36,7.13 1.36,7.13 1.33,7.16 1.33,7.16 1.34,7.17 1.35,7.17 1.32),(7.16 1.36,7.16 1.35,7.15 1.34,7.14 1.34,7.14 1.35,7.15 1.36,7.15 1.37,7.16 1.37,7.16 1.36)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "731"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 732,
+    "description": "Valid multipolygon with two outer rings, one containing an inner. One ring contains a node twice in succession.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 732900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.21 1.36,7.22 1.37,7.23 1.36,7.22 1.35,7.21 1.36)),((7.21 1.33,7.21 1.31,7.26 1.31,7.26 1.34,7.24 1.36,7.21 1.33),(7.24 1.34,7.22 1.32,7.25 1.32,7.24 1.34)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "732"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 733,
+    "description": "Valid multipolygon with two outer rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 733900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.33 1.31,7.32 1.34,7.35 1.35,7.36 1.32,7.33 1.31)),((7.32 1.34,7.31 1.35,7.34 1.36,7.32 1.34)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "733"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 734,
+    "description": "Valid multipolygon with three outer rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 734900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.41 1.34,7.43 1.34,7.44 1.32,7.42 1.32,7.41 1.34)),((7.44 1.32,7.44 1.36,7.46 1.36,7.46 1.34,7.44 1.32)),((7.46 1.34,7.48 1.34,7.47 1.32,7.45 1.32,7.46 1.34)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "734"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 740,
+    "description": "Invalid multipolygon because the outer ring crosses itself.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 740900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 741,
+    "description": "Invalid multipolygon with a line only as 'outer ring'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 741900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 742,
+    "description": "Invalid multipolygon because of a 'spike'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 742900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 742900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.21 1.41,7.21 1.43,7.23 1.43,7.23 1.41,7.21 1.41)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "742"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 743,
+    "description": "Invalid multipolygon because of a 'spike'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 743900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 743900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.31 1.41,7.31 1.43,7.33 1.43,7.33 1.41,7.31 1.41)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "743"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 744,
+    "description": "Invalid multpolygon with single outer ring not closed.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 744900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 745,
+    "description": "Impossible multipolygon out of one way.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 745900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 746,
+    "description": "Impossible multipolygon out of two ways.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 746900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 747,
+    "description": "Invalid multipolygon because there are two nodes with same location. Created from relation.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 747900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 747900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.71 1.41,7.71 1.45,7.75 1.45,7.75 1.41,7.71 1.41)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "747",
+            "landuse": "forest"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 748,
+    "description": "Invalid multipolygon because there are two nodes with same location. Created from way.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 748800,
+          "from_type": "way",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 748800,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((7.81 1.41,7.81 1.45,7.85 1.45,7.85 1.41,7.81 1.41)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "748",
+            "landuse": "forest"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 749,
+    "description": "Valid multipolygon with two outer rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 749800,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((7.93 1.46,7.95 1.47,7.97 1.43,7.95 1.42,7.93 1.46)),((7.93 1.46,7.91 1.45,7.92 1.43,7.93999 1.44,7.93 1.46)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "749",
+            "landuse": "forest"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 750,
+    "description": "Valid OSM multipolygon with touching inner rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 750900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.01 1.51,7.01 1.57,7.06 1.57,7.06 1.51,7.01 1.51),(7.02 1.52,7.02 1.55,7.04 1.55,7.05 1.55,7.05 1.52,7.03 1.52,7.02 1.52)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "750"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 751,
+    "description": "Valid OSM multipolygon with touching inner rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 751900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.12 1.51,7.15 1.51,7.16 1.57,7.13 1.57,7.11 1.54,7.12 1.51),(7.12 1.54,7.14 1.52,7.15 1.55,7.13 1.56,7.12 1.54)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "751"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 752,
+    "description": "Touching inner without common nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 752900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 752900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.21 1.51,7.29 1.51,7.29 1.59,7.21 1.59,7.21 1.51),(7.25 1.56,7.27 1.56,7.25 1.52,7.23 1.52,7.24 1.54,7.22 1.54,7.24 1.58,7.26 1.58,7.25 1.56)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "752"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 753,
+    "description": "Touching inner with one common node missing.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 753900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 753900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.31 1.51,7.39 1.51,7.39 1.59,7.31 1.59,7.31 1.51),(7.35 1.56,7.37 1.56,7.35 1.52,7.33 1.52,7.34 1.54,7.32 1.54,7.34 1.58,7.36 1.58,7.35 1.56)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "753"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 754,
+    "description": "Inner ring touching outer, but not in node.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 754900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 754900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.47 1.51,7.41 1.51,7.41 1.57,7.47 1.57,7.47 1.54,7.47 1.51),(7.45 1.56,7.47 1.54,7.45 1.52,7.43 1.54,7.45 1.56)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "754"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 755,
+    "description": "Inner ring touching outer in node.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 755900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.57 1.51,7.51 1.51,7.51 1.57,7.57 1.57,7.57 1.54,7.57 1.51),(7.55 1.56,7.57 1.54,7.55 1.52,7.53 1.54,7.55 1.56)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "755"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 756,
+    "description": "Inner ring touches outer ring in line, no common nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 756900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 756900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.67 1.51,7.61 1.51,7.61 1.57,7.67 1.57,7.67 1.55,7.65 1.55,7.65 1.53,7.67 1.53,7.67 1.51)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "756"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 757,
+    "description": "Inner ring touches outer ring in line using common nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 757900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "fix": [
+        {
+          "from_id": 757900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.77 1.51,7.71 1.51,7.71 1.57,7.77 1.57,7.77 1.55,7.75 1.55,7.75 1.53,7.77 1.53,7.77 1.51)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "757"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 758,
+    "description": "Inner touching outer in single node.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 758900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.81 1.53,7.81 1.57,7.84 1.59,7.86 1.55,7.84 1.51,7.81 1.53),(7.86 1.55,7.84 1.53,7.82 1.55,7.84 1.57,7.86 1.55)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "758"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 759,
+    "description": "Outer going back on itself in single node.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 759900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.91 1.53,7.91 1.57,7.94 1.59,7.96 1.55,7.94 1.51,7.91 1.53),(7.96 1.55,7.94 1.53,7.92 1.55,7.94 1.57,7.96 1.55)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "759"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 760,
+    "description": "Faking inner ring with outer going back on itself (with relation).",
+    "areas": {
+      "default": [
+        {
+          "from_id": 760900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.01 1.67,7.07 1.67,7.07 1.61,7.01 1.61,7.01 1.67),(7.05 1.65,7.03 1.65,7.03 1.63,7.05 1.63,7.05 1.65)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "760"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 761,
+    "description": "Faking inner ring with outer going back on itself (with way).",
+    "areas": {
+      "default": [
+        {
+          "from_id": 761800,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((7.11 1.67,7.17 1.67,7.17 1.61,7.11 1.61,7.11 1.67),(7.15 1.65,7.13 1.65,7.13 1.63,7.15 1.63,7.15 1.65)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "761",
+            "area": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 762,
+    "description": "Touching outer rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 762900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.21 1.67,7.27 1.67,7.27 1.61,7.21 1.61,7.21 1.67),(7.25 1.65,7.23 1.65,7.23 1.63,7.25 1.63,7.25 1.65)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "762"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 763,
+    "description": "Valid multipolygon with four outer rings touching in a single point.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 763900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.35 1.65,7.33 1.64,7.32 1.63,7.32 1.62,7.33 1.62,7.34 1.63,7.35 1.65)),((7.35 1.65,7.36 1.63,7.37 1.62,7.38 1.62,7.38 1.63,7.37 1.64,7.35 1.65)),((7.35 1.65,7.33 1.66,7.32 1.67,7.32 1.68,7.33 1.68,7.34 1.67,7.35 1.65)),((7.35 1.65,7.36 1.67,7.37 1.68,7.38 1.68,7.38 1.67,7.37 1.66,7.35 1.65)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "763"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 764,
+    "description": "Valid multipolygon with one outer ring and four inner rings touching in a single point.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 764900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.41 1.61,7.41 1.69,7.49 1.69,7.49 1.61,7.41 1.61),(7.45 1.65,7.43 1.64,7.42 1.63,7.42 1.62,7.43 1.62,7.44 1.63,7.45 1.65),(7.45 1.65,7.46 1.63,7.47 1.62,7.48 1.62,7.48 1.63,7.47 1.64,7.45 1.65),(7.45 1.65,7.43 1.66,7.42 1.67,7.42 1.68,7.43 1.68,7.44 1.67,7.45 1.65),(7.45 1.65,7.46 1.67,7.47 1.68,7.48 1.68,7.48 1.67,7.47 1.66,7.45 1.65)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "764"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 765,
+    "description": "Multipolygon with one outer ring that should be split into two components.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 765900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.57 1.66,7.55 1.68,7.53 1.66,7.55 1.64,7.57 1.66)),((7.55 1.63,7.58 1.63,7.58 1.62,7.52 1.62,7.52 1.63,7.55 1.63)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "765"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 766,
+    "description": "Multipolygon with one outer and inner ring that should be split into two components.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 766900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.61 1.61,7.61 1.69,7.69 1.69,7.69 1.61,7.61 1.61),(7.67 1.66,7.65 1.68,7.63 1.66,7.65 1.64,7.67 1.66),(7.65 1.63,7.68 1.63,7.68 1.62,7.62 1.62,7.62 1.63,7.65 1.63)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "766"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 767,
+    "description": "Single way going back on itself.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 767800,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((7.77 1.66,7.75 1.68,7.73 1.66,7.75 1.64,7.77 1.66)),((7.75 1.63,7.78 1.63,7.78 1.62,7.72 1.62,7.72 1.63,7.75 1.63)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "767",
+            "area": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 768,
+    "description": "Multipolygon with two overlapping ways.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 768900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 770,
+    "description": "Multipolygon with two outer rings touching in single node.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 770900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.06 1.72,7.02 1.72,7.02 1.74,7.04 1.74,7.06 1.74,7.06 1.72)),((7.04 1.74,7.06 1.76,7.04 1.78,7.02 1.76,7.04 1.74)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "770"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 771,
+    "description": "Multipolygon with two outer rings touching in single point, but no common node there.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 771900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 772,
+    "description": "Multipolygon with two inner rings touching in single node.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 772900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.21 1.71,7.21 1.79,7.29 1.79,7.29 1.71,7.21 1.71),(7.26 1.72,7.22 1.72,7.22 1.74,7.24 1.74,7.26 1.74,7.26 1.72),(7.24 1.74,7.26 1.76,7.24 1.78,7.22 1.76,7.24 1.74)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "772"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 773,
+    "description": "Multipolygon with two inner rings touching in single point, but no common node there.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 773900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 774,
+    "description": "Multipolygon with two outer rings touching in two nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 774900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.42 1.73,7.42 1.75,7.44 1.75,7.44 1.73,7.42 1.73)),((7.44 1.75,7.44 1.76,7.47 1.76,7.47 1.72,7.44 1.72,7.44 1.73,7.45 1.73,7.45 1.75,7.44 1.75)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "774"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 775,
+    "description": "Multipolygon with two outer rings touching in two nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 775900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.52 1.73,7.52 1.75,7.54 1.75,7.54 1.73,7.52 1.73)),((7.54 1.75,7.54 1.76,7.57 1.76,7.57 1.72,7.54 1.72,7.54 1.73,7.55 1.73,7.55 1.75,7.54 1.75)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "775"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 776,
+    "description": "Multipolygon with two outer rings touching in two nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 776900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.62 1.73,7.62 1.75,7.64 1.75,7.64 1.73,7.62 1.73)),((7.64 1.75,7.64 1.76,7.67 1.76,7.67 1.72,7.64 1.72,7.64 1.73,7.65 1.73,7.65 1.75,7.64 1.75)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "776"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 777,
+    "description": "Multipolygon with two outer rings and two inner rings touching in two nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 777900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.71 1.71,7.78 1.71,7.78 1.77,7.71 1.77,7.71 1.71),(7.72 1.73,7.72 1.75,7.74 1.75,7.74 1.76,7.77 1.76,7.77 1.72,7.74 1.72,7.74 1.73,7.72 1.73)),((7.74 1.73,7.75 1.73,7.75 1.75,7.74 1.75,7.74 1.73)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "777"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 778,
+    "description": "Multipolygon with two outer rings and two inner rings touching in two nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 778900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.81 1.71,7.88 1.71,7.88 1.77,7.81 1.77,7.81 1.71),(7.82 1.73,7.82 1.75,7.84 1.75,7.84 1.76,7.87 1.76,7.87 1.72,7.84 1.72,7.84 1.73,7.82 1.73)),((7.84 1.73,7.85 1.73,7.85 1.75,7.84 1.75,7.84 1.73)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "778"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 779,
+    "description": "Multipolygon with two outer rings and two inner rings touching in two nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 779900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.91 1.71,7.98 1.71,7.98 1.77,7.91 1.77,7.91 1.71),(7.92 1.73,7.92 1.75,7.94 1.75,7.94 1.76,7.97 1.76,7.97 1.72,7.94 1.72,7.94 1.73,7.92 1.73)),((7.94 1.73,7.95 1.73,7.95 1.75,7.94 1.75,7.94 1.73)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "779"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 780,
+    "description": "Way with different nodes as start and endpoint, but same location of those nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 780800,
+          "from_type": "way",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 780800,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((7.05 1.85,7.05 1.81,7.01 1.81,7.01 1.85,7.05 1.85)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "780",
+            "area": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 781,
+    "description": "Multipolygon with one outer ring from single way that has different end-nodes, but they have same location.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 781900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 781900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.15 1.85,7.15 1.81,7.11 1.81,7.11 1.85,7.15 1.85)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "781"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 782,
+    "description": "Multipolygon with correct outer ring, but inner ring made up out of two ways where locations match but not node ids.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 782900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 782900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.25 1.85,7.25 1.81,7.21 1.81,7.21 1.85,7.25 1.85),(7.24 1.84,7.22 1.84,7.22 1.82,7.24 1.82,7.24 1.84)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "782"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 783,
+    "description": "Valid OSM multipolygon with multiple touching inner rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 783900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.32 1.81,7.35 1.81,7.36 1.87,7.33 1.87,7.31 1.84,7.32 1.81),(7.32 1.84,7.34 1.82,7.35 1.85,7.33 1.86,7.32 1.84)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "783"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 784,
+    "description": "Valid OSM multipolygon with multiple touching inner rings.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 784900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.41 1.81,7.46 1.81,7.46 1.86,7.41 1.86,7.41 1.81),(7.42 1.82,7.45 1.82,7.45 1.85,7.42 1.85,7.42 1.82)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "784"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 785,
+    "description": "Valid OSM multipolygon with two touching inner rings leaving an empty area.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 785900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.51 1.81,7.56 1.81,7.56 1.86,7.51 1.86,7.51 1.81),(7.52 1.82,7.55 1.82,7.55 1.85,7.52 1.85,7.52 1.82)),((7.53 1.83,7.54 1.83,7.54 1.84,7.53 1.84,7.53 1.83)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "785"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 790,
+    "description": "Multipolygon relation containing the same way twice.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 790900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 790900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.05 1.95,7.01 1.95,7.01 1.91,7.05 1.91,7.05 1.95)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "790"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 791,
+    "description": "Multipolygon relation containing the two ways using the same nodes in the same order.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 791900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 791900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.15 1.95,7.15 1.91,7.11 1.91,7.11 1.95,7.15 1.95)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "791",
+            "area": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 792,
+    "description": "Multipolygon relation containing two ways using the same nodes in different order.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 792900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 792900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.25 1.95,7.25 1.91,7.21 1.91,7.21 1.95,7.25 1.95)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "792",
+            "area": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 793,
+    "description": "Multipolygon relation containing the two ways using nearly the same nodes.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 793900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 793900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.35 1.95,7.35 1.91,7.31 1.91,7.31 1.95,7.35 1.95)))",
+          "tags": {
+            "test:section": "mp-geom",
+            "test:id": "793",
+            "area": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 794,
+    "description": "Multipolygon relation containing three ways using the same nodes in the same order.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 794900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 794900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.45 1.95,7.45 1.91,7.41 1.91,7.41 1.95,7.45 1.95)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "794"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 795,
+    "description": "Multipolygon with one outer and one duplicated inner ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 795900,
+          "from_type": "relation",
+          "wkt": "INVALID"
+        }
+      ],
+      "location": [
+        {
+          "from_id": 795900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((7.55 1.91,7.51 1.91,7.51 1.95,7.55 1.95,7.55 1.91),(7.54 1.92,7.52 1.92,7.52 1.94,7.54 1.94,7.54 1.92)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-geom",
+            "test:id": "795"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 900,
+    "description": "Multipolygon with one outer ring from one way with role 'inner'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 900900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.01 1.01,9.01 1.04,9.04 1.04,9.04 1.01,9.01 1.01)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "900"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 901,
+    "description": "Multipolygon with one outer ring from two outer ways both with role 'inner'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 901900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.11 1.01,9.11 1.04,9.14 1.04,9.14 1.01,9.11 1.01)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-tags",
+            "test:id": "901"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 902,
+    "description": "Multipolygon with one outer ring from two ways, one with role 'outer', one with 'inner'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 902900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.21 1.01,9.21 1.04,9.24 1.04,9.24 1.01,9.21 1.01)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-tags",
+            "test:id": "902"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 903,
+    "description": "Multipolygon with one outer ring from one way with empty role.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 903900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.31 1.01,9.31 1.04,9.34 1.04,9.34 1.01,9.31 1.01)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-tags",
+            "test:id": "903"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 904,
+    "description": "Multipolygon with one outer and one inner ring, both tagged as 'outer'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 904900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.41 1.01,9.41 1.09,9.49 1.09,9.49 1.01,9.41 1.01),(9.43 1.03,9.43 1.07,9.47 1.07,9.47 1.03,9.43 1.03)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-tags",
+            "test:id": "904"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 905,
+    "description": "Multipolygon with one outern ring and two touching inner rings, one from way with empty role, one from way with role 'outer'.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 905900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.51 1.01,9.51 1.09,9.59 1.09,9.59 1.01,9.51 1.01),(9.52 1.06,9.52 1.04,9.54 1.04,9.56 1.04,9.56 1.06,9.54 1.06,9.52 1.06)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-tags",
+            "test:id": "905"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 910,
+    "description": "Multipolygon with one outer ring, tags on relation and no tags on ways.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 910900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.01 1.11,9.01 1.19,9.09 1.19,9.09 1.11,9.01 1.11)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "910",
+            "building": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 911,
+    "description": "Building with one outer ring, tags on way and not on relation.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 911900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.11 1.11,9.11 1.19,9.19 1.19,9.19 1.11,9.11 1.11)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "911",
+            "building": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 912,
+    "description": "Multipolygon with one outer ring, tags on ways making up outer ring and not on relation.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 912900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.21 1.11,9.21 1.19,9.29 1.19,9.29 1.11,9.21 1.11)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "912",
+            "building": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 913,
+    "description": "Multipolygon with one outer ring, no tags on relation, different tags on ways making up outer ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 913900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.31 1.11,9.31 1.19,9.39 1.19,9.39 1.11,9.31 1.11)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "913"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 920,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, no tags on inner ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 920900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.01 1.21,9.01 1.29,9.09 1.29,9.09 1.21,9.01 1.21),(9.03 1.23,9.03 1.27,9.07 1.27,9.07 1.23,9.03 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "920",
+            "building": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 921,
+    "description": "Multipolygon with one outer and one inner ring, tags on outer way, no tags on inner ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 921900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.11 1.21,9.11 1.29,9.19 1.29,9.19 1.21,9.11 1.21),(9.13 1.23,9.13 1.27,9.17 1.27,9.17 1.23,9.13 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "921",
+            "building": "yes"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 922,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, extra tags on inner ring made from a single way.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 922900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.21 1.21,9.21 1.29,9.29 1.29,9.29 1.21,9.21 1.21),(9.23 1.23,9.23 1.27,9.27 1.27,9.27 1.23,9.23 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "922",
+            "natural": "wood"
+          }
+        },
+        {
+          "from_id": 922801,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((9.23 1.23,9.23 1.27,9.27 1.27,9.27 1.23,9.23 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "922",
+            "natural": "water"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 923,
+    "description": "Multipolygon with one outer and one inner ring, tags on outer way, extra tags on inner ring made from single way.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 923900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.31 1.21,9.31 1.29,9.39 1.29,9.39 1.21,9.31 1.21),(9.33 1.23,9.33 1.27,9.37 1.27,9.37 1.23,9.33 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "923",
+            "natural": "wood"
+          }
+        },
+        {
+          "from_id": 923801,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((9.33 1.23,9.33 1.27,9.37 1.27,9.37 1.23,9.33 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "923",
+            "natural": "water"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 924,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, extra tags on inner ring made from multiple ways.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 924900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.41 1.21,9.41 1.29,9.49 1.29,9.49 1.21,9.41 1.21),(9.43 1.23,9.43 1.27,9.47 1.27,9.47 1.23,9.43 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "924",
+            "natural": "wood"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 925,
+    "description": "Multipolygon with one outer and one inner ring, tags on outer way, extra tags on inner ring made from multiple ways.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 925900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.51 1.21,9.51 1.29,9.59 1.29,9.59 1.21,9.51 1.21),(9.53 1.23,9.53 1.27,9.57 1.27,9.57 1.23,9.53 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "925",
+            "natural": "wood"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 926,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, same tags on inner ring made from a single way.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 926900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.61 1.21,9.61 1.29,9.69 1.29,9.69 1.21,9.61 1.21),(9.63 1.23,9.63 1.27,9.67 1.27,9.67 1.23,9.63 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "926",
+            "natural": "wood"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 927,
+    "description": "Multipolygon with one outer and one inner ring, tags on outer way, same tags on inner ring made from single way.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 927900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.71 1.21,9.71 1.29,9.79 1.29,9.79 1.21,9.71 1.21),(9.73 1.23,9.73 1.27,9.77 1.27,9.77 1.23,9.73 1.23)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "927",
+            "natural": "wood"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 930,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, same tags on inner ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 930900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.01 1.31,9.01 1.39,9.09 1.39,9.09 1.31,9.01 1.31),(9.03 1.33,9.03 1.37,9.07 1.37,9.07 1.33,9.03 1.33)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "930",
+            "natural": "wood"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 931,
+    "description": "Multipolygon with one outer and one inner ring, tags on outer way, same tags on inner ring.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 931900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.11 1.31,9.11 1.39,9.19 1.39,9.19 1.31,9.11 1.31),(9.13 1.33,9.13 1.37,9.17 1.37,9.17 1.33,9.13 1.33)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "931",
+            "natural": "wood"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 940,
+    "description": "Multipolygon with touching inner rings that are tagged themselves.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 940900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.01 1.41,9.01 1.47,9.06 1.47,9.06 1.41,9.01 1.41),(9.02 1.42,9.02 1.45,9.04 1.45,9.05 1.45,9.05 1.42,9.03 1.42,9.02 1.42)))",
+          "tags": {
+            "landuse": "forest",
+            "test:section": "mp-tags",
+            "test:id": "940"
+          }
+        },
+        {
+          "from_id": 940801,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((9.02 1.42,9.02 1.45,9.04 1.45,9.04 1.44,9.03 1.44,9.03 1.42,9.02 1.42)))",
+          "tags": {
+            "landuse": "grass",
+            "test:section": "mp-tags",
+            "test:id": "940"
+          }
+        },
+        {
+          "from_id": 940802,
+          "from_type": "way",
+          "wkt": "MULTIPOLYGON(((9.03 1.42,9.03 1.44,9.04 1.44,9.04 1.45,9.05 1.45,9.05 1.42,9.03 1.42)))",
+          "tags": {
+            "natural": "water",
+            "test:section": "mp-tags",
+            "test:id": "940"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "test_id": 950,
+    "description": "Multipolygon with one outer and one inner ring, tags on relation, type boundary.",
+    "areas": {
+      "default": [
+        {
+          "from_id": 950900,
+          "from_type": "relation",
+          "wkt": "MULTIPOLYGON(((9.01 1.51,9.01 1.59,9.09 1.59,9.09 1.51,9.01 1.51),(9.03 1.53,9.03 1.57,9.07 1.57,9.07 1.53,9.03 1.53)))",
+          "tags": {
+            "test:section": "mp-tags",
+            "test:id": "950",
+            "boundary": "administrative",
+            "admin_level": "2"
+          }
+        }
+      ]
+    }
+  }
+]

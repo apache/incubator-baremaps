@@ -1,0 +1,25 @@
+{
+    "test_id": 791,
+    "description": "Multipolygon relation containing the two ways using the same nodes in the same order.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 791900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "location": [
+            {
+                "from_id": 791900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.15 1.95,7.15 1.91,7.11 1.91,7.11 1.95,7.15 1.95)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "791",
+                    "area": "yes"
+                }
+            }
+        ]
+    }
+}

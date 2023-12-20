@@ -1,0 +1,18 @@
+{
+    "test_id": 905,
+    "description": "Multipolygon with one outern ring and two touching inner rings, one from way with empty role, one from way with role 'outer'.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 905900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((9.51 1.01,9.51 1.09,9.59 1.09,9.59 1.01,9.51 1.01),(9.52 1.06,9.52 1.04,9.54 1.04,9.56 1.04,9.56 1.06,9.54 1.06,9.52 1.06)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-tags",
+                    "test:id": "905"
+                }
+            }
+        ]
+    }
+}

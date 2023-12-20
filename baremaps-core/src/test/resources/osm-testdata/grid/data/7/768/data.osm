@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="768000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.81" lat="1.61"/>
+    <node id="768001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.81" lat="1.64"/>
+    <node id="768002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.84" lat="1.64"/>
+    <node id="768003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.84" lat="1.61"/>
+    <node id="768004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.87" lat="1.64"/>
+    <node id="768005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.87" lat="1.61"/>
+    <node id="768006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.84" lat="1.62"/>
+    <way id="768800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="768000"/>
+        <nd ref="768001"/>
+        <nd ref="768002"/>
+        <nd ref="768003"/>
+        <nd ref="768000"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="768"/>
+        <tag k="area" v="yes"/>
+    </way>
+    <way id="768801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="768002"/>
+        <nd ref="768004"/>
+        <nd ref="768005"/>
+        <nd ref="768003"/>
+        <nd ref="768006"/>
+        <nd ref="768002"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="768"/>
+        <tag k="area" v="yes"/>
+    </way>
+    <relation id="768900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="768800" role="outer"/>
+        <member type="way" ref="768801" role="outer"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="768"/>
+        <tag k="landuse" v="forest"/>
+    </relation>
+</osm>

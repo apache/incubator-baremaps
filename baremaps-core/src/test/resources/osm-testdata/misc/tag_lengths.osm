@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+  <node id="1" version="1" timestamp="2013-01-01T00:00:00Z" uid="1" user="test" changeset="1" lat="1.1" lon="1.1"/> <!-- no tags -->
+  <node id="2" version="1" timestamp="2013-01-01T00:00:00Z" uid="1" user="test" changeset="1" lat="1.1" lon="1.1"> <!-- also no tags -->
+  </node>
+  <node id="3" version="1" timestamp="2013-01-01T00:00:00Z" uid="1" user="test" changeset="1" lat="1.1" lon="1.1"> <!-- normal tags -->
+    <tag k="highway" v="residential"/>
+    <tag k="source" v="testdata"/>
+  </node>
+  <node id="4" version="1" timestamp="2013-01-01T00:00:00Z" uid="1" user="test" changeset="1" lat="1.1" lon="1.1"> <!-- empty tag keys and values are okay -->
+    <tag k="foo" v=""/>
+    <tag k="" v="bar"/>
+  </node>
+  <node id="5" version="1" timestamp="2013-01-01T00:00:00Z" uid="1" user="test" changeset="1" lat="1.1" lon="1.1"> <!-- empty tag keys and values are okay -->
+    <tag k="" v=""/>
+  </node>
+</osm>

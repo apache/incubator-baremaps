@@ -1,0 +1,8 @@
+<?xml version='1.0'?>
+<!DOCTYPE abc [
+ <!ENTITY ent "ent">
+]>
+<osm version="0.6">
+    &ent;
+    <node id="1" version="5"/>
+</osm>

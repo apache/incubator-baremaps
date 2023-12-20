@@ -1,0 +1,18 @@
+{
+    "test_id": 721,
+    "description": "Multipolygon with one outer and one inner ring. They are both oriented anti-clockwise and have the correct role.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 721900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.15 1.21,7.11 1.21,7.11 1.25,7.15 1.25,7.15 1.21),(7.14 1.22,7.12 1.22,7.12 1.24,7.14 1.24,7.14 1.22)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "721"
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "test_id": 785,
+    "description": "Valid OSM multipolygon with two touching inner rings leaving an empty area.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 785900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.51 1.81,7.56 1.81,7.56 1.86,7.51 1.86,7.51 1.81),(7.52 1.82,7.55 1.82,7.55 1.85,7.52 1.85,7.52 1.82)),((7.53 1.83,7.54 1.83,7.54 1.84,7.53 1.84,7.53 1.83)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "785"
+                }
+            }
+        ]
+    }
+}

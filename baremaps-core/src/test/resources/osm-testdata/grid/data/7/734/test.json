@@ -1,0 +1,18 @@
+{
+    "test_id": 734,
+    "description": "Valid multipolygon with three outer rings.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 734900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.41 1.34,7.43 1.34,7.44 1.32,7.42 1.32,7.41 1.34)),((7.44 1.32,7.44 1.36,7.46 1.36,7.46 1.34,7.44 1.32)),((7.46 1.34,7.48 1.34,7.47 1.32,7.45 1.32,7.46 1.34)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "734"
+                }
+            }
+        ]
+    }
+}

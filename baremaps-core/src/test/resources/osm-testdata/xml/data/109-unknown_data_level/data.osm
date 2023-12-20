@@ -1,0 +1,5 @@
+<?xml version='1.0'?>
+<osm version="0.6">
+    <someelement foo="bar"/>
+    <node id="1" version="5"/>
+</osm>

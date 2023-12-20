@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="36966060" version="25" timestamp="2012-12-09T06:54:34Z" uid="55843" user="flaktack" changeset="14209137" lat="-79.4063075" lon="0.3149312"/>
+    <node id="248461592" version="8" timestamp="2013-01-20T18:39:01Z" uid="42191" user="Jano John Akim Franke" changeset="14724481" lat="-62.1842838" lon="-58.474831"/>
+    <node id="248461593" version="1" timestamp="2008-02-19T18:53:05Z" uid="6634" user="DrMark" changeset="158452" lat="-62.5960265" lon="-59.90231"/>
+</osm>

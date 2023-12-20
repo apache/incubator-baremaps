@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="116000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.62" lat="1.12"/>
+    <node id="116001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.64" lat="1.13"/>
+    <node id="116002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.68" lat="1.11"/>
+    <node id="116003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.68" lat="1.17"/>
+    <node id="116004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.62" lat="1.17"/>
+    <way id="116800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="116000"/>
+        <nd ref="116001"/>
+        <tag k="test:section" v="basic-geom"/>
+        <tag k="test:id" v="116"/>
+    </way>
+    <way id="116801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="116001"/>
+        <nd ref="116002"/>
+        <tag k="test:section" v="basic-geom"/>
+        <tag k="test:id" v="116"/>
+    </way>
+    <way id="116802" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="116002"/>
+        <nd ref="116003"/>
+        <nd ref="116004"/>
+        <nd ref="116000"/>
+        <tag k="test:section" v="basic-geom"/>
+        <tag k="test:id" v="116"/>
+    </way>
+</osm>

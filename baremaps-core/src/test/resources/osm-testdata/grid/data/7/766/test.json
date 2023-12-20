@@ -1,0 +1,18 @@
+{
+    "test_id": 766,
+    "description": "Multipolygon with one outer and inner ring that should be split into two components.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 766900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.61 1.61,7.61 1.69,7.69 1.69,7.69 1.61,7.61 1.61),(7.67 1.66,7.65 1.68,7.63 1.66,7.65 1.64,7.67 1.66),(7.65 1.63,7.68 1.63,7.68 1.62,7.62 1.62,7.62 1.63,7.65 1.63)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "766"
+                }
+            }
+        ]
+    }
+}

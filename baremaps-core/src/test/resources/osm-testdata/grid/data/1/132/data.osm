@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="132000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.22" lat="1.32"/>
+    <node id="132001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.24" lat="1.34"/>
+    <node id="132002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.22" lat="1.34"/>
+    <node id="132003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.24" lat="1.32"/>
+    <node id="132004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.23" lat="1.33"/>
+    <node id="132005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="1.23" lat="1.33"/>
+    <way id="132800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="132000"/>
+        <nd ref="132004"/>
+        <nd ref="132001"/>
+        <tag k="test:section" v="basic-geom"/>
+        <tag k="test:id" v="132"/>
+    </way>
+    <way id="132801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="132002"/>
+        <nd ref="132005"/>
+        <nd ref="132003"/>
+        <tag k="test:section" v="basic-geom"/>
+        <tag k="test:id" v="132"/>
+    </way>
+</osm>

@@ -1,0 +1,18 @@
+{
+    "test_id": 758,
+    "description": "Inner touching outer in single node.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 758900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.81 1.53,7.81 1.57,7.84 1.59,7.86 1.55,7.84 1.51,7.81 1.53),(7.86 1.55,7.84 1.53,7.82 1.55,7.84 1.57,7.86 1.55)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "758"
+                }
+            }
+        ]
+    }
+}
