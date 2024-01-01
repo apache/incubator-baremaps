@@ -33,7 +33,7 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
 
   private final NodeGeometryBuilder nodeGeometryBuilder;
   private final WayGeometryBuilder wayGeometryBuilder;
-  private final RelationGeometryBuilder relationGeometryBuilder;
+  private final RelationMultiPolygonBuilder relationMultiPolygonBuilder;
 
   /**
    * Constructs a consumer that uses the provided caches to create and set geometries.
@@ -45,7 +45,7 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
       DataMap<Long, List<Long>> referenceMap) {
     this.nodeGeometryBuilder = new NodeGeometryBuilder();
     this.wayGeometryBuilder = new WayGeometryBuilder(coordinateMap);
-    this.relationGeometryBuilder = new RelationGeometryBuilder(coordinateMap, referenceMap);
+    this.relationMultiPolygonBuilder = new RelationMultiPolygonBuilder(coordinateMap, referenceMap);
   }
 
   /** {@inheritDoc} */
@@ -56,7 +56,7 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
     } else if (entity instanceof Way way) {
       wayGeometryBuilder.accept(way);
     } else if (entity instanceof Relation relation) {
-      relationGeometryBuilder.accept(relation);
+      relationMultiPolygonBuilder.accept(relation);
     }
   }
 

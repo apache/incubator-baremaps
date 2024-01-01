@@ -107,6 +107,9 @@ public class OsmTestData {
         var message = String.format("%s: %s\nExpected:\n%s\nActual:\n%s",
             osmTest.getId(), osmTest.getDescription(), testGeometry, fileGeometry);
 
+        testGeometry.normalize();
+        fileGeometry.normalize();
+
         assertTrue(message, testGeometry.equalsTopo(fileGeometry));
 
       }

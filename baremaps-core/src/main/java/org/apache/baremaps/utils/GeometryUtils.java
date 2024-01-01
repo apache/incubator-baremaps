@@ -35,7 +35,7 @@ import org.locationtech.proj4j.CoordinateTransformFactory;
 public class GeometryUtils {
 
   public static final GeometryFactory GEOMETRY_FACTORY_WGS84 =
-      new GeometryFactory(new PrecisionModel(), 4326);
+      new GeometryFactory(new PrecisionModel(1000000000), 4326);
 
   private GeometryUtils() {}
 

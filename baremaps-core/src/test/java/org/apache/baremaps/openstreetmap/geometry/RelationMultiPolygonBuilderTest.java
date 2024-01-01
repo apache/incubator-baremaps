@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.database.collection.DataMap;
-import org.apache.baremaps.openstreetmap.function.RelationGeometryBuilder;
+import org.apache.baremaps.openstreetmap.function.RelationMultiPolygonBuilder;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 
-class RelationGeometryBuilderTest {
+class RelationMultiPolygonBuilderTest {
 
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
@@ -50,7 +50,7 @@ class RelationGeometryBuilderTest {
             .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
     Relation relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
         .findFirst().get();
-    new RelationGeometryBuilder(coordinateMap, referenceMap).accept(relation);
+    new RelationMultiPolygonBuilder(coordinateMap, referenceMap).accept(relation);
     return relation.getGeometry();
   }
 
