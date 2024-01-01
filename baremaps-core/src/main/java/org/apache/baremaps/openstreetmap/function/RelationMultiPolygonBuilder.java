@@ -65,16 +65,14 @@ public class RelationMultiPolygonBuilder implements Consumer<Relation> {
 
       var tags = relation.getTags();
 
-      // Filter out type that are not multipolygon or boundary geometries
-      // TODO: filter out at the stream level
-      if (!("multipolygon".equals(tags.get("type"))
-          || "boundary".equals(tags.get("type")))) {
+      // Filter out relation that are not multipolygon
+      if (!("multipolygon".equals(tags.get("type")))) {
         return;
       }
 
-      // Filter coastline geometries
-      // TODO: filter out at the stream level
-      if ("coastline".equals(tags.get("natural"))) {
+      // Filter out complex relations
+      if ("coastline".equals(tags.get("natural"))
+          || "boundary".equals(tags.get("type"))) {
         return;
       }
 

@@ -27,9 +27,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.baremaps.openstreetmap.model.Element;
+import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.openstreetmap.store.MockDataMap;
 import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.utils.RoundingTransformer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -53,68 +56,75 @@ public class OsmTestData {
           .map(OsmTest::new)
           .filter(OsmTest::isValid)
           .sorted()
-          .map(this::createDynamicTest)
+          .flatMap(this::createDynamicTest)
           .toList().stream();
     }
   }
 
   @NotNull
-  private DynamicTest createDynamicTest(OsmTest testFile) {
-    var displayName = String.format("%s: %s", testFile.getId(), testFile.getDescription());
-    return DynamicTest.dynamicTest(displayName, () -> runTest(testFile));
+  private Stream<DynamicTest> createDynamicTest(OsmTest osmTest) {
+    String displayNameFormat = "%s (%s): %s";
+    var xmlDisplayName =
+        String.format(displayNameFormat, osmTest.getId(), "xml", osmTest.getDescription());
+    var pbfDisplayName =
+        String.format(displayNameFormat, osmTest.getId(), "pbf", osmTest.getDescription());
+    return Stream.<DynamicTest>builder()
+        .add(DynamicTest.dynamicTest(xmlDisplayName, () -> runTest(osmTest, new XmlEntityReader()
+            .coordinateMap(new MockDataMap<>())
+            .referenceMap(new MockDataMap<>())
+            .geometries(true)
+            .stream(Files.newInputStream(osmTest.getOsmXml())))))
+        .add(DynamicTest.dynamicTest(pbfDisplayName, () -> runTest(osmTest, new PbfEntityReader()
+            .coordinateMap(new MockDataMap<>())
+            .referenceMap(new MockDataMap<>())
+            .geometries(true)
+            .stream(Files.newInputStream(osmTest.getOsmPbf())))))
+        .build();
   }
 
-  public void runTest(OsmTest osmTest) {
-    try {
-      var elements = new XmlEntityReader()
-          .coordinateMap(new MockDataMap<>())
-          .referenceMap(new MockDataMap<>())
-          .geometries(true)
-          .stream(Files.newInputStream(osmTest.getOsmXml()))
-          .filter(e -> e instanceof Element)
-          .map(e -> (Element) e)
-          .toList();
+  public void runTest(OsmTest osmTest, Stream<Entity> entities) {
+    var elements = entities
+        .filter(e -> e instanceof Element)
+        .map(e -> (Element) e)
+        .toList();
 
-      for (var element : elements) {
-        // Each element should have a geometry
-        var id = element.getId();
-        var fileGeometry = element.getGeometry();
-        assertNotNull(fileGeometry);
+    for (var element : elements) {
+      // Each element should have a geometry
+      var id = element.getId();
+      var fileGeometry = element.getGeometry();
+      assertNotNull(fileGeometry);
 
-        // Prepare the test geometry
-        var testWkt = osmTest.getWkts().get(id);
-        Geometry testGeometry = null;
-        try {
-          testGeometry = new WKTReader().read(testWkt);
-        } catch (Exception e) {
-          // ignore
-        }
-        if (testGeometry instanceof LineString lineString
-            && lineString.isClosed()) {
-          testGeometry =
-              testGeometry.getFactory().createPolygon(lineString.getCoordinateSequence());
-        }
-        if (testGeometry instanceof MultiPolygon multiPolygon
-            && multiPolygon.getNumGeometries() == 1) {
-          testGeometry = multiPolygon.getGeometryN(0);
-        }
-        if (!testGeometry.isValid()) {
-          var geometryFixer = new GeometryFixer(testGeometry);
-          testGeometry = geometryFixer.getResult();
-        }
-
-        // The test geometry and the file geometry should be equal
-        var message = String.format("%s: %s\nExpected:\n%s\nActual:\n%s",
-            osmTest.getId(), osmTest.getDescription(), testGeometry, fileGeometry);
-
-        testGeometry.normalize();
-        fileGeometry.normalize();
-
-        assertTrue(message, testGeometry.equalsTopo(fileGeometry));
-
+      // Prepare the test geometry
+      var testWkt = osmTest.getWkts().get(id);
+      Geometry testGeometry = null;
+      try {
+        testGeometry = new WKTReader().read(testWkt);
+      } catch (Exception e) {
+        // ignore
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      if (testGeometry instanceof LineString lineString
+          && lineString.isClosed()) {
+        testGeometry =
+            testGeometry.getFactory().createPolygon(lineString.getCoordinateSequence());
+      }
+      if (testGeometry instanceof MultiPolygon multiPolygon
+          && multiPolygon.getNumGeometries() == 1) {
+        testGeometry = multiPolygon.getGeometryN(0);
+      }
+      if (!testGeometry.isValid()) {
+        var geometryFixer = new GeometryFixer(testGeometry);
+        testGeometry = geometryFixer.getResult();
+      }
+
+      // The test geometry and the file geometry should be equal
+      var message = String.format("%s: %s\nExpected:\n%s\nActual:\n%s",
+          osmTest.getId(), osmTest.getDescription(), testGeometry, fileGeometry);
+
+      RoundingTransformer transformer = new RoundingTransformer(2);
+      fileGeometry = transformer.transform(fileGeometry);
+
+      assertTrue(message, testGeometry.equalsTopo(fileGeometry));
+
     }
   }
 
@@ -251,4 +261,5 @@ public class OsmTestData {
       return Long.compare(getId(), o.getId());
     }
   }
+
 }
