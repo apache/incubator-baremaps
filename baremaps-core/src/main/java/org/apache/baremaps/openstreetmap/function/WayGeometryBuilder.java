@@ -27,6 +27,7 @@ import org.apache.baremaps.openstreetmap.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,13 @@ public class WayGeometryBuilder implements Consumer<Way> {
           way.setGeometry(line);
         } else {
           Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
-          way.setGeometry(polygon);
+          if (polygon.isValid()) {
+            way.setGeometry(polygon);
+          } else {
+            var geometryFixer = new GeometryFixer(polygon);
+            var fixedGeometry = geometryFixer.getResult();
+            way.setGeometry(fixedGeometry);
+          }
         }
       }
     } catch (Exception e) {

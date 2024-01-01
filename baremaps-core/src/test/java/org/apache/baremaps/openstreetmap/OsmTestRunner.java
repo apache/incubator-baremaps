@@ -36,6 +36,7 @@ import org.junit.jupiter.api.TestFactory;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.io.WKTReader;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
@@ -97,10 +98,17 @@ public class OsmTestRunner {
             && multiPolygon.getNumGeometries() == 1) {
           testGeometry = multiPolygon.getGeometryN(0);
         }
+        if (!testGeometry.isValid()) {
+          var geometryFixer = new GeometryFixer(testGeometry);
+          testGeometry = geometryFixer.getResult();
+        }
 
         // The test geometry and the file geometry should be equal
-        assertTrue(String.format("The geometries are not equal\nExpected:\n%s\nActual:\n%s",
-            testGeometry, fileGeometry), testGeometry.norm().equalsExact(fileGeometry.norm()));
+        var message = String.format("%s: %s\nExpected:\n%s\nActual:\n%s",
+            osmTest.getId(), osmTest.getDescription(), testGeometry, fileGeometry);
+
+        assertTrue(message, testGeometry.equalsTopo(fileGeometry));
+
       }
     } catch (IOException e) {
       throw new RuntimeException(e);

@@ -23,14 +23,15 @@ import java.util.*;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Member;
+import org.apache.baremaps.openstreetmap.model.Member.MemberType;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.operation.linemerge.LineMerger;
-import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,19 +78,48 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
         return;
       }
 
-      // Prepare outer and inner polygons
-      Set<Polygon> outerPolygons = createPolygons(relation, "outer");
-      Set<Polygon> innerPolygons = createPolygons(relation, "inner");
+      // Retain only the members that are ways and form polygons
+      var wayMembers =
+          relation.getMembers().stream().filter(m -> MemberType.WAY.equals(m.getType())).toList();
 
-      // Merge touching or overlapping inner polygons
-      innerPolygons = mergeInnerPolygons(innerPolygons);
+      // Prepare outer polygons
+      var outerMembers = wayMembers.stream().filter(m -> m.getRole().equals("outer")).toList();
+      var outerPolygons = createPolygons(outerMembers);
+
+      // Prepare inner polygons
+      var innerMembers = wayMembers.stream().filter(m -> m.getRole().equals("inner")).toList();
+      var innerPolygons = createPolygons(innerMembers);
+
+      // Union touching or overlapping inner polygons
+      innerPolygons = combinePolygons(innerPolygons);
+
+      // Prepare uncatgorized polygons
+      var uncategorizedMembers = wayMembers.stream().filter(m -> m.getRole().equals("")).toList();
+      var uncategorizedPolygons = createPolygons(uncategorizedMembers);
+
+      // Difference touching or overlapping uncategorized polygons
+      uncategorizedPolygons = combinePolygons(uncategorizedPolygons);
+
+      // An uncategorized polygon is an inner polygon if it is contained by an outer polygon
+      for (Polygon uncategorizedPolygon : uncategorizedPolygons) {
+        for (Polygon outerPolygon : outerPolygons) {
+          if (outerPolygon.contains(uncategorizedPolygon)) {
+            innerPolygons.add(uncategorizedPolygon);
+          }
+        }
+        if (!innerPolygons.contains(uncategorizedPolygon)) {
+          outerPolygons.add(uncategorizedPolygon);
+        }
+      }
+
+
 
       // Do the line work
       List<Polygon> polygons = mergeOuterAndInnerPolygons(outerPolygons, innerPolygons);
 
       // Set the geometry of the relation
       if (polygons.size() == 1) {
-        Polygon polygon = polygons.get(0);
+        Geometry polygon = polygons.get(0);
         relation.setGeometry(polygon);
       } else if (polygons.size() > 1) {
         MultiPolygon multiPolygon =
@@ -108,76 +138,105 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
     }
   }
 
-  private List<Polygon> mergeOuterAndInnerPolygons(Set<Polygon> outerPolygons,
+  private List<Polygon> mergeOuterAndInnerPolygons(
+      Set<Polygon> outerPolygons,
       Set<Polygon> innerPolygons) {
     List<Polygon> polygons = new ArrayList<>();
     for (Polygon outerPolygon : outerPolygons) {
       LinearRing shell = outerPolygon.getExteriorRing();
       List<LinearRing> holes = new ArrayList<>();
+      for (int i = 0; i < outerPolygon.getNumInteriorRing(); i++) {
+        holes.add(outerPolygon.getInteriorRingN(i));
+      }
       PreparedGeometry prepared = PreparedGeometryFactory.prepare(outerPolygon);
       Iterator<Polygon> it = innerPolygons.iterator();
       while (it.hasNext()) {
         Polygon innerPolygon = it.next();
         if (prepared.contains(innerPolygon)) {
           holes.add(innerPolygon.getExteriorRing());
+          for (int i = 0; i < innerPolygon.getNumInteriorRing(); i++) {
+            var innerPolygonHole =
+                GEOMETRY_FACTORY_WGS84.createPolygon(innerPolygon.getInteriorRingN(i));
+            polygons.add(innerPolygonHole);
+          }
           it.remove();
         }
       }
-      Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(shell, holes.toArray(new LinearRing[0]));
+      Polygon polygon =
+          GEOMETRY_FACTORY_WGS84.createPolygon(shell, holes.toArray(new LinearRing[0]));
 
       // Fix invalid polygons with a buffer (e.g. self-intersecting)
-      if (!polygon.isValid()) {
-        polygon = (Polygon) polygon.buffer(0);
+      if (polygon.isValid()) {
+        polygons.add(polygon);
+      } else {
+        var geometryFixer = new GeometryFixer(polygon);
+        var fixedGeometry = geometryFixer.getResult();
+        if (fixedGeometry instanceof Polygon fixedPolygon) {
+          polygons.add(fixedPolygon);
+        } else if (fixedGeometry instanceof MultiPolygon fixedMultiPolygon) {
+          PolygonExtracter.getPolygons(fixedMultiPolygon, polygons);
+        }
       }
-
-      polygons.add(polygon);
     }
     return polygons;
   }
 
-  private Set<Polygon> mergeInnerPolygons(Set<Polygon> innerPolygons) {
-    Set<Polygon> usedPolygons = new HashSet<>();
-    Set<Polygon> mergedPolygons = new HashSet<>();
-    for (Polygon p1 : innerPolygons) {
-      if (!usedPolygons.contains(p1)) {
-        Set<Polygon> unionPolygons = new HashSet<>();
-        unionPolygons.add(p1);
-        for (Polygon p2 : innerPolygons) {
-          if (!p1.equals(p2) && (p1.touches(p2) || p1.overlaps(p2))) {
-            unionPolygons.add(p2);
-            usedPolygons.add(p2);
-          }
-        }
-        Geometry union = CascadedPolygonUnion.union(unionPolygons);
-        for (Object polygon : PolygonExtracter.getPolygons(union)) {
-          mergedPolygons.add((Polygon) polygon);
-        }
-      }
+  private Set<Polygon> combinePolygons(Set<Polygon> polygons) {
+
+    var geometry = GEOMETRY_FACTORY_WGS84.createEmpty(0);
+
+    for (Polygon polygon : polygons) {
+      geometry = geometry.symDifference(polygon);
     }
+
+    Set<Polygon> mergedPolygons = new HashSet<>();
+    for (Object polygon : PolygonExtracter.getPolygons(geometry)) {
+      mergedPolygons.add((Polygon) polygon);
+    }
+
     return mergedPolygons;
   }
 
-  private Set<Polygon> createPolygons(Relation relation, String role) {
-    Set<Polygon> polygons = new HashSet<>();
+  private Set<Polygon> createPolygons(List<Member> members) {
+    List<Polygon> polygons = new ArrayList<>();
     LineMerger lineMerger = new LineMerger();
-    relation.getMembers().stream().filter(m -> Member.MemberType.WAY.equals(m.getType()))
-        .filter(m -> role.equals(m.getRole())).forEach(member -> {
-          LineString line = createLine(member);
-          if (line.isClosed()) {
-            Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
-            polygons.add(polygon);
-          } else {
-            lineMerger.add(line);
+    for (Member member : members) {
+      LineString line = createLine(member);
+      if (line.isClosed()) {
+        var polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinateSequence());
+        if (polygon.isValid()) {
+          polygons.add(polygon);
+        } else {
+          var geometryFixer = new GeometryFixer(polygon);
+          var fixedGeometry = geometryFixer.getResult();
+          if (fixedGeometry instanceof Polygon fixedPolygon) {
+            polygons.add(fixedPolygon);
+          } else if (fixedGeometry instanceof MultiPolygon fixedMultiPolygon) {
+            PolygonExtracter.getPolygons(fixedMultiPolygon, polygons);
           }
-        });
-    lineMerger.getMergedLineStrings().stream().forEach(geometry -> {
+        }
+      } else {
+        lineMerger.add(line);
+      }
+    }
+    for (Object geometry : lineMerger.getMergedLineStrings()) {
       LineString line = (LineString) geometry;
       if (line.isClosed()) {
         Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
-        polygons.add(polygon);
+        if (polygon.isValid()) {
+          polygons.add(polygon);
+        } else {
+          var geometryFixer = new GeometryFixer(polygon);
+          var fixedGeometry = geometryFixer.getResult();
+          if (fixedGeometry instanceof Polygon fixedPolygon) {
+            polygons.add(fixedPolygon);
+          } else if (fixedGeometry instanceof MultiPolygon fixedMultiPolygon) {
+            PolygonExtracter.getPolygons(fixedMultiPolygon, polygons);
+          }
+        }
       }
-    });
-    return polygons;
+    }
+    return new HashSet<>(polygons);
   }
 
   private LineString createLine(Member member) {
@@ -189,6 +248,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
       Coordinate previous = null;
       for (Long id : refs) {
         Coordinate coordinate = coordinateMap.get(id);
+
+        // remove duplicate coordinates
         if (coordinate != null && !coordinate.equals(previous)) {
           list.add(coordinate);
           previous = coordinate;

@@ -19,9 +19,10 @@ package org.apache.baremaps.utils;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
+import java.util.ArrayList;
+import java.util.List;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
@@ -96,6 +97,49 @@ public class GeometryUtils {
    */
   public static ProjectionTransformer projectionTransformer(int inputSRID, int outputSRID) {
     return new ProjectionTransformer(inputSRID, outputSRID);
+  }
+
+  public static CoordinateSequence removeExtraPoint(CoordinateSequence coordinates) {
+    List<Coordinate> simplifiedList = new ArrayList<>();
+
+    for (int i = 0; i < coordinates.size() - 1; i++) {
+      // Add the coordinate if it's not a point that needs to be removed
+      if (!isExtraPoint(coordinates, i)) {
+        simplifiedList.add(coordinates.getCoordinate(i));
+      }
+    }
+
+    // Ensure the polygon is closed by adding the first coordinate at the end
+    simplifiedList.add(simplifiedList.get(0));
+
+    return new CoordinateArraySequence(simplifiedList.toArray(new Coordinate[0]));
+  }
+
+  private static boolean isExtraPoint(CoordinateSequence coordinates, int index) {
+    return false;
+
+    // if (index == 0 || index == coordinates.size() - 1) {
+    // return false;
+    // }
+    //
+    // Coordinate prev = coordinates.getCoordinate(index - 1);
+    // Coordinate current = coordinates.getCoordinate(index);
+    // Coordinate next = coordinates.getCoordinate(index + 1);
+    //
+    // if (prev.x == current.x && current.x == next.x) {
+    // return true;
+    // }
+    //
+    // if (prev.y == current.y && current.y == next.y) {
+    // return true;
+    // }
+    //
+    // // Calculate slopes between prev-current and current-next
+    // double slope1 = (current.y - prev.y) / (current.x - prev.x);
+    // double slope2 = (next.y - current.y) / (next.x - current.x);
+    //
+    // // If slopes are equal, current is an extra point
+    // return Double.compare(slope1, slope2) == 0;
   }
 
 }
