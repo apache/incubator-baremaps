@@ -1,1 +1,0 @@
-Valid OSM XML file with various XML entities.

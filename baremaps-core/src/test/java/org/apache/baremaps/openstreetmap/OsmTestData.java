@@ -43,10 +43,10 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class OsmTestRunner {
+public class OsmTestData {
 
   @TestFactory
-  public Stream<DynamicTest> runTestsFromFiles() throws IOException {
+  public Stream<DynamicTest> runTests() throws IOException {
     var directory = TestFiles.resolve("osm-testdata");
     try (var files = Files.walk(directory)) {
       return files.filter(f -> f.endsWith("test.json"))
@@ -244,7 +244,7 @@ public class OsmTestRunner {
     }
 
     @Override
-    public int compareTo(@NotNull OsmTestRunner.OsmTest o) {
+    public int compareTo(@NotNull OsmTestData.OsmTest o) {
       return Long.compare(getId(), o.getId());
     }
   }

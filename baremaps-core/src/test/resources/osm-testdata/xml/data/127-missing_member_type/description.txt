@@ -1,1 +1,0 @@
-Missing type on relation member.

@@ -1,1 +1,0 @@
-Old version (0.5) attribute on osm element

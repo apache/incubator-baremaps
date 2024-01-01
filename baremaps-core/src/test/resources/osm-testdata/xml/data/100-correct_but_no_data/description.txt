@@ -1,1 +1,0 @@
-Valid XML file that contains no data.
