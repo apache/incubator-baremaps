@@ -19,35 +19,18 @@ package org.apache.baremaps.openstreetmap.function;
 
 import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.stream.ConditionalConsumer;
 import org.locationtech.jts.geom.*;
 
 /**
  * A consumer that builds and sets a node geometry via side effects.
  */
-public class NodeGeometryBuilder extends ConditionalConsumer<Node> {
-
-  /**
-   * Constructs a node geometry builder.
-   */
-  public NodeGeometryBuilder() {
-    this(node -> true);
-  }
-
-  /**
-   * Constructs a node geometry builder.
-   *
-   * @param predicate the predicate
-   */
-  public NodeGeometryBuilder(Predicate<Node> predicate) {
-    super(predicate);
-  }
+public class NodeGeometryBuilder implements Consumer<Node> {
 
   /** {@inheritDoc} */
   @Override
-  public void conditionalAccept(Node node) {
+  public void accept(Node node) {
     Point point = GEOMETRY_FACTORY_WGS84.createPoint(new Coordinate(node.getLon(), node.getLat()));
     node.setGeometry(point);
   }

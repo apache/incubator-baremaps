@@ -21,12 +21,11 @@ import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.Member.MemberType;
 import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.stream.ConditionalConsumer;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.GeometryFixer;
@@ -38,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A consumer that builds and sets a relation geometry via side effects.
  */
-public class RelationMultiPolygonBuilder extends ConditionalConsumer<Relation> {
+public class RelationMultiPolygonBuilder implements Consumer<Relation> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationMultiPolygonBuilder.class);
 
@@ -54,42 +53,13 @@ public class RelationMultiPolygonBuilder extends ConditionalConsumer<Relation> {
   public RelationMultiPolygonBuilder(
       DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap) {
-    this(coordinateMap, referenceMap, RelationMultiPolygonBuilder::isMultiPolygon);
-  }
-
-  /**
-   * Constructs a relation geometry builder.
-   *
-   * @param coordinateMap the coordinates map
-   * @param referenceMap the references map
-   * @param predicate the predicate
-   */
-  public RelationMultiPolygonBuilder(
-      DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
-      Predicate<Relation> predicate) {
-    super(predicate);
     this.coordinateMap = coordinateMap;
     this.referenceMap = referenceMap;
   }
 
-  /**
-   * A default predicate that returns true if the relation is a multipolygon.
-   */
-  private static boolean isMultiPolygon(Relation relation) {
-    var tags = relation.getTags();
-    if ("coastline".equals(tags.get("natural"))) {
-      // Coastlines are complex relations that we do not handle
-      return false;
-    } else {
-      // MultiPolygons and boundaries are complex relations that we handle
-      return "multipolygon".equals(tags.get("type")) || "boundary".equals(tags.get("type"));
-    }
-  }
-
   /** {@inheritDoc} */
   @Override
-  public void conditionalAccept(Relation relation) {
+  public void accept(Relation relation) {
     try {
       var start = System.currentTimeMillis();
 

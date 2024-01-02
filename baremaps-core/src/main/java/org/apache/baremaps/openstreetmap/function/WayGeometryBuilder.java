@@ -21,10 +21,9 @@ import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.stream.ConditionalConsumer;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A consumer that builds and sets a way geometry via side effects.
  */
-public class WayGeometryBuilder extends ConditionalConsumer<Way> {
+public class WayGeometryBuilder implements Consumer<Way> {
 
   private static final Logger logger = LoggerFactory.getLogger(WayGeometryBuilder.class);
 
@@ -47,21 +46,12 @@ public class WayGeometryBuilder extends ConditionalConsumer<Way> {
    * @param coordinateMap the coordinates map
    */
   public WayGeometryBuilder(DataMap<Long, Coordinate> coordinateMap) {
-    this(coordinateMap, way -> true);
-  }
-
-  /**
-   * Constructs a way geometry builder.
-   *
-   * @param coordinateMap the coordinates map
-   */
-  public WayGeometryBuilder(DataMap<Long, Coordinate> coordinateMap, Predicate<Way> predicate) {
-    super(predicate);
     this.coordinateMap = coordinateMap;
   }
 
+  /** {@inheritDoc} */
   @Override
-  public void conditionalAccept(Way way) {
+  public void accept(Way way) {
     try {
       // Build the coordinate list and remove duplicates.
       List<Coordinate> list = new ArrayList<>();
