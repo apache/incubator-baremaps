@@ -15,40 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.openstreetmap.function;
+package org.apache.baremaps.stream;
 
-import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
-
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.stream.ConditionalConsumer;
-import org.locationtech.jts.geom.*;
 
 /**
- * A consumer that builds and sets a node geometry via side effects.
+ * A consumer that conditionally accepts an object.
+ *
+ * @param <T> the type of the input to the operation
  */
-public class NodeGeometryBuilder extends ConditionalConsumer<Node> {
+public abstract class ConditionalConsumer<T> implements Consumer<T> {
+
+  private final Predicate<T> predicate;
 
   /**
-   * Constructs a node geometry builder.
+   * Constructs a consumer that conditionally accepts an object.
    */
-  public NodeGeometryBuilder() {
-    this(node -> true);
+  protected ConditionalConsumer() {
+    this.predicate = t -> true;
   }
 
   /**
-   * Constructs a node geometry builder.
+   * Constructs a consumer that conditionally accepts an object.
    *
    * @param predicate the predicate
    */
-  public NodeGeometryBuilder(Predicate<Node> predicate) {
-    super(predicate);
+  protected ConditionalConsumer(Predicate<T> predicate) {
+    this.predicate = predicate;
   }
 
   /** {@inheritDoc} */
   @Override
-  public void conditionalAccept(Node node) {
-    Point point = GEOMETRY_FACTORY_WGS84.createPoint(new Coordinate(node.getLon(), node.getLat()));
-    node.setGeometry(point);
+  public void accept(T t) {
+    if (predicate.test(t)) {
+      conditionalAccept(t);
+    }
   }
+
+  /**
+   * Conditionally accepts an object.
+   *
+   * @param t the object to be conditionally accepted
+   */
+  public abstract void conditionalAccept(T t);
+
 }
