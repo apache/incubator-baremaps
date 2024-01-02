@@ -1,0 +1,13 @@
+{
+    "test_id": 746,
+    "description": "Impossible multipolygon out of two ways.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 746900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ]
+    }
+}

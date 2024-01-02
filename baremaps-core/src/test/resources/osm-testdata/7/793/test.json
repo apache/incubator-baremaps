@@ -1,0 +1,25 @@
+{
+    "test_id": 793,
+    "description": "Multipolygon relation containing the two ways using nearly the same nodes.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 793900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "location": [
+            {
+                "from_id": 793900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.35 1.95,7.35 1.91,7.31 1.91,7.31 1.95,7.35 1.95)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "793",
+                    "area": "yes"
+                }
+            }
+        ]
+    }
+}

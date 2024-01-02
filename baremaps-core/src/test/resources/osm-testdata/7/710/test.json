@@ -1,0 +1,13 @@
+{
+    "test_id": 710,
+    "description": "Invalid multipolygon relation: Three ways make up two outer rings, but the outer rings overlap.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 710900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ]
+    }
+}

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="925000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.51" lat="1.21"/>
+    <node id="925001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.51" lat="1.29"/>
+    <node id="925002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.59" lat="1.29"/>
+    <node id="925003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.59" lat="1.21"/>
+
+    <node id="925004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.53" lat="1.23"/>
+    <node id="925005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.53" lat="1.27"/>
+    <node id="925006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.57" lat="1.27"/>
+    <node id="925007" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.57" lat="1.23"/>
+
+    <way id="925800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="925000"/>
+        <nd ref="925001"/>
+        <nd ref="925002"/>
+        <nd ref="925003"/>
+        <nd ref="925000"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="925"/>
+        <tag k="natural" v="wood"/>
+    </way>
+
+    <way id="925801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="925004"/>
+        <nd ref="925005"/>
+        <nd ref="925006"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="925"/>
+        <tag k="natural" v="water"/>
+    </way>
+    <way id="925802" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="925006"/>
+        <nd ref="925007"/>
+        <nd ref="925004"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="925"/>
+        <tag k="natural" v="water"/>
+    </way>
+
+    <relation id="925900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="925800" role="outer"/>
+        <member type="way" ref="925801" role="inner"/>
+        <member type="way" ref="925802" role="inner"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="925"/>
+    </relation>
+</osm>

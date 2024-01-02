@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="927000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.71" lat="1.21"/>
+    <node id="927001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.71" lat="1.29"/>
+    <node id="927002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.79" lat="1.29"/>
+    <node id="927003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.79" lat="1.21"/>
+
+    <node id="927004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.73" lat="1.23"/>
+    <node id="927005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.73" lat="1.27"/>
+    <node id="927006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.77" lat="1.27"/>
+    <node id="927007" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.77" lat="1.23"/>
+
+    <way id="927800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="927000"/>
+        <nd ref="927001"/>
+        <nd ref="927002"/>
+        <nd ref="927003"/>
+        <nd ref="927000"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="927"/>
+        <tag k="natural" v="wood"/>
+    </way>
+
+    <way id="927801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="927004"/>
+        <nd ref="927005"/>
+        <nd ref="927006"/>
+        <nd ref="927007"/>
+        <nd ref="927004"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="927"/>
+        <tag k="natural" v="wood"/>
+    </way>
+
+    <relation id="927900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="927800" role="outer"/>
+        <member type="way" ref="927801" role="inner"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="927"/>
+    </relation>
+</osm>

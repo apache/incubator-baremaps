@@ -1,0 +1,18 @@
+{
+    "test_id": 784,
+    "description": "Valid OSM multipolygon with multiple touching inner rings.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 784900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.41 1.81,7.46 1.81,7.46 1.86,7.41 1.86,7.41 1.81),(7.42 1.82,7.45 1.82,7.45 1.85,7.42 1.85,7.42 1.82)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "784"
+                }
+            }
+        ]
+    }
+}

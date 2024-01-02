@@ -26,14 +26,14 @@ import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.*;
 
 /** A consumer that builds and sets the geometry of OpenStreetMap entities via side effects. */
 public class EntityGeometryBuilder implements Consumer<Entity> {
 
-  private final NodeGeometryBuilder nodeGeometryBuilder;
-  private final WayGeometryBuilder wayGeometryBuilder;
-  private final RelationGeometryBuilder relationGeometryBuilder;
+  private final Consumer<Node> nodeGeometryBuilder;
+  private final Consumer<Way> wayGeometryBuilder;
+  private final Consumer<Relation> relationMultiPolygonBuilder;
 
   /**
    * Constructs a consumer that uses the provided caches to create and set geometries.
@@ -41,11 +41,26 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
    * @param coordinateMap the coordinate cache
    * @param referenceMap the reference cache
    */
-  public EntityGeometryBuilder(DataMap<Long, Coordinate> coordinateMap,
+  public EntityGeometryBuilder(
+      DataMap<Long, Coordinate> coordinateMap,
       DataMap<Long, List<Long>> referenceMap) {
     this.nodeGeometryBuilder = new NodeGeometryBuilder();
     this.wayGeometryBuilder = new WayGeometryBuilder(coordinateMap);
-    this.relationGeometryBuilder = new RelationGeometryBuilder(coordinateMap, referenceMap);
+    this.relationMultiPolygonBuilder = new RelationMultiPolygonBuilder(coordinateMap, referenceMap);
+  }
+
+  /**
+   * A default predicate that returns true if the relation is a multipolygon.
+   */
+  private static boolean isMultiPolygon(Relation relation) {
+    var tags = relation.getTags();
+    if ("coastline".equals(tags.get("natural"))) {
+      // Coastlines are complex relations that we do not handle
+      return false;
+    } else {
+      // MultiPolygons and boundaries are complex relations that we handle
+      return "multipolygon".equals(tags.get("type")) || "boundary".equals(tags.get("type"));
+    }
   }
 
   /** {@inheritDoc} */
@@ -55,8 +70,9 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
       nodeGeometryBuilder.accept(node);
     } else if (entity instanceof Way way) {
       wayGeometryBuilder.accept(way);
-    } else if (entity instanceof Relation relation) {
-      relationGeometryBuilder.accept(relation);
+    } else if (entity instanceof Relation relation && isMultiPolygon(relation)) {
+      relationMultiPolygonBuilder.accept(relation);
     }
   }
+
 }

@@ -1,0 +1,4 @@
+{
+    "test_id": 301,
+    "description": "Empty username on node should not happen"
+}

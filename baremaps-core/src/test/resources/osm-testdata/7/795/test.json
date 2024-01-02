@@ -1,0 +1,25 @@
+{
+    "test_id": 795,
+    "description": "Multipolygon with one outer and one duplicated inner ring.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 795900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "location": [
+            {
+                "from_id": 795900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.55 1.91,7.51 1.91,7.51 1.95,7.55 1.95,7.55 1.91),(7.54 1.92,7.52 1.92,7.52 1.94,7.54 1.94,7.54 1.92)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "795"
+                }
+            }
+        ]
+    }
+}

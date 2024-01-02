@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="749000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.93" lat="1.46"/>
+    <node id="749001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.95" lat="1.47"/>
+    <node id="749002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.97" lat="1.43"/>
+    <node id="749003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.95" lat="1.42"/>
+    <node id="749004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.91" lat="1.45"/>
+    <node id="749005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.92" lat="1.43"/>
+    <node id="749006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.93999" lat="1.44"/>
+    <way id="749800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="749000"/>
+        <nd ref="749001"/>
+        <nd ref="749002"/>
+        <nd ref="749003"/>
+        <nd ref="749000"/>
+        <nd ref="749004"/>
+        <nd ref="749005"/>
+        <nd ref="749006"/>
+        <nd ref="749000"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="749"/>
+        <tag k="landuse" v="forest"/>
+    </way>
+</osm>

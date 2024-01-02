@@ -1,0 +1,25 @@
+{
+    "test_id": 748,
+    "description": "Invalid multipolygon because there are two nodes with same location. Created from way.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 748800,
+                "from_type": "way",
+                "wkt": "INVALID"
+            }
+        ],
+        "location": [
+            {
+                "from_id": 748800,
+                "from_type": "way",
+                "wkt": "MULTIPOLYGON(((7.81 1.41,7.81 1.45,7.85 1.45,7.85 1.41,7.81 1.41)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "748",
+                    "landuse": "forest"
+                }
+            }
+        ]
+    }
+}

@@ -17,10 +17,7 @@
 
 package org.apache.baremaps.openstreetmap.geometry;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -120,43 +117,43 @@ class EntityDataTypeGeometryBuilderTest {
 
   static final Way WAY_0 = new Way(0L, INFO, ImmutableMap.of(), ImmutableList.of());
 
-  static final Way WAY_1 = new Way(1L, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l));
+  static final Way WAY_1 = new Way(1L, INFO, ImmutableMap.of(), ImmutableList.of(0L, 1L, 2L, 3L));
 
   static final Way WAY_2 =
-      new Way(2L, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l, 0l));
+      new Way(2L, INFO, ImmutableMap.of(), ImmutableList.of(0L, 1L, 2L, 3L, 0L));
 
   static final Way WAY_3 =
-      new Way(3L, INFO, ImmutableMap.of(), ImmutableList.of(8l, 9l, 10l, 11l, 8l));
+      new Way(3L, INFO, ImmutableMap.of(), ImmutableList.of(8L, 9L, 10L, 11L, 8L));
 
   static final Way WAY_4 =
-      new Way(4L, INFO, ImmutableMap.of(), ImmutableList.of(4l, 5l, 6l, 7l, 4l));
+      new Way(4L, INFO, ImmutableMap.of(), ImmutableList.of(4L, 5L, 6L, 7L, 4L));
 
   static final Way WAY_5 =
-      new Way(5L, INFO, ImmutableMap.of(), ImmutableList.of(12l, 13l, 14l, 15l, 12l));
+      new Way(5L, INFO, ImmutableMap.of(), ImmutableList.of(12L, 13L, 14L, 15L, 12L));
 
   static final DataMap<Long, List<Long>> REFERENCE_CACHE =
       new MockDataMap(Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
           .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
 
-  static final Relation RELATION_0 = new Relation(0L, INFO, ImmutableMap.of(), Arrays.asList());
+  static final Relation RELATION_0 = new Relation(0L, INFO, ImmutableMap.of(), List.of());
 
   static final Relation RELATION_1 =
-      new Relation(1L, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList());
+      new Relation(1L, INFO, ImmutableMap.of("type", "multipolygon"), List.of());
 
   static final Relation RELATION_2 = new Relation(2L, INFO, ImmutableMap.of("type", "multipolygon"),
-      Arrays.asList(new Member(2l, MemberType.WAY, "outer")));
+      List.of(new Member(2L, MemberType.WAY, "outer")));
 
   static final Relation RELATION_3 =
       new Relation(3L, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList(
-          new Member(2l, MemberType.WAY, "outer"), new Member(3l, MemberType.WAY, "inner")));
+          new Member(2L, MemberType.WAY, "outer"), new Member(3L, MemberType.WAY, "inner")));
 
   static final Relation RELATION_4 = new Relation(4L, INFO, ImmutableMap.of("type", "multipolygon"),
-      Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
-          new Member(3l, MemberType.WAY, "inner"), new Member(4l, MemberType.WAY, "outer")));
+      Arrays.asList(new Member(2L, MemberType.WAY, "outer"),
+          new Member(3L, MemberType.WAY, "inner"), new Member(4L, MemberType.WAY, "outer")));
 
   static final Relation RELATION_5 = new Relation(5L, INFO, ImmutableMap.of("type", "multipolygon"),
-      Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
-          new Member(4l, MemberType.WAY, "inner"), new Member(5l, MemberType.WAY, "inner")));
+      Arrays.asList(new Member(2L, MemberType.WAY, "outer"),
+          new Member(4L, MemberType.WAY, "inner"), new Member(5L, MemberType.WAY, "inner")));
 
   static final EntityGeometryBuilder GEOMETRY_BUILDER =
       new EntityGeometryBuilder(COORDINATE_CACHE, REFERENCE_CACHE);
@@ -178,9 +175,9 @@ class EntityDataTypeGeometryBuilderTest {
     GEOMETRY_BUILDER.accept(WAY_0);
     assertNull(WAY_0.getGeometry());
     GEOMETRY_BUILDER.accept(WAY_1);
-    assertTrue(WAY_1.getGeometry() instanceof LineString);
+    assertInstanceOf(LineString.class, WAY_1.getGeometry());
     GEOMETRY_BUILDER.accept(WAY_2);
-    assertTrue(WAY_2.getGeometry() instanceof Polygon);
+    assertInstanceOf(Polygon.class, WAY_2.getGeometry());
   }
 
   @Test
@@ -188,20 +185,24 @@ class EntityDataTypeGeometryBuilderTest {
     GEOMETRY_BUILDER.accept(RELATION_0);
     assertNull(RELATION_0.getGeometry());
     GEOMETRY_BUILDER.accept(RELATION_1);
-    assertNull(RELATION_1.getGeometry());
+    assertNotNull(RELATION_1.getGeometry());
     GEOMETRY_BUILDER.accept(RELATION_2);
-    assertTrue(RELATION_2.getGeometry() instanceof Polygon);
+    assertInstanceOf(MultiPolygon.class, RELATION_2.getGeometry());
     GEOMETRY_BUILDER.accept(RELATION_3);
-    assertTrue(RELATION_3.getGeometry() instanceof Polygon);
+    assertInstanceOf(MultiPolygon.class, RELATION_3.getGeometry());
     GEOMETRY_BUILDER.accept(RELATION_4);
-    assertTrue(RELATION_4.getGeometry() instanceof MultiPolygon);
+    assertInstanceOf(MultiPolygon.class, RELATION_4.getGeometry());
   }
 
   @Test
   void handleRelationWithHole() {
     GEOMETRY_BUILDER.accept(RELATION_5);
-    assertTrue(RELATION_5.getGeometry() instanceof Polygon);
-    assertNotNull(((Polygon) RELATION_5.getGeometry()).getExteriorRing());
-    assertEquals(1, ((Polygon) RELATION_5.getGeometry()).getNumInteriorRing());
+    assertInstanceOf(MultiPolygon.class, RELATION_5.getGeometry());
+    var multiPolygon = (MultiPolygon) RELATION_5.getGeometry();
+    assertEquals(1, multiPolygon.getNumGeometries());
+    assertInstanceOf(Polygon.class, multiPolygon.getGeometryN(0));
+    var polygon = (Polygon) multiPolygon.getGeometryN(0);
+    assertNotNull(polygon.getExteriorRing());
+    assertEquals(1, polygon.getNumInteriorRing());
   }
 }

@@ -1,0 +1,18 @@
+{
+    "test_id": 706,
+    "description": "Valid multipolygon relation with three ways making up two outer rings that touch in one point.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 706900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.61 1.04,7.62 1.06,7.65 1.05,7.64 1.03,7.63 1.02,7.61 1.04)),((7.64 1.03,7.67 1.03,7.67 1.01,7.64 1.01,7.64 1.03)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "706"
+                }
+            }
+        ]
+    }
+}

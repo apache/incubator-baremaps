@@ -1,0 +1,18 @@
+{
+    "test_id": 760,
+    "description": "Faking inner ring with outer going back on itself (with relation).",
+    "areas": {
+        "default": [
+            {
+                "from_id": 760900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.01 1.67,7.07 1.67,7.07 1.61,7.01 1.61,7.01 1.67),(7.05 1.65,7.03 1.65,7.03 1.63,7.05 1.63,7.05 1.65)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "760"
+                }
+            }
+        ]
+    }
+}

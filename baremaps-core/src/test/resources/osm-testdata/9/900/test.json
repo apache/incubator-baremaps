@@ -1,0 +1,17 @@
+{
+    "test_id": 900,
+    "description": "Multipolygon with one outer ring from one way with role 'inner'.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 900900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((9.01 1.01,9.01 1.04,9.04 1.04,9.04 1.01,9.01 1.01)))",
+                "tags": {
+                    "test:section": "mp-tags",
+                    "test:id": "900"
+                }
+            }
+        ]
+    }
+}

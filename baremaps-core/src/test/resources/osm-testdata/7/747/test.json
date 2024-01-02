@@ -1,0 +1,25 @@
+{
+    "test_id": 747,
+    "description": "Invalid multipolygon because there are two nodes with same location. Created from relation.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 747900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "location": [
+            {
+                "from_id": 747900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.71 1.41,7.71 1.45,7.75 1.45,7.75 1.41,7.71 1.41)))",
+                "tags": {
+                    "test:section": "mp-geom",
+                    "test:id": "747",
+                    "landuse": "forest"
+                }
+            }
+        ]
+    }
+}

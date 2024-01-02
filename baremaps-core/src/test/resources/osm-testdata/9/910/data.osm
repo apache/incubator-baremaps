@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="910000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.01" lat="1.11"/>
+    <node id="910001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.01" lat="1.19"/>
+    <node id="910002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.09" lat="1.19"/>
+    <node id="910003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.09" lat="1.11"/>
+
+    <way id="910800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="910000"/>
+        <nd ref="910001"/>
+        <nd ref="910002"/>
+        <nd ref="910003"/>
+        <nd ref="910000"/>
+    </way>
+
+    <relation id="910900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="910800" role="outer"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="910"/>
+        <tag k="building" v="yes"/>
+    </relation>
+</osm>

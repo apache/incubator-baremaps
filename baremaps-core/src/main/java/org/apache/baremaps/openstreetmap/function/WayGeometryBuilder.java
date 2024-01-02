@@ -19,6 +19,7 @@ package org.apache.baremaps.openstreetmap.function;
 
 import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
@@ -26,6 +27,7 @@ import org.apache.baremaps.openstreetmap.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,18 +53,36 @@ public class WayGeometryBuilder implements Consumer<Way> {
   @Override
   public void accept(Way way) {
     try {
-      List<Coordinate> list = way.getNodes().stream().map(coordinateMap::get).toList();
-      Coordinate[] array = list.toArray(new Coordinate[list.size()]);
+      // Build the coordinate list and remove duplicates.
+      List<Coordinate> list = new ArrayList<>();
+      Coordinate previous = null;
+      for (Long id : way.getNodes()) {
+        Coordinate coordinate = coordinateMap.get(id);
+        if (coordinate != null && !coordinate.equals(previous)) {
+          list.add(coordinate);
+          previous = coordinate;
+        }
+      }
+
+      Coordinate[] array = list.toArray(new Coordinate[0]);
       LineString line = GEOMETRY_FACTORY_WGS84.createLineString(array);
+
       if (!line.isEmpty()) {
         // Ways can be open or closed depending on the geometry or the tags:
         // https://wiki.openstreetmap.org/wiki/Way
-        if (!line.isClosed() || way.getTags().containsKey("highway")
+        if (!line.isClosed()
+            || way.getTags().containsKey("highway")
             || way.getTags().containsKey("barrier")) {
           way.setGeometry(line);
         } else {
           Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
-          way.setGeometry(polygon);
+          if (polygon.isValid()) {
+            way.setGeometry(polygon);
+          } else {
+            var geometryFixer = new GeometryFixer(polygon);
+            var fixedGeometry = geometryFixer.getResult();
+            way.setGeometry(fixedGeometry);
+          }
         }
       }
     } catch (Exception e) {

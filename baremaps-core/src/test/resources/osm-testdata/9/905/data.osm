@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="905000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.51" lat="1.01"/>
+    <node id="905001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.51" lat="1.09"/>
+    <node id="905002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.59" lat="1.09"/>
+    <node id="905003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.59" lat="1.01"/>
+
+    <node id="905004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.52" lat="1.06"/>
+    <node id="905005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.52" lat="1.04"/>
+    <node id="905006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.54" lat="1.04"/>
+    <node id="905007" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.54" lat="1.06"/>
+    <node id="905008" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.56" lat="1.06"/>
+    <node id="905009" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.56" lat="1.04"/>
+
+    <way id="905800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="905000"/>
+        <nd ref="905001"/>
+        <nd ref="905002"/>
+        <nd ref="905003"/>
+        <nd ref="905000"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="905"/>
+    </way>
+    <way id="905801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="905004"/>
+        <nd ref="905005"/>
+        <nd ref="905006"/>
+        <nd ref="905007"/>
+        <nd ref="905004"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="905"/>
+    </way>
+    <way id="905802" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="905008"/>
+        <nd ref="905009"/>
+        <nd ref="905006"/>
+        <nd ref="905007"/>
+        <nd ref="905008"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="905"/>
+    </way>
+
+    <relation id="905900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="905800" role="outer"/>
+        <member type="way" ref="905801" role=""/>
+        <member type="way" ref="905802" role="outer"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="905"/>
+        <tag k="landuse" v="forest"/>
+    </relation>
+</osm>

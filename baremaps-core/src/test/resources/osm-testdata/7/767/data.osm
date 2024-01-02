@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="767000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.77" lat="1.66"/>
+    <node id="767001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.75" lat="1.68"/>
+    <node id="767002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.73" lat="1.66"/>
+    <node id="767003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.75" lat="1.64"/>
+    <node id="767004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.75" lat="1.63"/>
+    <node id="767005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.78" lat="1.63"/>
+    <node id="767006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.78" lat="1.62"/>
+    <node id="767007" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.72" lat="1.62"/>
+    <node id="767008" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.72" lat="1.63"/>
+    <way id="767800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="767000"/>
+        <nd ref="767001"/>
+        <nd ref="767002"/>
+        <nd ref="767003"/>
+        <nd ref="767004"/>
+        <nd ref="767005"/>
+        <nd ref="767006"/>
+        <nd ref="767007"/>
+        <nd ref="767008"/>
+        <nd ref="767004"/>
+        <nd ref="767003"/>
+        <nd ref="767000"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="767"/>
+        <tag k="area" v="yes"/>
+    </way>
+</osm>

@@ -1,0 +1,18 @@
+{
+    "test_id": 725,
+    "description": "Valid multipolygon with one concave outer ring and no inner ring.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 725900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.53 1.21,7.54 1.21,7.52 1.23,7.54 1.25,7.53 1.25,7.51 1.23,7.53 1.21)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "725"
+                }
+            }
+        ]
+    }
+}

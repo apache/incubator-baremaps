@@ -1,0 +1,13 @@
+{
+    "test_id": 744,
+    "description": "Invalid multpolygon with single outer ring not closed.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 744900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ]
+    }
+}

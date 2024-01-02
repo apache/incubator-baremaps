@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="733000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.33" lat="1.31"/>
+    <node id="733001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.32" lat="1.34"/>
+    <node id="733002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.35" lat="1.35"/>
+    <node id="733003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.36" lat="1.32"/>
+
+    <node id="733004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.31" lat="1.35"/>
+    <node id="733005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.34" lat="1.36"/>
+
+    <way id="733800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="733000"/>
+        <nd ref="733001"/>
+        <nd ref="733002"/>
+        <nd ref="733003"/>
+        <nd ref="733000"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="733"/>
+    </way>
+    <way id="733801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="733001"/>
+        <nd ref="733004"/>
+        <nd ref="733005"/>
+        <nd ref="733001"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="733"/>
+    </way>
+
+    <relation id="733900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="733800" role="outer"/>
+        <member type="way" ref="733801" role="outer"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="733"/>
+        <tag k="landuse" v="forest"/>
+    </relation>
+</osm>

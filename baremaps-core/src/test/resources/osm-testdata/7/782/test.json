@@ -1,0 +1,25 @@
+{
+    "test_id": 782,
+    "description": "Multipolygon with correct outer ring, but inner ring made up out of two ways where locations match but not node ids.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 782900,
+                "from_type": "relation",
+                "wkt": "INVALID"
+            }
+        ],
+        "location": [
+            {
+                "from_id": 782900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.25 1.85,7.25 1.81,7.21 1.81,7.21 1.85,7.25 1.85),(7.24 1.84,7.22 1.84,7.22 1.82,7.24 1.82,7.24 1.84)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "782"
+                }
+            }
+        ]
+    }
+}

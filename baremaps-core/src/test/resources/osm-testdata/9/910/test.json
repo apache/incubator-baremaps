@@ -1,0 +1,18 @@
+{
+    "test_id": 910,
+    "description": "Multipolygon with one outer ring, tags on relation and no tags on ways.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 910900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((9.01 1.11,9.01 1.19,9.09 1.19,9.09 1.11,9.01 1.11)))",
+                "tags": {
+                    "test:section": "mp-tags",
+                    "test:id": "910",
+                    "building": "yes"
+                }
+            }
+        ]
+    }
+}

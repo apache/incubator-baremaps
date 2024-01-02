@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="704000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.41" lat="1.02"/>
+    <node id="704001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.41" lat="1.03"/>
+    <node id="704002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.42" lat="1.03"/>
+    <node id="704003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.42" lat="1.04"/>
+    <node id="704004" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.43" lat="1.04"/>
+    <node id="704005" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.43" lat="1.03"/>
+    <node id="704006" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.44" lat="1.03"/>
+    <node id="704007" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.44" lat="1.02"/>
+    <node id="704008" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.43" lat="1.02"/>
+    <node id="704009" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.43" lat="1.01"/>
+    <node id="704010" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.42" lat="1.01"/>
+    <node id="704011" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="7.42" lat="1.02"/>
+    <way id="704800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="704000"/>
+        <nd ref="704001"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="704"/>
+    </way>
+    <way id="704801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="704001"/>
+        <nd ref="704002"/>
+        <nd ref="704003"/>
+        <nd ref="704004"/>
+        <nd ref="704005"/>
+        <nd ref="704006"/>
+        <nd ref="704007"/>
+        <nd ref="704008"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="704"/>
+    </way>
+    <way id="704802" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="704008"/>
+        <nd ref="704009"/>
+        <nd ref="704010"/>
+        <nd ref="704011"/>
+        <nd ref="704000"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="704"/>
+    </way>
+    <relation id="704900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="704800" role="outer"/>
+        <member type="way" ref="704801" role="outer"/>
+        <member type="way" ref="704802" role="outer"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-geom"/>
+        <tag k="test:id" v="704"/>
+        <tag k="landuse" v="forest"/>
+    </relation>
+</osm>

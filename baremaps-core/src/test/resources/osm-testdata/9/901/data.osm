@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version="0.6" generator="testdata" upload="false">
+    <node id="901000" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.11" lat="1.01"/>
+    <node id="901001" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.11" lat="1.04"/>
+    <node id="901002" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.14" lat="1.04"/>
+    <node id="901003" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1" lon="9.14" lat="1.01"/>
+    <way id="901800" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="901000"/>
+        <nd ref="901001"/>
+        <nd ref="901002"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="901"/>
+    </way>
+    <way id="901801" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <nd ref="901002"/>
+        <nd ref="901003"/>
+        <nd ref="901000"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="901"/>
+    </way>
+    <relation id="901900" version="1" timestamp="2014-01-01T00:00:00Z" uid="1" user="test" changeset="1">
+        <member type="way" ref="901800" role="inner"/>
+        <member type="way" ref="901801" role="inner"/>
+        <tag k="type" v="multipolygon"/>
+        <tag k="test:section" v="mp-tags"/>
+        <tag k="test:id" v="901"/>
+        <tag k="landuse" v="forest"/>
+    </relation>
+</osm>

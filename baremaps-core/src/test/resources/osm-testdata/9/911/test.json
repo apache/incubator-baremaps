@@ -1,0 +1,18 @@
+{
+    "test_id": 911,
+    "description": "Building with one outer ring, tags on way and not on relation.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 911900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((9.11 1.11,9.11 1.19,9.19 1.19,9.19 1.11,9.11 1.11)))",
+                "tags": {
+                    "test:section": "mp-tags",
+                    "test:id": "911",
+                    "building": "yes"
+                }
+            }
+        ]
+    }
+}

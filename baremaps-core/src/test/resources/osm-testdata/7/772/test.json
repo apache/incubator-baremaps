@@ -1,0 +1,18 @@
+{
+    "test_id": 772,
+    "description": "Multipolygon with two inner rings touching in single node.",
+    "areas": {
+        "default": [
+            {
+                "from_id": 772900,
+                "from_type": "relation",
+                "wkt": "MULTIPOLYGON(((7.21 1.71,7.21 1.79,7.29 1.79,7.29 1.71,7.21 1.71),(7.26 1.72,7.22 1.72,7.22 1.74,7.24 1.74,7.26 1.74,7.26 1.72),(7.24 1.74,7.26 1.76,7.24 1.78,7.22 1.76,7.24 1.74)))",
+                "tags": {
+                    "landuse": "forest",
+                    "test:section": "mp-geom",
+                    "test:id": "772"
+                }
+            }
+        ]
+    }
+}
