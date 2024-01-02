@@ -13,6 +13,13 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-CREATE INDEX IF NOT EXISTS osm_nodes_tags_index ON osm_nodes USING gin (tags);
-CREATE INDEX IF NOT EXISTS osm_nodes_tags_tsvector_index ON osm_nodes USING gin (to_tsvector('english', tags));
-CREATE INDEX IF NOT EXISTS osm_nodes_geom_index ON osm_nodes USING gist (geom);
+CREATE VIEW osm_entities AS (
+    SELECT 'node' as type, id, tags, geom
+    FROM osm_nodes
+    UNION
+    SELECT 'way' as type, id, tags, geom
+    FROM osm_ways
+    UNION
+    SELECT 'relation' as type, id, tags, geom
+    FROM osm_relations
+);

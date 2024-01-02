@@ -122,6 +122,12 @@ export default {
           "databaseSrid": 3857,
           "replaceExisting": true,
         },
+        {
+          "type": "ExecuteSql",
+          "file": "queries/osm_entities.sql",
+          "database": config.database,
+          "parallel": false,
+        },
       ]
     },
     {
