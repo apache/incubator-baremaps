@@ -27,11 +27,9 @@ import org.locationtech.jts.io.WKBWriter;
 
 public class GeometryValueHandler extends BaseValueHandler<Geometry> {
 
-  private final WKBWriter writer = new WKBWriter(2, wkbNDR, true);
-
   @Override
   protected void internalHandle(DataOutputStream buffer, Geometry value) throws IOException {
-    byte[] wkb = writer.write(value);
+    byte[] wkb = new WKBWriter(2, wkbNDR, true).write(value);
     buffer.writeInt(wkb.length);
     buffer.write(wkb, 0, wkb.length);
   }

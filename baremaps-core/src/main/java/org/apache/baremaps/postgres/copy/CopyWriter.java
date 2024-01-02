@@ -25,10 +25,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
@@ -38,17 +37,74 @@ import org.postgresql.core.Oid;
 /** A helper for writing in a {@code PGCopyOutputStream}. */
 public class CopyWriter implements AutoCloseable {
 
-  private static final Charset UTF8 = StandardCharsets.UTF_8;
+  public static final StringValueHandler STRING_HANDLER =
+      new StringValueHandler();
 
-  private static final byte IPV4 = 2;
-  private static final byte IPV4_MASK = 32;
-  private static final byte IPV4_IS_CIDR = 0;
+  public static final CollectionValueHandler<String, Collection<String>> STRING_COLLECTION_HANDLER =
+      new CollectionValueHandler<>(Oid.TEXT, new StringValueHandler());
 
-  private static final byte IPV6 = 3;
-  private static final int IPV6_MASK = 128;
-  private static final byte IPV6_IS_CIDR = 0;
+  public static final BooleanValueHandler BOOLEAN_HANDLER =
+      new BooleanValueHandler();
 
-  private static final byte JSONB_VERSION = 1;
+  public static final CollectionValueHandler<Boolean, Collection<Boolean>> BOOLEAN_COLLECTION_HANDLER =
+      new CollectionValueHandler<>(Oid.BOOL, new BooleanValueHandler());
+
+  public static final ByteValueHandler<Number> BYTE_HANDLER =
+      new ByteValueHandler<>();
+
+  public static final ByteArrayValueHandler BYTE_ARRAY_HANDLER =
+      new ByteArrayValueHandler();
+
+  public static final ShortValueHandler<Number> SHORT_HANDLER =
+      new ShortValueHandler<>();
+
+  public static final CollectionValueHandler<Short, Collection<Short>> SHORT_COLLECTION_HANDLER =
+      new CollectionValueHandler<>(Oid.INT2, new ShortValueHandler<>());
+
+  public static final IntegerValueHandler<Number> INTEGER_HANDLER =
+      new IntegerValueHandler<>();
+
+  public static final CollectionValueHandler<Integer, Collection<Integer>> INTEGER_COLLECTION_HANDLER =
+      new CollectionValueHandler<>(Oid.INT4, new IntegerValueHandler<>());
+
+  public static final LongValueHandler<Number> LONG_HANDLER =
+      new LongValueHandler<>();
+
+  public static final CollectionValueHandler<Long, Collection<Long>> LONG_COLLECTION_HANDLER =
+      new CollectionValueHandler<>(Oid.INT8, new LongValueHandler<>());
+
+  public static final FloatValueHandler<Number> FLOAT_HANDLER =
+      new FloatValueHandler<>();
+
+  public static final CollectionValueHandler<Float, Collection<Float>> FLOAT_COLLECTION_HANDLER =
+      new CollectionValueHandler<>(Oid.FLOAT4, new FloatValueHandler<>());
+
+  public static final DoubleValueHandler<Number> DOUBLE_HANDLER =
+      new DoubleValueHandler<>();
+
+  public static final CollectionValueHandler<Double, Collection<Double>> DOUBLE_COLLECTION_HANDLER =
+      new CollectionValueHandler<>(Oid.FLOAT8, new DoubleValueHandler<>());
+
+  public static final LocalDateValueHandler LOCAL_DATE_HANDLER =
+      new LocalDateValueHandler();
+
+  public static final LocalDateTimeValueHandler LOCAL_DATE_TIME_HANDLER =
+      new LocalDateTimeValueHandler();
+
+  public static final Inet4AddressValueHandler INET_4_ADDRESS_HANDLER =
+      new Inet4AddressValueHandler();
+
+  public static final Inet6AddressValueHandler INET_6_ADDRESS_HANDLER =
+      new Inet6AddressValueHandler();
+
+  public static final HstoreValueHandler HSTORE_HANDLER =
+      new HstoreValueHandler();
+
+  public static final JsonbValueHandler JSONB_HANDLER =
+      new JsonbValueHandler();
+
+  public static final GeometryValueHandler GEOMETRY_HANDLER =
+      new GeometryValueHandler();
 
   private final DataOutputStream data;
 
@@ -118,7 +174,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void write(String value) throws IOException {
-    new StringValueHandler().handle(data, value);
+    STRING_HANDLER.handle(data, value);
   }
 
   /**
@@ -128,7 +184,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void write(List<String> value) throws IOException {
-    new CollectionValueHandler<>(Oid.TEXT, new StringValueHandler()).handle(data, value);
+    STRING_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
@@ -138,7 +194,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeBoolean(Boolean value) throws IOException {
-    new BooleanValueHandler().handle(data, value);
+    BOOLEAN_HANDLER.handle(data, value);
   }
 
   /**
@@ -148,7 +204,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeBooleanList(List<Boolean> value) throws IOException {
-    new CollectionValueHandler<>(Oid.BOOL, new BooleanValueHandler()).handle(data, value);
+    BOOLEAN_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
@@ -158,7 +214,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeByte(Byte value) throws IOException {
-    new ByteValueHandler<>().handle(data, value);
+    BYTE_HANDLER.handle(data, value);
   }
 
   /**
@@ -168,7 +224,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeByteArray(byte[] value) throws IOException {
-    new ByteArrayValueHandler().handle(data, value);
+    BYTE_ARRAY_HANDLER.handle(data, value);
   }
 
   /**
@@ -178,7 +234,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeShort(Short value) throws IOException {
-    new ShortValueHandler<>().handle(data, value);
+    SHORT_HANDLER.handle(data, value);
   }
 
   /**
@@ -188,7 +244,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeShortList(List<Short> value) throws IOException {
-    new CollectionValueHandler<>(Oid.INT2, new ShortValueHandler<Short>()).handle(data, value);
+    SHORT_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
@@ -198,7 +254,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeInteger(Integer value) throws IOException {
-    new IntegerValueHandler<>().handle(data, value);
+    INTEGER_HANDLER.handle(data, value);
   }
 
   /**
@@ -208,7 +264,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeIntegerList(List<Integer> value) throws IOException {
-    new CollectionValueHandler<>(Oid.INT4, new IntegerValueHandler<Integer>()).handle(data, value);
+    INTEGER_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
@@ -218,7 +274,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeLong(Long value) throws IOException {
-    new LongValueHandler<>().handle(data, value);
+    LONG_HANDLER.handle(data, value);
   }
 
   /**
@@ -228,7 +284,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeLongList(List<Long> value) throws IOException {
-    new CollectionValueHandler<>(Oid.INT8, new LongValueHandler<Long>()).handle(data, value);
+    LONG_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
@@ -238,7 +294,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeFloat(Float value) throws IOException {
-    new FloatValueHandler<>().handle(data, value);
+    FLOAT_HANDLER.handle(data, value);
   }
 
   /**
@@ -248,7 +304,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeFloatList(List<Float> value) throws IOException {
-    new CollectionValueHandler<>(Oid.FLOAT4, new FloatValueHandler<Float>()).handle(data, value);
+    FLOAT_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
@@ -258,7 +314,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeDouble(Double value) throws IOException {
-    new DoubleValueHandler<>().handle(data, value);
+    DOUBLE_HANDLER.handle(data, value);
   }
 
   /**
@@ -268,7 +324,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeDoubleArray(List<Double> value) throws IOException {
-    new CollectionValueHandler<>(Oid.FLOAT8, new DoubleValueHandler<Double>()).handle(data, value);
+    DOUBLE_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
@@ -278,7 +334,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeLocalDate(LocalDate value) throws IOException {
-    new LocalDateValueHandler().handle(data, value);
+    LOCAL_DATE_HANDLER.handle(data, value);
   }
 
   /**
@@ -288,7 +344,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeLocalDateTime(LocalDateTime value) throws IOException {
-    new LocalDateTimeValueHandler().handle(data, value);
+    LOCAL_DATE_TIME_HANDLER.handle(data, value);
   }
 
   /**
@@ -298,7 +354,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeInet4Adress(Inet4Address value) throws IOException {
-    new Inet4AddressValueHandler().handle(data, value);
+    INET_4_ADDRESS_HANDLER.handle(data, value);
   }
 
   /**
@@ -308,7 +364,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeInet6Adress(Inet6Address value) throws IOException {
-    new Inet6AddressValueHandler().handle(data, value);
+    INET_6_ADDRESS_HANDLER.handle(data, value);
   }
 
   /**
@@ -318,7 +374,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeHstore(Map<String, String> value) throws IOException {
-    new HstoreValueHandler().handle(data, value);
+    HSTORE_HANDLER.handle(data, value);
   }
 
   /**
@@ -328,7 +384,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeJsonb(String value) throws IOException {
-    new JsonbValueHandler().handle(data, value);
+    JSONB_HANDLER.handle(data, value);
   }
 
   /**
@@ -338,7 +394,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeGeometry(Geometry value) throws IOException {
-    new GeometryValueHandler().handle(data, value);
+    GEOMETRY_HANDLER.handle(data, value);
   }
 
   /** Close the writer. */
