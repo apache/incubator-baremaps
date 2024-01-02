@@ -185,7 +185,7 @@ class EntityDataTypeGeometryBuilderTest {
     GEOMETRY_BUILDER.accept(RELATION_0);
     assertNull(RELATION_0.getGeometry());
     GEOMETRY_BUILDER.accept(RELATION_1);
-    assertNull(RELATION_1.getGeometry());
+    assertNotNull(RELATION_1.getGeometry());
     GEOMETRY_BUILDER.accept(RELATION_2);
     assertInstanceOf(MultiPolygon.class, RELATION_2.getGeometry());
     GEOMETRY_BUILDER.accept(RELATION_3);
