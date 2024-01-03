@@ -72,24 +72,25 @@ public class SearchResource {
   public Response search(
       @QueryParam("query") String queryText,
       @QueryParam("limit") @DefaultValue("10") int limit) {
-    try (var connection = dataSource.getConnection()) {
-      var statement = connection.prepareStatement(SEARCH_QUERY);
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(SEARCH_QUERY)) {
       statement.setString(1, queryText);
       statement.setInt(2, limit);
-      var result = statement.executeQuery();
       var list = new ArrayList<SearchResult>();
-      while (result.next()) {
-        var id = result.getLong(1);
-        var json = result.getString(2);
-        var tags = new ObjectMapper().readTree(json);
-        var wkt = result.getString(3);
-        var rank = result.getDouble(4);
-        list.add(new SearchResult(id, tags, wkt, rank));
+      try (var result = statement.executeQuery()) {
+        while (result.next()) {
+          var id = result.getLong(1);
+          var json = result.getString(2);
+          var tags = new ObjectMapper().readTree(json);
+          var wkt = result.getString(3);
+          var rank = result.getDouble(4);
+          list.add(new SearchResult(id, tags, wkt, rank));
+        }
       }
       var response = new SearchResponse(list);
       return Response.status(Response.Status.OK).entity(response).build();
     } catch (SQLException | JsonProcessingException e) {
-      logger.error("Error while searching for {}", queryText, e);
+      logger.error("Error while searching", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
