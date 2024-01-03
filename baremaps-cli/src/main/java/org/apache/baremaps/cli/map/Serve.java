@@ -26,6 +26,7 @@ import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
+import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.server.*;
@@ -101,6 +102,7 @@ public class Serve implements Callable<Integer> {
             .register(TileResource.class)
             .register(StyleResource.class)
             .register(TileJSONResource.class)
+            .register(SearchResource.class)
             .register(ClassPathResource.class)
             .register(newContextResolver(objectMapper))
             .register(new AbstractBinder() {
@@ -108,6 +110,7 @@ public class Serve implements Callable<Integer> {
               protected void configure() {
                 bind("assets").to(String.class).named("directory");
                 bind("server.html").to(String.class).named("index");
+                bind(datasource).to(DataSource.class);
                 bind(tileStoreSupplier).to(tileStoreSupplierType);
                 bind(styleSupplier).to(styleSupplierType);
                 bind(tileJSONSupplier).to(tileJSONSupplierType);
