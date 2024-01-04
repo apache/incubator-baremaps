@@ -51,14 +51,11 @@ import ocean_overlay from './layers/ocean/overlay.js';
 import route_line from "./layers/route/style.js"
 import building_shape from "./layers/building/shape.js";
 import building_extrusion from "./layers/building/extrusion.js";
-import building_number from "./layers/building/number.js";
 import man_made_bridge from "./layers/man_made/bridge.js";
 import man_made_pier_line from "./layers/man_made/pier_line.js";
 import man_made_pier_label from "./layers/man_made/pier_label.js";
 import waterway_line from "./layers/waterway/line.js"
 import waterway_label from "./layers/waterway/label.js"
-import waterway_tunnel_line from "./layers/waterway/tunnel_line.js"
-import waterway_tunnel_casing from "./layers/waterway/tunnel_casing.js"
 import icon from "./layers/point/icon.js";
 import country_label from './layers/point/country_label.js';
 import point_label from './layers/point/point_label.js';
@@ -90,8 +87,6 @@ export default {
         leisure_overlay,
         ocean_overlay,
         waterway_line,
-        waterway_tunnel_casing,
-        waterway_tunnel_line,
         man_made_bridge,
         amenity_fountain,
         highway_tunnel_outline,
@@ -117,7 +112,6 @@ export default {
         boundary_line,
         waterway_label,
         building_extrusion,
-        building_number,
         icon,
         point_label,
         country_label,

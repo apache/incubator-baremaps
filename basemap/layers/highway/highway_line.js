@@ -17,18 +17,6 @@
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-const highwayMotorwayLineWidth = [5, 1, 16, 8];
-const highwayTrunkLineWidth = [5, 1, 16, 6];
-const highwayPrimaryLineWidth = [5, 1, 16, 6];
-const highwaySecondaryLineWidth = [5, 1, 16, 5];
-const highwayTertiaryLineWidth = [5, 1, 16, 4];
-const highwayBuswayLineWidth = [5, 1, 16, 4];
-const highwayUnclassifiedLineWidth = [5, 1, 16, 3];
-const highwayResidentialLineWidth = [5, 1, 16, 3];
-const highwayLivingStreetLineWidth = [5, 1, 16, 3];
-const highwayServiceLineWidth = [5, 1, 16, 3];
-const highwayRacewayLineWidth = [5, 1, 16, 2];
-const highwayPedestrianLineWidth = [5, 1, 16, 1];
 let directives = [
     {
         filter: [

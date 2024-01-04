@@ -15,30 +15,33 @@
  limitations under the License.
  **/
 import theme from "../../theme.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
+let directives = [
+    {
+        "filter": ["!", ["has", "tunnel"]],
+        "line-color": theme.waterwayLineColor,
+        "line-width-stops": [4, 1, 14, 1],
+    },
+    {
+        "filter": ["has", "tunnel"],
+        "line-color": theme.waterwayTunnelColor,
+        "line-width-stops": [4, 1, 14, 1],
+    },
+];
 
-export default {
+let layer = asLayerObject(withSortKeys(directives), {
     "id": "waterway",
     "type": "line",
-    "filter": [
-        "all",
-        ["!=", "tunnel", "yes"],
-        ["!=", "tunnel", "culvert"]
-    ],
     "source": "baremaps",
     "source-layer": "waterway",
-    "layout": {
-        "line-cap": "round",
-        "line-join": "round",
-        "visibility": "visible"
+    layout: {
+        visibility: 'visible',
+        'line-cap': 'round',
+        'line-join': 'round',
     },
-    "paint": {
-        "line-width": [
-            "interpolate",
-            ["exponential", 1.2],
-            ["zoom"],
-            4, 0, 20, 12
-        ],
-        "line-color": theme.waterwayLineWaterwayLineColor
-    }
-}
+});
+
+console.log(JSON.stringify(layer, null, 2));
+
+export default layer;
