@@ -37,17 +37,14 @@ import leisure_overlay from "./layers/leisure/overlay.js";
 import railway_tunnel from "./layers/railway/tunnel.js";
 import railway_line from "./layers/railway/line.js";
 
-
 import highway_line from './layers/highway/highway_line.js';
 import highway_outline from './layers/highway/highway_outline.js';
-import highway_dash from './layers/highway/highway_dash.js';
 import highway_tunnel_line from './layers/highway/tunnel_line.js';
 import highway_tunnel_outline from './layers/highway/tunnel_outline.js';
 import highway_pedestrian_area from './layers/highway/pedestrian_area.js';
 import highway_bridge_line from './layers/highway/bridge_line.js';
 import highway_bridge_outline from './layers/highway/bridge_outline.js';
 import highway_construction_line from "./layers/highway/construction_line.js";
-import highway_construction_dash from "./layers/highway/construction_dash.js";
 import highway_label from './layers/highway/highway_label.js';
 
 import ocean_overlay from './layers/ocean/overlay.js';
@@ -99,14 +96,11 @@ export default {
         amenity_fountain,
         highway_tunnel_outline,
         highway_tunnel_line,
-        railway_tunnel,
+        // railway_tunnel,
         building_shape,
-        building_number,
-        highway_construction_dash,
         highway_construction_line,
         highway_outline,
         highway_line,
-        highway_dash,
         highway_pedestrian_area,
         railway_line,
         highway_bridge_outline,
@@ -123,6 +117,7 @@ export default {
         boundary_line,
         waterway_label,
         building_extrusion,
+        building_number,
         icon,
         point_label,
         country_label,

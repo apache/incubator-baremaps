@@ -21,14 +21,14 @@ import theme from "../../theme.js";
 let directives = [
     {
         'filter': ['==', ['get', 'aeroway'], 'runway'],
-        'line-color': theme.aerowayLineRunwayLineColor,
-        'road-width': 30,
+        'line-color': theme.aerowayRunwayLineColor,
+        'line-width': 1,
     },
     {
 
         'filter': ['==', ['get', 'aeroway'], 'taxiway'],
-        'line-color': theme.aerowayLineTaxiwayLineColor,
-        'road-width': 14,
+        'line-color': theme.aerowayTaxiwayLineColor,
+        'line-width': 1,
     },
 ];
 

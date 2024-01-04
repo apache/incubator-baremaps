@@ -27,6 +27,6 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'line-color': theme.aerialwayStyleLinePaintLineColor,
+        'line-color': theme.aerialwayLineColor,
     },
 }

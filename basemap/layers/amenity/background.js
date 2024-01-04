@@ -20,11 +20,11 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'amenity'], 'kindergarten'],
-        'fill-color': theme.amenityBackgroundKinderGartenFillColor,
+        'fill-color': theme.amenityKinderGartenFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'school'],
-        'fill-color': theme.amenityBackgroundSchoolFillColor,
+        'fill-color': theme.amenitySchoolFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'college'],

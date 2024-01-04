@@ -23,4 +23,4 @@ FROM (
    FROM osm_ways
    WHERE tags ->> 'railway' IN ('light_rail', 'monorail', 'rail', 'subway', 'tram')
    GROUP BY tags -> 'railway', tags -> 'service'
-) AS merge;
+) AS mergedDirective;

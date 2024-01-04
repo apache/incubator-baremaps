@@ -26,6 +26,6 @@ FROM (
    WHERE tags ->> 'route' IN ('light_rail', 'monorail', 'rail', 'subway', 'tram')
    AND NOT tags ? 'service'
    GROUP BY tags -> 'route'
-) AS merge;
+) AS mergedDirective;
 
 CREATE INDEX IF NOT EXISTS osm_route_geom_index ON osm_route USING SPGIST (geom);

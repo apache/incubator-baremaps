@@ -14,6 +14,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
+
 export function withSortKeys(directives) {
     return directives
         .map(withFillSortKey)
@@ -28,7 +29,7 @@ export function withFillSortKey(directive, index, array) {
 }
 
 export function withLineSortKey(directive, index, array) {
-    return directive['line-width'] ? {
+    return directive['line-width'] || directive['line-width-stops'] ? {
         ...directive,
         'line-sort-key': array.length - index,
     } : directive;
@@ -192,20 +193,47 @@ function mergeDirectives(directives, property, value) {
 }
 
 function roadWidth(directives) {
-    return mergeInterpolatedDirective(directives, 'road-width', 'line-width', 1)
+    return mergeRoadDirective(directives, 'line-width-stops', 'line-width', 1)
 }
 
 function roadGapWidth(directives) {
-    return mergeInterpolatedDirective(directives, 'road-gap-width', 'line-gap-width', 1)
+    return mergeRoadDirective(directives, 'line-gap-width-stops', 'line-gap-width', 1)
 }
 
 function labelColor(directives) {
     return mergeInterpolatedColorDirective(directives, 'label-color', 'text-color', 6, 8, 'rgb(0, 0, 0)')
 }
 
-
 function labelSize(directives) {
     return mergeInterpolatedNumberDirective(directives, 'label-size', 'text-size', 6, 8, 4, 14)
+}
+
+function mergeRoadDirective(directives, property, alias, value) {
+    if (directives.filter((directive) => directive[property]).length == 0) {
+        return {};
+    }
+    var mergedDirective = [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+    ];
+    for (let zoom = 0; zoom <= 22; zoom++) {
+        mergedDirective.push(zoom);
+        let cases = ['case']
+        for (let directive of directives) {
+            if (directive[property]) {
+                let filter = directive['filter'];
+                let value = interpolate(zoom, directive[property]);
+                cases.push(filter);
+                cases.push(value);
+            }
+        }
+        cases.push(value);
+        mergedDirective.push(cases);
+    }
+    return {
+        [alias]: mergedDirective,
+    }
 }
 
 function mergeInterpolatedDirective(directives, property, alias, value) {
@@ -286,3 +314,41 @@ function groupBy(xs, key) {
         return rv
     }, {})
 }
+
+/**
+ * Given an array in the form of [zoom_level_n, value_n, zoom_level_m, value_m, ...], with n < m, n >= 0, and m <= 22,
+ * the function linearly interpolates the value for the given zoom level.
+ *
+ * The values before zoom_level_n are assumed to be equal to 0.
+ * The values after zoom_level_m are assumed to be equal to value_m * 2 ** (zoom - zoom_level_m).
+ *
+ * Here are a few examples:
+ * interpolate(0, [10, 1, 14, 5]) = 0
+ * interpolate(9, [10, 1, 14, 5]) = 0
+ * interpolate(10, [10, 1, 14, 5]) = 1
+ * interpolate(11, [10, 1, 14, 5]) = 2
+ * interpolate(12, [10, 1, 14, 5]) = 3
+ * interpolate(13, [10, 1, 14, 5]) = 4
+ * interpolate(14, [10, 1, 14, 5]) = 5
+ * interpolate(15, [10, 1, 14, 5]) = 10
+ * interpolate(17, [10, 1, 14, 5]) = 40
+ * interpolate(22, [10, 1, 14, 5]) = 5
+ */
+export function interpolate(zoom, values) {
+    let i = 0
+    while (i < values.length && zoom >= values[i]) {
+        i += 2;
+    }
+    if (i >= values.length) {
+        return values[values.length - 1] * 2 ** (zoom - values[values.length - 2]);
+    }
+    if (i === 0) {
+        return 0;
+    }
+    const zoomN = values[i - 2];
+    const valueN = values[i - 1];
+    const zoomM = values[i];
+    const valueM = values[i + 1];
+    return valueN + (valueM - valueN) * (zoom - zoomN) / (zoomM - zoomN);
+}
+

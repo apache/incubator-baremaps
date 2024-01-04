@@ -20,7 +20,7 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['geometry-type'], 'Polygon'],
-        'fill-color': theme.aerowayPolygonLineColor,
+        'fill-color': theme.aerowayPolygonColor,
     },
 ];
 

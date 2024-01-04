@@ -25,8 +25,8 @@ let directives = [
             ['==', ['get', 'highway'], 'motorway_link'],
         ],
         'line-color': theme.highwayOutlineMotorwayLineColor,
-        'road-gap-width': 12,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayMotorwayLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: [
@@ -35,8 +35,8 @@ let directives = [
             ['==', ['get', 'highway'], 'trunk_link'],
         ],
         'line-color': theme.highwayOutlineTrunkLineColor,
-        'road-gap-width': 10,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayTrunkLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: [
@@ -45,8 +45,8 @@ let directives = [
             ['==', ['get', 'highway'], 'primary_link'],
         ],
         'line-color': theme.highwayOutlinePrimaryLineColor,
-        'road-gap-width': 10,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayPrimaryLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: [
@@ -55,8 +55,8 @@ let directives = [
             ['==', ['get', 'highway'], 'secondary_link'],
         ],
         'line-color': theme.highwayOutlineSecondaryLineColor,
-        'road-gap-width': 8,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwaySecondaryLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: [
@@ -65,38 +65,38 @@ let directives = [
             ['==', ['get', 'highway'], 'tertiary_link'],
         ],
         'line-color': theme.highwayOutlineTertiaryLineColor,
-        'road-gap-width': 8,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayTertiaryLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'busway'],
         'line-color': theme.highwayOutlineBuswayLineColor,
-        'road-gap-width': 8,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayBuswayLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'unclassified'],
         'line-color': theme.highwayOutlineUnclassifiedLineColor,
-        'road-gap-width': 4,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayUnclassifiedLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'residential'],
         'line-color': theme.highwayOutlineResidentialLineColor,
-        'road-gap-width': 4,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayResidentialLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'living_street'],
         'line-color': theme.highwayOutlineLivingStreetLineColor,
-        'road-gap-width': 4,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayLivingStreetLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'service'],
         'line-color': theme.highwayOutlineServiceLineColor,
-        'road-gap-width': 4,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayServiceLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
     {
         filter: [
@@ -105,17 +105,8 @@ let directives = [
             ['!=', ['get', 'area'], 'yes'],
         ],
         'line-color': theme.highwayOutlinePedestrianLineColor,
-        'road-gap-width': 2,
-        'road-width': 2,
-    },
-    {
-        filter: [
-            'all',
-            ['==', ['get', 'highway'], 'pedestrian'],
-            ['==', ['get', 'area'], 'yes'],
-        ],
-        'line-color': theme.highwayOutlinePedestrianBisLineColor,
-        'road-width': 2,
+        'line-gap-width-stops': theme.highwayPedestrianLineWidth,
+        'line-width-stops': theme.highwayOutlineWidth,
     },
 ]
 
