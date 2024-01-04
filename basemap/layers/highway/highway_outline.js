@@ -35,7 +35,7 @@ let directives = [
             ['==', ['get', 'highway'], 'trunk_link'],
         ],
         'line-color': theme.highwayOutlineTrunkLineColor,
-        'road-gap-width': 8,
+        'road-gap-width': 10,
         'road-width': 2,
     },
     {

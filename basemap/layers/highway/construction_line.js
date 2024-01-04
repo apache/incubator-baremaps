@@ -41,7 +41,7 @@ let directives = [
             ]
         ],
         'line-color': theme.constructionLineConstructionTrunkLineColor,
-        'road-width': 12,
+        'road-width': 14,
     },
     {
         filter: [

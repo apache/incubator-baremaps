@@ -35,7 +35,7 @@ let directives = [
             ['==', ['get', 'construction'], 'trunk'],
         ],
         'line-color': theme.constructionDashConstructionTrunkLineColor,
-        'road-width': 12,
+        'road-width': 14,
     },
     {
         filter: [

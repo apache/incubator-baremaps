@@ -35,7 +35,7 @@ let directives = [
             ['==', ['get', 'highway'], 'trunk_link'],
         ],
         'line-color': theme.tunnelLineTrunkLineColor,
-        'road-width': 8,
+        'road-width': 10,
     },
     {
         filter: [
