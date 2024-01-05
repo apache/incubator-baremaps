@@ -36,4 +36,5 @@ export default asLayerObject(withSortKeys(directives), {
         'line-join': 'round',
         visibility: 'visible',
     },
+    filter: ['==', ['geometry-type'], 'LineString'],
 });

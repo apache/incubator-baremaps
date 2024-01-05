@@ -24,11 +24,6 @@ let directives = [
         'fill-color': theme.leisureBackgroundGolfCourseFillColor,
     },
     {
-        filter: ['==', ['get', 'leisure'], 'track'],
-        'fill-color': theme.leisureBackgroundTrackFillColor,
-        'fill-outline-color': theme.leisureBackgroundTrackFillOutlineColor,
-    },
-    {
         filter: ['==', ['get', 'leisure'], 'sports_centre'],
         'fill-color': theme.leisureBackgroundSportsCentreFillColor,
     },
@@ -53,4 +48,5 @@ export default asLayerObject(withSortKeys(directives), {
     paint: {
         'fill-antialias': false,
     },
+    filter: ['==', ["geometry-type"], 'Polygon'],
 });

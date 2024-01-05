@@ -26,7 +26,7 @@ export default {
     },
     filter: [
         'all',
-        ['==', 'area', 'yes'],
+        ['has', 'area'], // Some pedestrian areas are not closed polygons, hence the need for this filter
         [
             'any',
             ['==', 'highway', 'pedestrian'],

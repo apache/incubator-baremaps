@@ -19,7 +19,6 @@ import theme from "../../theme.js";
 export default {
     id: 'natural_trunk',
     type: 'circle',
-    filter: ['all', ['==', 'natural', 'tree']],
     source: 'baremaps',
     'source-layer': 'point',
     layout: {
@@ -38,4 +37,5 @@ export default {
             50,
         ],
     },
+    filter: ['all', ['==', 'natural', 'tree']],
 };

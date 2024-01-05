@@ -104,10 +104,10 @@ public class ChangeResource {
     public void run() {
       try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
         if (tileset != null && Files.exists(tileset)) {
-          tileset.toAbsolutePath().getParent().register(watchService, ENTRY_MODIFY);
+          registerRecursively(tileset.toAbsolutePath().getParent(), watchService);
         }
         if (style != null && Files.exists(style)) {
-          style.toAbsolutePath().getParent().register(watchService, ENTRY_MODIFY);
+          registerRecursively(style.toAbsolutePath().getParent(), watchService);
         }
         WatchKey key;
         while ((key = watchService.take()) != null) {
@@ -135,6 +135,25 @@ public class ChangeResource {
       } catch (InterruptedException | IOException e) {
         logger.error(e.getMessage());
         Thread.currentThread().interrupt();
+      }
+    }
+
+    /**
+     * Registers a directory and its sub-directories with the watch service.
+     *
+     * @param directory the directory
+     * @param watchService the watch service
+     * @throws IOException
+     */
+    private void registerRecursively(Path directory, WatchService watchService) throws IOException {
+      try (var directories = Files.walk(directory)) {
+        directories.filter(Files::isDirectory).forEach(path -> {
+          try {
+            path.register(watchService, ENTRY_MODIFY);
+          } catch (IOException e) {
+            logger.error(e.getMessage());
+          }
+        });
       }
     }
   }

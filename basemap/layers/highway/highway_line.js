@@ -20,12 +20,71 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: [
+            'all',
+            ['==', ['get', 'highway'], 'pedestrian'],
+            ['!=', ['get', 'area'], 'yes'],
+        ],
+        'line-color': theme.highwayPedestrianLineColor,
+        'line-width-stops': theme.highwayPedestrianLineWidth,
+    },
+    {
+        filter: ['==', ['get', 'highway'], 'bridleway'],
+        'line-color': theme.highwayDashBridlewayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: ['==', ['get', 'highway'], 'busway'],
+        'line-color': theme.highwayDashBuswayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: [
+            'any',
+            ['==', ['get', 'highway'], 'cycleway'],
+            [
+                'all',
+                ['==', ['get', 'highway'], 'path'],
+                ['==', ['get', 'bicycle'], 'designated'],
+            ],
+        ],
+        'line-color': theme.highwayDashCyclewayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: [
+            'any',
+            [
+                'in',
+                ['get', 'highway'],
+                ['literal', ['sidewalk', 'crossing', 'steps']],
+            ],
+            [
+                'all',
+                ['==', ['get', 'highway'], 'footway'],
+                ['!=', ['get', 'access'], 'private'],
+            ],
+            [
+                'all',
+                ['==', ['get', 'highway'], 'path'],
+                ['!=', ['get', 'bicycle'], 'designated'],
+            ],
+        ],
+        'line-color': theme.highwayDashHighwayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: ['all', ['==', ['get', 'highway'], 'track']],
+        'line-color': theme.highwayDashTrackLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: [
             'any',
             ['==', ['get', 'highway'], 'motorway'],
             ['==', ['get', 'highway'], 'motorway_link'],
         ],
-        'line-color': theme.highwayLineMotorwayLineColor,
-        'road-width': 12,
+        'line-color': theme.highwayMotorwayLineColor,
+        'line-width-stops': theme.highwayMotorwayLineWidth,
     },
     {
         filter: [
@@ -33,8 +92,8 @@ let directives = [
             ['==', ['get', 'highway'], 'trunk'],
             ['==', ['get', 'highway'], 'trunk_link'],
         ],
-        'line-color': theme.highwayLineTrunkLineColor,
-        'road-width': 8,
+        'line-color': theme.highwayTrunkLineColor,
+        'line-width-stops': theme.highwayTrunkLineWidth,
     },
     {
         filter: [
@@ -42,8 +101,8 @@ let directives = [
             ['==', ['get', 'highway'], 'primary'],
             ['==', ['get', 'highway'], 'primary_link'],
         ],
-        'line-color': theme.highwayLinePrimaryLineColor,
-        'road-width': 10,
+        'line-color': theme.highwayPrimaryLineColor,
+        'line-width-stops': theme.highwayPrimaryLineWidth,
     },
     {
         filter: [
@@ -51,8 +110,8 @@ let directives = [
             ['==', ['get', 'highway'], 'secondary'],
             ['==', ['get', 'highway'], 'secondary_link'],
         ],
-        'line-color': theme.highwayLineSecondaryLineColor,
-        'road-width': 8,
+        'line-color': theme.highwaySecondaryLineColor,
+        'line-width-stops': theme.highwaySecondaryLineWidth,
     },
     {
         filter: [
@@ -60,47 +119,38 @@ let directives = [
             ['==', ['get', 'highway'], 'tertiary'],
             ['==', ['get', 'highway'], 'tertiary_link'],
         ],
-        'line-color': theme.highwayLineTertiaryLineColor,
-        'road-width': 8,
+        'line-color': theme.highwayTertiaryLineColor,
+        'line-width-stops': theme.highwayTertiaryLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'busway'],
-        'line-color': theme.highwayLineBuswayLineColor,
-        'road-width': 8,
+        'line-color': theme.highwayBuswayLineColor,
+        'line-width-stops': theme.highwayBuswayLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'unclassified'],
-        'line-color': theme.highwayLineUnclassifiedLineColor,
-        'road-width': 4,
+        'line-color': theme.highwayUnclassifiedLineColor,
+        'line-width-stops': theme.highwayUnclassifiedLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'residential'],
-        'line-color': theme.highwayLineResidentialLineColor,
-        'road-width': 4,
+        'line-color': theme.highwayResidentialLineColor,
+        'line-width-stops': theme.highwayResidentialLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'living_street'],
-        'line-color': theme.highwayLineLivingStreetLineColor,
-        'road-width': 4,
+        'line-color': theme.highwayLivingStreetLineColor,
+        'line-width-stops': theme.highwayLivingStreetLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'service'],
-        'line-color': theme.highwayLineServiceLineColor,
-        'road-width': 4,
+        'line-color': theme.highwayServiceLineColor,
+        'line-width-stops': theme.highwayServiceLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'raceway'],
-        'line-color': theme.highwayLineRacewayLineColor,
-        'road-width': 4,
-    },
-    {
-        filter: [
-            'all',
-            ['==', ['get', 'highway'], 'pedestrian'],
-            ['!=', ['get', 'area'], 'yes'],
-        ],
-        'line-color': theme.highwayLinePedestrianLineColor,
-        'road-width': 2,
+        'line-color': theme.highwayRacewayLineColor,
+        'line-width-stops': theme.highwayRacewayLineWidth,
     },
 ];
 
@@ -116,9 +166,8 @@ export default asLayerObject(withSortKeys(directives), {
     },
     filter: [
         'all',
+        ['==', ['geometry-type'], 'LineString'],
         ['!=', ['get', 'bridge'], 'yes'],
         ['!=', ['get', 'tunnel'], 'yes'],
-        ['!=', ['get', 'layer'], '-1'],
-        ['!=', ['get', 'covered'], 'yes'],
     ],
 });

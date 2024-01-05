@@ -17,24 +17,16 @@
 import theme from "../../theme.js";
 
 export default {
-    id: 'building',
-    type: 'fill',
+    id: 'waterway_polygon',
     source: 'baremaps',
-    'source-layer': 'building',
-    filter: ['!=', ['get', 'building'], 'no'],
+    'source-layer': 'waterway',
+    type: 'fill',
     layout: {
         visibility: 'visible',
     },
+    filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
         'fill-antialias': false,
-        'fill-color': theme.buildingShapeFillColor,
-        'fill-outline-color': theme.buildingShapeFillOutlineColor,
-        'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            13, 0,
-            13.5, 1
-        ]
+        'fill-color': theme.waterwayLineColor,
     },
 }

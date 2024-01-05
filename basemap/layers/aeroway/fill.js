@@ -14,25 +14,25 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
-
-import {withFillSortKey} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
 let directives = [
     {
-        filter: ['==', 'leisure', 'nature_reserve'],
-        'line-width': 5,
-        'line-color': theme.leisureNatureReserveLineColor,
+        filter: ['==', ['geometry-type'], 'Polygon'],
+        'fill-color': theme.aerowayPolygonColor,
     },
 ];
 
-export default {
-    id: 'leisure_nature_reserve',
-    type: 'line',
+export default asLayerObject(withSortKeys(directives), {
+    id: 'aeroway_polygon',
+    type: 'fill',
     source: 'baremaps',
-    'source-layer': 'leisure',
+    'source-layer': 'aeroway',
     layout: {
         visibility: 'visible',
     },
-    directives: directives.map(withFillSortKey),
-}
+    paint: {
+        'fill-antialias': true,
+    },
+});

@@ -22,6 +22,7 @@ export default {
     source: 'baremaps',
     'source-layer': 'building',
     filter: ['all',
+        ['==', ['geometry-type'], 'Polygon'],
         ['!=', ['get', 'building'], 'no'],
         ['!=', ['get', 'building:part'], 'no']
     ],

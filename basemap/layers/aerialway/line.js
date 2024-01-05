@@ -15,30 +15,26 @@
  limitations under the License.
  **/
 import theme from "../../theme.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils";
 
 
-export default {
-    "id": "waterway_tunnel",
-    "type": "line",
-    "filter": [
-        "any",
-        ["==", "tunnel", "yes"],
-        ["==", "tunnel", "culvert"]
-    ],
-    "source": "baremaps",
-    "source-layer": "waterway",
-    "layout": {
-        "line-cap": "round",
-        "line-join": "round",
-        "visibility": "visible"
+let directives = [
+    {
+        filter: ['==', ["geometry-type"], 'LineString'],
+        'line-color': theme.aerialwayLineColor,
+        'line-width': 1,
     },
-    "paint": {
-        "line-width": [
-            "interpolate",
-            ["exponential", 1.2],
-            ["zoom"],
-            4, 0, 20, 8
-        ],
-        "line-color": theme.waterwayTunnelLineLineColor
-    }
-}
+];
+
+export default asLayerObject(withSortKeys(directives), {
+    id: 'aerialway_line',
+    type: 'line',
+    source: 'baremaps',
+    'source-layer': 'aerialway',
+    layout: {
+        'line-cap': 'round',
+        'line-join': 'round',
+        visibility: 'visible',
+    },
+    filter: ['==', ['geometry-type'], 'LineString'],
+});

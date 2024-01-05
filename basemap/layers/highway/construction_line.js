@@ -23,13 +23,22 @@ let directives = [
         filter: [
             'all',
             ['==', ['get', 'highway'], 'construction'],
+            ['!', ['has', 'construction']],
+        ],
+        'line-color': theme.constructionLineConstructionDefaultLineColor,
+        'line-width-stops': theme.highwayConstructionLineWidth,
+    },
+    {
+        filter: [
+            'all',
+            ['==', ['get', 'highway'], 'construction'],
             ['any',
                 ['==', ['get', 'construction'], 'motorway'],
                 ['==', ['get', 'construction'], 'motorway_link'],
             ]
         ],
         'line-color': theme.constructionLineConstructionMotorwayLineColor,
-        'road-width': 16,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -41,7 +50,7 @@ let directives = [
             ]
         ],
         'line-color': theme.constructionLineConstructionTrunkLineColor,
-        'road-width': 12,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -53,7 +62,7 @@ let directives = [
             ]
         ],
         'line-color': theme.constructionLineConstructionPrimaryLineColor,
-        'road-width': 14,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -65,7 +74,7 @@ let directives = [
             ]
         ],
         'line-color': theme.constructionLineConstructionSecondaryLineColor,
-        'road-width': 12,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -77,7 +86,7 @@ let directives = [
             ]
         ],
         'line-color': theme.constructionLineConstructionTertiaryLineColor,
-        'road-width': 12,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -86,7 +95,7 @@ let directives = [
             ['==', ['get', 'construction'], 'unclassified'],
         ],
         'line-color': theme.constructionLineConstructionUnclassifiedLineColor,
-        'road-width': 8,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -95,7 +104,7 @@ let directives = [
             ['==', ['get', 'construction'], 'residential'],
         ],
         'line-color': theme.constructionLineConstructionResidentialLineColor,
-        'road-width': 8,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -104,7 +113,7 @@ let directives = [
             ['==', ['get', 'construction'], 'living_street'],
         ],
         'line-color': theme.constructionLineConstructionLivingStreetLineColor,
-        'road-width': 8,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -113,7 +122,7 @@ let directives = [
             ['==', ['get', 'construction'], 'service'],
         ],
         'line-color': theme.constructionLineConstructionServiceLineColor,
-        'road-width': 8,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
     {
         filter: [
@@ -122,7 +131,7 @@ let directives = [
             ['==', ['get', 'construction'], 'raceway'],
         ],
         'line-color': theme.constructionLineConstructionRacewayLineColor,
-        'road-width': 8,
+        'line-width-stops': theme.highwayConstructionLineWidth,
     },
 ]
 
@@ -139,4 +148,5 @@ export default asLayerObject(withSortKeys(directives), {
     paint: {
         'line-dasharray': [1, 1],
     },
+    filter: ['==', ['geometry-type'], 'LineString'],
 });

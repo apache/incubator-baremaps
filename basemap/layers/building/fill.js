@@ -17,16 +17,28 @@
 import theme from "../../theme.js";
 
 export default {
-    id: 'aerialway_line',
-    type: 'line',
+    id: 'building',
+    type: 'fill',
     source: 'baremaps',
-    'source-layer': 'aerialway',
+    'source-layer': 'building',
     layout: {
-        'line-cap': 'round',
-        'line-join': 'round',
         visibility: 'visible',
     },
     paint: {
-        'line-color': theme.aerialwayStyleLinePaintLineColor,
+        'fill-antialias': false,
+        'fill-color': theme.buildingShapeFillColor,
+        'fill-outline-color': theme.buildingShapeFillOutlineColor,
+        'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            13, 0,
+            13.5, 1
+        ]
     },
+    filter: ['all',
+        ['==', ['geometry-type'], 'Polygon'],
+        ['!=', ['get', 'building'], 'no'],
+        ['!=', ['get', 'building:part'], 'no']
+    ],
 }

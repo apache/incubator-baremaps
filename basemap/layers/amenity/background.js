@@ -20,11 +20,11 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'amenity'], 'kindergarten'],
-        'fill-color': theme.amenityBackgroundKinderGartenFillColor,
+        'fill-color': theme.amenityKinderGartenFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'school'],
-        'fill-color': theme.amenityBackgroundSchoolFillColor,
+        'fill-color': theme.amenitySchoolFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'college'],
@@ -55,4 +55,5 @@ export default asLayerObject(withSortKeys(directives), {
     paint: {
         'fill-antialias': false,
     },
+    filter: ['==', ["geometry-type"], 'Polygon'],
 });
