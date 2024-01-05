@@ -138,18 +138,23 @@ public class ChangeResource {
       }
     }
 
+    /**
+     * Registers a directory and its sub-directories with the watch service.
+     *
+     * @param directory the directory
+     * @param watchService the watch service
+     * @throws IOException
+     */
     private void registerRecursively(Path directory, WatchService watchService) throws IOException {
-      Files.walk(directory)
-          .filter(Files::isDirectory)
-          .forEach(path -> {
-            try {
-              path.register(watchService, ENTRY_MODIFY);
-            } catch (IOException e) {
-              logger.error(e.getMessage());
-            }
-          });
+      try (var directories = Files.walk(directory)) {
+        directories.filter(Files::isDirectory).forEach(path -> {
+          try {
+            path.register(watchService, ENTRY_MODIFY);
+          } catch (IOException e) {
+            logger.error(e.getMessage());
+          }
+        });
+      }
     }
-
-
   }
 }
