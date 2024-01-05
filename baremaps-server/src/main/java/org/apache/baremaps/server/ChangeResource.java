@@ -104,10 +104,10 @@ public class ChangeResource {
     public void run() {
       try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
         if (tileset != null && Files.exists(tileset)) {
-          tileset.toAbsolutePath().getParent().register(watchService, ENTRY_MODIFY);
+          registerRecursively(tileset.toAbsolutePath().getParent(), watchService);
         }
         if (style != null && Files.exists(style)) {
-          style.toAbsolutePath().getParent().register(watchService, ENTRY_MODIFY);
+          registerRecursively(style.toAbsolutePath().getParent(), watchService);
         }
         WatchKey key;
         while ((key = watchService.take()) != null) {
@@ -137,5 +137,19 @@ public class ChangeResource {
         Thread.currentThread().interrupt();
       }
     }
+
+    private void registerRecursively(Path directory, WatchService watchService) throws IOException {
+      Files.walk(directory)
+          .filter(Files::isDirectory)
+          .forEach(path -> {
+            try {
+              path.register(watchService, ENTRY_MODIFY);
+            } catch (IOException e) {
+              logger.error(e.getMessage());
+            }
+          });
+    }
+
+
   }
 }
