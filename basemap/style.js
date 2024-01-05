@@ -55,6 +55,7 @@ import man_made_bridge from "./layers/man_made/bridge.js";
 import man_made_pier_line from "./layers/man_made/pier_line.js";
 import man_made_pier_label from "./layers/man_made/pier_label.js";
 import waterway_line from "./layers/waterway/line.js"
+import waterway_polygon from "./layers/waterway/polygon.js"
 import waterway_label from "./layers/waterway/label.js"
 import icon from "./layers/point/icon.js";
 import country_label from './layers/point/country_label.js';
@@ -87,6 +88,7 @@ export default {
         leisure_overlay,
         ocean_overlay,
         waterway_line,
+        waterway_polygon,
         man_made_bridge,
         amenity_fountain,
         highway_tunnel_outline,

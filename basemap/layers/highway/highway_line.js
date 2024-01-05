@@ -54,23 +54,6 @@ let directives = [
         filter: [
             'any',
             [
-                'all',
-                ['==', ['get', 'highway'], 'footway'],
-                ['==', ['get', 'access'], 'private'],
-            ],
-            [
-                'all',
-                ['==', ['get', 'highway'], 'service'],
-                ['in', ['get', 'access'], ['literal', ['private', 'no']]],
-            ],
-        ],
-        'line-color': theme.highwayDashFootwayLineColor,
-        'line-width-stops': theme.highwayMinorLineWidth,
-    },
-    {
-        filter: [
-            'any',
-            [
                 'in',
                 ['get', 'highway'],
                 ['literal', ['sidewalk', 'crossing', 'steps']],

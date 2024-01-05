@@ -71,6 +71,7 @@ public class WayGeometryBuilder implements Consumer<Way> {
         // Ways can be open or closed depending on the geometry or the tags:
         // https://wiki.openstreetmap.org/wiki/Way
         if (!line.isClosed()
+            || way.getTags().containsKey("railway")
             || way.getTags().containsKey("highway")
             || way.getTags().containsKey("barrier")) {
           way.setGeometry(line);
