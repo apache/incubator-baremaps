@@ -30,8 +30,43 @@ class Header {
   private long leafDirectoryLength;
   private long tileDataOffset;
   private long tileDataLength;
+
+  /**
+   * Number of Addressed Tiles
+   * <p>
+   * The Number of Addressed Tiles is an 8-byte field specifying the total number of tiles in the
+   * PMTiles archive, before RunLength Encoding.
+   * <p>
+   * A value of 0 indicates that the number is unknown.
+   * <p>
+   * This field is encoded as a little-endian 64-bit unsigned integer.
+   */
   private long numAddressedTiles;
+
+  /**
+   * Number of Tile Entries
+   * <p>
+   * The Number of Tile Entries is an 8-byte field specifying the total number of tile entries:
+   * entries where RunLength is greater than 0.
+   * <p>
+   * A value of 0 indicates that the number is unknown.
+   * <p>
+   * This field is encoded as a little-endian 64-bit unsigned integer.
+   *
+   * @return the number of tile entries
+   */
   private long numTileEntries;
+
+  /**
+   * Number of tile entries.
+   * <p>
+   * The Number of Tile Contents is an 8-byte field specifying the total number of blobs in the tile
+   * data section.
+   * <p>
+   * A value of 0 indicates that the number is unknown.
+   * <p>
+   * This field is encoded as a little-endian 64-bit unsigned integer.
+   */
   private long numTileContents;
   private boolean clustered;
   private Compression internalCompression;
