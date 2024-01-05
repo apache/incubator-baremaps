@@ -14,25 +14,31 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
-
-import {withFillSortKey} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-let directives = [
-    {
-        filter: ['==', 'leisure', 'nature_reserve'],
-        'line-width': 5,
-        'line-color': theme.leisureNatureReserveLineColor,
-    },
-];
-
 export default {
-    id: 'leisure_nature_reserve',
-    type: 'line',
+    id: 'pedestrian_area',
     source: 'baremaps',
-    'source-layer': 'leisure',
+    'source-layer': 'highway',
+    type: 'fill',
     layout: {
         visibility: 'visible',
     },
-    directives: directives.map(withFillSortKey),
+    filter: [
+        'all',
+        ['has', 'area'], // Some pedestrian areas are not closed polygons, hence the need for this filter
+        [
+            'any',
+            ['==', 'highway', 'pedestrian'],
+            ['==', 'highway', 'path'],
+            ['==', 'highway', 'sidewalk'],
+            ['==', 'highway', 'crossing'],
+            ['==', 'highway', 'steps'],
+            ['==', 'highway', 'footway'],
+        ],
+    ],
+    paint: {
+        'fill-antialias': false,
+        'fill-color': theme.pedestrianAreaPaintFillColor,
+    },
 }

@@ -20,7 +20,6 @@ import theme from "../../theme.js";
 export default {
     id: 'power_plant',
     type: 'fill',
-    filter: ['any', ['==', 'power', 'plant'], ['==', 'power', 'substation']],
     source: 'baremaps',
     'source-layer': 'power',
     layout: {
@@ -31,4 +30,5 @@ export default {
         'fill-color': theme.powerBackgroundPowerPlantFillColor,
         'fill-outline-color': theme.powerBackgroundPowerPlantFillOutlineColor,
     },
+    filter: ['any', ['==', 'power', 'plant'], ['==', 'power', 'substation']],
 }

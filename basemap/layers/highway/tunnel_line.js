@@ -175,9 +175,8 @@ export default asLayerObject(withSortKeys(directives), {
         'line-join': 'miter',
     },
     filter: [
-        'any',
+        'all',
+        ['==', ['geometry-type'], 'LineString'],
         ['==', ['get', 'tunnel'], 'yes'],
-        ['==', ['get', 'layer'], '-1'],
-        ['==', ['get', 'covered'], 'yes'],
     ],
 });

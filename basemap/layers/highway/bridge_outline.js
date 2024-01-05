@@ -114,5 +114,8 @@ export default asLayerObject(withSortKeys(directives), {
         'line-cap': 'butt',
         'line-join': 'miter',
     },
-    filter: ['any', ['==', ['get', 'bridge'], 'yes']],
+    filter: ['all',
+        ['==', ['geometry-type'], 'LineString'],
+        ['==', ['get', 'bridge'], 'yes']
+    ],
 });

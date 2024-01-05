@@ -98,10 +98,13 @@ export default asLayerObject(withSortKeys(directives), {
     'source': 'baremaps',
     'source-layer': 'railway',
     'type': 'line',
-    'filter': ['!=', ['get', 'tunnel'], 'yes'],
     'layout': {
         'visibility': 'visible',
         'line-cap': 'round',
         'line-join': 'round',
     },
+    'filter': ['all',
+        ['==', ['geometry-type'], 'LineString'],
+        ['!=', ['get', 'tunnel'], 'yes'],
+    ],
 });

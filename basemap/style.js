@@ -18,7 +18,7 @@ import config from "./config.js";
 
 import background from "./layers/background/style.js";
 import aeroway_line from "./layers/aeroway/line.js";
-import aeroway_polygon from "./layers/aeroway/polygon.js";
+import aeroway_fill from "./layers/aeroway/fill.js";
 import amenity_background from "./layers/amenity/background.js";
 import amenity_fountain from "./layers/amenity/fountain.js";
 import amenity_overlay from "./layers/amenity/overlay.js";
@@ -41,7 +41,7 @@ import highway_line from './layers/highway/highway_line.js';
 import highway_outline from './layers/highway/highway_outline.js';
 import highway_tunnel_line from './layers/highway/tunnel_line.js';
 import highway_tunnel_outline from './layers/highway/tunnel_outline.js';
-import highway_pedestrian_area from './layers/highway/pedestrian_area.js';
+import highway_fill from './layers/highway/highway_fill.js';
 import highway_bridge_line from './layers/highway/bridge_line.js';
 import highway_bridge_outline from './layers/highway/bridge_outline.js';
 import highway_construction_line from "./layers/highway/construction_line.js";
@@ -55,7 +55,7 @@ import man_made_bridge from "./layers/man_made/bridge.js";
 import man_made_pier_line from "./layers/man_made/pier_line.js";
 import man_made_pier_label from "./layers/man_made/pier_label.js";
 import waterway_line from "./layers/waterway/line.js"
-import waterway_polygon from "./layers/waterway/polygon.js"
+import waterway_area from "./layers/waterway/area.js"
 import waterway_label from "./layers/waterway/label.js"
 import icon from "./layers/point/icon.js";
 import country_label from './layers/point/country_label.js';
@@ -77,7 +77,7 @@ export default {
     "layers": [
         background,
         power_background,
-        aeroway_polygon,
+        aeroway_fill,
         landuse_background,
         leisure_background,
         amenity_background,
@@ -88,17 +88,17 @@ export default {
         leisure_overlay,
         ocean_overlay,
         waterway_line,
-        waterway_polygon,
+        waterway_area,
         man_made_bridge,
         amenity_fountain,
         highway_tunnel_outline,
         highway_tunnel_line,
-        // railway_tunnel,
+        railway_tunnel,
         building_shape,
         highway_construction_line,
         highway_outline,
         highway_line,
-        highway_pedestrian_area,
+        highway_fill,
         railway_line,
         highway_bridge_outline,
         highway_bridge_line,

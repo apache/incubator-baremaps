@@ -52,4 +52,5 @@ export default asLayerObject(withSortKeys(directives), {
     paint: {
         'fill-antialias': false,
     },
+    filter: ['==', ['geometry-type'], 'Polygon'],
 });

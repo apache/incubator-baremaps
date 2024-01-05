@@ -21,7 +21,6 @@ export default {
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'building',
-    filter: ['!=', ['get', 'building'], 'no'],
     layout: {
         visibility: 'visible',
     },
@@ -37,4 +36,9 @@ export default {
             13.5, 1
         ]
     },
+    filter: ['all',
+        ['==', ['geometry-type'], 'Polygon'],
+        ['!=', ['get', 'building'], 'no'],
+        ['!=', ['get', 'building:part'], 'no']
+    ],
 }

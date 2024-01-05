@@ -166,9 +166,8 @@ export default asLayerObject(withSortKeys(directives), {
     },
     filter: [
         'all',
+        ['==', ['geometry-type'], 'LineString'],
         ['!=', ['get', 'bridge'], 'yes'],
         ['!=', ['get', 'tunnel'], 'yes'],
-        ['!=', ['get', 'layer'], '-1'],
-        ['!=', ['get', 'covered'], 'yes'],
     ],
 });

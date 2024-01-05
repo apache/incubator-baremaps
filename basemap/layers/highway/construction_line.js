@@ -148,4 +148,5 @@ export default asLayerObject(withSortKeys(directives), {
     paint: {
         'line-dasharray': [1, 1],
     },
+    filter: ['==', ['geometry-type'], 'LineString'],
 });

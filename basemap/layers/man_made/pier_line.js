@@ -20,7 +20,6 @@ import theme from "../../theme.js";
 export default {
     id: 'man_made_pier_line',
     type: 'line',
-    filter: ['==', ['get', 'man_made'], 'pier'],
     source: 'baremaps',
     'source-layer': 'man_made',
     layout: {
@@ -31,4 +30,9 @@ export default {
         'line-color': theme.manMadePierLineLineColor,
         'line-width': ['interpolate', ['exponential', 1], ['zoom'], 12, 0.5, 18, 2],
     },
+    filter: [
+        'all',
+        ['==', ["geometry-type"], 'LineString'],
+        ['==', ['get', 'man_made'], 'pier'],
+    ]
 }
