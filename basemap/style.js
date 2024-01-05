@@ -49,7 +49,7 @@ import highway_label from './layers/highway/highway_label.js';
 
 import ocean_overlay from './layers/ocean/overlay.js';
 import route_line from "./layers/route/style.js"
-import building_shape from "./layers/building/shape.js";
+import building_fill from "./layers/building/fill.js";
 import building_extrusion from "./layers/building/extrusion.js";
 import man_made_bridge from "./layers/man_made/bridge.js";
 import man_made_pier_line from "./layers/man_made/pier_line.js";
@@ -94,7 +94,7 @@ export default {
         highway_tunnel_outline,
         highway_tunnel_line,
         railway_tunnel,
-        building_shape,
+        building_fill,
         highway_construction_line,
         highway_outline,
         highway_line,
