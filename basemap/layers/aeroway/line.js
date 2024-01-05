@@ -37,10 +37,10 @@ export default asLayerObject(withSortKeys(directives), {
     type: 'line',
     source: 'baremaps',
     'source-layer': 'aeroway',
-    filter: ['==', ['geometry-type'], 'LineString'],
     layout: {
         'line-cap': 'round',
         'line-join': 'round',
         visibility: 'visible',
     },
+    filter: ['==', ['geometry-type'], 'LineString'],
 });

@@ -24,7 +24,7 @@ export default {
     layout: {
         visibility: 'visible',
     },
-    filter: ['==', '$type', 'Polygon'],
+    filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
         'fill-antialias': false,
         'fill-color': theme.waterwayLineColor,

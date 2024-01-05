@@ -35,7 +35,7 @@ let layer = asLayerObject(withSortKeys(directives), {
     "type": "line",
     "source": "baremaps",
     "source-layer": "waterway",
-    filter: ['==', ['get', '$type'], 'LineString'],
+    filter: ['==', ['geometry-type'], 'LineString'],
     layout: {
         visibility: 'visible',
         'line-cap': 'round',

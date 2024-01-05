@@ -36,4 +36,5 @@ export default asLayerObject(directives, {
     paint: {
         'fill-antialias': false,
     },
+    filter: ['==', ["geometry-type"], 'Polygon'],
 });

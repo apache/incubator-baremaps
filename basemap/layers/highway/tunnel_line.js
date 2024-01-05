@@ -88,7 +88,7 @@ let directives = [
         filter: [
             'all',
             ['==', ['get', 'highway'], 'pedestrian'],
-            ['!=', ['get', '$type'], 'Polygon'],
+            ['!=', ['geometry-type'], 'Polygon'],
         ],
         'line-color': theme.tunnelLinePedestrianLineColor,
         'line-width-stops': theme.highwayPedestrianLineWidth,

@@ -15,8 +15,18 @@
  limitations under the License.
  **/
 import theme from "../../theme.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils";
 
-export default {
+
+let directives = [
+    {
+        filter: ['==', ["geometry-type"], 'LineString'],
+        'line-color': theme.aerialwayLineColor,
+        'line-width': 1,
+    },
+];
+
+export default asLayerObject(withSortKeys(directives), {
     id: 'aerialway_line',
     type: 'line',
     source: 'baremaps',
@@ -26,7 +36,5 @@ export default {
         'line-join': 'round',
         visibility: 'visible',
     },
-    paint: {
-        'line-color': theme.aerialwayLineColor,
-    },
-}
+    filter: ['==', ['geometry-type'], 'LineString'],
+});

@@ -47,6 +47,9 @@ export function withSymbolSortKey(directive, index) {
 }
 
 export function asLayerObject(directives = [], baseLayer = {}) {
+
+    console.log(JSON.stringify(asFilterProperty(directives, baseLayer['filter']), null, 2))
+
     return {
         ...baseLayer,
         filter: asFilterProperty(directives, baseLayer['filter']),
@@ -102,7 +105,7 @@ export function asFilterProperty(directives = [], filter = []) {
     } else if (directives.length > 0) {
         return ['any', ...directives.map((rule) => rule['filter'])];
     } else if (filter.length > 0) {
-        return filter;
+        return ['all', filter];
     } else {
         return [];
     }
