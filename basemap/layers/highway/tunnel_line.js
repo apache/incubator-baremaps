@@ -21,6 +21,65 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: [
+            'all',
+            ['==', ['get', 'highway'], 'pedestrian'],
+            ['!=', ['get', 'area'], 'yes'],
+        ],
+        'line-color': theme.highwayPedestrianLineColor,
+        'line-width-stops': theme.highwayPedestrianLineWidth,
+    },
+    {
+        filter: ['==', ['get', 'highway'], 'bridleway'],
+        'line-color': theme.highwayDashBridlewayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: ['==', ['get', 'highway'], 'busway'],
+        'line-color': theme.highwayDashBuswayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: [
+            'any',
+            ['==', ['get', 'highway'], 'cycleway'],
+            [
+                'all',
+                ['==', ['get', 'highway'], 'path'],
+                ['==', ['get', 'bicycle'], 'designated'],
+            ],
+        ],
+        'line-color': theme.highwayDashCyclewayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: [
+            'any',
+            [
+                'in',
+                ['get', 'highway'],
+                ['literal', ['sidewalk', 'crossing', 'steps']],
+            ],
+            [
+                'all',
+                ['==', ['get', 'highway'], 'footway'],
+                ['!=', ['get', 'access'], 'private'],
+            ],
+            [
+                'all',
+                ['==', ['get', 'highway'], 'path'],
+                ['!=', ['get', 'bicycle'], 'designated'],
+            ],
+        ],
+        'line-color': theme.highwayDashHighwayLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: ['all', ['==', ['get', 'highway'], 'track']],
+        'line-color': theme.highwayDashTrackLineColor,
+        'line-width-stops': theme.highwayMinorLineWidth,
+    },
+    {
+        filter: [
             'any',
             ['==', ['get', 'highway'], 'motorway'],
             ['==', ['get', 'highway'], 'motorway_link'],
