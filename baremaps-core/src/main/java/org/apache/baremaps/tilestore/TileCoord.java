@@ -19,13 +19,13 @@ package org.apache.baremaps.tilestore;
 
 
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
 import com.google.common.math.LongMath;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import org.locationtech.jts.geom.Envelope;
@@ -242,7 +242,11 @@ public final class TileCoord implements Comparable<TileCoord> {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("x", x).add("y", y).add("z", z).toString();
+    return new StringJoiner(", ", TileCoord.class.getSimpleName() + "[", "]")
+        .add("x=" + x)
+        .add("y=" + y)
+        .add("z=" + z)
+        .toString();
   }
 
   /** {@inheritDoc} */

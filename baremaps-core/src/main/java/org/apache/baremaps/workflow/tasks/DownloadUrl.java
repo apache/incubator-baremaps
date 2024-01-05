@@ -24,6 +24,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.StringJoiner;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -105,5 +106,17 @@ public class DownloadUrl implements Task {
       Files.createDirectories(targetPath.toAbsolutePath().getParent());
       Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", DownloadUrl.class.getSimpleName() + "[", "]")
+        .add("source='" + source + "'")
+        .add("target=" + target)
+        .add("replaceExisting=" + replaceExisting)
+        .toString();
   }
 }

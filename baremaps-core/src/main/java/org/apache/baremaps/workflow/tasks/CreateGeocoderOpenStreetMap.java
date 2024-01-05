@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.StringJoiner;
 import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoderosm.GeocoderOsmConsumerEntity;
@@ -100,6 +101,16 @@ public class CreateGeocoderOpenStreetMap implements Task {
     try (var input = Files.newInputStream(path)) {
       StreamUtils.batch(reader.stream(input)).forEach(importer);
     }
+  }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", CreateGeocoderOpenStreetMap.class.getSimpleName() + "[", "]")
+        .add("file=" + file)
+        .add("indexDirectory=" + indexDirectory)
+        .toString();
   }
 }

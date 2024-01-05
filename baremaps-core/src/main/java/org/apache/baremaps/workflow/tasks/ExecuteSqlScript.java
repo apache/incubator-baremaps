@@ -20,6 +20,7 @@ package org.apache.baremaps.workflow.tasks;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.StringJoiner;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -70,4 +71,14 @@ public class ExecuteSqlScript implements Task {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ExecuteSqlScript.class.getSimpleName() + "[", "]")
+        .add("database=" + database)
+        .add("file=" + file)
+        .toString();
+  }
 }

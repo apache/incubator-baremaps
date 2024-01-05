@@ -20,6 +20,7 @@ package org.apache.baremaps.workflow.tasks;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
@@ -136,5 +137,16 @@ public class ImportDaylightTranslations implements Task {
         }
       }
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ImportDaylightTranslations.class.getSimpleName() + "[", "]")
+        .add("file=" + file)
+        .add("database=" + database)
+        .toString();
   }
 }

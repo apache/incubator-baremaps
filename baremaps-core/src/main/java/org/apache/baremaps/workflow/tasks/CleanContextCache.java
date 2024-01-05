@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.util.StringJoiner;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 
@@ -36,5 +37,14 @@ public class CleanContextCache implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     context.cleanCache();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", CleanContextCache.class.getSimpleName() + "[", "]")
+        .toString();
   }
 }

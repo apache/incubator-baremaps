@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
@@ -124,5 +125,16 @@ public class ImportDaylightFeatures implements Task {
         }
       }
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ImportDaylightFeatures.class.getSimpleName() + "[", "]")
+        .add("file=" + file)
+        .add("database=" + database)
+        .toString();
   }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.util.StringJoiner;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -55,4 +56,13 @@ public class ExecuteCommand implements Task {
     new ProcessBuilder().command("/bin/sh", "-c", command).start().waitFor();
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ExecuteCommand.class.getSimpleName() + "[", "]")
+        .add("command='" + command + "'")
+        .toString();
+  }
 }

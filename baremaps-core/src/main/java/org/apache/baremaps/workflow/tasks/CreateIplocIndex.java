@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.StringJoiner;
 import org.apache.baremaps.iploc.IpLocReader;
 import org.apache.baremaps.iploc.IpLocRepository;
 import org.apache.baremaps.stream.StreamException;
@@ -94,5 +95,17 @@ public class CreateIplocIndex implements Task {
         }
       });
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", CreateIplocIndex.class.getSimpleName() + "[", "]")
+        .add("geonamesIndexPath=" + geonamesIndexPath)
+        .add("nicPaths=" + nicPaths)
+        .add("targetIplocIndexPath=" + targetIplocIndexPath)
+        .toString();
   }
 }
