@@ -195,4 +195,15 @@ public class ExportVectorTiles implements Task {
     return metadata;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ExportVectorTiles.class.getSimpleName() + "[", "]")
+        .add("tileset=" + tileset)
+        .add("repository=" + repository)
+        .add("format=" + format)
+        .toString();
+  }
 }

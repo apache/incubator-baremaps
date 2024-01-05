@@ -18,6 +18,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
+import java.util.StringJoiner;
 import org.apache.baremaps.database.schema.DataTableAdapter;
 import org.apache.baremaps.database.schema.DataTableGeometryTransformer;
 import org.apache.baremaps.storage.postgres.PostgresDataSchema;
@@ -80,5 +81,18 @@ public class ImportShapefile implements Task {
     } catch (Exception e) {
       throw new WorkflowException(e);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ImportShapefile.class.getSimpleName() + "[", "]")
+        .add("file=" + file)
+        .add("fileSrid=" + fileSrid)
+        .add("database=" + database)
+        .add("databaseSrid=" + databaseSrid)
+        .toString();
   }
 }

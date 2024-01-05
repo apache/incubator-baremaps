@@ -21,6 +21,7 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.ChangeEntitiesHandler;
@@ -162,5 +163,17 @@ public class UpdateOsmDatabase implements Task {
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
           header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", UpdateOsmDatabase.class.getSimpleName() + "[", "]")
+        .add("database=" + database)
+        .add("databaseSrid=" + databaseSrid)
+        .add("replicationUrl='" + replicationUrl + "'")
+        .toString();
   }
 }

@@ -20,6 +20,7 @@ package org.apache.baremaps.workflow.tasks;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.StringJoiner;
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoder.GeonamesDocumentMapper;
 import org.apache.baremaps.geocoder.GeonamesReader;
@@ -77,5 +78,16 @@ public class CreateGeonamesIndex implements Task {
     } catch (IOException exception) {
       throw new RuntimeException();
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", CreateGeonamesIndex.class.getSimpleName() + "[", "]")
+        .add("dataFile=" + dataFile)
+        .add("indexDirectory=" + indexDirectory)
+        .toString();
   }
 }

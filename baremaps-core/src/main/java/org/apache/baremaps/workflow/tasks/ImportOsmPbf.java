@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.StringJoiner;
 import org.apache.baremaps.database.collection.*;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -157,5 +158,18 @@ public class ImportOsmPbf implements Task {
     try (var input = Files.newInputStream(path)) {
       StreamUtils.batch(reader.stream(input)).forEach(importer);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ImportOsmPbf.class.getSimpleName() + "[", "]")
+        .add("file=" + file)
+        .add("database=" + database)
+        .add("databaseSrid=" + databaseSrid)
+        .add("replaceExisting=" + replaceExisting)
+        .toString();
   }
 }

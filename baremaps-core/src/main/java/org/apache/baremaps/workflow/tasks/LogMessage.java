@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.util.StringJoiner;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -53,5 +54,15 @@ public class LogMessage implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info(message);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", LogMessage.class.getSimpleName() + "[", "]")
+        .add("message='" + message + "'")
+        .toString();
   }
 }

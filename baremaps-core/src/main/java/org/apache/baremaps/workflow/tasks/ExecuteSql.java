@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.apache.baremaps.workflow.Task;
@@ -114,5 +115,17 @@ public class ExecuteSql implements Task {
     result = multiLineMatcher.replaceAll("");
 
     return result;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ExecuteSql.class.getSimpleName() + "[", "]")
+        .add("database=" + database)
+        .add("file=" + file)
+        .add("parallel=" + parallel)
+        .toString();
   }
 }

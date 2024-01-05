@@ -22,6 +22,7 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.StringJoiner;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.postgres.*;
 import org.apache.baremaps.openstreetmap.repository.CopyChangeImporter;
@@ -97,5 +98,18 @@ public class ImportOsmOsc implements Task {
         new BufferedInputStream(compression.decompress(Files.newInputStream(path)))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ImportOsmOsc.class.getSimpleName() + "[", "]")
+        .add("file=" + file)
+        .add("compression=" + compression)
+        .add("database=" + database)
+        .add("databaseSrid=" + databaseSrid)
+        .toString();
   }
 }

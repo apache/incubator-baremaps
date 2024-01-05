@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipFile;
 import org.apache.baremaps.workflow.Task;
@@ -196,5 +197,17 @@ public class DecompressFile implements Task {
         }
       }
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", DecompressFile.class.getSimpleName() + "[", "]")
+        .add("source=" + source)
+        .add("target=" + target)
+        .add("compression=" + compression)
+        .toString();
   }
 }
