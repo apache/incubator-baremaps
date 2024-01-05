@@ -178,7 +178,7 @@ public class PMTilesWriter {
     var header = new Header();
     header.setNumAddressedTiles(numTiles);
     header.setNumTileEntries(numTiles);
-    header.setNumTileContents(numTiles);
+    header.setNumTileContents(tileHashToOffset.size());
     header.setClustered(true);
 
     header.setInternalCompression(compression);

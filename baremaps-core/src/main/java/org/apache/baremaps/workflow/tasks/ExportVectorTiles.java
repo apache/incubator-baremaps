@@ -147,8 +147,7 @@ public class ExportVectorTiles implements Task {
         return tilesStore;
       case pmtiles:
         Files.deleteIfExists(repository);
-        var tileStore = new PMTilesStore(repository, source);
-        return tileStore;
+        return new PMTilesStore(repository, source);
       default:
         throw new IllegalArgumentException("Unsupported format");
     }
