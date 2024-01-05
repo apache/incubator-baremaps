@@ -58,6 +58,11 @@ let directives = [
         'fill-outline-color': theme.leisureOverlayPitchFillOutlineColor,
     },
     {
+        filter: ['==', ['get', 'leisure'], 'track'],
+        'fill-color': theme.leisureBackgroundTrackFillColor,
+        'fill-outline-color': theme.leisureBackgroundTrackFillOutlineColor,
+    },
+    {
         filter: ['==', ['get', 'leisure'], 'stadium'],
         'fill-color': theme.leisureOverlayStadiumFillColor,
     },
