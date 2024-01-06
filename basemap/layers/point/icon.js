@@ -361,7 +361,7 @@ let directives = [
     },
     {
         'filter': ['==', ['get', 'amenity'], 'ferry_terminal'],
-        'icon-image': 'ferry_icon',
+        'icon-image': 'ferry',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
@@ -407,7 +407,7 @@ let directives = [
     },
     {
         'filter': ['==', ['get', 'amenity'], 'fire_station'],
-        'icon-image': 'fire_station',
+        'icon-image': 'firestation',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
@@ -543,60 +543,209 @@ let directives = [
     },
 
     // Historic
+    // {
+    //     filter: ['==', ['get', 'historic'], 'archaeological_site'],
+    //     'icon-image': 'archaeological_site',
+    //     'icon-color': theme.pointIconArchaeologicalSiteIconColor,
+    //     'text-color': theme.pointIconArchaeologicalSiteTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'castle'],
+    //     'icon-image': 'castle',
+    //     'icon-color': theme.pointIconCastleIconColor,
+    //     'text-color': theme.pointIconCastleTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'city_gate'],
+    //     'icon-image': 'city_gate',
+    //     'icon-color': theme.pointIconCityGateIconColor,
+    //     'text-color': theme.pointIconCityGateTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'fort'],
+    //     'icon-image': 'fort',
+    //     'icon-color': theme.pointIconFortIconColor,
+    //     'text-color': theme.pointIconFortTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'manor'],
+    //     'icon-image': 'manor',
+    //     'icon-color': theme.pointIconManorIconColor,
+    //     'text-color': theme.pointIconManorTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'memorial'],
+    //     'icon-image': 'memorial',
+    //     'icon-color': theme.pointIconMemorialIconColor,
+    //     'text-color': theme.pointIconMemorialTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'monument'],
+    //     'icon-image': 'monument',
+    //     'icon-color': theme.pointIconMonumentIconColor,
+    //     'text-color': theme.pointIconMonumentTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'wayside_cross'],
+    //     'icon-image': 'wayside_cross',
+    //     'icon-color': theme.pointIconWaysideCrossIconColor,
+    //     'text-color': theme.pointIconWaysideCrossTextColor,
+    // },
+    // {
+    //     filter: ['==', ['get', 'historic'], 'wayside_shrine'],
+    //     'icon-image': 'wayside_shrine',
+    //     'icon-color': theme.pointIconWayShrineIconColor,
+    //     'text-color': theme.pointIconWaysideShrineTextColor,
+    // },
+
+
+
     {
-        filter: ['==', ['get', 'historic'], 'archaeological_site'],
-        'icon-image': 'archaeological_site',
-        'icon-color': theme.pointIconArchaeologicalSiteIconColor,
-        'text-color': theme.pointIconArchaeologicalSiteTextColor,
-    },
-    {
-        filter: ['==', ['get', 'historic'], 'castle'],
-        'icon-image': 'castle',
-        'icon-color': theme.pointIconCastleIconColor,
-        'text-color': theme.pointIconCastleTextColor,
-    },
-    {
-        filter: ['==', ['get', 'historic'], 'city_gate'],
-        'icon-image': 'city_gate',
-        'icon-color': theme.pointIconCityGateIconColor,
-        'text-color': theme.pointIconCityGateTextColor,
-    },
-    {
-        filter: ['==', ['get', 'historic'], 'fort'],
-        'icon-image': 'fort',
-        'icon-color': theme.pointIconFortIconColor,
-        'text-color': theme.pointIconFortTextColor,
-    },
-    {
-        filter: ['==', ['get', 'historic'], 'manor'],
-        'icon-image': 'manor',
-        'icon-color': theme.pointIconManorIconColor,
-        'text-color': theme.pointIconManorTextColor,
-    },
-    {
-        filter: ['==', ['get', 'historic'], 'memorial'],
+        'filter': ['==', ['get', 'historic'], 'memorial'],
         'icon-image': 'memorial',
-        'icon-color': theme.pointIconMemorialIconColor,
-        'text-color': theme.pointIconMemorialTextColor,
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
     },
     {
-        filter: ['==', ['get', 'historic'], 'monument'],
-        'icon-image': 'monument',
-        'icon-color': theme.pointIconMonumentIconColor,
-        'text-color': theme.pointIconMonumentTextColor,
+        'filter': ['==', ['get', 'historic'], 'archaeological_site'],
+        'icon-image': 'archaeological_site',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
     },
     {
-        filter: ['==', ['get', 'historic'], 'wayside_cross'],
-        'icon-image': 'wayside_cross',
-        'icon-color': theme.pointIconWaysideCrossIconColor,
-        'text-color': theme.pointIconWaysideCrossTextColor,
-    },
-    {
-        filter: ['==', ['get', 'historic'], 'wayside_shrine'],
+        'filter': ['==', ['get', 'historic'], 'wayside_shrine'],
         'icon-image': 'wayside_shrine',
-        'icon-color': theme.pointIconWayShrineIconColor,
-        'text-color': theme.pointIconWaysideShrineTextColor,
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
     },
+    {
+        'filter': ['==', ['get', 'historic'], 'monument'],
+        'icon-image': 'monument',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': ['==', ['get', 'historic'], 'castle'],
+        'icon-image': 'castle',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': [
+            'any',
+            [
+                'all',
+                ['==', ['get', 'historic'], 'memorial'],
+                ['==', ['get', 'memorial'], 'plaque']
+            ],
+            [
+                'all',
+                ['==', ['get', 'historic'], 'memorial'],
+                ['==', ['get', 'memorial'], 'blue_plaque']
+            ]
+        ],
+        'icon-image': 'plaque',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': [
+            'any',
+            [
+                'all',
+                ['==', ['get', 'historic'], 'memorial'],
+                ['==', ['get', 'memorial'], 'statue']
+            ],
+            [
+                'all',
+                ['==', ['get', 'tourism'], 'artwork'],
+                ['==', ['get', 'artwork_type'], 'statue']
+            ]
+        ],
+        'icon-image': 'statue',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': [
+            'any',
+            ['==', ['get', 'historic'], 'memorial'],
+            ['==', ['get', 'memorial'], 'stone']
+        ],
+        'icon-image': 'stone',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': [
+            'any',
+            [
+                'all',
+                ['==', ['get', 'historic'], 'castle'],
+                ['==', ['get', 'castle_type'], 'palace']
+            ],
+            [
+                'all',
+                ['==', ['get', 'historic'], 'castle'],
+                ['==', ['get', 'castle_type'], 'stately']
+            ]
+        ],
+        'icon-image': 'palace',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': ['==', ['get', 'historic'], 'castle'],
+        'icon-image': 'fortress',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': ['==', ['get', 'historic'], 'fort'],
+        'icon-image': 'historic_fort',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': [
+            'any',
+            [
+                'all',
+                ['==', ['get', 'historic'], 'memorial'],
+                ['==', ['get', 'memorial'], 'bust']
+            ],
+            [
+                'all',
+                ['==', ['get', 'tourism'], 'artwork'],
+                ['==', ['get', 'artwork_type'], 'bust']
+            ]
+        ],
+        'icon-image': 'bust',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': ['==', ['get', 'historic'], 'city_gate'],
+        'icon-image': 'city_gate',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+    {
+        'filter': [
+            'any',
+            ['==', ['get', 'historic'], 'manor'],
+            [
+                'all',
+                ['==', ['get', 'historic'], 'castle'],
+                ['==', ['get', 'castle_type'], 'manor']
+            ]
+        ],
+        'icon-image': 'manor',
+        'icon-color': theme.pointIconHistoricIconColor,
+        'text-color': theme.pointIconHistoricTextColor
+    },
+
+
 
     // Leisure
     {
@@ -617,7 +766,7 @@ let directives = [
     },
     {
         'filter': ['==', ['get', 'leisure'], 'golf_course'],
-        'icon-image': 'golf_icon',
+        'icon-image': 'golf',
         'icon-color': theme.pointIconLeisureColor,
         'text-color': theme.pointIconLeisureTextColor,
     },
