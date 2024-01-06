@@ -616,6 +616,8 @@ export default {
     pointIconAmenityTextColor: 'rgb(199, 116, 0)',
     pointIconHistoricIconColor: 'rgb(115, 74, 7)',
     pointIconHistoricTextColor: 'rgb(115, 74, 7)',
+    pointIconRailwayIconColor: 'rgb(0, 146, 218)',
+    pointIconRailwayTextColor: 'rgb(0, 146, 218)',
 
     highwayMotorwayLineWidth: [5, 0.5, 16, 7],
     highwayTrunkLineWidth: [5, 0.5, 16, 6],

@@ -543,63 +543,6 @@ let directives = [
     },
 
     // Historic
-    // {
-    //     filter: ['==', ['get', 'historic'], 'archaeological_site'],
-    //     'icon-image': 'archaeological_site',
-    //     'icon-color': theme.pointIconArchaeologicalSiteIconColor,
-    //     'text-color': theme.pointIconArchaeologicalSiteTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'castle'],
-    //     'icon-image': 'castle',
-    //     'icon-color': theme.pointIconCastleIconColor,
-    //     'text-color': theme.pointIconCastleTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'city_gate'],
-    //     'icon-image': 'city_gate',
-    //     'icon-color': theme.pointIconCityGateIconColor,
-    //     'text-color': theme.pointIconCityGateTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'fort'],
-    //     'icon-image': 'fort',
-    //     'icon-color': theme.pointIconFortIconColor,
-    //     'text-color': theme.pointIconFortTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'manor'],
-    //     'icon-image': 'manor',
-    //     'icon-color': theme.pointIconManorIconColor,
-    //     'text-color': theme.pointIconManorTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'memorial'],
-    //     'icon-image': 'memorial',
-    //     'icon-color': theme.pointIconMemorialIconColor,
-    //     'text-color': theme.pointIconMemorialTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'monument'],
-    //     'icon-image': 'monument',
-    //     'icon-color': theme.pointIconMonumentIconColor,
-    //     'text-color': theme.pointIconMonumentTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'wayside_cross'],
-    //     'icon-image': 'wayside_cross',
-    //     'icon-color': theme.pointIconWaysideCrossIconColor,
-    //     'text-color': theme.pointIconWaysideCrossTextColor,
-    // },
-    // {
-    //     filter: ['==', ['get', 'historic'], 'wayside_shrine'],
-    //     'icon-image': 'wayside_shrine',
-    //     'icon-color': theme.pointIconWayShrineIconColor,
-    //     'text-color': theme.pointIconWaysideShrineTextColor,
-    // },
-
-
-
     {
         'filter': ['==', ['get', 'historic'], 'memorial'],
         'icon-image': 'memorial',
@@ -744,8 +687,6 @@ let directives = [
         'icon-color': theme.pointIconHistoricIconColor,
         'text-color': theme.pointIconHistoricTextColor
     },
-
-
 
     // Leisure
     {
@@ -1089,7 +1030,7 @@ let directives = [
 
     // Military
     {
-        filter: ['==', ['get', 'military'], 'bunker'],
+        filter: ["==", ["get", "military"], "bunker"],
         'icon-image': 'bunker',
         'icon-color': theme.pointIconBunkerIconColor,
         'text-color': theme.pointIconBunkerTextColor,
@@ -1127,45 +1068,47 @@ let directives = [
         'text-color': theme.pointIconVolcanoTextColor,
     },
 
-    // Railway: stations and stops
+    // Railway
     {
-        filter: ['==', ['get', 'railway'], 'halt'],
+        'filter': [
+            'any',
+            ['==', ['get', 'railway'], 'station'],
+            ['==', ['get', 'railway'], 'halt'],
+            ['==', ['get', 'railway'], 'tram_stop']
+        ],
         'icon-image': 'place-6',
         'icon-color': theme.pointIconHaltIconColor,
         'text-color': theme.pointIconHaltTextColor,
     },
     {
-        filter: ['==', ['get', 'railway'], 'station'],
-        'icon-image': 'place-6',
-        'icon-color': theme.pointIconStationIconColor,
-        'text-color': theme.pointIconStationTextColor,
+        "filter": [
+            "any",
+            ["==", ["get", "railway"], "level_crossing"],
+            ["==", ["get", "railway"], "crossing"]
+        ],
+        "icon-image": "level_crossing2",
+        'icon-color': theme.pointIconRailwayIconColor,
+        'text-color': theme.pointIconRailwayIconColor,
     },
     {
-        filter: ['==', ['get', 'railway'], 'subway_entrance'],
-        'icon-image': 'entrance',
-        'icon-color': theme.pointIconSubwayEntranceIconColor,
-        'text-color': theme.pointIconSubwayEntranceTextColor,
-    },
-    {
-        filter: ['==', ['get', 'railway'], 'tram_stop'],
-        'icon-image': 'tram_stop',
-        'icon-color': theme.pointIconTramStopIconColor,
-        'text-color': theme.pointIconTramStopTextColor,
+        "filter": [
+            "any",
+            ["==", ["get", "railway"], "level_crossing"],
+            ["==", ["get", "railway"], "crossing"]
+        ],
+        "icon-image": "level_crossing",
+        'icon-color': theme.pointIconRailwayIconColor,
+        'text-color': theme.pointIconRailwayIconColor,
     },
 
-    // Railway: other railways
+    // Railway (custom)
     {
-        filter: ['==', ['get', 'railway'], 'crossing'],
-        'icon-image': 'level_crossing',
-        'icon-color': theme.pointIconCrossingIconColor,
-        'text-color': theme.pointIconCrossingTextColor,
+        'filter': ['==', ['get', 'railway'], 'subway_entrance'],
+        'icon-image': 'entrance',
+        'icon-color': theme.pointIconRailwayIconColor,
+        'text-color': theme.pointIconRailwayIconColor,
     },
-    {
-        filter: ['==', ['get', 'railway'], 'level_crossing'],
-        'icon-image': 'level_crossing',
-        'icon-color': theme.pointIconLevelCrossingIconColor,
-        'text-color': theme.pointIconLevelCrossingTextColor,
-    },
+
 
     // Tourism
     {
@@ -1755,8 +1698,6 @@ let directives = [
     //     'icon-color': theme.pointIconShopIconColor,
     //     'text-color': theme.pointIconShopTextColor,
     // },
-
-
 
 
     // To be classified
