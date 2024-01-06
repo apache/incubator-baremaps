@@ -504,186 +504,334 @@ let directives = [
 
     // Leisure
     {
-        filter: ['==', ['get', 'leisure'], 'amusement_arcade'],
-        'icon-image': 'amusement_arcade',
-        'icon-color': theme.pointIconAmusementArcadeIconColor,
-        'text-color': theme.pointIconAmusementArcadeTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'beach_resort'],
-        'icon-image': 'beach_resort',
-        'icon-color': theme.pointIconBeachResortIconColor,
-        'text-color': theme.pointIconBeachResortTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'bird_hide'],
-        'icon-image': 'bird_hide',
-        'icon-color': theme.pointIconBirdHideIconColor,
-        'text-color': theme.pointIconBirdHideTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'bowling_alley'],
-        'icon-image': 'bowling_alley',
-        'icon-color': theme.pointIconBowlingAlleyIconColor,
-        'text-color': theme.pointIconBowlingAlleyTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'firepit'],
-        'icon-image': 'firepit',
-        'icon-color': theme.pointIconFirepitIconColor,
-        'text-color': theme.pointIconFirepitTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'fishing'],
-        'icon-image': 'fishing',
-        'icon-color': theme.pointIconFishingIconColor,
-        'text-color': theme.pointIconFishingTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'fitness_centre'],
-        'icon-image': 'sports',
-        'icon-color': theme.pointIconFitnessCentreIconColor,
-        'text-color': theme.pointIconFitnessCentreTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'fitness_station'],
-        'icon-image': 'sports',
-        'icon-color': theme.pointIconFitnessStationIconColor,
-        'text-color': theme.pointIconFitnessStationTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'golf_course'],
-        'icon-image': 'golf_course',
-        'icon-color': theme.pointIconGolfCourseIconColor,
-        'text-color': theme.pointIconGolfCourseTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'miniature_golf'],
-        'icon-image': 'miniature_golf',
-        'icon-color': theme.pointIconMiniatureGolfIconColor,
-        'text-color': theme.pointIconMiniatureGolfTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'outdoor_seating'],
-        'icon-image': 'outdoor_seating',
-        'icon-color': theme.pointIconOutdoorSeatingIconColor,
-        'text-color': theme.pointIconOutdoorSeatingTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'picnic_table'],
-        'icon-image': 'picnic',
-        'icon-color': theme.pointIconPicnicTableIconColor,
-        'text-color': theme.pointIconPicnicTableTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'playground'],
+        'filter': ['==', ['get', 'leisure'], 'playground'],
         'icon-image': 'playground',
-        'icon-color': theme.pointIconPlaygroundIconColor,
-        'text-color': theme.pointIconPlaygroundTextColor,
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
     },
     {
-        filter: ['==', ['get', 'leisure'], 'sauna'],
-        'icon-image': 'sauna',
-        'icon-color': theme.pointIconSaunaIconColor,
-        'text-color': theme.pointIconSaunaTextColor,
+        'filter': [
+            'any',
+            ['==', ['get', 'leisure'], 'fitness_centre'],
+            ['==', ['get', 'leisure'], 'fitness_station']
+        ],
+        'icon-image': 'fitness',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
     },
     {
-        filter: ['==', ['get', 'leisure'], 'slipway'],
-        'icon-image': 'slipway',
-        'icon-color': theme.pointIconSlipwayIconColor,
-        'text-color': theme.pointIconSlipwayTextColor,
+        'filter': ['==', ['get', 'leisure'], 'golf_course'],
+        'icon-image': 'golf_icon',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
     },
     {
-        filter: ['==', ['get', 'leisure'], 'swimming_area'],
-        'icon-image': 'swimming_area',
-        'icon-color': theme.pointIconSwimmingAreaIconColor,
-        'text-color': theme.pointIconSwimmingAreaTextColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'water_park'],
+        'filter': [
+            'any',
+            ['==', ['get', 'leisure'], 'water_park'],
+            ['==', ['get', 'leisure'], 'swimming_area'],
+            ['==', ['get', 'leisure'], 'sports_centre'],
+            ['==', ['get', 'sport'], 'swimming']
+        ],
         'icon-image': 'water_park',
-        'icon-color': theme.pointIconWaterParkIconColor,
-        'text-color': theme.pointIconWaterParkTextColor,
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'sauna'],
+        'icon-image': 'sauna',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'outdoor_seating'],
+        'icon-image': 'outdoor_seating',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'amusement_arcade'],
+        'icon-image': 'amusement_arcade',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'miniature_golf'],
+        'icon-image': 'miniature_golf',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'beach_resort'],
+        'icon-image': 'beach_resort',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'fishing'],
+        'icon-image': 'fishing',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'bowling_alley'],
+        'icon-image': 'bowling_alley',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'dog_park'],
+        'icon-image': 'dog_park',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'golf'], 'pin'],
+        'icon-image': 'leisure_golf_pin',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'picnic_table'],
+        'icon-image': 'picnic',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'firepit'],
+        'icon-image': 'firepit',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'leisure'], 'bird_hide'],
+        'icon-image': 'bird_hide',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
+    },
+
+    {
+        'filter': ['==', ['get', 'leisure'], 'slipway'],
+        'icon-image': 'slipway',
+        'icon-color': theme.pointIconLeisureColor,
+        'text-color': theme.pointIconLeisureTextColor,
     },
 
     // Man-made
     {
-        filter: ['==', ['get', 'man_made'], 'chimney'],
-        'icon-image': 'chimney',
-        'icon-color': theme.pointIconChimneyIconColor,
-        'text-color': theme.pointIconChimneyTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'communications_tower'],
-        'icon-image': 'communications_tower',
-        'icon-color': theme.pointIconCommunicationTowerIconColor,
-        'text-color': theme.pointIconCommunicationTowerTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'crane'],
-        'icon-image': 'crane',
-        'icon-color': theme.pointIconCraneIconColor,
-        'text-color': theme.pointIconCraneTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'cross'],
-        'icon-image': 'cross',
-        'icon-color': theme.pointIconCrossIconColor,
-        'text-color': theme.pointIconCrossTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'lighthouse'],
-        'icon-image': 'lighthouse',
-        'icon-color': theme.pointIconLighthouseIconColor,
-        'text-color': theme.pointIconLightHouseTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'mast'],
-        'icon-image': 'mast',
-        'icon-color': theme.pointIconMastIconColor,
-        'text-color': theme.pointIconMastTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'obelisk'],
-        'icon-image': 'obelisk',
-        'icon-color': theme.pointIconObeliskIconColor,
-        'text-color': theme.pointIconObeliskTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'silo'],
-        'icon-image': 'silo',
-        'icon-color': theme.pointIconSiloIconColor,
-        'text-color': theme.pointIconSiloTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'storage_tank'],
+        'filter': ['any', ['==', ['get', 'man_made'], 'storage_tank'], ['==', ['get', 'man_made'], 'silo']],
         'icon-image': 'storage_tank',
-        'icon-color': theme.pointIconStorageTankIconColor,
-        'text-color': theme.pointIconStorageTankTextColor,
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
     },
     {
-        filter: ['==', ['get', 'man_made'], 'telescope'],
-        'icon-image': 'telescope',
-        'icon-color': theme.pointIconTelescopeIconColor,
-        'text-color': theme.pointIconTelescopeTextColor,
-    },
-    {
-        filter: ['==', ['get', 'man_made'], 'tower'],
+        'filter': ['==', ['get', 'man_made'], 'tower'],
         'icon-image': 'tower_generic',
-        'icon-color': theme.pointIconTowerIconColor,
-        'text-color': theme.pointIconTowerTextColor,
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
     },
     {
-        filter: ['==', ['get', 'man_made'], 'water_tower'],
+        'filter': ['all', ['==', ['get', 'man_made'], 'tower'], ['==', ['get', 'tower:type'], 'communication']],
+        'icon-image': 'tower_cantilever_communication',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'historic'], 'wayside_cross'], ['==', ['get', 'man_made'], 'cross']],
+        'icon-image': 'christian',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'man_made'], 'water_tower'],
         'icon-image': 'water_tower',
-        'icon-color': theme.pointIconWaterTowerIconColor,
-        'text-color': theme.pointIconWaterTowerTextColor,
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
     },
     {
-        filter: ['==', ['get', 'man_made'], 'windmill'],
+        'filter': ['==', ['get', 'man_made'], 'obelisk'],
+        'icon-image': 'obelisk',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'man_made'], 'mast'],
+        'icon-image': 'mast',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'man_made'], 'chimney'],
+        'icon-image': 'chimney',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'any',
+            ['all', ['==', ['get', 'man_made'], 'tower'], ['==', ['get', 'tower:type'], 'observation']],
+            ['all', ['==', ['get', 'man_made'], 'tower'], ['==', ['get', 'tower:type'], 'watchtower']]
+        ],
+        'icon-image': 'tower_observation',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:type'], 'bell_tower']
+        ],
+        'icon-image': 'tower_bell_tower',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:type'], 'lighting']
+        ],
+        'icon-image': 'tower_lighting',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'man_made'], 'lighthouse'],
+        'icon-image': 'lighthouse',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+
+    {
+        'filter': ['==', ['get', 'man_made'], 'crane'],
+        'icon-image': 'crane',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'man_made'], 'windmill'],
         'icon-image': 'windmill',
-        'icon-color': theme.pointIconWindmillIconColor,
-        'text-color': theme.pointIconWindmillTextColor,
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:type'], 'communication'],
+            ['==', ['get', 'tower:construction'], 'lattice']
+        ],
+        'icon-image': 'tower_lattice_communication',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'mast'],
+            ['==', ['get', 'tower:type'], 'lighting']
+        ],
+        'icon-image': 'mast_lighting',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'mast'],
+            ['==', ['get', 'tower:type'], 'communication']
+        ],
+        'icon-image': 'mast_communications',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'man_made'], 'communications_tower'],
+        'icon-image': 'communication_tower',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:type'], 'defensive']
+        ],
+        'icon-image': 'tower_defensive',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:type'], 'cooling']
+        ],
+        'icon-image': 'tower_cooling',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:construction'], 'lattice']
+        ],
+        'icon-image': 'tower_lattice',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:type'], 'lighting'],
+            ['==', ['get', 'tower:construction'], 'lattice']
+        ],
+        'icon-image': 'tower_lattice_lighting',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:construction'], 'dish']
+        ],
+        'icon-image': 'tower_dish',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'tower'],
+            ['==', ['get', 'tower:construction'], 'dome']
+        ],
+        'icon-image': 'tower_dome',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'telescope'],
+            ['==', ['get', 'telescope:type'], 'radio']
+        ],
+        'icon-image': 'telescope_dish',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'man_made'], 'telescope'],
+            ['==', ['get', 'telescope:type'], 'optical']
+        ],
+        'icon-image': 'telescope_dome',
+        'icon-color': theme.pointIconManMadeIconColor,
+        'text-color': theme.pointIconManMadeTextColor,
     },
 
     // Military
@@ -877,6 +1025,441 @@ let directives = [
         'icon-color': theme.pointIconLockGateIconColor,
         'text-color': theme.pointIconLockGateTextColor,
     },
+
+    // Shop
+    {
+        'filter': ['==', ['get', 'shop'], 'convenience'],
+        'icon-image': 'convenience',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'supermarket'],
+        'icon-image': 'supermarket',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'clothes'], ['==', ['get', 'shop'], 'fashion']],
+        'icon-image': 'clothes',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'hairdresser'],
+        'icon-image': 'hairdresser',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'bakery'],
+        'icon-image': 'bakery',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'car_repair'],
+        'icon-image': 'car_repair',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'doityourself'], ['==', ['get', 'shop'], 'hardware']],
+        'icon-image': 'diy',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'car'],
+        'icon-image': 'car',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'kiosk'], ['==', ['get', 'shop'], 'newsagent']],
+        'icon-image': 'newsagent',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'beauty'],
+        'icon-image': 'beauty',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'car_wash'],
+        'icon-image': 'car_wash',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'butcher'],
+        'icon-image': 'butcher',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'alcohol'], ['==', ['get', 'shop'], 'wine']],
+        'icon-image': 'alcohol',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'furniture'],
+        'icon-image': 'furniture',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'florist'],
+        'icon-image': 'florist',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'mobile_phone'],
+        'icon-image': 'mobile_phone',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'electronics'],
+        'icon-image': 'electronics',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'shoes'],
+        'icon-image': 'shoes',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'car_parts'],
+        'icon-image': 'car_parts',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'greengrocer'], ['==', ['get', 'shop'], 'farm']],
+        'icon-image': 'greengrocer',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'laundry'], ['==', ['get', 'shop'], 'dry_cleaning']],
+        'icon-image': 'laundry',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'optician'],
+        'icon-image': 'optician',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'jewelry'], ['==', ['get', 'shop'], 'jewellery']],
+        'icon-image': 'jewelry',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'books'],
+        'icon-image': 'library',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'gift'],
+        'icon-image': 'gift',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'department_store'],
+        'icon-image': 'department_store',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'bicycle'],
+        'icon-image': 'bicycle',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'confectionery'], ['==', ['get', 'shop'], 'chocolate'], ['==', ['get', 'shop'], 'pastry']],
+        'icon-image': 'confectionery',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'variety_store'],
+        'icon-image': 'variety_store',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'travel_agency'],
+        'icon-image': 'travel_agency',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'sports'],
+        'icon-image': 'sports',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'chemist'],
+        'icon-image': 'chemist',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'computer'],
+        'icon-image': 'computer',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'stationery'],
+        'icon-image': 'stationery',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'pet'],
+        'icon-image': 'pet',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'beverages'],
+        'icon-image': 'beverages',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'cosmetics'], ['==', ['get', 'shop'], 'perfumery']],
+        'icon-image': 'perfumery',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'tyres'],
+        'icon-image': 'tyres',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'motorcycle'],
+        'icon-image': 'motorcycle',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'garden_centre'],
+        'icon-image': 'garden_centre',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'copyshop'],
+        'icon-image': 'copyshop',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'toys'],
+        'icon-image': 'toys',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'deli'],
+        'icon-image': 'deli',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'tobacco'],
+        'icon-image': 'tobacco',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'seafood'],
+        'icon-image': 'seafood',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'interior_decoration'],
+        'icon-image': 'interior_decoration',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'ticket'],
+        'icon-image': 'ticket',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'photo'], ['==', ['get', 'shop'], 'photo_studio'], ['==', ['get', 'shop'], 'photography']],
+        'icon-image': 'photo',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['any', ['==', ['get', 'shop'], 'trade'], ['==', ['get', 'shop'], 'wholesale']],
+        'icon-image': 'trade',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'outdoor'],
+        'icon-image': 'outdoor',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'houseware'],
+        'icon-image': 'houseware',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'art'],
+        'icon-image': 'art',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'paint'],
+        'icon-image': 'paint',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'fabric'],
+        'icon-image': 'fabric',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'bookmaker'],
+        'icon-image': 'bookmaker',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'second_hand'],
+        'icon-image': 'second_hand',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'charity'],
+        'icon-image': 'charity',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'bed'],
+        'icon-image': 'bed',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'medical_supply'],
+        'icon-image': 'medical_supply',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'hifi'],
+        'icon-image': 'hifi',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'music'],
+        'icon-image': 'music',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'coffee'],
+        'icon-image': 'coffee',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'musical_instrument'],
+        'icon-image': 'musical_instrument',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'tea'],
+        'icon-image': 'tea',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'video'],
+        'icon-image': 'video',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'bag'],
+        'icon-image': 'bag',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'carpet'],
+        'icon-image': 'carpet',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'video_games'],
+        'icon-image': 'video_games',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'vehicle_inspection'],
+        'icon-image': 'vehicle_inspection',
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'dairy'],
+        'icon-image': 'dairy',
+        'icon-color': '',
+        'text-color': ''
+    },
+    {
+        'filter': ['==', ['get', 'shop'], 'massage'],
+        'icon-image': 'massage',
+        'icon-color': '',
+        'text-color': ''
+    },
+    // {
+    //     'filter': ['!=', ['get', 'shop'], 'yes'],
+    //     'icon-image': 'place-4',
+    //     'icon-color': theme.pointIconShopIconColor,
+    //     'text-color': theme.pointIconShopTextColor,
+    // },
+
 ];
 
 export default asLayerObject(withSortKeys(directives), {
