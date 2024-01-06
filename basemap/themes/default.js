@@ -612,6 +612,9 @@ export default {
     pointIconManMadeTextColor: 'rgb(85, 85, 85)',
     pointIconLeisureColor: 'rgb(13, 134, 22)',
     pointIconLeisureTextColor: 'rgb(13, 134, 22)',
+    pointIconAmenityIconColor: 'rgb(199, 116, 0)',
+    pointIconAmenityTextColor: 'rgb(199, 116, 0)',
+
     highwayMotorwayLineWidth: [5, 0.5, 16, 7],
     highwayTrunkLineWidth: [5, 0.5, 16, 6],
     highwayPrimaryLineWidth: [5, 0.5, 16, 6],

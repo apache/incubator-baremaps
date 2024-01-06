@@ -17,434 +17,547 @@
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
+/**
+ * These directives are based on the following source:
+ * https://wiki.openstreetmap.org/wiki/OpenStreetMap_Carto/Symbols
+ */
 let directives = [
-    // Amenity: sustenance
+    // Amenity
     {
-        filter: ['==', ['get', 'amenity'], 'bar'],
-        'icon-image': 'bar',
-        'icon-color': theme.pointIconBarIconColor,
-        'text-color': theme.pointIconBarTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'biergarten'],
-        'icon-image': 'biergarten',
-        'icon-color': theme.pointIconBiergartenIconColor,
-        'text-color': theme.pointIconBiergartenTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'cafe'],
-        'icon-image': 'cafe',
-        'icon-color': theme.pointIconCafeIconColor,
-        'text-color': theme.pointIconCafeTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'fast_food'],
-        'icon-image': 'fast_food',
-        'icon-color': theme.pointIconFastFoodIconColor,
-        'text-color': theme.pointIconFastFoodTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'food_court'],
-        'icon-image': 'food_court',
-        'icon-color': theme.pointIconFoodCourtIconColor,
-        'text-color': theme.pointIconFoodCourtTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'ice_cream'],
-        'icon-image': 'ice_cream',
-        'icon-color': theme.pointIconIceCreamIconColor,
-        'text-color': theme.pointIconIceCreamTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'pub'],
-        'icon-image': 'pub',
-        'icon-color': theme.pointIconPubIconColor,
-        'text-color': theme.pointIconPubTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'restaurant'],
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'restaurant'],
+            ['==', ['get', 'amenity'], 'food_court']
+        ],
         'icon-image': 'restaurant',
-        'icon-color': theme.pointIconRestaurantIconColor,
-        'text-color': theme.pointIconRestaurantTextColor,
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
-
-    // Amenity: education
+    {
+        'filter': ['==', ['get', 'amenity'], 'cafe'],
+        'icon-image': 'cafe',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'fast_food'],
+        'icon-image': 'fast_food',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'bar'],
+        'icon-image': 'bar',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'pub'],
+        'icon-image': 'pub',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'ice_cream'],
+        'icon-image': 'ice_cream',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'biergarten'],
+        'icon-image': 'biergarten',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'artwork'],
+        'icon-image': 'artwork',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'community_centre'],
+        'icon-image': 'community_centre',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'library'],
+        'icon-image': 'library',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'museum'],
+        'icon-image': 'museum',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'theatre'],
+        'icon-image': 'theatre',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'cinema'],
+        'icon-image': 'cinema',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'nightclub'],
+        'icon-image': 'nightclub',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'arts_centre'],
+        'icon-image': 'arts_centre',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'internet_cafe'],
+        'icon-image': 'internet_cafe',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'casino'],
+        'icon-image': 'casino',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'public_bookcase'],
+        'icon-image': 'public_bookcase',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'public_bath'],
+        'icon-image': 'public_bath',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'toilets'],
+        'icon-image': 'toilets',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'recycling'],
+        'icon-image': 'recycling',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'waste_basket'],
+        'icon-image': 'waste_basket',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'waste_disposal'],
+        'icon-image': 'waste_disposal',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['all', ['==', ['get', 'amenity'], 'vending_machine'], ['==', ['get', 'vending'], 'excrement_bags']],
+        'icon-image': 'excrement_bags',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'bench'],
+        'icon-image': 'bench',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'shelter'],
+        'icon-image': 'shelter',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'drinking_water'],
+        'icon-image': 'drinking_water',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'fountain'],
+        'icon-image': 'fountain',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'bbq'],
+        'icon-image': 'bbq',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'shower'],
+        'icon-image': 'shower',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'bank'],
+        'icon-image': 'bank',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'atm'],
+        'icon-image': 'atm',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'bureau_de_change'],
+        'icon-image': 'bureau_de_change',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'pharmacy'],
+        'icon-image': 'pharmacy',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'hospital'],
+        'icon-image': 'hospital',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'any',
+            ['==', ['get', 'amenity'], 'clinic'],
+            ['==', ['get', 'amenity'], 'doctors']
+        ],
+        'icon-image': 'doctors',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'dentist'],
+        'icon-image': 'dentist',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'veterinary'],
+        'icon-image': 'veterinary',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'post_box'],
+        'icon-image': 'post_box',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'post_office'],
+        'icon-image': 'post_office',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
     // {
-    //     filter: ['==', ['get', 'amenity'], 'driving_school'],
-    //     'icon-image': 'driving_school',
-    //     'icon-color': colorScheme.pointIconDrivingSchoolIconColor,
-    //     'text-color': colorScheme.pointIconDrivingSchoolTextColor,
+    //     'filter': ['==', ['get', 'amenity'], 'parcel_locker'],
+    //     'icon-image': 'parcel_locker',
+    //     'icon-color': theme.pointIconAmenityIconColor,
+    //     'text-color': theme.pointIconAmenityTextColor
     // },
     {
-        filter: ['==', ['get', 'amenity'], 'library'],
-        'icon-image': 'library',
-        'icon-color': theme.pointIconLibraryIconColor,
-        'text-color': theme.pointIconLibraryTextColor,
-    },
-
-    // Amenity: transportation
-    {
-        filter: ['==', ['get', 'amenity'], 'bicycle_parking'],
-        'icon-image': 'bicycle_parking',
-        'icon-color': theme.pointIconBicycleParkingIconColor,
-        'text-color': theme.pointIconBicycleParkingTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'bicycle_repair_station'],
-        'icon-image': 'bicycle_repair_station',
-        'icon-color': theme.pointIconBicycleRepairStationIconColor,
-        'text-color': theme.pointIconBicycleRepairStationTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'bicycle_rental'],
-        'icon-image': 'rental_bicycle',
-        'icon-color': theme.pointIconBicycleRentalIconColor,
-        'text-color': theme.pointIconBicycleRentalTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'boat_rental'],
-        'icon-image': 'boat_rental',
-        'icon-color': theme.pointIconBoatRentalIconColor,
-        'text-color': theme.pointIconBoatRentalTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'bus_station'],
-        'icon-image': 'bus_station',
-        'icon-color': theme.pointIconBusStationIconColor,
-        'text-color': theme.pointIconBusStationTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'car_rental'],
-        'icon-image': 'rental_car',
-        'icon-color': theme.pointIconCarRentalIconColor,
-        'text-color': theme.pointIconCarRentalTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'car_wash'],
-        'icon-image': 'car_wash',
-        'icon-color': theme.pointIconCarWashIconColor,
-        'text-color': theme.pointIconCarWashTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'vehicle_inspection'],
-        'icon-image': 'vehicle_inspection',
-        'icon-color': theme.pointIconVehicleInspectionIconColor,
-        'text-color': theme.pointIconVehicleInspectionTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'charging_station'],
-        'icon-image': 'charging_station',
-        'icon-color': theme.pointIconChargingStationIconColor,
-        'text-color': theme.pointIconChargingStationTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'ferry_terminal'],
-        'icon-image': 'ferry',
-        'icon-color': theme.pointIconFerryTerminalIconColor,
-        'text-color': theme.pointIconFerryTerminalTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'fuel'],
-        'icon-image': 'fuel',
-        'icon-color': theme.pointIconFuelIconColor,
-        'text-color': theme.pointIconFuelTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'motorcycle_parking'],
-        'icon-image': 'motorcycle_parking',
-        'icon-color': theme.pointIconMotorcycleParkingIconColor,
-        'text-color': theme.pointIconMotorcycleParkingTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'parking'],
-        'icon-image': 'parking',
-        'icon-color': theme.pointIconParkingIconColor,
-        'text-color': theme.pointIconParkingTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'parking_entrance'],
-        'icon-image': 'entrance',
-        'icon-color': theme.pointIconParkingEntranceIconColor,
-        'text-color': theme.pointIconParkingEntranceTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'taxi'],
-        'icon-image': 'taxi',
-        'icon-color': theme.pointIconTaxiIconColor,
-        'text-color': theme.pointIconTaxiTextColor,
-    },
-    {
-        filter: ['==', ['get', 'highway'], 'bus_stop'],
-        'icon-image': 'bus_stop',
-        'icon-color': theme.pointIconBusStopIconColor,
-        'text-color': theme.pointIconBusStopTextColo,
-    },
-
-    // Amenity: financial
-    {
-        filter: ['==', ['get', 'amenity'], 'atm'],
-        'icon-image': 'atm',
-        'icon-color': theme.pointIconAtmIconColor,
-        'text-color': theme.pointIconAtmTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'bank'],
-        'icon-image': 'bank',
-        'icon-color': theme.pointIconBankIconColor,
-        'text-color': theme.pointIconBankTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'bureau_de_change'],
-        'icon-image': 'bureau_de_change',
-        'icon-color': theme.pointIconBureauDeChangeIconColor,
-        'text-color': theme.pointIconBureauDeChangeTextColor,
-    },
-
-    // Amenity: healthcare
-    {
-        filter: ['==', ['get', 'amenity'], 'clinic'],
-        'icon-image': 'hospital',
-        'icon-color': theme.pointIconCliniqueIconColor,
-        'text-color': theme.pointIconCliniqueTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'dentist'],
-        'icon-image': 'dentist',
-        'icon-color': theme.pointIconDentistIconColor,
-        'text-color': theme.pointIconDentistTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'doctors'],
-        'icon-image': 'doctors',
-        'icon-color': theme.pointIconDoctorIconColor,
-        'text-color': theme.pointIconDoctorTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'hospital'],
-        'icon-image': 'hospital',
-        'icon-color': theme.pointIconHospitalIconColor,
-        'text-color': theme.pointIconHospitalTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'nursing_home'],
-        'icon-image': 'nursing_home',
-        'icon-color': theme.pointIconNursingHomeIconColor,
-        'text-color': theme.pointIconNursingHomeTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'pharmacy'],
-        'icon-image': 'pharmacy',
-        'icon-color': theme.pointIconPharmacieIconColor,
-        'text-color': theme.pointIconPharmacieTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'social_facility'],
-        'icon-image': 'social_facility',
-        'icon-color': theme.pointIconSocialFacilityIconColor,
-        'text-color': theme.pointIconSocialFacilityTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'veterinary'],
-        'icon-image': 'veterinary',
-        'icon-color': theme.pointIconVeterinaryIconColor,
-        'text-color': theme.pointIconVeterinaryTextColor,
-    },
-
-    // Amenity: entertainment, arts & culture
-    {
-        filter: ['==', ['get', 'amenity'], 'arts_centre'],
-        'icon-image': 'arts_centre',
-        'icon-color': theme.pointIconArtsCentreIconColor,
-        'text-color': theme.pointIconArtsCentreTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'casino'],
-        'icon-image': 'casino',
-        'icon-color': theme.pointIconCasinoIconColor,
-        'text-color': theme.pointIconCasinoTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'cinema'],
-        'icon-image': 'cinema',
-        'icon-color': theme.pointIconCinemaIconColor,
-        'text-color': theme.pointIconCinemaTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'community_centre'],
-        'icon-image': 'community_centre',
-        'icon-color': theme.pointIconCommunityCentreIconColor,
-        'text-color': theme.pointIconCommunityCentreTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'fountain'],
-        'icon-image': 'fountain',
-        'icon-color': theme.pointIconFountainIconColor,
-        'text-color': theme.pointIconFountainTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'nightclub'],
-        'icon-image': 'nightclub',
-        'icon-color': theme.pointIconNigthclubIconColor,
-        'text-color': theme.pointIconNightclubTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'public_bookcase'],
-        'icon-image': 'public_bookcase',
-        'icon-color': theme.pointIconPublicBookcaseIconColor,
-        'text-color': theme.pointIconPublicBookCaseTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'theatre'],
-        'icon-image': 'theatre',
-        'icon-color': theme.pointIconTheatreIconColor,
-        'text-color': theme.pointIconTheatreTextColor,
-    },
-
-    // Amenity: public service
-    {
-        filter: ['==', ['get', 'amenity'], 'courthouse'],
-        'icon-image': 'courthouse',
-        'icon-color': theme.pointIconCourthouseIconColor,
-        'text-color': theme.pointIconCourthouseTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'fire_station'],
-        'icon-image': 'firestation',
-        'icon-color': theme.pointIconFireStationIconColor,
-        'text-color': theme.pointIconFireStationTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'police'],
-        'icon-image': 'police',
-        'icon-color': theme.pointIconPoliceIconColor,
-        'text-color': theme.pointIconPoliceTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'post_box'],
-        'icon-image': 'post_box',
-        'icon-color': theme.pointIconPostBoxIconColor,
-        'text-color': theme.pointIconPostBoxTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'post_office'],
-        'icon-image': 'post_office',
-        'icon-color': theme.pointIconPostOfficeIconColor,
-        'text-color': theme.pointIconPostOfficeTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'prison'],
-        'icon-image': 'prison',
-        'icon-color': theme.pointIconPrisonIconColor,
-        'text-color': theme.pointIconPrisonTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'townhall'],
-        'icon-image': 'town_hall',
-        'icon-color': theme.pointIconTownhallIconColor,
-        'text-color': theme.pointIconTowmhallTextColor,
-    },
-
-    // Amenity: facilities
-    {
-        filter: ['==', ['get', 'amenity'], 'bbq'],
-        'icon-image': 'bbq',
-        'icon-color': theme.pointIconBbqIconColor,
-        'text-color': theme.pointIconBbqTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'bench'],
-        'icon-image': 'bench',
-        'icon-color': theme.pointIconBenchIconColor,
-        'text-color': theme.pointIconBenchTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'drinking_water'],
-        'icon-image': 'drinking_water',
-        'icon-color': theme.pointIconDrinkingWaterIconColor,
-        'text-color': theme.pointIconDrinkingWaterTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'shelter'],
-        'icon-image': 'shelter',
-        'icon-color': theme.pointIconShelterIconColor,
-        'text-color': theme.pointIconShelterTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'shower'],
-        'icon-image': 'shower',
-        'icon-color': theme.pointIconShowerIconColor,
-        'text-color': theme.pointIconShowerTextColor,
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'telephone'],
+        'filter': ['==', ['get', 'amenity'], 'telephone'],
         'icon-image': 'telephone',
-        'icon-color': theme.pointIconTelephoneIconColor,
-        'text-color': theme.pointIconTelephoneTextColor,
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'toilets'],
-        'icon-image': 'toilets',
-        'icon-color': theme.pointIconToiletsIconColor,
-        'text-color': theme.pointIconToiletsTextColor,
-    },
-
-    // Amenity: waste management
-    {
-        filter: ['==', ['get', 'amenity'], 'recycling'],
-        'icon-image': 'recycling',
-        'icon-color': theme.pointIconRecyclingIconColor,
-        'text-color': theme.pointIconRecyclingTextColor,
+        'filter': ['==', ['get', 'amenity'], 'parking'],
+        'icon-image': 'parking',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'waste_basket'],
-        'icon-image': 'waste_basket',
-        'icon-color': theme.pointIconWasteBasketIconColor,
-        'text-color': theme.pointIconWasteBasketTextColor,
+        'filter': [
+            'any',
+            ['all',
+                ['==', ['get', 'amenity'], 'parking'],
+                ['==', ['get', 'parking'], 'lane'],
+            ],
+            ['all',
+                ['==', ['get', 'amenity'], 'parking'],
+                ['==', ['get', 'parking'], 'street_side']
+            ]
+        ],
+        'icon-image': 'parking_subtle',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'waste_disposal'],
-        'icon-image': 'waste_disposal',
-        'icon-color': theme.pointIconWasteDisposalIconColor,
-        'text-color': theme.pointIconWasteDisposalTextColor,
-    },
-
-    // Amenity: Others
-    {
-        filter: ['==', ['get', 'amenity'], 'childcare'],
-        'icon-image': 'place-6',
-        'icon-color': theme.pointIconChildcareIconColor,
-        'text-color': theme.pointIconChildcareTextColor,
+        'filter': ['==', ['get', 'amenity'], 'fuel'],
+        'icon-image': 'fuel',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'hunting_stand'],
-        'icon-image': 'hunting_stand',
-        'icon-color': theme.pointIconHuntingStandIconColor,
-        'text-color': theme.pointIconHuntingStandTextColor,
+        'filter': ['==', ['get', 'amenity'], 'bicycle_parking'],
+        'icon-image': 'bicycle_parking',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'internet_cafe'],
-        'icon-image': 'internet_cafe',
-        'icon-color': theme.pointIconInternetCafeIconColor,
-        'text-color': theme.pointIconInternetCafeTextColor,
+        'filter': ['==', ['get', 'amenity'], 'bus_station'],
+        'icon-image': 'amenity_bus_station',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'marketplace'],
-        'icon-image': 'marketplace',
-        'icon-color': theme.pointIconMarketplaceIconColor,
-        'text-color': theme.pointIconMarketplaceTextColor,
+        'filter': ['==', ['get', 'amenity'], 'bicycle_rental'],
+        'icon-image': 'rental_bicycle',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'place_of_worship'],
+        'filter': ['==', ['get', 'amenity'], 'taxi'],
+        'icon-image': 'taxi',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'vending_machine'],
+            ['==', ['get', 'vending'], 'parking_tickets']
+        ],
+        'icon-image': 'parking_tickets',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'charging_station'],
+        'icon-image': 'charging_station',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'car_rental'],
+        'icon-image': 'rental_car',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'parking_entrance'],
+            ['==', ['get', 'parking'], 'underground']
+        ],
+        'icon-image': 'parking_entrance_underground',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'vending_machine'],
+            ['==', ['get', 'vending'], 'public_transport_tickets']
+        ],
+        'icon-image': 'public_transport_tickets',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'ferry_terminal'],
+        'icon-image': 'ferry_icon',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'motorcycle_parking'],
+        'icon-image': 'motorcycle_parking',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'bicycle_repair_station'],
+        'icon-image': 'bicycle_repair_station',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'boat_rental'],
+        'icon-image': 'boat_rental',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'parking_entrance'],
+            ['==', ['get', 'parking'], 'multi-storey']
+        ],
+        'icon-image': 'parking_entrance_multi_storey',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'police'],
+        'icon-image': 'police',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'townhall'],
+        'icon-image': 'town_hall',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'fire_station'],
+        'icon-image': 'fire_station',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'social_facility'],
+        'icon-image': 'social_facility',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'courthouse'],
+        'icon-image': 'courthouse',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'prison'],
+        'icon-image': 'prison',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'christian']
+        ],
+        'icon-image': 'christian',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'jewish']
+        ],
+        'icon-image': 'jewish',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'muslim']
+        ],
+        'icon-image': 'muslim',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'taoist']
+        ],
+        'icon-image': 'taoist',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'hindu']
+        ],
+        'icon-image': 'hinduist',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'buddhist']
+        ],
+        'icon-image': 'buddhist',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'shinto']
+        ],
+        'icon-image': 'shintoist',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'religion'], 'sikh']
+        ],
+        'icon-image': 'sikhist',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'place_of_worship'],
+            ['==', ['get', 'without or other religion'], '* value']
+        ],
         'icon-image': 'place_of_worship',
-        'icon-color': theme.pointIconPlaceOfWorkshipIconColor,
-        'text-color': theme.pointIconPlaceOfWorkshipTextColor,
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'amenity'], 'public_bath'],
-        'icon-image': 'public_bath',
-        'icon-color': theme.pointIconPublicBathIconColor,
-        'text-color': theme.pointIconPublicBathTextColor,
+        'filter': ['==', ['get', 'amenity'], 'marketplace'],
+        'icon-image': 'marketplace',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
+    {
+        'filter': ['any', ['==', ['get', 'amenity'], 'nursing_home'], ['==', ['get', 'amenity'], 'childcare']],
+        'icon-image': 'social_facility',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'amenity'], 'hunting_stand'],
+        'icon-image': 'hunting_stand',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    
+    
+    
 
     // Historic
     {
