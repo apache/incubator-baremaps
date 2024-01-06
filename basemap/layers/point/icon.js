@@ -70,12 +70,6 @@ let directives = [
         'text-color': theme.pointIconAmenityTextColor
     },
     {
-        'filter': ['==', ['get', 'tourism'], 'artwork'],
-        'icon-image': 'artwork',
-        'icon-color': theme.pointIconAmenityIconColor,
-        'text-color': theme.pointIconAmenityTextColor
-    },
-    {
         'filter': ['==', ['get', 'amenity'], 'community_centre'],
         'icon-image': 'community_centre',
         'icon-color': theme.pointIconAmenityIconColor,
@@ -84,12 +78,6 @@ let directives = [
     {
         'filter': ['==', ['get', 'amenity'], 'library'],
         'icon-image': 'library',
-        'icon-color': theme.pointIconAmenityIconColor,
-        'text-color': theme.pointIconAmenityTextColor
-    },
-    {
-        'filter': ['==', ['get', 'tourism'], 'museum'],
-        'icon-image': 'museum',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
@@ -162,12 +150,6 @@ let directives = [
     {
         'filter': ['==', ['get', 'amenity'], 'waste_disposal'],
         'icon-image': 'waste_disposal',
-        'icon-color': theme.pointIconAmenityIconColor,
-        'text-color': theme.pointIconAmenityTextColor
-    },
-    {
-        'filter': ['all', ['==', ['get', 'amenity'], 'vending_machine'], ['==', ['get', 'vending'], 'excrement_bags']],
-        'icon-image': 'excrement_bags',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
@@ -544,7 +526,11 @@ let directives = [
         'text-color': theme.pointIconAmenityTextColor
     },
     {
-        'filter': ['any', ['==', ['get', 'amenity'], 'nursing_home'], ['==', ['get', 'amenity'], 'childcare']],
+        'filter': [
+            'any',
+            ['==', ['get', 'amenity'], 'nursing_home'],
+            ['==', ['get', 'amenity'], 'childcare']
+        ],
         'icon-image': 'social_facility',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
@@ -555,9 +541,6 @@ let directives = [
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
-    
-    
-    
 
     // Historic
     {
@@ -782,8 +765,16 @@ let directives = [
     {
         'filter': [
             'any',
-            ['all', ['==', ['get', 'man_made'], 'tower'], ['==', ['get', 'tower:type'], 'observation']],
-            ['all', ['==', ['get', 'man_made'], 'tower'], ['==', ['get', 'tower:type'], 'watchtower']]
+            [
+                'all',
+                ['==', ['get', 'man_made'], 'tower'],
+                ['==', ['get', 'tower:type'], 'observation']
+            ],
+            [
+                'all',
+                ['==', ['get', 'man_made'], 'tower'],
+                ['==', ['get', 'tower:type'], 'watchtower']
+            ]
         ],
         'icon-image': 'tower_observation',
         'icon-color': theme.pointIconManMadeIconColor,
@@ -1153,7 +1144,11 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'clothes'], ['==', ['get', 'shop'], 'fashion']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'clothes'],
+            ['==', ['get', 'shop'], 'fashion']
+        ],
         'icon-image': 'clothes',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1177,7 +1172,10 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'doityourself'], ['==', ['get', 'shop'], 'hardware']],
+        'filter': ['any',
+            ['==', ['get', 'shop'], 'doityourself'],
+            ['==', ['get', 'shop'], 'hardware']
+        ],
         'icon-image': 'diy',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1189,7 +1187,10 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'kiosk'], ['==', ['get', 'shop'], 'newsagent']],
+        'filter': ['any',
+            ['==', ['get', 'shop'], 'kiosk'],
+            ['==', ['get', 'shop'], 'newsagent']
+        ],
         'icon-image': 'newsagent',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1213,7 +1214,10 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'alcohol'], ['==', ['get', 'shop'], 'wine']],
+        'filter': ['any',
+            ['==', ['get', 'shop'], 'alcohol'],
+            ['==', ['get', 'shop'], 'wine']
+        ],
         'icon-image': 'alcohol',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1255,13 +1259,21 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'greengrocer'], ['==', ['get', 'shop'], 'farm']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'greengrocer'],
+            ['==', ['get', 'shop'], 'farm']
+        ],
         'icon-image': 'greengrocer',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'laundry'], ['==', ['get', 'shop'], 'dry_cleaning']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'laundry'],
+            ['==', ['get', 'shop'], 'dry_cleaning']
+        ],
         'icon-image': 'laundry',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1273,7 +1285,11 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'jewelry'], ['==', ['get', 'shop'], 'jewellery']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'jewelry'],
+            ['==', ['get', 'shop'], 'jewellery']
+        ],
         'icon-image': 'jewelry',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1303,7 +1319,12 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'confectionery'], ['==', ['get', 'shop'], 'chocolate'], ['==', ['get', 'shop'], 'pastry']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'confectionery'],
+            ['==', ['get', 'shop'], 'chocolate'],
+            ['==', ['get', 'shop'], 'pastry']
+        ],
         'icon-image': 'confectionery',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1357,7 +1378,11 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'cosmetics'], ['==', ['get', 'shop'], 'perfumery']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'cosmetics'],
+            ['==', ['get', 'shop'], 'perfumery']
+        ],
         'icon-image': 'perfumery',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1423,13 +1448,22 @@ let directives = [
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'photo'], ['==', ['get', 'shop'], 'photo_studio'], ['==', ['get', 'shop'], 'photography']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'photo'],
+            ['==', ['get', 'shop'], 'photo_studio'],
+            ['==', ['get', 'shop'], 'photography']
+        ],
         'icon-image': 'photo',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
     },
     {
-        'filter': ['any', ['==', ['get', 'shop'], 'trade'], ['==', ['get', 'shop'], 'wholesale']],
+        'filter': [
+            'any',
+            ['==', ['get', 'shop'], 'trade'],
+            ['==', ['get', 'shop'], 'wholesale']
+        ],
         'icon-image': 'trade',
         'icon-color': theme.pointIconShopIconColor,
         'text-color': theme.pointIconShopTextColor,
@@ -1573,6 +1607,32 @@ let directives = [
     //     'text-color': theme.pointIconShopTextColor,
     // },
 
+
+
+
+    // To be classified
+    {
+        'filter': ['==', ['get', 'tourism'], 'artwork'],
+        'icon-image': 'artwork',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'museum'],
+        'icon-image': 'museum',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'amenity'], 'vending_machine'],
+            ['==', ['get', 'vending'], 'excrement_bags']
+        ],
+        'icon-image': 'excrement_bags',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
 ];
 
 export default asLayerObject(withSortKeys(directives), {
