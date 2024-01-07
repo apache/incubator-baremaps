@@ -22,6 +22,20 @@ import theme from "../../theme.js";
  * https://wiki.openstreetmap.org/wiki/OpenStreetMap_Carto/Symbols
  */
 let directives = [
+    // Aeroway
+    {
+        'filter': ['==', ['get', 'aeroway'], 'aerodrome'],
+        'icon-image': 'aerodrome',
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+    {
+        "filter": ["==", ["get", "aeroway"], "helipad"],
+        "icon-image": "helipad",
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
+    },
+
     // Amenity
     {
         'filter': [
@@ -301,7 +315,7 @@ let directives = [
     },
     {
         'filter': ['==', ['get', 'amenity'], 'bus_station'],
-        'icon-image': 'amenity_bus_station',
+        'icon-image': 'bus_station',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
@@ -389,7 +403,7 @@ let directives = [
             ['==', ['get', 'amenity'], 'parking_entrance'],
             ['==', ['get', 'parking'], 'multi-storey']
         ],
-        'icon-image': 'parking_entrance_multi_storey',
+        'icon-image': 'parking_entrance_multistorey',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
@@ -1109,117 +1123,216 @@ let directives = [
         'text-color': theme.pointIconRailwayIconColor,
     },
 
-
     // Tourism
     {
-        filter: ['==', ['get', 'tourism'], 'alpine_hut'],
-        'icon-image': 'alpine_hut',
-        'icon-color': theme.pointIconAlpineHutIconColor,
-        'text-color': theme.pointIconAlpineHutTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'apartment'],
-        'icon-image': 'apartment',
-        'icon-color': theme.pointIconApartmentIconColor,
-        'text-color': theme.pointIconApartmentTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'artwork'],
+        'filter': ['==', ['get', 'tourism'], 'artwork'],
         'icon-image': 'artwork',
-        'icon-color': theme.pointIconArtworkIconColor,
-        'text-color': theme.pointIconArtworkTextColor,
+        'icon-color': theme.pointIconAmenityIconColor,
+        'text-color': theme.pointIconAmenityTextColor
     },
     {
-        filter: ['==', ['get', 'tourism'], 'camp_site'],
-        'icon-image': 'camping',
-        'icon-color': theme.pointIconCampSiteIconColor,
-        'text-color': theme.pointIconCampSiteTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'caravan_site'],
-        'icon-image': 'caravan_park',
-        'icon-color': theme.pointIconCaravaneSiteIconColor,
-        'text-color': theme.pointIconCaravaneSiteTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'chalet'],
-        'icon-image': 'chalet',
-        'icon-color': theme.pointIconChaletIconColor,
-        'text-color': theme.pointIconChaletTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'gallery'],
+        'filter': ['==', ['get', 'tourism'], 'gallery'],
         'icon-image': 'art',
-        'icon-color': theme.pointIconGalleryIconColor,
-        'text-color': theme.pointIconGalleryTextColor,
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
     },
     {
-        filter: ['==', ['get', 'tourism'], 'guest_house'],
-        'icon-image': 'guest_house',
-        'icon-color': theme.pointIconGuestHouseIconColor,
-        'text-color': theme.pointIconGuestHouseextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'hostel'],
-        'icon-image': 'hostel',
-        'icon-color': theme.pointIconHostelIconColor,
-        'text-color': theme.pointIconHostelTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'motel'],
-        'icon-image': 'motel',
-        'icon-color': theme.pointIconMotelIconColor,
-        'text-color': theme.pointIconMotelTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'museum'],
-        'icon-image': 'museum',
-        'icon-color': theme.pointIconMuseumIconColor,
-        'text-color': theme.pointIconMuseumTextColor,
-    },
-    {
-        filter: ['==', ['get', 'tourism'], 'picnic_site'],
+        'filter': ['==', ['get', 'tourism'], 'picnic_site'],
         'icon-image': 'picnic',
-        'icon-color': theme.pointIconPicnicSiteIconColor,
-        'text-color': theme.pointIconPicnicSiteTextColor,
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
     },
     {
-        filter: ['==', ['get', 'tourism'], 'viewpoint'],
+        'filter': ['==', ['get', 'tourism'], 'camp_site'],
+        'icon-image': 'camping',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'caravan_site'],
+        'icon-image': 'caravan_park',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'tourism'], 'information'],
+            ['==', ['get', 'information'], 'guidepost']
+        ],
+        'icon-image': 'guidepost',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'tourism'], 'information'],
+            ['==', ['get', 'information'], 'board']
+        ],
+        'icon-image': 'board',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': [
+            'any',
+            [
+                'all',
+                ['==', ['get', 'tourism'], 'information'],
+                ['==', ['get', 'information'], 'map']
+            ],
+            [
+                'all',
+                ['==', ['get', 'tourism'], 'information'],
+                ['==', ['get', 'information'], 'tactile_map']
+            ]
+        ],
+        'icon-image': 'map',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': [
+            'any',
+            ['==', ['get', 'tourism'], 'information'],
+            ['==', ['get', 'information'], 'office']
+        ],
+        'icon-image': 'office',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': [
+            'any',
+            ['==', ['get', 'tourism'], 'information'],
+            ['==', ['get', 'information'], 'terminal']
+        ],
+        'icon-image': 'terminal',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': [
+            'any',
+            ['==', ['get', 'tourism'], 'information'],
+            ['==', ['get', 'information'], 'audioguide']
+        ],
+        'icon-image': 'audioguide',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'viewpoint'],
         'icon-image': 'viewpoint',
-        'icon-color': theme.pointIconViewpointIconColor,
-        'text-color': theme.pointIconViewpointTextColor,
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
     },
     {
-        filter: ['==', ['get', 'tourism'], 'wilderness_hut'],
+        'filter': ['==', ['get', 'tourism'], 'hotel'],
+        'icon-image': 'hotel',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'guest_house'],
+        'icon-image': 'guest_house',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'hostel'],
+        'icon-image': 'hostel',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'chalet'],
+        'icon-image': 'chalet',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'motel'],
+        'icon-image': 'motel',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'apartment'],
+        'icon-image': 'apartment',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'alpine_hut'],
+        'icon-image': 'alpinehut',
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
+    },
+    {
+        'filter': ['==', ['get', 'tourism'], 'wilderness_hut'],
         'icon-image': 'wilderness_hut',
-        'icon-color': theme.pointIconWildernessHutIconColor,
-        'text-color': theme.pointIconWildernessHutTextColor,
+        'icon-color': theme.pointIconTourismIconColor,
+        'text-color': theme.pointIconTourismTextColor
     },
 
-    // Waterway: barriers on waterways
+    // Waterway
     {
-        filter: ['==', ['get', 'waterway'], 'dam'],
-        'icon-image': 'dam',
-        'icon-color': theme.pointIconDamIconColor,
-        'text-color': theme.pointIconDamTextColor,
+        "filter": ["==", ["get", "waterway"], "dam"],
+        "icon-image": "place-6",
+        "icon-color": theme.pointIconWaterIconColor,
+        "text-color": theme.pointIconWaterTextColor
     },
     {
-        filter: ['==', ['get', 'waterway'], 'weir'],
-        'icon-image': 'weir',
-        'icon-color': theme.pointIconWeirIconColor,
-        'text-color': theme.pointIconWeirTextColor,
+        "filter": ["==", ["get", "waterway"], "weir"],
+        "icon-image": "place-6",
+        "icon-color": theme.pointIconWaterIconColor,
+        "text-color": theme.pointIconWaterTextColor
     },
     {
-        filter: ['==', ['get', 'waterway'], 'waterfall'],
-        'icon-image': 'waterfall',
-        'icon-color': theme.pointIconWaterfallIconColor,
-        'text-color': theme.pointIconWaterfallTextColor,
+        "filter": ["==", ["get", "waterway"], "lock_gate"],
+        "icon-image": "place-6",
+        "icon-color": theme.pointIconWaterIconColor,
+        "text-color": theme.pointIconWaterTextColor
     },
     {
-        filter: ['==', ['get', 'waterway'], 'lock_gate'],
-        'icon-image': 'lock_gate',
-        'icon-color': theme.pointIconLockGateIconColor,
-        'text-color': theme.pointIconLockGateTextColor,
+        "filter": ["==", ["get", "waterway"], "waterfall"],
+        "icon-image": "waterfall",
+        "icon-color": theme.pointIconWaterIconColor,
+        "text-color": theme.pointIconWaterTextColor
+    },
+
+    // Nature
+    {
+        "filter": ["==", ["get", "natural"], "peak"],
+        "icon-image": "peak",
+        "icon-color": theme.pointIconPeakIconColor,
+        "text-color": theme.pointIconPeakTextColor
+    },
+    {
+        "filter": ["==", ["get", "natural"], "spring"],
+        "icon-image": "spring",
+        "icon-color": theme.pointIconSpringIconColor,
+        "text-color": theme.pointIconSpringTextColor
+    },
+    {
+        "filter": ["==", ["get", "natural"], "cave_entrance"],
+        "icon-image": "cave",
+        "icon-color": theme.pointIconCaveEntranceIconColor,
+        "text-color": theme.pointIconCaveEntranceTextColor
+    },
+    {
+        "filter": ["==", ["get", "natural"], "saddle"],
+        "icon-image": "saddle",
+        "icon-color": theme.pointIconSaddleIconColor,
+        "text-color": theme.pointIconSaddleTextColor
+    },
+    {
+        "filter": ["==", ["get", "natural"], "volcano"],
+        "icon-image": "peak",
+        "icon-color": theme.pointIconVolcanoIconColor,
+        "text-color": theme.pointIconVolcanoTextColor
     },
 
     // Shop
@@ -1700,29 +1813,23 @@ let directives = [
     // },
 
 
-    // To be classified
-    {
-        'filter': ['==', ['get', 'tourism'], 'artwork'],
-        'icon-image': 'artwork',
-        'icon-color': theme.pointIconAmenityIconColor,
-        'text-color': theme.pointIconAmenityTextColor
-    },
-    {
-        'filter': ['==', ['get', 'tourism'], 'museum'],
-        'icon-image': 'museum',
-        'icon-color': theme.pointIconAmenityIconColor,
-        'text-color': theme.pointIconAmenityTextColor
-    },
-    {
-        'filter': [
-            'all',
-            ['==', ['get', 'amenity'], 'vending_machine'],
-            ['==', ['get', 'vending'], 'excrement_bags']
-        ],
-        'icon-image': 'excrement_bags',
-        'icon-color': theme.pointIconAmenityIconColor,
-        'text-color': theme.pointIconAmenityTextColor
-    },
+    // // To be classified
+    // {
+    //     'filter': ['==', ['get', 'tourism'], 'museum'],
+    //     'icon-image': 'museum',
+    //     'icon-color': theme.pointIconAmenityIconColor,
+    //     'text-color': theme.pointIconAmenityTextColor
+    // },
+    // {
+    //     'filter': [
+    //         'all',
+    //         ['==', ['get', 'amenity'], 'vending_machine'],
+    //         ['==', ['get', 'vending'], 'excrement_bags']
+    //     ],
+    //     'icon-image': 'excrement_bags',
+    //     'icon-color': theme.pointIconAmenityIconColor,
+    //     'text-color': theme.pointIconAmenityTextColor
+    // },
 ];
 
 export default asLayerObject(withSortKeys(directives), {
