@@ -3,19 +3,19 @@
  contributor license agreements.  See the NOTICE file distributed with
  this work for additional information regarding copyright ownership.
  The ASF licenses this file to you under the Apache License, Version 2.0
- (the "License"); you may not use this file except in compliance with
+ (the 'License'); you may not use this file except in compliance with
  the License.  You may obtain a copy of the License at
 
  http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
+ distributed under the License is distributed on an 'AS IS' BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
-import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import theme from "../../theme.js";
+import {asLayerObject, withSortKeys} from '../../utils/utils.js';
+import theme from '../../theme.js';
 
 /**
  * These directives are based on the following source:
@@ -30,8 +30,8 @@ let directives = [
         'text-color': theme.pointIconAmenityTextColor
     },
     {
-        "filter": ["==", ["get", "aeroway"], "helipad"],
-        "icon-image": "helipad",
+        'filter': ['==', ['get', 'aeroway'], 'helipad'],
+        'icon-image': 'helipad',
         'icon-color': theme.pointIconAmenityIconColor,
         'text-color': theme.pointIconAmenityTextColor
     },
@@ -1044,7 +1044,7 @@ let directives = [
 
     // Military
     {
-        filter: ["==", ["get", "military"], "bunker"],
+        filter: ['==', ['get', 'military'], 'bunker'],
         'icon-image': 'bunker',
         'icon-color': theme.pointIconBunkerIconColor,
         'text-color': theme.pointIconBunkerTextColor,
@@ -1095,22 +1095,22 @@ let directives = [
         'text-color': theme.pointIconHaltTextColor,
     },
     {
-        "filter": [
-            "any",
-            ["==", ["get", "railway"], "level_crossing"],
-            ["==", ["get", "railway"], "crossing"]
+        'filter': [
+            'any',
+            ['==', ['get', 'railway'], 'level_crossing'],
+            ['==', ['get', 'railway'], 'crossing']
         ],
-        "icon-image": "level_crossing2",
+        'icon-image': 'level_crossing2',
         'icon-color': theme.pointIconRailwayIconColor,
         'text-color': theme.pointIconRailwayIconColor,
     },
     {
-        "filter": [
-            "any",
-            ["==", ["get", "railway"], "level_crossing"],
-            ["==", ["get", "railway"], "crossing"]
+        'filter': [
+            'any',
+            ['==', ['get', 'railway'], 'level_crossing'],
+            ['==', ['get', 'railway'], 'crossing']
         ],
-        "icon-image": "level_crossing",
+        'icon-image': 'level_crossing',
         'icon-color': theme.pointIconRailwayIconColor,
         'text-color': theme.pointIconRailwayIconColor,
     },
@@ -1277,62 +1277,89 @@ let directives = [
         'text-color': theme.pointIconTourismTextColor
     },
 
+    // Power
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'power'], 'generator'],
+            ['any',
+                ['==', ['get', 'generator:source'], 'wind'],
+                ['==', ['get', 'generator:method'], 'wind_turbine)']
+            ]
+        ],
+        'icon-image': 'generator_wind',
+        'icon-color': theme.pointIconPowerIconColor,
+        'text-color': theme.pointIconPowerTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'power'], 'tower'],
+        'icon-image': 'power_tower',
+        'icon-color': theme.pointIconPowerIconColor,
+        'text-color': theme.pointIconPowerTextColor,
+    },
+    {
+        'filter': ['==', ['get', 'power'], 'pole'],
+        'icon-image': 'power_pole',
+        'icon-color': theme.pointIconPowerIconColor,
+        'text-color': theme.pointIconPowerTextColor,
+    },
+
     // Waterway
     {
-        "filter": ["==", ["get", "waterway"], "dam"],
-        "icon-image": "place-6",
-        "icon-color": theme.pointIconWaterIconColor,
-        "text-color": theme.pointIconWaterTextColor
+        'filter': ['==', ['get', 'waterway'], 'dam'],
+        'icon-image': 'place-6',
+        'icon-color': theme.pointIconWaterIconColor,
+        'text-color': theme.pointIconWaterTextColor
     },
     {
-        "filter": ["==", ["get", "waterway"], "weir"],
-        "icon-image": "place-6",
-        "icon-color": theme.pointIconWaterIconColor,
-        "text-color": theme.pointIconWaterTextColor
+        'filter': ['==', ['get', 'waterway'], 'weir'],
+        'icon-image': 'place-6',
+        'icon-color': theme.pointIconWaterIconColor,
+        'text-color': theme.pointIconWaterTextColor
     },
     {
-        "filter": ["==", ["get", "waterway"], "lock_gate"],
-        "icon-image": "place-6",
-        "icon-color": theme.pointIconWaterIconColor,
-        "text-color": theme.pointIconWaterTextColor
+        'filter': ['==', ['get', 'waterway'], 'lock_gate'],
+        'icon-image': 'place-6',
+        'icon-color': theme.pointIconWaterIconColor,
+        'text-color': theme.pointIconWaterTextColor
     },
     {
-        "filter": ["==", ["get", "waterway"], "waterfall"],
-        "icon-image": "waterfall",
-        "icon-color": theme.pointIconWaterIconColor,
-        "text-color": theme.pointIconWaterTextColor
+        'filter': ['==', ['get', 'waterway'], 'waterfall'],
+        'icon-image': 'waterfall',
+        'icon-color': theme.pointIconWaterIconColor,
+        'text-color': theme.pointIconWaterTextColor
     },
 
     // Nature
     {
-        "filter": ["==", ["get", "natural"], "peak"],
-        "icon-image": "peak",
-        "icon-color": theme.pointIconPeakIconColor,
-        "text-color": theme.pointIconPeakTextColor
+        'filter': ['==', ['get', 'natural'], 'peak'],
+        'icon-image': 'peak',
+        'icon-color': theme.pointIconPeakIconColor,
+        'text-color': theme.pointIconPeakTextColor
     },
     {
-        "filter": ["==", ["get", "natural"], "spring"],
-        "icon-image": "spring",
-        "icon-color": theme.pointIconSpringIconColor,
-        "text-color": theme.pointIconSpringTextColor
+        'filter': ['==', ['get', 'natural'], 'spring'],
+        'icon-image': 'spring',
+        'icon-color': theme.pointIconSpringIconColor,
+        'text-color': theme.pointIconSpringTextColor
     },
     {
-        "filter": ["==", ["get", "natural"], "cave_entrance"],
-        "icon-image": "cave",
-        "icon-color": theme.pointIconCaveEntranceIconColor,
-        "text-color": theme.pointIconCaveEntranceTextColor
+        'filter': ['==', ['get', 'natural'], 'cave_entrance'],
+        'icon-image': 'cave',
+        'icon-color': theme.pointIconCaveEntranceIconColor,
+        'text-color': theme.pointIconCaveEntranceTextColor
     },
     {
-        "filter": ["==", ["get", "natural"], "saddle"],
-        "icon-image": "saddle",
-        "icon-color": theme.pointIconSaddleIconColor,
-        "text-color": theme.pointIconSaddleTextColor
+        'filter': ['==', ['get', 'natural'], 'saddle'],
+        'icon-image': 'saddle',
+        'icon-color': theme.pointIconSaddleIconColor,
+        'text-color': theme.pointIconSaddleTextColor
     },
     {
-        "filter": ["==", ["get", "natural"], "volcano"],
-        "icon-image": "peak",
-        "icon-color": theme.pointIconVolcanoIconColor,
-        "text-color": theme.pointIconVolcanoTextColor
+        'filter': ['==', ['get', 'natural'], 'volcano'],
+        'icon-image': 'peak',
+        'icon-color': theme.pointIconVolcanoIconColor,
+        'text-color': theme.pointIconVolcanoTextColor
     },
 
     // Shop
@@ -1796,15 +1823,16 @@ let directives = [
     {
         'filter': ['==', ['get', 'shop'], 'dairy'],
         'icon-image': 'dairy',
-        'icon-color': '',
-        'text-color': ''
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
     },
     {
         'filter': ['==', ['get', 'shop'], 'massage'],
         'icon-image': 'massage',
-        'icon-color': '',
-        'text-color': ''
+        'icon-color': theme.pointIconShopIconColor,
+        'text-color': theme.pointIconShopTextColor,
     },
+
     // {
     //     'filter': ['!=', ['get', 'shop'], 'yes'],
     //     'icon-image': 'place-4',
@@ -1829,6 +1857,206 @@ let directives = [
     //     'icon-image': 'excrement_bags',
     //     'icon-color': theme.pointIconAmenityIconColor,
     //     'text-color': theme.pointIconAmenityTextColor
+    // },
+    // {
+    //     'filter': ['==', ['get', 'emergency'], 'phone'],
+    //     'icon-image': 'emergency_phone',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'highway'], 'bus_stop'],
+    //     'icon-image': 'bus_stop',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'highway'], 'traffic_signals'],
+    //     'icon-image': 'traffic_light',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'highway'], 'elevator'],
+    //     'icon-image': 'elevator',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'oneway'], 'yes'],
+    //     'icon-image': 'oneway',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'gate'],
+    //     'icon-image': 'barrier_gate',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': [
+    //         'any',
+    //         ['==', ['get', 'barrier'], 'bollard'],
+    //         ['==', ['get', 'barrier'], 'block'],
+    //         ['==', ['get', 'barrier'], 'turnstile'],
+    //         ['==', ['get', 'barrier'], 'log']
+    //     ],
+    //     'icon-image': 'barrier',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': [
+    //         'any',
+    //         ['==', ['get', 'barrier'], 'lift_gate'],
+    //         ['==', ['get', 'barrier'], 'swing_gate']
+    //     ],
+    //     'icon-image': 'liftgate',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'cycle_barrier'],
+    //     'icon-image': 'cycle_barrier',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'stile'],
+    //     'icon-image': 'barrier_stile',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'highway'], 'mini_roundabout'],
+    //     'icon-image': 'highway_mini_roundabout',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'toll_booth'],
+    //     'icon-image': 'toll_booth',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'cattle_grid'],
+    //     'icon-image': 'barrier_cattle_grid',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'kissing_gate'],
+    //     'icon-image': 'kissing_gate',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'full-height_turnstile'],
+    //     'icon-image': 'full_height_turnstile',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'barrier'], 'motorcycle_barrier'],
+    //     'icon-image': 'motorcycle_barrier',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': [
+    //         'any',
+    //         ['==', ['get', 'ford'], 'yes'],
+    //         ['==', ['get', 'ford'], 'stepping_stones']
+    //     ],
+    //     'icon-image': 'ford',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'mountain_pass'], 'yes'],
+    //     'icon-image': 'mountain_pass',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': [
+    //         'all',
+    //         ['==', ['get', 'office'], 'diplomatic'],
+    //         ['==', ['get', 'diplomatic'], 'embassy']
+    //     ],
+    //     'icon-image': 'diplomatic',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': [
+    //         'all',
+    //         ['==', ['get', 'office'], 'diplomatic'],
+    //         ['==', ['get', 'diplomatic'], 'consulate']
+    //     ],
+    //     'icon-image': 'office_diplomatic_consulate',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'office'], '*'],
+    //     'icon-image': 'office',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'advertising'], 'column'],
+    //     'icon-image': 'column',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'place'], 'city'],
+    //     'icon-image': 'place',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['has', 'capital'],
+    //     'icon-image': 'place_capital',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'entrance'], 'yes'],
+    //     'icon-image': 'rect',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'entrance'], 'main'],
+    //     'icon-image': 'entrance_main',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'entrance'], 'service'],
+    //     'icon-image': 'entrance',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': [
+    //         'all',
+    //         ['has', 'entrance'],
+    //         ['==', ['get', 'access'], 'no']
+    //     ],
+    //     'icon-image': 'rectdiag',
+    //     'icon-color': '',
+    //     'text-color': ''
+    // },
+    // {
+    //     'filter': ['==', ['get', 'Node with highway'], 'turning_circle at way with highway'],
+    //     'icon-image': 'turning_circle_on_highway_track',
+    //     'icon-color': '',
+    //     'text-color': ''
     // },
 ];
 
