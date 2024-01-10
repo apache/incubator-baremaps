@@ -61,12 +61,12 @@ export function asLayoutProperty(directives = [], baseLayout = {}) {
             ...textFont(directives),
             ...textField(directives),
             ...textSize(directives),
+            ...textSizeStops(directives),
             ...textMaxWidth(directives),
             ...iconImage(directives),
             ...lineSortKey(directives),
             ...fillSortKey(directives),
             ...symbolSortKey(directives),
-            ...labelSize(directives),
         },
         baseLayout,
     )
@@ -83,10 +83,10 @@ export function asPaintProperty(directives = [], basePaint = {}) {
             ...fillOutlineColor(directives),
             ...lineColor(directives),
             ...lineWidth(directives),
+            ...lineWidthStops(directives),
             ...lineGapWidth(directives),
-            ...roadWidth(directives),
-            ...roadGapWidth(directives),
-            ...labelColor(directives),
+            ...lineGapWidthStops(directives),
+            ...textColor(directives),
         },
         basePaint,
     )
@@ -122,10 +122,6 @@ function textFont(directives) {
 
 function textField(directives) {
     return mergeDirectives(directives, 'text-field', null)
-}
-
-function textSize(directives) {
-    return mergeDirectives(directives, 'text-size', 12)
 }
 
 function textMaxWidth(directives) {
@@ -176,6 +172,10 @@ function symbolSortKey(directives) {
     return mergeDirectives(directives, 'symbol-sort-key', 0)
 }
 
+function textSize(directives) {
+    return mergeDirectives(directives, 'text-size', 0)
+}
+
 function mergeDirectives(directives, property, value) {
     let cases = directives.flatMap((rule) => {
         if (rule[property]) {
@@ -192,23 +192,19 @@ function mergeDirectives(directives, property, value) {
     }
 }
 
-function roadWidth(directives) {
-    return mergeRoadDirective(directives, 'line-width-stops', 'line-width', 1)
+function lineWidthStops(directives) {
+    return interpolateStops(directives, 'line-width-stops', 'line-width', 1)
 }
 
-function roadGapWidth(directives) {
-    return mergeRoadDirective(directives, 'line-gap-width-stops', 'line-gap-width', 1)
+function lineGapWidthStops(directives) {
+    return interpolateStops(directives, 'line-gap-width-stops', 'line-gap-width', 1)
 }
 
-function labelColor(directives) {
-    return mergeInterpolatedColorDirective(directives, 'label-color', 'text-color', 6, 8, 'rgb(0, 0, 0)')
+function textSizeStops(directives) {
+    return interpolateStops(directives, 'text-size-stops', 'text-size', 1)
 }
 
-function labelSize(directives) {
-    return mergeInterpolatedNumberDirective(directives, 'label-size', 'text-size', 6, 8, 4, 14)
-}
-
-function mergeRoadDirective(directives, property, alias, value) {
+function interpolateStops(directives, property, alias, value) {
     if (directives.filter((directive) => directive[property]).length == 0) {
         return {};
     }
@@ -236,78 +232,13 @@ function mergeRoadDirective(directives, property, alias, value) {
     }
 }
 
-function mergeInterpolatedDirective(directives, property, alias, value) {
-    let cases = directives.flatMap((rule) => {
-        if (rule[property]) {
-            return [rule['filter'], rule[property]]
-        } else {
-            return []
-        }
-    })
-    if (cases.length == 0) {
-        return {}
-    }
-    return {
-        [alias]: [
-            'interpolate',
-            ['exponential', 1.2],
-            ['zoom'],
-            5,
-            0.2,
-            20,
-            ['case', ...cases, value],
-        ],
-    }
-}
-
-function mergeInterpolatedColorDirective(directives, property, alias, startZoom, endZoom, fallback) {
-    const cases = directives.filter((rule) => rule[property]).map((rule) => {
-        const propertyValue = rule[property]
-        if (propertyValue instanceof Array) {
-            return [rule['filter'], propertyValue]
-        } else {
-            return [rule['filter'], [propertyValue, propertyValue]]
-        }
-    })
-    if (cases.length == 0) {
-        return {}
-    }
-    return {
-        [alias]: [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            startZoom,
-            ['case', ...(cases.flatMap((c) => ([c[0], c[1][0]]))), fallback],
-            endZoom,
-            ['case', ...(cases.flatMap((c) => ([c[0], c[1][1]]))), fallback],
-        ],
-    }
-}
-
-function mergeInterpolatedNumberDirective(directives, property, alias, startZoom, endZoom, offset, fallback) {
-    let cases = []
-    directives.forEach((rule) => {
-        if (rule[property]) {
-            cases.push([rule['filter'], rule[property]])
-        }
-    })
-    if (cases.length == 0) {
-        return {}
-    }
-    return {
-        [alias]: [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            startZoom,
-            ['case', ...(cases.flatMap((c) => ([c[0], c[1]]))), fallback],
-            endZoom,
-            ['case', ...(cases.flatMap((c) => ([c[0], c[1] + offset]))), fallback],
-        ],
-    }
-}
-
+/**
+ * Group an array of objects by a given key.
+ *
+ * @param xs
+ * @param key
+ * @returns {*}
+ */
 function groupBy(xs, key) {
     return xs.reduce(function (rv, x) {
         ;(rv[x[key]] = rv[x[key]] || []).push(x)
