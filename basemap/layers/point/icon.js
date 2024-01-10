@@ -2002,12 +2002,12 @@ let directives = [
         'icon-color': theme.otherIconColor,
         'text-color': theme.otherIconColor,
     },
-    {
-        'filter': ['has', 'capital'],
-        'icon-image': 'place_capital',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor,
-    },
+    // {
+    //     'filter': ['has', 'capital'],
+    //     'icon-image': 'place_capital',
+    //     'icon-color': theme.otherIconColor,
+    //     'text-color': theme.otherIconColor,
+    // },
     // {
     //     'filter': ['==', ['get', 'entrance'], 'yes'],
     //     'icon-image': 'entrance',

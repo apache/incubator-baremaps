@@ -58,8 +58,8 @@ import waterway_line from "./layers/waterway/line.js"
 import waterway_area from "./layers/waterway/area.js"
 import waterway_label from "./layers/waterway/label.js"
 import icon from "./layers/point/icon.js";
+import place from './layers/point/place.js';
 import country_label from './layers/point/country_label.js';
-import point_label from './layers/point/point_label.js';
 
 export default {
     "version": 8,
@@ -115,7 +115,7 @@ export default {
         waterway_label,
         building_extrusion,
         icon,
-        point_label,
+        place,
         country_label,
     ],
 };

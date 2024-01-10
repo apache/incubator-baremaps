@@ -357,6 +357,7 @@ export default {
     gastronomyIconColor: 'rgb(199, 116, 0)',
     religionIconColor: 'rgb(0, 0, 0)',
     powerIconColor: 'rgb(0, 0, 0)',
+    placeIconColor: 'rgb(0, 0, 0)',
     waterIconColor: 'rgb(0, 146, 219)',
     officeIconColor: 'rgb(72, 99, 160)',
     manMadeIconColor: 'rgb(85, 85, 85)',

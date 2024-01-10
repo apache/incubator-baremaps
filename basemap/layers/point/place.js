@@ -19,40 +19,61 @@ import {asLayerObject, withSymbolSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
-        filter: [
+        'filter': [
             'all',
+            ['==', ['get', 'place'], 'city'],
             ['==', ['get', 'capital'], 'yes'],
-            ['==', ['get', 'place'], 'city']
         ],
-        'label-color': theme.pointLabelCityLabelColor,
-        'label-size': 16,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
+        'label-color': theme.placeIconColor,
+        'text-size-stops': [
+            0, 0,
+            10, 18,
+            24, 72
+        ],
     },
     {
-        filter: [
+        'filter': [
             'all',
+            ['==', ['get', 'place'], 'city'],
             ['!=', ['get', 'capital'], 'yes'],
-            ['==', ['get', 'place'], 'city']
         ],
-        'label-color': [theme.pointLabelCityFilterOneLabelColor, theme.pointLabelCityFilterTwoLabelColor],
-        'label-size': 12,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
+        'label-color': [theme.pointLabelCityFilterOneLabelColor, theme.pointLabelCityFilterTwoLabelColor],
+        'text-size-stops': [
+            0, 0,
+            10, 16,
+            24, 64
+        ],
     },
     {
-        filter: ['==', ['get', 'place'], 'town'],
-        'label-size': 10,
+        'filter': ['==', ['get', 'place'], 'town'],
+        'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
         'label-color': [theme.pointLabelTownFilterOneLabelColor, theme.pointLabelTownFilterTwoLabelColor],
-
+        'text-size-stops': [
+            0, 0,
+            10, 14,
+            24, 56
+        ],
     },
     {
         filter: ['==', ['get', 'place'], 'village'],
-        'label-size': 10,
+        'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
         'label-color': theme.pointLabelVillageLabelColor,
+        'text-size-stops': [
+            0, 0,
+            10, 10,
+            24, 40
+        ],
     },
     {
         filter: ['==', ['get', 'place'], 'locality'],
-        'label-size': 8,
         'label-color': theme.pointLabelLocalityLabelColor,
+        'text-size-stops': [
+            0, 0,
+            10, 8,
+            24, 32
+        ],
     },
     // {
     //     filter: [
@@ -85,6 +106,8 @@ export default asLayerObject(withSymbolSortKeys(directives), {
         visibility: 'visible',
         'text-font': ['Noto Sans Regular'],
         'text-field': ['get', 'name'],
+        'icon-size': 1,
+        'text-optional': true,
     },
     paint: {
         'text-halo-color': theme.pointLabelPaintTextHaloColor,

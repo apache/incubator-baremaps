@@ -26,7 +26,14 @@ export default {
         'text-anchor': 'center',
         'text-field': ['get', 'name'],
         'text-font': ['Noto Sans Regular'],
-        'text-size': ['interpolate', ['exponential', 1], ['zoom'], 13, 10, 14, 12],
+        'text-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0, 0,
+            10, 6,
+            24, 24
+        ],
         visibility: 'visible',
     },
     paint: {
