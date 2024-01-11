@@ -20,4 +20,5 @@ export default {
     "center": [0, 0],
     "bounds": [-180, -85.0511, 180, 85.0511],
     "zoom": 3,
+    "daylightVersion": "v1.37",
 }

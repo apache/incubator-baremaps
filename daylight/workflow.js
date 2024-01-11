@@ -20,7 +20,7 @@ export default {
             "tasks": [
                 {
                     "type": "DownloadUrl",
-                    "source": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/planet-v1.33.osm.pbf",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/planet-${config.daylightVersion}.osm.pbf`,
                     "target": "data/data.osm.pbf"
                 },
                 {
@@ -33,7 +33,7 @@ export default {
                 },
                 {
                     "type": "DownloadUrl",
-                    "source": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/ml-buildings-v1.33.osm.pbf",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/ml-buildings-${config.daylightVersion}.osm.pbf`,
                     "target": "data/buildings.osm.pbf"
                 },
                 {
@@ -46,7 +46,7 @@ export default {
                 },
                 {
                     "type": "DownloadUrl",
-                    "source": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/fb-ml-roads-v1.33.osc.gz",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/fb-ml-roads-${config.daylightVersion}.osc.gz`,
                     "target": "data/roads.osc.gz"
                 },
                 {
@@ -58,7 +58,7 @@ export default {
                 },
                 {
                     "type": "DownloadUrl",
-                    "source": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/admin-v1.33.osc.gz",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/admin-${config.daylightVersion}.osc.gz`,
                     "target": "data/admin.osc.gz"
                 },
                 {
@@ -70,7 +70,7 @@ export default {
                 },
                 {
                     "type": "DownloadUrl",
-                    "source": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/coastlines-v1.33.tgz",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/coastlines-${config.daylightVersion}.tgz`,
                     "target": "data/coastlines.tgz"
                 },
                 {
@@ -93,7 +93,7 @@ export default {
                 },
                 {
                     "type": "DownloadUrl",
-                    "source": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/preferred-localization-v1.33.tsv",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/preferred-localization-${config.daylightVersion}.tsv`,
                     "target": "data/preferred-localization.tsv"
                 },
                 {
@@ -103,7 +103,7 @@ export default {
                 },
                 {
                     "type": "DownloadUrl",
-                    "source": "https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/v1.33/important-features-v1.33.json",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/important-features-${config.daylightVersion}.json`,
                     "target": "data/important-features.json"
                 },
                 {
