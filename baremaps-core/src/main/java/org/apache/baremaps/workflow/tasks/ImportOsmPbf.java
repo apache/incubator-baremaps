@@ -50,7 +50,7 @@ public class ImportOsmPbf implements Task {
   private Path file;
   private Object database;
   private Integer databaseSrid;
-  private Boolean replaceExisting;
+  private boolean replaceExisting = true;
 
   /**
    * Constructs a {@code ImportOsmPbf}.
