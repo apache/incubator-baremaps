@@ -18,19 +18,17 @@
 package org.apache.baremaps.server;
 
 import static com.google.common.net.HttpHeaders.*;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 
 import com.google.common.net.InetAddresses;
-import io.servicetalk.http.api.StreamingHttpRequest;
-import io.servicetalk.transport.api.ConnectionContext;
+import com.linecorp.armeria.common.*;
+import com.linecorp.armeria.server.ServiceRequestContext;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
+import com.linecorp.armeria.server.annotation.ProducesJson;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.*;
 import org.apache.baremaps.iploc.IpLocObject;
 import org.apache.baremaps.iploc.IpLocRepository;
 import org.slf4j.Logger;
@@ -39,15 +37,12 @@ import org.slf4j.LoggerFactory;
 /**
  * A resource that provides access to the IP location database.
  */
-@Singleton
-@javax.ws.rs.Path("/")
 public class IpLocResource {
 
   private static final Logger logger = LoggerFactory.getLogger(IpLocResource.class);
 
   private final IpLocRepository ipLocRepository;
 
-  @Inject
   public IpLocResource(IpLocRepository ipLocRepository) {
     this.ipLocRepository = ipLocRepository;
   }
@@ -55,52 +50,56 @@ public class IpLocResource {
   public record IP(String ip) {
   }
 
-  @GET
-  @javax.ws.rs.Path("/api/ip")
-  public Response ip(
-      @Context ConnectionContext context,
-      @Context StreamingHttpRequest request,
-      @QueryParam("ip") String ip) {
+  @Get("/api/ip")
+  @ProducesJson
+  public HttpResponse ip(
+      ServiceRequestContext context,
+      HttpHeaders requestHeaders,
+      @Param("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
-              .or(() -> Optional.ofNullable(request.headers().get("X-Forwarded-For")))
-              .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
-              .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
+              .or(() -> Optional.ofNullable(requestHeaders.get("X-Forwarded-For")))
+              .or(() -> Optional.ofNullable(requestHeaders.get("X-Real-IP")))
+              .orElse(context.remoteAddress().getAddress().getHostAddress())
               .toString().split(",")[0].trim());
-      return Response.status(200) // lgtm [java/xss]
-          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-          .header(CONTENT_TYPE, APPLICATION_JSON)
-          .entity(new IP(address.toString())).build();
+
+      var responseHeaders = ResponseHeaders.builder(200)
+          .add(CONTENT_TYPE, APPLICATION_JSON)
+          .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+          .build();
+
+      return HttpResponse.ofJson(responseHeaders, new IP(address.toString()));
     } catch (IllegalArgumentException e) {
       logger.error("Error while processing request", e);
-      return Response.serverError().build();
+      return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  @GET
-  @javax.ws.rs.Path("/api/iploc")
+  @Get("/api/iploc")
+  @ProducesJson
   public Response iploc(
-      @Context ConnectionContext context,
-      @Context StreamingHttpRequest request,
-      @QueryParam("ip") String ip) {
+      ServiceRequestContext context,
+      HttpHeaders requestHeaders,
+      @Param("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
-              .or(() -> Optional.ofNullable(request.headers().get("X-Forwarded-For")))
-              .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
+              .or(() -> Optional.ofNullable(requestHeaders.get("X-Forwarded-For")))
+              .or(() -> Optional.ofNullable(requestHeaders.get("X-Real-IP")))
               .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
               .toString().split(",")[0].trim());
       List<IpLocObject> inetnumLocations = ipLocRepository.findByInetAddress(address);
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
-      return Response.status(200) // lgtm [java/xss]
-          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-          .header(CONTENT_TYPE, APPLICATION_JSON)
-          .entity(inetnumLocationDtos).build();
+      var responseHeaders = ResponseHeaders.builder(200)
+          .add(CONTENT_TYPE, APPLICATION_JSON)
+          .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+          .build();
+      return HttpResponse.ofJson(responseHeaders, inetnumLocationDtos);
     } catch (IllegalArgumentException e) {
       logger.error("Error while processing request", e);
-      return Response.serverError().build();
+      return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

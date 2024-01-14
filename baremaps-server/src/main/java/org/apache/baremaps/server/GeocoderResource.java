@@ -17,23 +17,22 @@
 
 package org.apache.baremaps.server;
 
-import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static com.google.common.net.HttpHeaders.*;
+import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
 
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.ResponseHeaders;
+import com.linecorp.armeria.server.annotation.Default;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
+import com.linecorp.armeria.server.annotation.ProducesJson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
@@ -44,8 +43,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A resource that provides access to the geocoder.
  */
-@Singleton
-@javax.ws.rs.Path("/")
 public class GeocoderResource {
 
   private static final Logger logger = LoggerFactory.getLogger(GeocoderResource.class);
@@ -53,27 +50,23 @@ public class GeocoderResource {
   record GeocoderResponse(List<GeocoderResult> results) {
   }
 
-
   record GeocoderResult(float score, Map<String, Object> data) {
   }
 
-
   private final SearcherManager searcherManager;
 
-  @Inject
   public GeocoderResource(SearcherManager searcherManager) {
     this.searcherManager = searcherManager;
   }
 
-  @GET
-  @javax.ws.rs.Path("/api/geocoder")
-  public Response searchLocations(
-      @QueryParam("queryText") String queryText,
-      @QueryParam("countryCode") @DefaultValue("") String countryCode,
-      @QueryParam("limit") @DefaultValue("10") int limit) {
+  @Get("/api/geocoder")
+  @ProducesJson
+  public HttpResponse searchLocations(
+      @Param("queryText") String queryText,
+      @Param("countryCode") @Default("") String countryCode,
+      @Param("limit") @Default("10") int limit) {
     if (queryText == null) {
-      throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-          .entity("The queryText parameter is mandatory").build());
+      return HttpResponse.of(HttpStatus.BAD_REQUEST);
     }
     try {
       IndexSearcher searcher = searcherManager.acquire();
@@ -91,20 +84,25 @@ public class GeocoderResource {
         var result = searcher.search(query, limit);
         var results =
             Arrays.stream(result.scoreDocs).map(scoreDoc -> asResult(searcher, scoreDoc)).toList();
-        return Response.status(Response.Status.OK).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-            .header(CONTENT_TYPE, APPLICATION_JSON).entity(new GeocoderResponse(results)).build();
+
+        var headers = ResponseHeaders.builder(200)
+            .add(CONTENT_TYPE, APPLICATION_JSON)
+            .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            .build();
+
+        return HttpResponse.ofJson(headers, new GeocoderResponse(results));
       } catch (IllegalArgumentException e) {
         logger.warn("Illegal input while processing request", e);
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        return HttpResponse.of(HttpStatus.BAD_REQUEST);
       } catch (IOException | ParseException e) {
         logger.error("Error while processing request", e);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
       } finally {
         searcherManager.release(searcher);
       }
     } catch (IOException e) {
       logger.error("Error while processing request", e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

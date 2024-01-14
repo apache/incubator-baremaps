@@ -35,52 +35,8 @@ limitations under the License.
       <artifactId>armeria-reactor3</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-http-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-transport-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.ws.rs</groupId>
-      <artifactId>jakarta.ws.rs-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.media</groupId>
-      <artifactId>jersey-media-json-jackson</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.media</groupId>
-      <artifactId>jersey-media-multipart</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.media</groupId>
-      <artifactId>jersey-media-sse</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.test-framework</groupId>
-      <artifactId>jersey-test-framework-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.test-framework</groupId>
-      <artifactId>jersey-test-framework-util</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-      <artifactId>jersey-test-framework-provider-inmemory</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

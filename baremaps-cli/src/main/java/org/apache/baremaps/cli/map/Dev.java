@@ -24,22 +24,23 @@ import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.annotation.JacksonResponseConverterFunction;
 import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.file.HttpFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-
-import com.linecorp.armeria.server.file.HttpFile;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.server.*;
+import org.apache.baremaps.server.ChangeResource;
+import org.apache.baremaps.server.StyleResource;
+import org.apache.baremaps.server.TileResource;
+import org.apache.baremaps.server.TilesetResource;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tileset.Tileset;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -78,16 +79,18 @@ public class Dev implements Callable<Integer> {
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
 
-    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
-    var tileStoreSupplier = (Supplier<TileStore>) () -> {
+    var tilesetSupplier = (Supplier<Tileset>) () -> {
       try {
-        var config = configReader.read(this.tilesetPath);
-        var tilesetObject =
-            objectMapper.readValue(config, Tileset.class);
-        return new PostgresTileStore(datasource, tilesetObject);
+        var config = configReader.read(tilesetPath);
+        return objectMapper.readValue(config, Tileset.class);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
+    };
+
+    var tileStoreSupplier = (Supplier<TileStore>) () -> {
+      var tileJSON = tilesetSupplier.get();
+      return new PostgresTileStore(datasource, tileJSON);
     };
 
     var styleSupplier = (Supplier<Style>) () -> {
@@ -99,33 +102,26 @@ public class Dev implements Callable<Integer> {
       }
     };
 
-    var tileJSONSupplier = (Supplier<Tileset>) () -> {
-      try {
-        var config = configReader.read(tilesetPath);
-        return objectMapper.readValue(config, Tileset.class);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    };
-
     var serverBuilder = Server.builder();
     serverBuilder.http(port);
 
-    JacksonResponseConverterFunction jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
-    serverBuilder.annotatedService(new ChangeResource(tilesetPath, stylePath), jsonResponseConverter);
+    JacksonResponseConverterFunction jsonResponseConverter =
+        new JacksonResponseConverterFunction(objectMapper);
+    serverBuilder.annotatedService(new ChangeResource(tilesetPath, stylePath),
+        jsonResponseConverter);
     serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
-    serverBuilder.annotatedService(new TilesetResource(tileJSONSupplier), jsonResponseConverter);
+    serverBuilder.annotatedService(new TilesetResource(tilesetSupplier), jsonResponseConverter);
 
     HttpFile index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/viewer.html");
     serverBuilder.service("/", index.asService());
     serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/assets"));
 
     serverBuilder.decorator(CorsService.builderForAnyOrigin()
-          .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
-          .allowRequestHeaders("Origin", "Content-Type", "Accept")
-          .newDecorator());
-    
+        .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
+        .allowRequestHeaders("Origin", "Content-Type", "Accept")
+        .newDecorator());
+
     serverBuilder.disableServerHeader();
     serverBuilder.disableDateHeader();
 
