@@ -19,13 +19,14 @@ package org.apache.baremaps.server;
 
 import static com.google.common.net.HttpHeaders.*;
 
+import com.linecorp.armeria.common.HttpData;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.ResponseHeaders;
+import com.linecorp.armeria.server.annotation.Blocking;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
 import java.nio.ByteBuffer;
 import java.util.function.Supplier;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -35,8 +36,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A resource that provides access to the tiles.
  */
-@Singleton
-@javax.ws.rs.Path("/")
 public class TileResource {
 
   private static final Logger logger = LoggerFactory.getLogger(TileResource.class);
@@ -47,33 +46,34 @@ public class TileResource {
 
   private final Supplier<TileStore> tileStoreSupplier;
 
-  @Inject
   public TileResource(Supplier<TileStore> tileStoreSupplier) {
     this.tileStoreSupplier = tileStoreSupplier;
   }
 
-  @GET
-  @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
-  public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
+  @Get("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).mvt$")
+  @Blocking
+  public HttpResponse tile(@Param("z") int z, @Param("x") int x, @Param("y") int y) {
     TileCoord tileCoord = new TileCoord(x, y, z);
     try {
       TileStore tileStore = tileStoreSupplier.get();
       ByteBuffer blob = tileStore.read(tileCoord);
       if (blob != null) {
+        var headers = ResponseHeaders.builder(200)
+            .add(CONTENT_TYPE, TILE_TYPE)
+            .add(CONTENT_ENCODING, TILE_ENCODING)
+            .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            .build();
         byte[] bytes = new byte[blob.remaining()];
         blob.get(bytes);
-        return Response.status(200) // lgtm [java/xss]
-            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-            .header(CONTENT_TYPE, TILE_TYPE)
-            .header(CONTENT_ENCODING, TILE_ENCODING)
-            .entity(bytes)
-            .build();
+        HttpData data = HttpData.wrap(bytes);
+        return HttpResponse.of(headers, data);
+
       } else {
-        return Response.status(204).build();
+        return HttpResponse.of(204);
       }
     } catch (TileStoreException ex) {
       logger.error("Error while reading tile.", ex);
-      return Response.status(404).build();
+      return HttpResponse.of(404);
     }
   }
 
