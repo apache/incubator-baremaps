@@ -393,30 +393,30 @@ export default {
             ]
         },
         {
-            "id": "openstreetmap-leisure",
+            "id": "daylight-leisure",
             "needs": [
-                "openstreetmap-polygon"
+                "daylight-polygon"
             ],
             "tasks": [
                 {
                     "type": "ExecuteSql",
-                    "file": "layers/leisure/clean.sql",
+                    "file": "../basemap/layers/leisure/clean.sql",
                     "database": config.database,
                 },
                 {
                     "type": "ExecuteSql",
-                    "file": "layers/leisure/prepare.sql",
+                    "file": "../basemap/layers/leisure/prepare.sql",
                     "database": config.database,
                 },
                 {
                     "type": "ExecuteSql",
-                    "file": "layers/leisure/simplify.sql",
+                    "file": "../basemap/layers/leisure/simplify.sql",
                     "database": config.database,
                     "parallel": true,
                 },
                 {
                     "type": "ExecuteSql",
-                    "file": "layers/leisure/index.sql",
+                    "file": "../basemap/layers/leisure/index.sql",
                     "database": config.database,
                     "parallel": true
                 },
