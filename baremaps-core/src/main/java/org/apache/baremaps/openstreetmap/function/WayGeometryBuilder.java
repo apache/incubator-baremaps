@@ -82,6 +82,7 @@ public class WayGeometryBuilder implements Consumer<Way> {
           } else {
             var geometryFixer = new GeometryFixer(polygon);
             var fixedGeometry = geometryFixer.getResult();
+            fixedGeometry.setSRID(GEOMETRY_FACTORY_WGS84.getSRID());
             way.setGeometry(fixedGeometry);
           }
         }

@@ -233,6 +233,7 @@ public class RelationMultiPolygonBuilder implements Consumer<Relation> {
     } else {
       var geometryFixer = new GeometryFixer(polygon);
       var fixedGeometry = geometryFixer.getResult();
+      fixedGeometry.setSRID(GEOMETRY_FACTORY_WGS84.getSRID());
       if (fixedGeometry instanceof Polygon fixedPolygon) {
         accumulator.add(fixedPolygon);
       } else if (fixedGeometry instanceof MultiPolygon fixedMultiPolygon) {
