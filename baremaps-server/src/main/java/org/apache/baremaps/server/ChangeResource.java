@@ -37,7 +37,7 @@ import reactor.core.publisher.Sinks;
 /**
  * A resource that provides the changes in the tileset and style.
  */
-public class ChangeResource {
+public final class ChangeResource {
 
   private static final Logger logger = LoggerFactory.getLogger(ChangeResource.class);
 
@@ -48,6 +48,8 @@ public class ChangeResource {
   private final Path tileset;
 
   private final Path style;
+
+  private final Thread thread;
 
   private final Sinks.Many<ServerSentEvent> changes = Sinks.many().multicast().directBestEffort();
 
@@ -60,7 +62,8 @@ public class ChangeResource {
   public ChangeResource(Path tileset, Path style) {
     this.tileset = tileset;
     this.style = style;
-    new Thread(new ChangeListener()).start();
+    this.thread = new Thread(new ChangeListener());
+    this.thread.start();
   }
 
   /**

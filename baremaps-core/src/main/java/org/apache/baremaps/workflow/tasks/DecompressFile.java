@@ -25,8 +25,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipFile;
-
-import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -198,10 +196,10 @@ public class DecompressFile implements Task {
           Files.createDirectories(path);
         } else {
           Files.write(path, new byte[] {},
-                  StandardOpenOption.CREATE,
-                  StandardOpenOption.TRUNCATE_EXISTING);
+              StandardOpenOption.CREATE,
+              StandardOpenOption.TRUNCATE_EXISTING);
           try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
-               var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
+              var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
             input.transferTo(output);
           }
         }
