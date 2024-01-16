@@ -100,7 +100,7 @@ public class GeocoderResource {
       } finally {
         searcherManager.release(searcher);
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       logger.error("Error while processing request", e);
       return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -28,7 +28,6 @@ import com.linecorp.armeria.server.file.HttpFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
@@ -105,15 +104,14 @@ public class Dev implements Callable<Integer> {
     var serverBuilder = Server.builder();
     serverBuilder.http(port);
 
-    JacksonResponseConverterFunction jsonResponseConverter =
-        new JacksonResponseConverterFunction(objectMapper);
+    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
     serverBuilder.annotatedService(new ChangeResource(tilesetPath, stylePath),
         jsonResponseConverter);
     serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new TilesetResource(tilesetSupplier), jsonResponseConverter);
 
-    HttpFile index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/viewer.html");
+    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/viewer.html");
     serverBuilder.service("/", index.asService());
     serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/assets"));
 
@@ -125,9 +123,13 @@ public class Dev implements Callable<Integer> {
     serverBuilder.disableServerHeader();
     serverBuilder.disableDateHeader();
 
-    Server server = serverBuilder.build();
-    CompletableFuture<Void> future = server.start();
-    future.join();
+    var server = serverBuilder.build();
+
+    var startFuture = server.start();
+    startFuture.join();
+
+    var shutdownFuture = server.closeOnJvmShutdown();
+    shutdownFuture.join();
 
     return 0;
   }

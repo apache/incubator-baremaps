@@ -31,7 +31,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
 import org.apache.baremaps.iploc.IpLocRepository;
 import org.apache.baremaps.server.IpLocResource;
 import org.slf4j.Logger;
@@ -57,16 +56,16 @@ public class Serve implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
 
-    String jdbcUrl = String.format("JDBC:sqlite:%s", database.toString());
+    var jdbcUrl = String.format("JDBC:sqlite:%s", database.toString());
 
-    HikariConfig config = new HikariConfig();
+    var config = new HikariConfig();
     config.setJdbcUrl(jdbcUrl);
     config.addDataSourceProperty("cachePrepStmts", "true");
     config.addDataSourceProperty("prepStmtCacheSize", "250");
     config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-    DataSource dataSource = new HikariDataSource(config);
+    var dataSource = new HikariDataSource(config);
 
-    IpLocRepository ipLocRepository = new IpLocRepository(dataSource);
+    var ipLocRepository = new IpLocRepository(dataSource);
 
     var serverBuilder = Server.builder();
     serverBuilder.http(port);
@@ -92,8 +91,12 @@ public class Serve implements Callable<Integer> {
     serverBuilder.disableDateHeader();
 
     var server = serverBuilder.build();
-    var future = server.start();
-    future.join();
+
+    var startFuture = server.start();
+    startFuture.join();
+
+    var shutdownFuture = server.closeOnJvmShutdown();
+    shutdownFuture.join();
 
     return 0;
   }

@@ -86,8 +86,12 @@ public class Serve implements Callable<Integer> {
       serverBuilder.disableDateHeader();
 
       var server = serverBuilder.build();
-      var future = server.start();
-      future.join();
+
+      var startFuture = server.start();
+      startFuture.join();
+
+      var shutdownFuture = server.closeOnJvmShutdown();
+      shutdownFuture.join();
     }
 
     return 0;
