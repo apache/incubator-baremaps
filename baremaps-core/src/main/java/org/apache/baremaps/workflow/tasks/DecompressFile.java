@@ -141,6 +141,9 @@ public class DecompressFile implements Task {
           Files.createDirectories(path);
         } else {
           Files.createDirectories(path.getParent());
+          Files.write(path, new byte[] {},
+              StandardOpenOption.CREATE,
+              StandardOpenOption.TRUNCATE_EXISTING);
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
             tarInputStream.transferTo(outputStream);
@@ -169,6 +172,9 @@ public class DecompressFile implements Task {
           Files.createDirectories(path);
         } else {
           Files.createDirectories(path.getParent());
+          Files.write(path, new byte[] {},
+              StandardOpenOption.CREATE,
+              StandardOpenOption.TRUNCATE_EXISTING);
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
             tarInputStream.transferTo(outputStream);
@@ -195,6 +201,7 @@ public class DecompressFile implements Task {
         if (entry.isDirectory()) {
           Files.createDirectories(path);
         } else {
+          Files.createDirectories(path.getParent());
           Files.write(path, new byte[] {},
               StandardOpenOption.CREATE,
               StandardOpenOption.TRUNCATE_EXISTING);
