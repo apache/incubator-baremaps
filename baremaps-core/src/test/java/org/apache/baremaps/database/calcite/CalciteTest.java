@@ -72,6 +72,8 @@ public class CalciteTest {
       ModelHandler.addFunctions(rootSchema, "ST_AsMVT", emptyPath,
           VectorTileFunctions.class.getName(), "asVectorTile", true);
 
+
+
       // Create the city table
       DataRowType cityRowType = new DataRowTypeImpl("city", List.of(
           new DataColumnImpl("id", Type.INTEGER),

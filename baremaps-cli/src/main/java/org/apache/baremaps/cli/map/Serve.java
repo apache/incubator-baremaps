@@ -25,6 +25,7 @@ import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.annotation.JacksonResponseConverterFunction;
 import com.linecorp.armeria.server.cors.CorsService;
+import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.file.HttpFile;
 import java.nio.file.Path;
@@ -32,6 +33,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
+import org.apache.baremaps.server.SearchResource;
 import org.apache.baremaps.server.StyleResource;
 import org.apache.baremaps.server.TileJSONResource;
 import org.apache.baremaps.server.TileResource;
@@ -101,6 +103,7 @@ public class Serve implements Callable<Integer> {
     serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
+    serverBuilder.annotatedService(new SearchResource(datasource), jsonResponseConverter);
 
     var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/server.html");
     serverBuilder.service("/", index.asService());
@@ -114,6 +117,8 @@ public class Serve implements Callable<Integer> {
         .allowCredentials()
         .exposeHeaders(HttpHeaderNames.LOCATION)
         .newDecorator());
+
+    serverBuilder.serviceUnder("/docs", new DocService());
 
     serverBuilder.disableServerHeader();
     serverBuilder.disableDateHeader();

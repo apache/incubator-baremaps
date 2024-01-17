@@ -25,6 +25,7 @@ import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.annotation.JacksonResponseConverterFunction;
 import com.linecorp.armeria.server.cors.CorsService;
+import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.file.HttpFile;
 import com.zaxxer.hikari.HikariConfig;
@@ -86,6 +87,8 @@ public class Serve implements Callable<Integer> {
         .allowCredentials()
         .exposeHeaders(HttpHeaderNames.LOCATION)
         .newDecorator());
+
+    serverBuilder.serviceUnder("/docs", new DocService());
 
     serverBuilder.disableServerHeader();
     serverBuilder.disableDateHeader();
