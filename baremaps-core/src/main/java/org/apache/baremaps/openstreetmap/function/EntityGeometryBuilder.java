@@ -19,13 +19,12 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
+import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
+
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
-import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.locationtech.jts.geom.*;
 
 /** A consumer that builds and sets the geometry of OpenStreetMap entities via side effects. */
@@ -72,6 +71,13 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
       wayGeometryBuilder.accept(way);
     } else if (entity instanceof Relation relation && isMultiPolygon(relation)) {
       relationMultiPolygonBuilder.accept(relation);
+    }
+
+    // TODO: Find out why a few geometries get a srid of 0
+    if (entity instanceof Element element
+        && element.getGeometry() != null
+        && element.getGeometry().getSRID() != GEOMETRY_FACTORY_WGS84.getSRID()) {
+      element.getGeometry().setSRID(GEOMETRY_FACTORY_WGS84.getSRID());
     }
   }
 
