@@ -73,7 +73,8 @@ public class RelationMultiPolygonBuilder implements Consumer<Relation> {
 
     } catch (Exception e) {
       logger.debug("Unable to build the geometry for relation #" + relation.getId(), e);
-      relation.setGeometry(GEOMETRY_FACTORY_WGS84.createMultiPolygon());
+      var emptyMultiPolygon = GEOMETRY_FACTORY_WGS84.createMultiPolygon();
+      relation.setGeometry(emptyMultiPolygon);
     }
   }
 
@@ -162,7 +163,8 @@ public class RelationMultiPolygonBuilder implements Consumer<Relation> {
           GEOMETRY_FACTORY_WGS84.createMultiPolygon(polygons.toArray(new Polygon[0]));
       relation.setGeometry(multiPolygon);
     } else {
-      relation.setGeometry(GEOMETRY_FACTORY_WGS84.createMultiPolygon());
+      var emptyMultiPolygon = GEOMETRY_FACTORY_WGS84.createMultiPolygon();
+      relation.setGeometry(emptyMultiPolygon);
     }
   }
 
