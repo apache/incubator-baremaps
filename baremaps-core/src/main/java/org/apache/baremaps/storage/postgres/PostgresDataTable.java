@@ -154,7 +154,7 @@ public class PostgresDataTable extends AbstractDataTable {
     var columns = rowType.columns().stream()
         .map(column -> {
           if (column.type().binding().isAssignableFrom(Geometry.class)) {
-            return String.format("st_asbinary(\"%s\") AS \"%s\"", column.name(), column.name());
+            return String.format("st_asewkb(\"%s\") AS \"%s\"", column.name(), column.name());
           } else {
             return String.format("\"%s\"", column.name());
           }

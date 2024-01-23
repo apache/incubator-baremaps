@@ -116,12 +116,12 @@ public class PostgresNodeRepository implements NodeRepository {
     this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", fullTableName);
     this.truncateTable = String.format("TRUNCATE TABLE %1$s", fullTableName);
     this.select = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ?",
+        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asewkb(%10$s) FROM %1$s WHERE %2$s = ?",
         fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
     this.selectIn = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
+        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asewkb(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
         fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn,
         longitudeColumn, latitudeColumn, geometryColumn);
