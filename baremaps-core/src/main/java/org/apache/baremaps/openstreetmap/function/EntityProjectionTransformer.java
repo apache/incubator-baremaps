@@ -51,7 +51,6 @@ public class EntityProjectionTransformer implements Consumer<Entity> {
         && entity instanceof Element element
         && element.getGeometry() != null) {
       var geometry = projectionTransformer.transform(element.getGeometry());
-      geometry.setSRID(targetSrid);
       element.setGeometry(geometry);
     }
   }

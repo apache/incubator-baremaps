@@ -19,8 +19,6 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
-import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
-
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
@@ -71,13 +69,6 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
       wayGeometryBuilder.accept(way);
     } else if (entity instanceof Relation relation && isMultiPolygon(relation)) {
       relationMultiPolygonBuilder.accept(relation);
-    }
-
-    // TODO: Find out why a few geometries get a srid of 0
-    if (entity instanceof Element element
-        && element.getGeometry() != null
-        && element.getGeometry().getSRID() != GEOMETRY_FACTORY_WGS84.getSRID()) {
-      element.getGeometry().setSRID(GEOMETRY_FACTORY_WGS84.getSRID());
     }
   }
 
