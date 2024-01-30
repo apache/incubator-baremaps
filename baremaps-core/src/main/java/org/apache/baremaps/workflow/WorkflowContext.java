@@ -67,7 +67,7 @@ public class WorkflowContext {
 
   public DataMap<Long, Coordinate> getCoordinateMap(Path path) throws IOException {
     if (Files.size(path) > 1 << 30) {
-      return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
+      return getMemoryAlignedDataMap("coordinates" + path.getFileName(), new LonLatDataType());
     } else {
       return getMonotonicDataMap("coordinates", new LonLatDataType());
     }
@@ -79,7 +79,7 @@ public class WorkflowContext {
 
   public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
       throws IOException {
-    var coordinateDir = Files.createDirectories(cacheDir.resolve(name));
+    var coordinateDir = Files.createTempDirectory(cacheDir, name);
     return new MemoryAlignedDataMap<>(
         dataType,
         new MemoryMappedDirectory(coordinateDir));
@@ -87,7 +87,7 @@ public class WorkflowContext {
 
   public <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)
       throws IOException {
-    var mapDir = Files.createDirectories(cacheDir.resolve(name));
+    var mapDir = Files.createTempDirectory(cacheDir, name);
     var keysDir = Files.createDirectories(mapDir.resolve("keys"));
     var valuesDir = Files.createDirectories(mapDir.resolve("values"));
     return new MonotonicDataMap<>(
