@@ -67,19 +67,19 @@ public class WorkflowContext {
 
   public DataMap<Long, Coordinate> getCoordinateMap(Path path) throws IOException {
     if (Files.size(path) > 1 << 30) {
-      return getMemoryAlignedDataMap("coordinates" + path.getFileName(), new LonLatDataType());
+      return getMemoryAlignedDataMap(path.getFileName() + "_coordinates", new LonLatDataType());
     } else {
-      return getMonotonicDataMap("coordinates", new LonLatDataType());
+      return getMonotonicDataMap(path.getFileName() + "_coordinates", new LonLatDataType());
     }
   }
 
   public DataMap<Long, List<Long>> getReferenceMap(Path path) throws IOException {
-    return getMonotonicDataMap("references", new LongListDataType());
+    return getMonotonicDataMap(path.getFileName() + "_references", new LongListDataType());
   }
 
   public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
       throws IOException {
-    var coordinateDir = Files.createTempDirectory(cacheDir, name);
+    var coordinateDir = Files.createDirectories(cacheDir.resolve(name));
     return new MemoryAlignedDataMap<>(
         dataType,
         new MemoryMappedDirectory(coordinateDir));
@@ -87,7 +87,7 @@ public class WorkflowContext {
 
   public <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)
       throws IOException {
-    var mapDir = Files.createTempDirectory(cacheDir, name);
+    var mapDir = Files.createDirectories(cacheDir.resolve(name));
     var keysDir = Files.createDirectories(mapDir.resolve("keys"));
     var valuesDir = Files.createDirectories(mapDir.resolve("values"));
     return new MonotonicDataMap<>(
