@@ -40,26 +40,6 @@ limitations under the License.
       <artifactId>picocli</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-data-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-data-jackson-jersey</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-http-netty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-http-router-jersey</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-transport-netty</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-core</artifactId>
     </dependency>

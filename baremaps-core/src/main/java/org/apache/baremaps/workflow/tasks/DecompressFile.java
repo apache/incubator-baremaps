@@ -100,6 +100,7 @@ public class DecompressFile implements Task {
    * @throws IOException if an I/O error occurs
    */
   protected static void decompressBzip2(Path source, Path target) throws IOException {
+    Files.createDirectories(target.getParent());
     try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var bzip2InputStream = new BZip2CompressorInputStream(bufferedInputStream)) {
       Files.copy(bzip2InputStream, target, StandardCopyOption.REPLACE_EXISTING);
@@ -114,6 +115,7 @@ public class DecompressFile implements Task {
    * @throws IOException if an I/O error occurs
    */
   protected static void decompressGzip(Path source, Path target) throws IOException {
+    Files.createDirectories(target.getParent());
     try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var zis = new GZIPInputStream(bufferedInputStream)) {
       Files.copy(zis, target, StandardCopyOption.REPLACE_EXISTING);
@@ -124,10 +126,11 @@ public class DecompressFile implements Task {
    * Decompresses a tar.gz file.
    * 
    * @param source the source file
-   * @param target the target file
+   * @param target the target directory
    * @throws IOException if an I/O error occurs
    */
   protected static void decompressTarGz(Path source, Path target) throws IOException {
+    Files.createDirectories(target.getParent());
     try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var gzipInputStream = new GZIPInputStream(bufferedInputStream);
         var tarInputStream = new TarArchiveInputStream(gzipInputStream)) {
@@ -138,6 +141,9 @@ public class DecompressFile implements Task {
           Files.createDirectories(path);
         } else {
           Files.createDirectories(path.getParent());
+          Files.write(path, new byte[] {},
+              StandardOpenOption.CREATE,
+              StandardOpenOption.TRUNCATE_EXISTING);
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
             tarInputStream.transferTo(outputStream);
@@ -151,10 +157,11 @@ public class DecompressFile implements Task {
    * Decompresses a tar.bz2 file.
    * 
    * @param source the source file
-   * @param target the target file
+   * @param target the target directory
    * @throws IOException if an I/O error occurs
    */
   protected static void decompressTarBz2(Path source, Path target) throws IOException {
+    Files.createDirectories(target);
     try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var bzip2InputStream = new BZip2CompressorInputStream(bufferedInputStream);
         var tarInputStream = new TarArchiveInputStream(bzip2InputStream)) {
@@ -165,6 +172,9 @@ public class DecompressFile implements Task {
           Files.createDirectories(path);
         } else {
           Files.createDirectories(path.getParent());
+          Files.write(path, new byte[] {},
+              StandardOpenOption.CREATE,
+              StandardOpenOption.TRUNCATE_EXISTING);
           try (BufferedOutputStream outputStream =
               new BufferedOutputStream(Files.newOutputStream(path))) {
             tarInputStream.transferTo(outputStream);
@@ -178,22 +188,27 @@ public class DecompressFile implements Task {
    * Decompresses a zip file.
    * 
    * @param source the source file
-   * @param target the target file
+   * @param target the target directory
    * @throws IOException if an I/O error occurs
    */
   protected static void decompressZip(Path source, Path target) throws IOException {
+    Files.createDirectories(target);
     try (var zipFile = new ZipFile(source.toFile())) {
       var entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         var entry = entries.nextElement();
         var path = target.resolve(entry.getName());
-        Files.createDirectories(path.getParent());
-        Files.write(path, new byte[] {},
-            StandardOpenOption.CREATE,
-            StandardOpenOption.TRUNCATE_EXISTING);
-        try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
-            var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
-          input.transferTo(output);
+        if (entry.isDirectory()) {
+          Files.createDirectories(path);
+        } else {
+          Files.createDirectories(path.getParent());
+          Files.write(path, new byte[] {},
+              StandardOpenOption.CREATE,
+              StandardOpenOption.TRUNCATE_EXISTING);
+          try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
+              var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
+            input.transferTo(output);
+          }
         }
       }
     }

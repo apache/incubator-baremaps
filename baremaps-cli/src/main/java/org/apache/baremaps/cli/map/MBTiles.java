@@ -17,12 +17,17 @@
 
 package org.apache.baremaps.cli.map;
 
-import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
-import io.servicetalk.http.netty.HttpServers;
-import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
+import com.linecorp.armeria.common.HttpHeaderNames;
+import com.linecorp.armeria.common.HttpMethod;
+import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.annotation.JacksonResponseConverterFunction;
+import com.linecorp.armeria.server.cors.CorsService;
+import com.linecorp.armeria.server.docs.DocService;
+import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.file.HttpFile;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -35,9 +40,6 @@ import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
 import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
-import org.glassfish.hk2.api.TypeLiteral;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -77,45 +79,50 @@ public class MBTiles implements Callable<Integer> {
     var caffeineSpec = CaffeineSpec.parse(cache);
 
     var datasource = SqliteUtils.createDataSource(mbtilesPath, true);
-    var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new MBTilesStore(datasource);
     var tileCache = new TileCache(tileStore, caffeineSpec);
     var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
 
-    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
     var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
     var styleSupplier = (Supplier<Style>) () -> style;
 
-    var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
     var tileJSON = objectMapper.readValue(configReader.read(tileJSONPath), TileJSON.class);
     var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
 
-    // Configure the application
-    var application =
-        new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(TileResource.class)
-            .register(StyleResource.class)
-            .register(TilesetResource.class)
-            .register(ClassPathResource.class)
-            .register(newContextResolver(objectMapper))
-            .register(new AbstractBinder() {
-              @Override
-              protected void configure() {
-                bind("assets").to(String.class).named("directory");
-                bind("server.html").to(String.class).named("index");
-                bind(tileStoreSupplier).to(tileStoreSupplierType);
-                bind(styleSupplier).to(styleSupplierType);
-                bind(tileJSONSupplier).to(tileJSONSupplierType);
-              }
-            });
+    var serverBuilder = Server.builder();
+    serverBuilder.http(port);
 
-    var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-    var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
+    serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
+    serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
+    serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
 
-    logger.info("Listening on {}", serverContext.listenAddress());
+    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/server.html");
+    serverBuilder.service("/", index.asService());
+    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/assets"));
 
-    serverContext.awaitShutdown();
+    serverBuilder.decorator(CorsService.builderForAnyOrigin()
+        .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
+            HttpMethod.OPTIONS, HttpMethod.HEAD)
+        .allowRequestHeaders(HttpHeaderNames.ORIGIN, HttpHeaderNames.CONTENT_TYPE,
+            HttpHeaderNames.ACCEPT, HttpHeaderNames.AUTHORIZATION)
+        .allowCredentials()
+        .exposeHeaders(HttpHeaderNames.LOCATION)
+        .newDecorator());
+
+    serverBuilder.serviceUnder("/docs", new DocService());
+
+    serverBuilder.disableServerHeader();
+    serverBuilder.disableDateHeader();
+
+    var server = serverBuilder.build();
+
+    var startFuture = server.start();
+    startFuture.join();
+
+    var shutdownFuture = server.closeOnJvmShutdown();
+    shutdownFuture.join();
+
     return 0;
   }
 }

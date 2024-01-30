@@ -58,19 +58,21 @@ export default {"steps": [
         id: `iploc`,
         needs: [],
         tasks: [
-            ...nics.flatMap(nic => [
-                {
+            ...nics.map(nic => {
+                return {
                     type: "DownloadUrl",
                     source: nic.url,
                     target: `downloads/${nic.filename}.gz`
-                },
-                {
+                }
+            }),
+            ...nics.map(nic => {
+                return {
                     type: "DecompressFile",
                     source: `downloads/${nic.filename}.gz`,
-                    target: "archives",
+                    target: "archives/ripe.db",
                     compression: "gzip"
                 }
-            ]),
+            }),
             {
                 type: "DownloadUrl",
                 source: "https://download.geonames.org/export/dump/allCountries.zip",

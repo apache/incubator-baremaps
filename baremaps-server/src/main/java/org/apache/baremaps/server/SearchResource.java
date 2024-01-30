@@ -20,26 +20,22 @@ package org.apache.baremaps.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.server.annotation.Default;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
+import com.linecorp.armeria.server.annotation.ProducesJson;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.sql.DataSource;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A resource that searches for entities in the database.
  */
-@Singleton
-@javax.ws.rs.Path("/")
 public class SearchResource {
 
   private static final Logger logger = LoggerFactory.getLogger(SearchResource.class);
@@ -55,7 +51,6 @@ public class SearchResource {
 
   private final DataSource dataSource;
 
-  @Inject
   public SearchResource(DataSource dataSource) {
     this.dataSource = dataSource;
   }
@@ -66,12 +61,11 @@ public class SearchResource {
   record SearchResult(long id, JsonNode tags, String wkt, double score) {
   }
 
-  @GET
-  @javax.ws.rs.Path("/api/search")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response search(
-      @QueryParam("query") String queryText,
-      @QueryParam("limit") @DefaultValue("10") int limit) {
+  @Get("/api/search")
+  @ProducesJson
+  public HttpResponse search(
+      @Param("query") String queryText,
+      @Param("limit") @Default("10") int limit) {
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(SEARCH_QUERY)) {
       statement.setString(1, queryText);
@@ -88,10 +82,10 @@ public class SearchResource {
         }
       }
       var response = new SearchResponse(list);
-      return Response.status(Response.Status.OK).entity(response).build();
+      return HttpResponse.ofJson(response);
     } catch (SQLException | JsonProcessingException e) {
       logger.error("Error while searching", e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

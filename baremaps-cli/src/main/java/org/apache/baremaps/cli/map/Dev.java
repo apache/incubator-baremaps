@@ -17,27 +17,30 @@
 
 package org.apache.baremaps.cli.map;
 
-import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
-import io.servicetalk.http.netty.HttpServers;
-import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
+import com.linecorp.armeria.common.HttpMethod;
+import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.annotation.JacksonResponseConverterFunction;
+import com.linecorp.armeria.server.cors.CorsService;
+import com.linecorp.armeria.server.docs.DocService;
+import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.file.HttpFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.server.*;
-import org.apache.baremaps.server.CorsFilter;
+import org.apache.baremaps.server.ChangeResource;
+import org.apache.baremaps.server.StyleResource;
+import org.apache.baremaps.server.TileResource;
+import org.apache.baremaps.server.TilesetResource;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tileset.Tileset;
-import org.glassfish.hk2.api.TypeLiteral;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -76,19 +79,20 @@ public class Dev implements Callable<Integer> {
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
 
-    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
-    var tileStoreSupplier = (Supplier<TileStore>) () -> {
+    var tilesetSupplier = (Supplier<Tileset>) () -> {
       try {
-        var config = configReader.read(this.tilesetPath);
-        var tilesetObject =
-            objectMapper.readValue(config, Tileset.class);
-        return new PostgresTileStore(datasource, tilesetObject);
+        var config = configReader.read(tilesetPath);
+        return objectMapper.readValue(config, Tileset.class);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     };
 
-    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
+    var tileStoreSupplier = (Supplier<TileStore>) () -> {
+      var tileJSON = tilesetSupplier.get();
+      return new PostgresTileStore(datasource, tileJSON);
+    };
+
     var styleSupplier = (Supplier<Style>) () -> {
       try {
         var config = configReader.read(stylePath);
@@ -98,43 +102,37 @@ public class Dev implements Callable<Integer> {
       }
     };
 
-    var tileJSONSupplierType = new TypeLiteral<Supplier<Tileset>>() {};
-    var tileJSONSupplier = (Supplier<Tileset>) () -> {
-      try {
-        var config = configReader.read(tilesetPath);
-        return objectMapper.readValue(config, Tileset.class);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    };
+    var serverBuilder = Server.builder();
+    serverBuilder.http(port);
 
-    var application = new ResourceConfig()
-        .register(CorsFilter.class)
-        .register(ChangeResource.class)
-        .register(TileResource.class)
-        .register(StyleResource.class)
-        .register(TilesetResource.class)
-        .register(ChangeResource.class)
-        .register(ClassPathResource.class)
-        .register(newContextResolver(objectMapper))
-        .register(new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bind("assets").to(String.class).named("directory");
-            bind("viewer.html").to(String.class).named("index");
-            bind(tilesetPath).to(Path.class).named("tileset");
-            bind(stylePath).to(Path.class).named("style");
-            bind(tileStoreSupplier).to(tileStoreType);
-            bind(styleSupplier).to(styleSupplierType);
-            bind(tileJSONSupplier).to(tileJSONSupplierType);
-          }
-        });
+    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
+    serverBuilder.annotatedService(new ChangeResource(tilesetPath, stylePath),
+        jsonResponseConverter);
+    serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
+    serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
+    serverBuilder.annotatedService(new TilesetResource(tilesetSupplier), jsonResponseConverter);
 
-    var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-    var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/viewer.html");
+    serverBuilder.service("/", index.asService());
+    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/assets"));
 
-    logger.info("Listening on {}", serverContext.listenAddress());
-    serverContext.awaitShutdown();
+    serverBuilder.decorator(CorsService.builderForAnyOrigin()
+        .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
+        .allowRequestHeaders("Origin", "Content-Type", "Accept")
+        .newDecorator());
+
+    serverBuilder.serviceUnder("/docs", new DocService());
+
+    serverBuilder.disableServerHeader();
+    serverBuilder.disableDateHeader();
+
+    var server = serverBuilder.build();
+
+    var startFuture = server.start();
+    startFuture.join();
+
+    var shutdownFuture = server.closeOnJvmShutdown();
+    shutdownFuture.join();
 
     return 0;
   }

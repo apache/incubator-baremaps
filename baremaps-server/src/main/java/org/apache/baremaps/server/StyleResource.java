@@ -17,31 +17,24 @@
 
 package org.apache.baremaps.server;
 
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.ProducesJson;
 import java.util.function.Supplier;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import org.apache.baremaps.vectortile.style.Style;
 
 /**
  * A resource that provides access to the style.
  */
-@Singleton
-@javax.ws.rs.Path("/")
 public class StyleResource {
 
   private final Supplier<Style> styleSupplier;
 
-  @Inject
   public StyleResource(Supplier<Style> styleSupplier) {
     this.styleSupplier = styleSupplier;
   }
 
-  @GET
-  @javax.ws.rs.Path("style.json")
-  @Produces(MediaType.APPLICATION_JSON)
+  @Get("/style.json")
+  @ProducesJson
   public Style getStyle() {
     return styleSupplier.get();
   }

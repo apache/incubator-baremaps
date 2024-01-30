@@ -22,29 +22,22 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.linecorp.armeria.common.sse.ServerSentEvent;
+import com.linecorp.armeria.server.ServiceRequestContext;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.ProducesEventStream;
 import java.io.IOException;
 import java.nio.file.*;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseBroadcaster;
-import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.config.ConfigReader;
-import org.jvnet.hk2.annotations.Optional;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Sinks;
 
 /**
  * A resource that provides the changes in the tileset and style.
  */
-@Singleton
-@javax.ws.rs.Path("/")
-public class ChangeResource {
+public final class ChangeResource {
 
   private static final Logger logger = LoggerFactory.getLogger(ChangeResource.class);
 
@@ -56,40 +49,33 @@ public class ChangeResource {
 
   private final Path style;
 
-  private final SseBroadcaster sseBroadcaster;
+  private final Thread thread;
 
-  private final OutboundSseEvent.Builder sseEventBuilder;
+  private final Sinks.Many<ServerSentEvent> changes = Sinks.many().multicast().directBestEffort();
 
   /**
    * Constructs a {@code ChangeResource}.
    * 
    * @param tileset the path to the tileset
    * @param style the path to the style
-   * @param sse the server-sent events
    */
-  @Inject
-  public ChangeResource(
-      @Named("tileset") @Optional Path tileset,
-      @Named("style") @Optional Path style,
-      Sse sse) {
+  public ChangeResource(Path tileset, Path style) {
     this.tileset = tileset;
     this.style = style;
-    this.sseBroadcaster = sse.newBroadcaster();
-    this.sseEventBuilder = sse.newEventBuilder();
-    var changeListener = new ChangeListener();
-    new Thread(changeListener).start();
+    this.thread = new Thread(new ChangeListener());
+    this.thread.start();
   }
 
   /**
    * Returns the changes in the tileset and style.
    * 
-   * @param sseEventSink the server-sent events
+   * @param ctx the service request context
    */
-  @GET
-  @javax.ws.rs.Path("changes")
-  @Produces("text/event-stream")
-  public void changes(@Context SseEventSink sseEventSink) {
-    sseBroadcaster.register(sseEventSink);
+  @Get("/changes")
+  @ProducesEventStream
+  public Publisher<ServerSentEvent> changes(ServiceRequestContext ctx) {
+    ctx.clearRequestTimeout();
+    return changes.asFlux();
   }
 
   /**
@@ -127,7 +113,7 @@ public class ChangeResource {
               }
 
               // broadcast the changes
-              sseBroadcaster.broadcast(sseEventBuilder.data(styleObjectNode.toString()).build());
+              changes.tryEmitNext(ServerSentEvent.ofData(styleObjectNode.toString()));
             }
           }
           key.reset();
