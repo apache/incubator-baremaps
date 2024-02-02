@@ -53,7 +53,7 @@ public class WorkflowContext {
     this.cacheDir = cacheDir;
   }
 
-  private Map<Object, DataSource> dataSources = new ConcurrentHashMap<>() {};
+  private Map<Object, DataSource> dataSources = new ConcurrentHashMap<>();
 
   /**
    * Returns the data source associated with the specified database.
