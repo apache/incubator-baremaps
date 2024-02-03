@@ -30,6 +30,6 @@ class StateReaderTest {
   void getStateFromTimestamp() {
     var reader = new StateReader();
     var state = reader.getStateFromTimestamp(LocalDateTime.now().minusDays(10));
-    System.out.println(state.get().getSequenceNumber());
+    assertTrue(state.isPresent());
   }
 }
