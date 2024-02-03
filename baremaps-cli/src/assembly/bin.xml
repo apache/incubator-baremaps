@@ -49,6 +49,7 @@ limitations under the License.
         <include>${license.filename}</include>
       </includes>
       <lineEnding>unix</lineEnding>
+      <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <directory>src/bin</directory>

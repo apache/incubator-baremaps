@@ -200,7 +200,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   THIRD PARTY LICENSES: This project bundles third party code and data
+   SOURCE CODE VERSION:
+
+   This product bundles the source code of Apache Baremaps v${project.version}.
+
+   THIRD PARTY LICENSES:
 
    Code and data produced outside the ASF that is included in the
    distribution of this product is subject to the following
