@@ -263,7 +263,7 @@ export default {
                 },
                 {
                     "type": "ExecuteSql",
-                    "file": "../basemap/layers/highway/prepare.sql",
+                    "file": "./layers/highway/prepare.sql",
                     "database": config.database,
                 },
                 {
