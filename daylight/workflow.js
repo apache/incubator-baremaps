@@ -26,7 +26,6 @@ export default {
                 {
                     "type": "ImportOsmPbf",
                     "file": "data/data.osm.pbf",
-                    "cache": "cache/",
                     "database": config.database,
                     "databaseSrid": 3857,
                     "replaceExisting": true,
@@ -39,7 +38,6 @@ export default {
                 {
                     "type": "ImportOsmPbf",
                     "file": "data/buildings.osm.pbf",
-                    "cache": "building_cache/",
                     "database": config.database,
                     "databaseSrid": 3857,
                     "replaceExisting": false,
