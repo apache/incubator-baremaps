@@ -103,8 +103,8 @@ public class ImportOsmPbf implements Task {
       relationRepository.create();
     }
 
-    var coordinateMap = context.getCoordinateMap(path);
-    var referenceMap = context.getReferenceMap(path);
+    var coordinateMap = context.getCoordinateMap();
+    var referenceMap = context.getReferenceMap();
 
     execute(
         path,

@@ -18,7 +18,6 @@
 package org.apache.baremaps.workflow;
 
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,16 +64,12 @@ public class WorkflowContext {
     return dataSources.computeIfAbsent(database, PostgresUtils::createDataSourceFromObject);
   }
 
-  public DataMap<Long, Coordinate> getCoordinateMap(Path path) throws IOException {
-    if (Files.size(path) > 1 << 30) {
-      return getMemoryAlignedDataMap(path.getFileName() + "_coordinates", new LonLatDataType());
-    } else {
-      return getMonotonicDataMap(path.getFileName() + "_coordinates", new LonLatDataType());
-    }
+  public DataMap<Long, Coordinate> getCoordinateMap() throws IOException {
+    return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
   }
 
-  public DataMap<Long, List<Long>> getReferenceMap(Path path) throws IOException {
-    return getMonotonicDataMap(path.getFileName() + "_references", new LongListDataType());
+  public DataMap<Long, List<Long>> getReferenceMap() throws IOException {
+    return getMonotonicDataMap("references", new LongListDataType());
   }
 
   public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
