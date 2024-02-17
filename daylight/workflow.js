@@ -14,242 +14,221 @@ import config from "./config.js";
 
 export default {
     "steps": [
-        // {
-        //     "id": "daylight-data",
-        //     "needs": [],
-        //     "tasks": [
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/planet-${config.daylightVersion}.osm.pbf`,
-        //             "target": "data/data.osm.pbf"
-        //         },
-        //         {
-        //             "type": "ImportOsmPbf",
-        //             "file": "data/data.osm.pbf",
-        //             "database": config.database,
-        //             "databaseSrid": 3857,
-        //             "replaceExisting": true,
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/ml-buildings-${config.daylightVersion}.osm.pbf`,
-        //             "target": "data/buildings.osm.pbf"
-        //         },
-        //         {
-        //             "type": "ImportOsmPbf",
-        //             "file": "data/buildings.osm.pbf",
-        //             "database": config.database,
-        //             "databaseSrid": 3857,
-        //             "replaceExisting": false,
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/fb-ml-roads-${config.daylightVersion}.osc.gz`,
-        //             "target": "data/roads.osc.gz"
-        //         },
-        //         {
-        //             "type": "ImportOsmOsc",
-        //             "file": "data/roads.osc.gz",
-        //             "compression": "gzip",
-        //             "database": config.database,
-        //             "databaseSrid": 3857
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/admin-${config.daylightVersion}.osc.gz`,
-        //             "target": "data/admin.osc.gz"
-        //         },
-        //         {
-        //             "type": "ImportOsmOsc",
-        //             "file": "data/admin.osc.gz",
-        //             "compression": "gzip",
-        //             "database": config.database,
-        //             "databaseSrid": 3857
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/coastlines-${config.daylightVersion}.tgz`,
-        //             "target": "data/coastlines.tgz"
-        //         },
-        //         {
-        //             "type": "DecompressFile",
-        //             "compression": "targz",
-        //             "source": "data/coastlines.tgz",
-        //             "target": "data/coastlines"
-        //         },
-        //         {
-        //             "type": "ImportShapefile",
-        //             "file": "data/coastlines/water_polygons.shp",
-        //             "database": config.database,
-        //             "fileSrid": 4326,
-        //             "databaseSrid": 3857
-        //         },
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "./layers/coastline/prepare.sql",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/preferred-localization-${config.daylightVersion}.tsv`,
-        //             "target": "data/preferred-localization.tsv"
-        //         },
-        //         {
-        //             "type": "ImportDaylightTranslations",
-        //             "file": "data/preferred-localization.tsv",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/important-features-${config.daylightVersion}.json`,
-        //             "target": "data/important-features.json"
-        //         },
-        //         {
-        //             "type": "ImportDaylightFeatures",
-        //             "file": "data/important-features.json",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.shp",
-        //             "target": "data/landcover/low.shp"
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.dbf",
-        //             "target": "data/landcover/low.dbf"
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.prj",
-        //             "target": "data/landcover/low.prj"
-        //         },
-        //         {
-        //             "type": "DownloadUrl",
-        //             "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.shx",
-        //             "target": "data/landcover/low.shx"
-        //         },
-        //         {
-        //             "type": "ImportShapefile",
-        //             "file": "data/landcover/low.shp",
-        //             "database": config.database,
-        //             "fileSrid": 4326,
-        //             "databaseSrid": 3857
-        //         },
-        //     ]
-        // },
-        // {
-        //     "id": "daylight-nodes",
-        //     "needs": ["daylight-data"],
-        //     "tasks": [
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/queries/osm_nodes.sql",
-        //             "database": config.database,
-        //             "parallel": true,
-        //         },
-        //     ]
-        // },
-        // {
-        //     "id": "daylight-ways",
-        //     "needs": ["daylight-data"],
-        //     "tasks": [
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/queries/osm_ways.sql",
-        //             "database": config.database,
-        //             "parallel": true,
-        //         },
-        //     ]
-        // },
-        // {
-        //     "id": "daylight-relations",
-        //     "needs": ["daylight-data"],
-        //     "tasks": [
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/queries/osm_relations.sql",
-        //             "database": config.database,
-        //             "parallel": true,
-        //         },
-        //     ]
-        // },
-        // {
-        //     "id": "daylight-member",
-        //     "needs": ["daylight-data"],
-        //     "tasks": [
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/member/prepare.sql",
-        //             "database": config.database,
-        //         },
-        //     ]
-        // },
-        // {
-        //     "id": "daylight-point",
-        //     "needs": ["daylight-nodes"],
-        //     "tasks": [
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/point/clean.sql",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/point/simplify.sql",
-        //             "database": config.database,
-        //             "parallel": true,
-        //         },
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/point/index.sql",
-        //             "database": config.database,
-        //             "parallel": true,
-        //         },
-        //     ]
-        // },
-        // {
-        //     "id": "daylight-linestring",
-        //     "needs": ["daylight-member"],
-        //     "tasks": [
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/linestring/clean.sql",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/linestring/prepare.sql",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/linestring/index.sql",
-        //             "database": config.database,
-        //         },
-        //     ]
-        // },
-        // {
-        //     "id": "daylight-polygon",
-        //     "needs": ["daylight-member"],
-        //     "tasks": [
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/polygon/clean.sql",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/polygon/prepare.sql",
-        //             "database": config.database,
-        //         },
-        //         {
-        //             "type": "ExecuteSql",
-        //             "file": "../basemap/layers/polygon/index.sql",
-        //             "database": config.database,
-        //         },
-        //     ]
-        // },
+        {
+            "id": "daylight-data",
+            "needs": [],
+            "tasks": [
+                {
+                    "type": "DownloadUrl",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/planet-${config.daylightVersion}.osm.pbf`,
+                    "target": "data/data.osm.pbf"
+                },
+                {
+                    "type": "ImportOsmPbf",
+                    "file": "data/data.osm.pbf",
+                    "database": config.database,
+                    "databaseSrid": 3857,
+                    "replaceExisting": true,
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/ml-buildings-${config.daylightVersion}.osm.pbf`,
+                    "target": "data/buildings.osm.pbf"
+                },
+                {
+                    "type": "ImportOsmPbf",
+                    "file": "data/buildings.osm.pbf",
+                    "database": config.database,
+                    "databaseSrid": 3857,
+                    "replaceExisting": false,
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/fb-ml-roads-${config.daylightVersion}.osc.gz`,
+                    "target": "data/roads.osc.gz"
+                },
+                {
+                    "type": "ImportOsmOsc",
+                    "file": "data/roads.osc.gz",
+                    "compression": "gzip",
+                    "database": config.database,
+                    "databaseSrid": 3857
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/admin-${config.daylightVersion}.osc.gz`,
+                    "target": "data/admin.osc.gz"
+                },
+                {
+                    "type": "ImportOsmOsc",
+                    "file": "data/admin.osc.gz",
+                    "compression": "gzip",
+                    "database": config.database,
+                    "databaseSrid": 3857
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/coastlines-${config.daylightVersion}.tgz`,
+                    "target": "data/coastlines.tgz"
+                },
+                {
+                    "type": "DecompressFile",
+                    "compression": "targz",
+                    "source": "data/coastlines.tgz",
+                    "target": "data/coastlines"
+                },
+                {
+                    "type": "ImportShapefile",
+                    "file": "data/coastlines/water_polygons.shp",
+                    "database": config.database,
+                    "fileSrid": 4326,
+                    "databaseSrid": 3857
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "./layers/coastline/prepare.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/preferred-localization-${config.daylightVersion}.tsv`,
+                    "target": "data/preferred-localization.tsv"
+                },
+                {
+                    "type": "ImportDaylightTranslations",
+                    "file": "data/preferred-localization.tsv",
+                    "database": config.database,
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": `https://daylight-map-distribution.s3.us-west-1.amazonaws.com/release/${config.daylightVersion}/important-features-${config.daylightVersion}.json`,
+                    "target": "data/important-features.json"
+                },
+                {
+                    "type": "ImportDaylightFeatures",
+                    "file": "data/important-features.json",
+                    "database": config.database,
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.shp",
+                    "target": "data/landcover/low.shp"
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.dbf",
+                    "target": "data/landcover/low.dbf"
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.prj",
+                    "target": "data/landcover/low.prj"
+                },
+                {
+                    "type": "DownloadUrl",
+                    "source": "https://daylight-openstreetmap.s3.us-west-2.amazonaws.com/landcover/low.shx",
+                    "target": "data/landcover/low.shx"
+                },
+                {
+                    "type": "ImportShapefile",
+                    "file": "data/landcover/low.shp",
+                    "database": config.database,
+                    "fileSrid": 4326,
+                    "databaseSrid": 3857
+                },
+            ]
+        },
+        {
+            "id": "daylight-nodes",
+            "needs": ["daylight-data"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/queries/osm_nodes.sql",
+                    "database": config.database,
+                    "parallel": true,
+                },
+            ]
+        },
+        {
+            "id": "daylight-ways",
+            "needs": ["daylight-data"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/queries/osm_ways.sql",
+                    "database": config.database,
+                    "parallel": true,
+                },
+            ]
+        },
+        {
+            "id": "daylight-relations",
+            "needs": ["daylight-data"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/queries/osm_relations.sql",
+                    "database": config.database,
+                    "parallel": true,
+                },
+            ]
+        },
+        {
+            "id": "daylight-member",
+            "needs": ["daylight-data"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/member/prepare.sql",
+                    "database": config.database,
+                },
+            ]
+        },
+        {
+            "id": "daylight-point",
+            "needs": ["daylight-nodes"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/point/clean.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/point/simplify.sql",
+                    "database": config.database,
+                    "parallel": true,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/point/index.sql",
+                    "database": config.database,
+                    "parallel": true,
+                },
+            ]
+        },
+        {
+            "id": "daylight-linestring",
+            "needs": ["daylight-member"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/linestring/clean.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/linestring/prepare.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/linestring/index.sql",
+                    "database": config.database,
+                },
+            ]
+        },
         {
             "id": "daylight-highway",
             "needs": ["daylight-linestring"],
@@ -261,7 +240,7 @@ export default {
                 },
                 {
                     "type": "ExecuteSql",
-                    "file": "./layers/highway/prepare.sql",
+                    "file": "../basemap/layers/highway/prepare.sql",
                     "database": config.database,
                 },
                 {
@@ -276,6 +255,12 @@ export default {
                     "database": config.database,
                     "parallel": true,
                 },
+            ]
+        },
+        {
+            "id": "daylight-railway",
+            "needs": ["daylight-linestring"],
+            "tasks": [
                 {
                     "type": "ExecuteSql",
                     "file": "../basemap/layers/railway/clean.sql",
@@ -298,6 +283,12 @@ export default {
                     "database": config.database,
                     "parallel": true,
                 },
+            ]
+        },
+        {
+            "id": "daylight-route",
+            "needs": ["daylight-linestring"],
+            "tasks": [
                 {
                     "type": "ExecuteSql",
                     "file": "../basemap/layers/route/clean.sql",
@@ -320,6 +311,61 @@ export default {
                     "database": config.database,
                     "parallel": true,
                 },
+            ]
+        },
+        {
+            "id": "daylight-waterway",
+            "needs": ["daylight-linestring"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/waterway/clean.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/waterway/prepare.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/waterway/simplify.sql",
+                    "database": config.database,
+                    "parallel": true,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/waterway/index.sql",
+                    "database": config.database,
+                    "parallel": true
+                },
+            ]
+        },
+        {
+            "id": "daylight-polygon",
+            "needs": ["daylight-member"],
+            "tasks": [
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/polygon/clean.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/polygon/prepare.sql",
+                    "database": config.database,
+                },
+                {
+                    "type": "ExecuteSql",
+                    "file": "../basemap/layers/polygon/index.sql",
+                    "database": config.database,
+                },
+            ]
+        },
+        {
+            "id": "daylight-natural",
+            "needs": ["daylight-polygon"],
+            "tasks": [
                 {
                     "type": "ExecuteSql",
                     "file": "../basemap/layers/natural/clean.sql",
@@ -342,6 +388,12 @@ export default {
                     "database": config.database,
                     "parallel": true
                 },
+            ]
+        },
+        {
+            "id": "daylight-landuse",
+            "needs": ["daylight-polygon"],
+            "tasks": [
                 {
                     "type": "ExecuteSql",
                     "file": "../basemap/layers/landuse/clean.sql",
@@ -364,6 +416,12 @@ export default {
                     "database": config.database,
                     "parallel": true
                 },
+            ]
+        },
+        {
+            "id": "daylight-leisure",
+            "needs": ["daylight-polygon"],
+            "tasks": [
                 {
                     "type": "ExecuteSql",
                     "file": "../basemap/layers/leisure/clean.sql",
@@ -383,28 +441,6 @@ export default {
                 {
                     "type": "ExecuteSql",
                     "file": "../basemap/layers/leisure/index.sql",
-                    "database": config.database,
-                    "parallel": true
-                },
-                {
-                    "type": "ExecuteSql",
-                    "file": "../basemap/layers/waterway/clean.sql",
-                    "database": config.database,
-                },
-                {
-                    "type": "ExecuteSql",
-                    "file": "../basemap/layers/waterway/prepare.sql",
-                    "database": config.database,
-                },
-                {
-                    "type": "ExecuteSql",
-                    "file": "../basemap/layers/waterway/simplify.sql",
-                    "database": config.database,
-                    "parallel": true,
-                },
-                {
-                    "type": "ExecuteSql",
-                    "file": "../basemap/layers/waterway/index.sql",
                     "database": config.database,
                     "parallel": true
                 },

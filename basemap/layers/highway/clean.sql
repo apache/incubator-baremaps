@@ -13,7 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-DROP VIEW IF EXISTS osm_highway CASCADE;
+DROP MATERIALIZED VIEW IF EXISTS osm_highway CASCADE;
 
 DROP VIEW IF EXISTS osm_highway_z20 CASCADE;
 DROP VIEW IF EXISTS osm_highway_z19 CASCADE;
