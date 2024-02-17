@@ -67,8 +67,8 @@ public class FixedSizeDataList<E> extends DataList<E> {
 
   private void write(long index, E value) {
     long position = index * dataType.size();
-    int segmentIndex = (int) (position / dataType.size());
-    int segmentOffset = (int) (position % dataType.size());
+    int segmentIndex = (int) (position / memory.segmentSize());
+    int segmentOffset = (int) (position % memory.segmentSize());
     ByteBuffer segment = memory.segment(segmentIndex);
     dataType.write(segment, segmentOffset, value);
   }
@@ -100,8 +100,8 @@ public class FixedSizeDataList<E> extends DataList<E> {
   @Override
   public E get(long index) {
     long position = index * dataType.size();
-    int segmentIndex = (int) (position / dataType.size());
-    int segmentOffset = (int) (position % dataType.size());
+    int segmentIndex = (int) (position / memory.segmentSize());
+    int segmentOffset = (int) (position % memory.segmentSize());
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
   }

@@ -22,7 +22,6 @@ package org.apache.baremaps.openstreetmap.function;
 import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.utils.ProjectionTransformer;
-import org.locationtech.jts.geom.Geometry;
 
 /** Changes the projection of the geometry of an entity via side-effects. */
 public class EntityProjectionTransformer implements Consumer<Entity> {
@@ -51,7 +50,7 @@ public class EntityProjectionTransformer implements Consumer<Entity> {
     if (sourceSrid != targetSrid
         && entity instanceof Element element
         && element.getGeometry() != null) {
-      Geometry geometry = projectionTransformer.transform(element.getGeometry());
+      var geometry = projectionTransformer.transform(element.getGeometry());
       element.setGeometry(geometry);
     }
   }

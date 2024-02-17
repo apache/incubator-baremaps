@@ -18,7 +18,6 @@
 package org.apache.baremaps.workflow;
 
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +52,7 @@ public class WorkflowContext {
     this.cacheDir = cacheDir;
   }
 
-  private Map<Object, DataSource> dataSources = new ConcurrentHashMap<>() {};
+  private Map<Object, DataSource> dataSources = new ConcurrentHashMap<>();
 
   /**
    * Returns the data source associated with the specified database.
@@ -65,15 +64,11 @@ public class WorkflowContext {
     return dataSources.computeIfAbsent(database, PostgresUtils::createDataSourceFromObject);
   }
 
-  public DataMap<Long, Coordinate> getCoordinateMap(Path path) throws IOException {
-    if (Files.size(path) > 1 << 30) {
-      return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
-    } else {
-      return getMonotonicDataMap("coordinates", new LonLatDataType());
-    }
+  public DataMap<Long, Coordinate> getCoordinateMap() throws IOException {
+    return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
   }
 
-  public DataMap<Long, List<Long>> getReferenceMap(Path path) throws IOException {
+  public DataMap<Long, List<Long>> getReferenceMap() throws IOException {
     return getMonotonicDataMap("references", new LongListDataType());
   }
 

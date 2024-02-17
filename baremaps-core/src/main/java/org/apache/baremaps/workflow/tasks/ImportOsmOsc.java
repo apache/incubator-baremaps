@@ -80,11 +80,12 @@ public class ImportOsmOsc implements Task {
     var wayRepository = new PostgresWayRepository(datasource);
     var relationRepository = new PostgresRelationRepository(datasource);
 
-    var coordinateMap = context.getCoordinateMap(path);
-    var referenceMap = context.getReferenceMap(path);
+    var coordinateMap = context.getCoordinateMap();
+    var referenceMap = context.getReferenceMap();
 
     var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
     var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
+
     var buildGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
     var prepareGeometries = coordinateMapBuilder

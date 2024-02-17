@@ -13,6 +13,6 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-CREATE INDEX IF NOT EXISTS osm_relations_tags_index ON osm_relations USING gin (tags);
-CREATE INDEX IF NOT EXISTS osm_relations_tags_tsvector_index ON osm_relations USING gin (to_tsvector('english', tags));
 CREATE INDEX IF NOT EXISTS osm_relations_geom_index ON osm_relations USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_relations_tags_index ON osm_relations USING gin (tags);
+--CREATE INDEX IF NOT EXISTS osm_relations_tags_tsvector_index ON osm_relations USING gin (to_tsvector('english', tags));

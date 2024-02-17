@@ -80,6 +80,7 @@ public class ExecuteSql implements Task {
             logger.info("Execute SQL query: {}", query.replaceAll("\\s+", " "));
             connection.createStatement().execute(query);
           } catch (SQLException e) {
+            logger.error("Failed to execute query: {}", query.replaceAll("\\s+", " "));
             throw new WorkflowException(e);
           }
         });
