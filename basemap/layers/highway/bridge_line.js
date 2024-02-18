@@ -34,7 +34,7 @@ let directives = [
     },
     {
         filter: ['==', ['get', 'highway'], 'busway'],
-        'line-color': theme.highwayDashBuswayLineColor,
+        'line-color': theme.highwayBuswayDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
@@ -47,7 +47,7 @@ let directives = [
                 ['==', ['get', 'bicycle'], 'designated'],
             ],
         ],
-        'line-color': theme.highwayDashCyclewayLineColor,
+        'line-color': theme.highwayCyclewayDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
@@ -69,12 +69,12 @@ let directives = [
                 ['!=', ['get', 'bicycle'], 'designated'],
             ],
         ],
-        'line-color': theme.highwayDashHighwayLineColor,
+        'line-color': theme.highwayHighwayDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
         filter: ['all', ['==', ['get', 'highway'], 'track']],
-        'line-color': theme.highwayDashTrackLineColor,
+        'line-color': theme.highwayTrackDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
@@ -83,7 +83,7 @@ let directives = [
             ['==', ['get', 'highway'], 'motorway'],
             ['==', ['get', 'highway'], 'motorway_link'],
         ],
-        'line-color': theme.bridgeLineMotorwayLineColor,
+        'line-color': theme.highwayMotorwayBridgeLineColor,
         'line-width-stops': theme.highwayMotorwayLineWidth,
     },
     {
@@ -92,7 +92,7 @@ let directives = [
             ['==', ['get', 'highway'], 'trunk'],
             ['==', ['get', 'highway'], 'trunk_link'],
         ],
-        'line-color': theme.bridgeLineTrunkLineColor,
+        'line-color': theme.highwayTrunkBridgeLineColor,
         'line-width-stops': theme.highwayTrunkLineWidth,
     },
     {
@@ -101,7 +101,7 @@ let directives = [
             ['==', ['get', 'highway'], 'primary'],
             ['==', ['get', 'highway'], 'primary_link'],
         ],
-        'line-color': theme.bridgeLinePrimaryLineColor,
+        'line-color': theme.highwayPrimaryBridgeLineColor,
         'line-width-stops': theme.highwayPrimaryLineWidth,
     },
     {
@@ -110,7 +110,7 @@ let directives = [
             ['==', ['get', 'highway'], 'secondary'],
             ['==', ['get', 'highway'], 'secondary_link'],
         ],
-        'line-color': theme.bridgeLineSecondaryLineColor,
+        'line-color': theme.highwaySecondaryBridgeLineColor,
         'line-width-stops': theme.highwaySecondaryLineWidth,
     },
     {
@@ -119,37 +119,37 @@ let directives = [
             ['==', ['get', 'highway'], 'tertiary'],
             ['==', ['get', 'highway'], 'tertiary_link'],
         ],
-        'line-color': theme.bridgeLineTertiaryLineColor,
+        'line-color': theme.highwayTertiaryBridgeLineColor,
         'line-width-stops': theme.highwayTertiaryLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'unclassified'],
-        'line-color': theme.bridgeLineUnclassifiedLineColor,
+        'line-color': theme.highwayLineUnclassifiedBridgeLineColor,
         'line-width-stops': theme.highwayUnclassifiedLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'residential'],
-        'line-color': theme.bridgeLineResidentialLineColor,
+        'line-color': theme.highwayResidentialBridgeLineColor,
         'line-width-stops': theme.highwayResidentialLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'living_street'],
-        'line-color': theme.bridgeLineLivingStreetLineColor,
+        'line-color': theme.highwayLivingStreetBridgeLineColor,
         'line-width-stops': theme.highwayLivingStreetLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'service'],
-        'line-color': theme.bridgeLineServiceLineColor,
+        'line-color': theme.highwayServiceBridgeLineColor,
         'line-width-stops': theme.highwayServiceLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'track'],
-        'line-color': theme.bridgeLineTrackLineColor,
+        'line-color': theme.highwayTrackBridgeLineColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
         filter: ['==', ['get', 'highway'], 'raceway'],
-        'line-color': theme.bridgeLineRacewayLineColor,
+        'line-color': theme.highwayRacewayBridgeLineColor,
         'line-width-stops': theme.highwayRacewayLineWidth,
     },
     {
@@ -158,7 +158,7 @@ let directives = [
             ['==', ['get', 'highway'], 'pedestrian'],
             ['!=', ['geometry-type'], 'Polygon'],
         ],
-        'line-color': theme.bridgeLinePedestrianLineColor,
+        'line-color': theme.highwayPedestrianBridgeLineColor,
         'line-width-stops': theme.highwayPedestrianLineWidth,
     },
 ]

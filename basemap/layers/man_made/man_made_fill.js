@@ -23,6 +23,14 @@ let directives = [
         filter: ['==', ['get', 'man_made'], 'bridge'],
         'fill-color': theme.manMadeBridgeFillColor,
     },
+    {
+        filter: ['==', ['get', 'man_made'], 'groyne'],
+        'fill-color': theme.manMadeGroyneFillColor,
+    },
+    {
+        filter: ['==', ['get', 'man_made'], 'pier'],
+        'fill-color': theme.manMadePierFillColor,
+    }
 ];
 
 export default asLayerObject(directives, {

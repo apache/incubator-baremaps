@@ -15,105 +15,105 @@
  limitations under the License.
  **/
 
-import {withFillSortKey, asLayoutProperty, asPaintProperty, asLayerObject, withSortKeys} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'village_green'],
-        'fill-color': theme.landuseBackgroundVillageGreenFillColor,
+        'fill-color': theme.landuseVillageGreenBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'salt_pond'],
-        'fill-color': theme.landuseBackgroundSaltPondFillColor,
+        'fill-color': theme.landuseSaltPondBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'religious'],
-        'fill-color': theme.landuseBackgroundReligiousFillColor,
+        'fill-color': theme.landuseReligiousBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'recreation_ground'],
-        'fill-color': theme.landuseBackgroundRecreationGroundFillColor,
+        'fill-color': theme.landuseRecreationGroundBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'railway'],
-        'fill-color': theme.landuseBackgroundRailwayFillColor,
+        'fill-color': theme.landuseRailwayBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'quarry'],
-        'fill-color': theme.landuseBackgroundQuarryFillColor,
+        'fill-color': theme.landuseQuarryBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'plant_nursery'],
-        'fill-color': theme.landuseBackgroundPlantNurseryFillColor,
+        'fill-color': theme.landusePlantNurseryBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'military'],
-        'fill-color': theme.landuseBackgroundMilitaryFillColor,
+        'fill-color': theme.landuseMilitaryBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'landfill'],
-        'fill-color': theme.landuseBackgroundLandfillFillColor,
+        'fill-color': theme.landuseLandfillBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'greenfield'],
-        'fill-color': theme.landuseBackgroundGreenfieldFillColor,
+        'fill-color': theme.landuseGreenfieldBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'garages'],
-        'fill-color': theme.landuseBackgroundGaragesFillColor,
+        'fill-color': theme.landuseGaragesBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'cemetery'],
-        'fill-color': theme.landuseBackgroundCemeteryFillColor,
+        'fill-color': theme.landuseCemeteryBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'brownfield'],
-        'fill-color': theme.landuseBackgroundBrowmfieldFillColor,
+        'fill-color': theme.landuseBrowmfieldBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'basin'],
-        'fill-color': theme.landuseBackgroundBasinFillColor,
+        'fill-color': theme.landuseBasinBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'vineyard'],
-        'fill-color': theme.landuseBackgroundVineyardFillColor,
+        'fill-color': theme.landuseVineyardBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'farmyard'],
-        'fill-color': theme.landuseBackgroundFarmyardFillColor,
+        'fill-color': theme.landuseFarmyardBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'farmland'],
-        'fill-color': theme.landuseBackgroundFarmlandFillColor,
+        'fill-color': theme.landuseFarmlandBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'allotments'],
-        'fill-color': theme.landuseBackgroundAllotmentsFillColor,
+        'fill-color': theme.landuseAllotmentsBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'retail'],
-        'fill-color': theme.landuseBackgroundRetailFillColor,
+        'fill-color': theme.landuseRetailBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'industrial'],
-        'fill-color': theme.landuseBackgroundIndustrialFillColor,
+        'fill-color': theme.landuseIndustrialBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'residential'],
-        'fill-color': theme.landuseBackgroundResidentialFillColor,
+        'fill-color': theme.landuseResidentialBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'construction'],
-        'fill-color': theme.landuseBackgroundConstructionFillColor,
+        'fill-color': theme.landuseConstructionBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'commercial'],
-        'fill-color': theme.landuseBackgroundCommercialFillColor,
+        'fill-color': theme.landuseCommercialBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'pedestrian'],
-        'fill-color': theme.landuseBackgroundPedestrianFillColor,
+        'fill-color': theme.landusePedestrianBackgroundFillColor,
     },
 ];
 

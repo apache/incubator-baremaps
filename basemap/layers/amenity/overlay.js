@@ -20,7 +20,7 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'amenity'], 'motorcycle_parking'],
-        'fill-color': theme.amenityOverlayMotorcycleParkingFillColor,
+        'fill-color': theme.amenityMotorcycleParkingOverlayFillColor,
     },
     {
         filter: [
@@ -28,8 +28,8 @@ let directives = [
             ['!=', ['get', 'layer'], '-1'],
             ['==', ['get', 'amenity'], 'parking']
         ],
-        'fill-color': theme.amenityOverlayParkingFillColor,
-        'fill-outline-color': theme.amenityOverlayParkingFillOutlineColor
+        'fill-color': theme.amenityParkingOverlayFillColor,
+        'fill-outline-color': theme.amenityParkingOverlayOutlineColor
     },
 ];
 

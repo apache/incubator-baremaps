@@ -15,29 +15,29 @@
  limitations under the License.
  **/
 
-import {asLayerObject, withFillSortKey, withSortKeys} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'forest'],
-        'fill-color': theme.landuseOverlayForestFillColor,
+        'fill-color': theme.landuseForestOverlayFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'grass'],
-        'fill-color': theme.landuseOverlayGrassFillColor,
+        'fill-color': theme.landuseGrassOverlayFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'greenhouse_horticulture'],
-        'fill-color': theme.landuseOverlayGreenhouseHorticultureFillColor,
+        'fill-color': theme.landuseGreenhouseHorticultureOverlayFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'orchard'],
-        'fill-color': theme.landuseOverlayOrchardFillColor,
+        'fill-color': theme.landuseOrchardOverlayFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'meadow'],
-        'fill-color': theme.landuseOverlayMeadowFillColor,
+        'fill-color': theme.landuseMeadowOverlayFillColor,
     },
 ];
 

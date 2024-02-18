@@ -442,14 +442,14 @@ let directives = [
     {
         'filter': ['==', ['get', 'amenity'], 'bench'],
         'icon-image': 'bench',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'amenity'], 'shelter'],
         'icon-image': 'shelter',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'amenity'], 'drinking_water'],
@@ -478,8 +478,8 @@ let directives = [
     {
         'filter': ['==', ['get', 'leisure'], 'picnic_table'],
         'icon-image': 'picnic',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor,
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor,
     },
     {
         'filter': ['==', ['get', 'tourism'], 'caravan_site'],
@@ -520,8 +520,8 @@ let directives = [
             ['==', ['get', 'information'], 'guidepost']
         ],
         'icon-image': 'guidepost',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -530,8 +530,8 @@ let directives = [
             ['==', ['get', 'information'], 'board']
         ],
         'icon-image': 'board',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -548,8 +548,8 @@ let directives = [
             ]
         ],
         'icon-image': 'map',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -568,8 +568,8 @@ let directives = [
             ['==', ['get', 'information'], 'terminal']
         ],
         'icon-image': 'terminal',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -578,8 +578,8 @@ let directives = [
             ['==', ['get', 'information'], 'audioguide']
         ],
         'icon-image': 'audioguide',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'tourism'], 'viewpoint'],
@@ -785,14 +785,14 @@ let directives = [
     {
         'filter': ['==', ['get', 'aeroway'], 'helipad'],
         'icon-image': 'helipad',
-        'icon-color': theme.otherTransportIconColor,
-        'text-color': theme.otherTransportIconColor
+        'icon-color': theme.transportDefaultIconColor,
+        'text-color': theme.transportDefaultIconColor
     },
     {
         'filter': ['==', ['get', 'aeroway'], 'aerodrome'],
         'icon-image': 'aerodrome',
-        'icon-color': theme.otherTransportIconColor,
-        'text-color': theme.otherTransportIconColor
+        'icon-color': theme.transportDefaultIconColor,
+        'text-color': theme.transportDefaultIconColor
     },
     {
         'filter': ['==', ['get', 'amenity'], 'bicycle_rental'],
@@ -869,8 +869,8 @@ let directives = [
     {
         'filter': ['==', ['get', 'amenity'], 'ferry_terminal'],
         'icon-image': 'ferry',
-        'icon-color': theme.otherTransportIconColor,
-        'text-color': theme.otherTransportIconColor
+        'icon-color': theme.transportDefaultIconColor,
+        'text-color': theme.transportDefaultIconColor
     },
     {
         'filter': ['==', ['get', 'amenity'], 'motorcycle_parking'],
@@ -905,20 +905,20 @@ let directives = [
     // {
     //     'filter': ['==', ['get', 'oneway'], 'yes'],
     //     'icon-image': 'oneway',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor
     // },
     {
         'filter': ['==', ['get', 'barrier'], 'gate'],
         'icon-image': 'gate',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'highway'], 'traffic_signals'],
         'icon-image': 'traffic_light',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     // {
     //     'filter': [
@@ -927,8 +927,8 @@ let directives = [
     //         ['==', ['get', 'railway'], 'crossing']
     //     ],
     //     'icon-image': 'level_crossing2',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor
     // },
     {
         'filter': [
@@ -937,8 +937,8 @@ let directives = [
             ['==', ['get', 'railway'], 'crossing']
         ],
         'icon-image': 'level_crossing',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -949,8 +949,8 @@ let directives = [
             ['==', ['get', 'barrier'], 'log']
         ],
         'icon-image': 'gate',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -959,26 +959,26 @@ let directives = [
             ['==', ['get', 'barrier'], 'swing_gate']
         ],
         'icon-image': 'lift_gate',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'barrier'], 'cycle_barrier'],
         'icon-image': 'cycle_barrier',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'barrier'], 'stile'],
         'icon-image': 'stile',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     // {
     //     'filter': ['==', ['get', 'highway'], 'mini_roundabout'],
     //     'icon-image': 'highway_mini_roundabout',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor
     // },
     {
         'filter': ['==', ['get', 'barrier'], 'toll_booth'],
@@ -989,26 +989,26 @@ let directives = [
     {
         'filter': ['==', ['get', 'barrier'], 'cattle_grid'],
         'icon-image': 'barrier_cattle_grid',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'barrier'], 'kissing_gate'],
         'icon-image': 'kissing_gate',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'barrier'], 'full-height_turnstile'],
         'icon-image': 'full-height_turnstile',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'barrier'], 'motorcycle_barrier'],
         'icon-image': 'motorcycle_barrier',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -1018,7 +1018,7 @@ let directives = [
         ],
         'icon-image': 'ford',
         'icon-color': theme.waterIconColor,
-        'text-color': theme.waterwayLabelTextColor
+        'text-color': theme.waterwayTextColor
     },
     // {
     //     'filter': ['==', ['get', 'mountain_pass'], 'yes'],
@@ -1029,34 +1029,34 @@ let directives = [
     {
         'filter': ['==', ['get', 'waterway'], 'dam'],
         'icon-image': 'place-6',
-        'icon-color': theme.pointIconWaterIconColor,
-        'text-color': theme.pointIconWaterTextColor
+        'icon-color': theme.waterIconColor,
+        'text-color': theme.waterTextColor
     },
     {
         'filter': ['==', ['get', 'waterway'], 'weir'],
         'icon-image': 'place-6',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'waterway'], 'lock_gate'],
         'icon-image': 'place-6',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     // {
     //     'filter': ['==', ['get', 'Node with highway'], 'turning_circle at way with highway'],
     //     'icon-image': 'turning_circle_on_highway_track',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor
     // },
 
     // Nature
     {
         'filter': ['==', ['get', 'natural'], 'peak'],
         'icon-image': 'peak',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'natural'], 'spring'],
@@ -1067,8 +1067,8 @@ let directives = [
     {
         'filter': ['==', ['get', 'natural'], 'cave_entrance'],
         'icon-image': 'cave',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'waterway'], 'waterfall'],
@@ -1079,14 +1079,14 @@ let directives = [
     {
         'filter': ['==', ['get', 'natural'], 'saddle'],
         'icon-image': 'saddle',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': ['==', ['get', 'natural'], 'volcano'],
         'icon-image': 'peak',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
 
     // Administrative facilities
@@ -1718,8 +1718,8 @@ let directives = [
     {
         'filter': ['==', ['get', 'office'], '*'],
         'icon-image': 'office',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
     {
         'filter': [
@@ -1728,8 +1728,8 @@ let directives = [
             ['==', ['get', 'amenity'], 'childcare']
         ],
         'icon-image': 'place-6',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor
     },
 
     // Landmarks, man-made infrastructure, masts and towers
@@ -1999,32 +1999,32 @@ let directives = [
     {
         'filter': ['==', ['get', 'place'], 'city'],
         'icon-image': 'place-6',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor,
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor,
     },
     // {
     //     'filter': ['has', 'capital'],
     //     'icon-image': 'place_capital',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor,
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor,
     // },
     // {
     //     'filter': ['==', ['get', 'entrance'], 'yes'],
     //     'icon-image': 'entrance',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor,
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor,
     // },
     // {
     //     'filter': ['==', ['get', 'entrance'], 'main'],
     //     'icon-image': 'entrance',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor,
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor,
     // },
     // {
     //     'filter': ['==', ['get', 'entrance'], 'service'],
     //     'icon-image': 'entrance',
-    //     'icon-color': theme.otherIconColor,
-    //     'text-color': theme.otherIconColor,
+    //     'icon-color': theme.defaultIconColor,
+    //     'text-color': theme.defaultIconColor,
     // },
     {
         'filter': [
@@ -2033,8 +2033,8 @@ let directives = [
             ['==', ['get', 'access'], 'no']
         ],
         'icon-image': 'entrance',
-        'icon-color': theme.otherIconColor,
-        'text-color': theme.otherIconColor,
+        'icon-color': theme.defaultIconColor,
+        'text-color': theme.defaultIconColor,
     },
 ];
 

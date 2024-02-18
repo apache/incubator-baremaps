@@ -27,7 +27,7 @@ export default {
         "visibility": "visible"
     },
     "paint": {
-        "line-color": theme.tourismStyleZooLineTourismZooLineColor,
+        "line-color": theme.tourismZooLineColor,
         "line-width": [
             "interpolate", ["exponential", 1.2], ["zoom"], 13, 1, 16,
             2, 19, 3

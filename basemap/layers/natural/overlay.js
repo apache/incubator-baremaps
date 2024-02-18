@@ -20,7 +20,7 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'natural'], 'wetland'],
-        'fill-color': theme.naturalOverlayWetlandFillColor
+        'fill-color': theme.naturalWetlandOverlayFillColor
     },
     {
         filter: [
@@ -28,15 +28,15 @@ let directives = [
             ['==', ['get', 'natural'], 'beach'],
             ['==', ['get', 'surface'], 'gravel']
         ],
-        'fill-color': theme.naturalOverlayBeachGravelFillColor
+        'fill-color': theme.naturalBeachGravelOverlayFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'beach'],
-        'fill-color': theme.naturalOverlayBeachFillColor
+        'fill-color': theme.naturalBeachOverlayFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'sand'],
-        'fill-color': theme.naturalOverlaySandFillColor
+        'fill-color': theme.naturalSandOverlayFillColor
     },
     {
         filter: [
@@ -44,7 +44,7 @@ let directives = [
             ['==', ['get', 'natural'], 'water'],
             ['!=', ['get', 'water'], 'lake'],
         ],
-        'fill-color': theme.naturalOverlayLakeFillColor
+        'fill-color': theme.naturalLakeOverlayFillColor
     },
 ];
 

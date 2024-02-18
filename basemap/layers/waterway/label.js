@@ -42,8 +42,8 @@ export default {
         'symbol-placement': 'line',
     },
     paint: {
-        'text-color': theme.waterwayLabelTextColor,
-        'text-halo-color': theme.waterwayLabelTextHaloColor,
+        'text-color': theme.waterwayTextColor,
+        'text-halo-color': theme.waterwayTextHaloColor,
         'text-halo-width': 1.2,
     },
 }

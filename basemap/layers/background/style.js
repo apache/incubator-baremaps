@@ -27,6 +27,6 @@ export default {
     minzoom: 0,
     maxzoom: 24,
     paint: {
-        'background-color': theme.backgroundStyleBackgroundColor,
+        'background-color': theme.backgroundColor,
     },
 }

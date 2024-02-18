@@ -42,7 +42,7 @@ export default {
     },
     minzoom: 15,
     paint: {
-        'text-halo-color': theme.manMadePierLabelTextHaloColor,
+        'text-halo-color': theme.manMadePierTextHaloColor,
         'text-halo-width': 1.2,
     },
 }

@@ -21,7 +21,7 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'route'], 'ferry'],
-        'line-color': theme.routeStyleFerryLineColor,
+        'line-color': theme.routeFerryLineColor,
         'line-width': 1
     },
 ];
