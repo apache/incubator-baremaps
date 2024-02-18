@@ -18,25 +18,31 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
 let directives = [
-    {
-        filter: ['==', ['get', 'admin_level'], "0"],
-        'line-color': theme.boundaryAdminLevelLineColor,
-    },
+
     {
         filter: ['==', ['get', 'admin_level'], "1"],
         'line-color': theme.boundaryAdminLevelLineColor,
+        'line-width': 3,
     },
     {
         filter: ['==', ['get', 'admin_level'], "2"],
         'line-color': theme.boundaryAdminLevelLineColor,
+        'line-width': 3,
     },
     {
         filter: ['==', ['get', 'admin_level'], "3"],
         'line-color': theme.boundaryAdminLevelLineColor,
+        'line-width': 2,
     },
     {
         filter: ['==', ['get', 'admin_level'], "4"],
         'line-color': theme.boundaryAdminLevelLineColor,
+        'line-width': 2,
+    },
+    {
+        filter: ['has', 'boundary'],
+        'line-color': theme.boundaryAdminLevelLineColor,
+        'line-width': 1,
     },
 ];
 

@@ -17,22 +17,28 @@
 import config from "./config.js";
 
 import background from "./layers/background/style.js";
+import aerialway_line from "./layers/aerialway/line.js";
+import aerialway_circle from "./layers/aerialway/circle.js";
 import aeroway_line from "./layers/aeroway/line.js";
 import aeroway_fill from "./layers/aeroway/fill.js";
 import amenity_background from "./layers/amenity/background.js";
 import amenity_fountain from "./layers/amenity/fountain.js";
 import amenity_overlay from "./layers/amenity/overlay.js";
+import attraction_line from "./layers/attraction/line.js";
 import boundary_line from "./layers/boundary/line.js";
+import barrier_line from "./layers/barrier/line.js";
 import landuse_background from "./layers/landuse/background.js";
 import landuse_overlay from "./layers/landuse/overlay.js";
 import natural_background from "./layers/natural/background.js";
 import natural_overlay from "./layers/natural/overlay.js";
+import natural_line from "./layers/natural/line.js";
 import natural_tree from "./layers/natural/tree.js";
 import natural_trunk from "./layers/natural/trunk.js";
 import power_background from "./layers/power/background.js";
 import power_tower from "./layers/power/tower.js";
 import power_cable from "./layers/power/cable.js";
 import leisure_background from "./layers/leisure/background.js";
+import leisure_line from "./layers/leisure/line.js";
 import leisure_overlay from "./layers/leisure/overlay.js";
 import railway_tunnel from "./layers/railway/tunnel.js";
 import railway_line from "./layers/railway/line.js";
@@ -87,6 +93,8 @@ export default {
         amenity_overlay,
         leisure_overlay,
         ocean_overlay,
+        natural_line,
+        barrier_line,
         waterway_line,
         waterway_area,
         man_made_fill,
@@ -102,15 +110,19 @@ export default {
         highway_line,
         highway_fill,
         railway_line,
+        attraction_line,
         highway_bridge_outline,
         highway_bridge_line,
         highway_label,
         aeroway_line,
         route_line,
+        aerialway_line,
+        aerialway_circle,
         power_cable,
         power_tower,
         natural_tree,
         natural_trunk,
+        leisure_line,
         boundary_line,
         waterway_label,
         //building_extrusion,

@@ -30,6 +30,10 @@ let directives = [
     {
         filter: ['==', ['get', 'man_made'], 'pier'],
         'fill-color': theme.manMadePierFillColor,
+    },
+    {
+        filter: ['==', ['get', 'man_made'], 'wastewater_plant'],
+        'fill-color': theme.manMadeWasteWaterPlantFillColor,
     }
 ];
 

@@ -14,31 +14,35 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-export default {
-    id: 'building',
-    type: 'fill',
+let directives = [
+    {
+        filter: ['==', ['get', 'natural'], 'cliff'],
+        'line-color': theme.naturalCliffLineColor,
+        'line-width-stops': theme.naturalCliffLineWidth,
+    },
+    {
+        filter: ['==', ['get', 'natural'], 'tree_row'],
+        'line-color': theme.naturalTreeRowLineColor,
+        'line-width-stops': theme.naturalTreeRowLineWidth,
+    },
+
+];
+
+export default asLayerObject(withSortKeys(directives), {
+    id: 'natural_line',
     source: 'baremaps',
-    'source-layer': 'building',
+    'source-layer': 'natural',
+    type: 'line',
     layout: {
         visibility: 'visible',
+        'line-cap': 'round',
+        'line-join': 'round',
     },
-    paint: {
-        'fill-antialias': true,
-        'fill-color': theme.buildingFillColor,
-        'fill-outline-color': theme.buildingOutlineColor,
-        'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            13, 0,
-            13.5, 1
-        ]
-    },
-    filter: ['all',
-        ['==', ['geometry-type'], 'Polygon'],
-        ['!=', ['get', 'building'], 'no'],
-        ['!=', ['get', 'building:part'], 'no']
+    filter: [
+        'all',
+        ['==', ['geometry-type'], 'LineString'],
     ],
-}
+});

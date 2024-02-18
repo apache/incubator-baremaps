@@ -14,31 +14,29 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-export default {
-    id: 'building',
-    type: 'fill',
+let directives = [
+    {
+        filter: ['==', ['get', 'barrier'], 'hedge'],
+        'line-color': theme.barrierHedgeLineColor,
+        'line-width-stops': theme.barrierHedgeLineWidth,
+    },
+];
+
+export default asLayerObject(withSortKeys(directives), {
+    id: 'barrier_line',
     source: 'baremaps',
-    'source-layer': 'building',
+    'source-layer': 'barrier',
+    type: 'line',
     layout: {
         visibility: 'visible',
+        'line-cap': 'round',
+        'line-join': 'round',
     },
-    paint: {
-        'fill-antialias': true,
-        'fill-color': theme.buildingFillColor,
-        'fill-outline-color': theme.buildingOutlineColor,
-        'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            13, 0,
-            13.5, 1
-        ]
-    },
-    filter: ['all',
-        ['==', ['geometry-type'], 'Polygon'],
-        ['!=', ['get', 'building'], 'no'],
-        ['!=', ['get', 'building:part'], 'no']
+    filter: [
+        'all',
+        ['==', ['geometry-type'], 'LineString'],
     ],
-}
+});

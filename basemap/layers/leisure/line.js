@@ -14,31 +14,26 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-export default {
-    id: 'building',
-    type: 'fill',
-    source: 'baremaps',
-    'source-layer': 'building',
-    layout: {
-        visibility: 'visible',
+
+export let directives = [
+    {
+        'filter': ['==', ['get', 'leisure'], 'nature_reserve'],
+        'line-color': theme.leisureNatureReserveLineColor,
+        'line-width': 2,
     },
-    paint: {
-        'fill-antialias': true,
-        'fill-color': theme.buildingFillColor,
-        'fill-outline-color': theme.buildingOutlineColor,
-        'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            13, 0,
-            13.5, 1
-        ]
+];
+
+export default asLayerObject(withSortKeys(directives), {
+    'id': 'leisure_line',
+    'source': 'baremaps',
+    'source-layer': 'leisure',
+    'type': 'line',
+    'layout': {
+        'visibility': 'visible',
+        'line-cap': 'round',
+        'line-join': 'round',
     },
-    filter: ['all',
-        ['==', ['geometry-type'], 'Polygon'],
-        ['!=', ['get', 'building'], 'no'],
-        ['!=', ['get', 'building:part'], 'no']
-    ],
-}
+});

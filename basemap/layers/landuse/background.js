@@ -48,10 +48,6 @@ let directives = [
         'fill-color': theme.landusePlantNurseryBackgroundFillColor,
     },
     {
-        filter: ['==', ['get', 'landuse'], 'military'],
-        'fill-color': theme.landuseMilitaryBackgroundFillColor,
-    },
-    {
         filter: ['==', ['get', 'landuse'], 'landfill'],
         'fill-color': theme.landuseLandfillBackgroundFillColor,
     },

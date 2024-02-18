@@ -21,7 +21,7 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'natural'], 'glacier'],
-        'fill-color': theme.naturalGlacierBackgroundFillColor
+        'fill-color': theme.naturalGlacierBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'natural'], 'wood'],
@@ -40,12 +40,12 @@ let directives = [
         'fill-color': theme.naturalGrasslandBackgroundFillColor
     },
     {
-        filter: ['==', ['get', 'natural'], 'bare_rock'],
-        'fill-color': theme.naturalBareRockBackgroundFillColor
-    },
-    {
         filter: ['==', ['get', 'natural'], 'scree'],
         'fill-color': theme.naturalScreeBackgroundFillColor
+    },
+    {
+        filter: ['==', ['get', 'natural'], 'bare_rock'],
+        'fill-color': theme.naturalBareRockBackgroundFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'shingle'],

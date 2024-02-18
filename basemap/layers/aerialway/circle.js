@@ -16,29 +16,29 @@
  **/
 import theme from "../../theme.js";
 
+
 export default {
-    id: 'building',
-    type: 'fill',
-    source: 'baremaps',
-    'source-layer': 'building',
-    layout: {
-        visibility: 'visible',
-    },
-    paint: {
-        'fill-antialias': true,
-        'fill-color': theme.buildingFillColor,
-        'fill-outline-color': theme.buildingOutlineColor,
-        'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            13, 0,
-            13.5, 1
-        ]
-    },
-    filter: ['all',
-        ['==', ['geometry-type'], 'Polygon'],
-        ['!=', ['get', 'building'], 'no'],
-        ['!=', ['get', 'building:part'], 'no']
+    "id": "aerialway_circle",
+    "type": "circle",
+    "filter": [
+        "any",
+        ["==", "aerialway", "pylon"],
+        ["==", "aerialway", "station"],
     ],
+    "source": "baremaps",
+    "source-layer": "point",
+    "layout": {
+        "visibility": "visible"
+    },
+    "paint": {
+        'circle-pitch-alignment': 'map',
+        "circle-color": theme.powerTowerCircleColor,
+        "circle-radius": [
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            14, 1,
+            20, 8
+        ]
+    }
 }
