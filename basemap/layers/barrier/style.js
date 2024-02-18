@@ -24,7 +24,7 @@ export default [
         source: 'baremaps',
         'source-layer': 'barrier',
         paint: {
-            'line-color': theme.barrierStyleGuardRailLineColor,
+            'line-color': theme.barrierGuardRailBackgroundLineColor,
         },
     },
 ]

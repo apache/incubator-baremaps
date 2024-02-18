@@ -21,35 +21,35 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'natural'], 'glacier'],
-        'fill-color': theme.naturalBackgroundGlacierFillColor
+        'fill-color': theme.naturalGlacierBackgroundFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'wood'],
-        'fill-color': theme.naturalBackgroundWoodFillColor
+        'fill-color': theme.naturalWoodBackgroundFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'scrub'],
-        'fill-color': theme.naturalOverlayScrubFillColor
+        'fill-color': theme.naturalScrubOverlayFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'heath'],
-        'fill-color': theme.naturalBackgroundHeathFillColor
+        'fill-color': theme.naturalHeathBackgroundFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'grassland'],
-        'fill-color': theme.naturalBackgroundGrasslandFillColor
+        'fill-color': theme.naturalGrasslandBackgroundFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'bare_rock'],
-        'fill-color': theme.naturalBackgroundBareRockFillColor
+        'fill-color': theme.naturalBareRockBackgroundFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'scree'],
-        'fill-color': theme.naturalBackgroundScreeFillColor
+        'fill-color': theme.naturalScreeBackgroundFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'shingle'],
-        'fill-color': theme.naturalBackgroundShingleFillColor
+        'fill-color': theme.naturalShingleBackgroundFillColor
     },
     {
         filter: [
@@ -57,7 +57,7 @@ let directives = [
             ['==', ['get', 'natural'], 'water'],
             ['==', ['get', 'water'], 'lake'],
         ],
-        'fill-color': theme.naturalBackgroundWaterFillColor,
+        'fill-color': theme.naturalWaterBackgroundFillColor,
     },
 ];
 

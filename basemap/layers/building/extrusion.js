@@ -49,7 +49,7 @@ export default {
             16,
             ['get', "extrusion:height"]
         ],
-        "fill-extrusion-color": theme.buildingShapeFillColor,
+        "fill-extrusion-color": theme.buildingFillColor,
         // Having muliple colors for building parts results in z-fighting
         // https://github.com/maplibre/maplibre-gl-js/issues/3157
         // https://github.com/maplibre/maplibre-gl-js/issues/3187
@@ -57,7 +57,7 @@ export default {
         //     "case",
         //     ["has", "building:colour"],
         //     ["get", "building:colour"],
-        //     theme.buildingShapeFillColor,
+        //     theme.buildingFillColor,
         // ],
     },
 }

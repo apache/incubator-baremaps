@@ -42,7 +42,7 @@ export default [
         source: 'baremaps',
         'source-layer': 'attraction',
         paint: {
-            'line-color': theme.attractionStyleWaterSlideLineColor,
+            'line-color': theme.attractionWaterSlideLineColor,
             'line-width': [
                 'interpolate',
                 ['exponential', 1],

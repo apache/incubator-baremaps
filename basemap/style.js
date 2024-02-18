@@ -51,9 +51,9 @@ import ocean_overlay from './layers/ocean/overlay.js';
 import route_line from "./layers/route/style.js"
 import building_fill from "./layers/building/fill.js";
 import building_extrusion from "./layers/building/extrusion.js";
-import man_made_bridge from "./layers/man_made/bridge.js";
-import man_made_pier_line from "./layers/man_made/pier_line.js";
-import man_made_pier_label from "./layers/man_made/pier_label.js";
+import man_made_fill from "./layers/man_made/man_made_fill.js";
+import man_made_line from "./layers/man_made/man_made_line.js";
+import man_made_label from "./layers/man_made/man_made_label.js";
 import waterway_line from "./layers/waterway/line.js"
 import waterway_area from "./layers/waterway/area.js"
 import waterway_label from "./layers/waterway/label.js"
@@ -89,7 +89,9 @@ export default {
         ocean_overlay,
         waterway_line,
         waterway_area,
-        man_made_bridge,
+        man_made_fill,
+        man_made_line,
+        man_made_label,
         amenity_fountain,
         highway_tunnel_outline,
         highway_tunnel_line,
@@ -107,13 +109,11 @@ export default {
         route_line,
         power_cable,
         power_tower,
-        man_made_pier_line,
-        man_made_pier_label,
         natural_tree,
         natural_trunk,
         boundary_line,
         waterway_label,
-        building_extrusion,
+        //building_extrusion,
         icon,
         place,
         country_label,

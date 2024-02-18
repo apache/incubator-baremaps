@@ -27,8 +27,8 @@ export default {
     },
     paint: {
         'fill-antialias': false,
-        'fill-color': theme.powerBackgroundPowerPlantFillColor,
-        'fill-outline-color': theme.powerBackgroundPowerPlantFillOutlineColor,
+        'fill-color': theme.powerPlantBackgroundFillColor,
+        'fill-outline-color': theme.powerPlantBackgroundOutlineColor,
     },
     filter: ['any', ['==', 'power', 'plant'], ['==', 'power', 'substation']],
 }

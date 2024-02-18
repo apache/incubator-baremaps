@@ -24,7 +24,7 @@ let directives = [
             ['==', ['get', 'place'], 'country']
         ],
         'text-size': 16,
-        'text-color': theme.pointCountryLabelCountryTextColor,
+        'text-color': theme.placeCountryTextColor,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
 ];
@@ -42,7 +42,7 @@ export default asLayerObject(withSymbolSortKeys(directives), {
         'text-field': ['get', 'name'],
     },
     paint: {
-        'text-halo-color': theme.pointCountryLabelPaintTextHaloColor,
+        'text-halo-color': theme.placeCountryTextHaloColor,
         'text-halo-width': 1,
     },
 });

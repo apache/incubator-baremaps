@@ -28,19 +28,19 @@ let directives = [
     },
     {
         filter: ['==', ['get', 'amenity'], 'college'],
-        'fill-color': theme.amenityBackgroundCollegeFillColor,
+        'fill-color': theme.amenityCollegeBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'university'],
-        'fill-color': theme.amenityBackgroundUniversityFillColor,
+        'fill-color': theme.amenityUniversityBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'hospital'],
-        'fill-color': theme.amenityBackgroundHospitalFillColor,
+        'fill-color': theme.amenityHospitalBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'grave_yard'],
-        'fill-color': theme.amenityBackgroundGraveYardFillColor,
+        'fill-color': theme.amenityGraveYardBackgroundFillColor,
     },
 ];
 

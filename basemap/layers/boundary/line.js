@@ -20,23 +20,23 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'admin_level'], "0"],
-        'line-color': theme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "1"],
-        'line-color': theme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "2"],
-        'line-color': theme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "3"],
-        'line-color': theme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "4"],
-        'line-color': theme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryAdminLevelLineColor,
     },
 ];
 

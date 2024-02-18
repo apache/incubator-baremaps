@@ -39,6 +39,6 @@ export default {
     ],
     paint: {
         'fill-antialias': false,
-        'fill-color': theme.pedestrianAreaPaintFillColor,
+        'fill-color': theme.pedestrianAreaFillColor,
     },
 }

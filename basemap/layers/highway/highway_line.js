@@ -34,7 +34,7 @@ let directives = [
     },
     {
         filter: ['==', ['get', 'highway'], 'busway'],
-        'line-color': theme.highwayDashBuswayLineColor,
+        'line-color': theme.highwayBuswayDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
@@ -47,7 +47,7 @@ let directives = [
                 ['==', ['get', 'bicycle'], 'designated'],
             ],
         ],
-        'line-color': theme.highwayDashCyclewayLineColor,
+        'line-color': theme.highwayCyclewayDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
@@ -69,12 +69,12 @@ let directives = [
                 ['!=', ['get', 'bicycle'], 'designated'],
             ],
         ],
-        'line-color': theme.highwayDashHighwayLineColor,
+        'line-color': theme.highwayHighwayDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {
         filter: ['all', ['==', ['get', 'highway'], 'track']],
-        'line-color': theme.highwayDashTrackLineColor,
+        'line-color': theme.highwayTrackDashColor,
         'line-width-stops': theme.highwayMinorLineWidth,
     },
     {

@@ -37,8 +37,8 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'text-color': theme.highwayLabelPaintTextColor,
-        'text-halo-color': theme.highwayLabelPaintTextHaloColor,
+        'text-color': theme.highwayLabelColor,
+        'text-halo-color': theme.highwayLabelHaloColor,
         'text-halo-width': 1.2,
     },
 }

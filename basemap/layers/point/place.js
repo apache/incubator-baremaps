@@ -39,7 +39,7 @@ let directives = [
             ['!=', ['get', 'capital'], 'yes'],
         ],
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
-        'label-color': [theme.pointLabelCityFilterOneLabelColor, theme.pointLabelCityFilterTwoLabelColor],
+        'label-color': [theme.placeCityCapitalTextColorOne, theme.placeCityCapitalTextColorTwo],
         'text-size-stops': [
             0, 0,
             10, 16,
@@ -49,7 +49,7 @@ let directives = [
     {
         'filter': ['==', ['get', 'place'], 'town'],
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
-        'label-color': [theme.pointLabelTownFilterOneLabelColor, theme.pointLabelTownFilterTwoLabelColor],
+        'label-color': [theme.placeTownTextColorOne, theme.placeTownTextColorTwo],
         'text-size-stops': [
             0, 0,
             10, 14,
@@ -59,7 +59,7 @@ let directives = [
     {
         filter: ['==', ['get', 'place'], 'village'],
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
-        'label-color': theme.pointLabelVillageLabelColor,
+        'label-color': theme.placeVillageTextColor,
         'text-size-stops': [
             0, 0,
             10, 10,
@@ -68,7 +68,7 @@ let directives = [
     },
     {
         filter: ['==', ['get', 'place'], 'locality'],
-        'label-color': theme.pointLabelLocalityLabelColor,
+        'label-color': theme.placeLocalityTextColor,
         'text-size-stops': [
             0, 0,
             10, 8,
@@ -90,7 +90,7 @@ let directives = [
     //         ]
     //     ],
     //     'text-size': 11,
-    //     'text-color': theme.pointLabelPlaceTextColor,
+    //     'text-color': theme.placeTextColor,
     // },
 
 ];
@@ -110,7 +110,7 @@ export default asLayerObject(withSymbolSortKeys(directives), {
         'text-optional': true,
     },
     paint: {
-        'text-halo-color': theme.pointLabelPaintTextHaloColor,
+        'text-halo-color': theme.placeTextHaloColor,
         'text-halo-width': 1,
     },
 });

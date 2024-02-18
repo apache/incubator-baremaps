@@ -15,24 +15,30 @@
  limitations under the License.
  **/
 
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-export default {
+let directives = [
+    {
+        filter: [
+            'all',
+            ['==', ["geometry-type"], 'LineString'],
+            ['==', ['get', 'man_made'], 'pier'],
+        ],
+        'line-color': theme.manMadePierLineColor,
+        'line-width-stops': theme.manMadePierLineWidth,
+    }
+];
+
+export default asLayerObject(withSortKeys(directives), {
     id: 'man_made_pier_line',
     type: 'line',
     source: 'baremaps',
     'source-layer': 'man_made',
     layout: {
         visibility: 'visible',
+        'line-cap': 'round',
+        'line-join': 'round',
     },
     minzoom: 12,
-    paint: {
-        'line-color': theme.manMadePierLineLineColor,
-        'line-width': ['interpolate', ['exponential', 1], ['zoom'], 12, 0.5, 18, 2],
-    },
-    filter: [
-        'all',
-        ['==', ["geometry-type"], 'LineString'],
-        ['==', ['get', 'man_made'], 'pier'],
-    ]
-}
+});

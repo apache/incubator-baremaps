@@ -21,19 +21,19 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'leisure'], 'golf_course'],
-        'fill-color': theme.leisureBackgroundGolfCourseFillColor,
+        'fill-color': theme.leisureGolfCourseBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'sports_centre'],
-        'fill-color': theme.leisureBackgroundSportsCentreFillColor,
+        'fill-color': theme.leisureSportsCentreBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'garden'],
-        'fill-color': theme.leisureBackgroundGardenFillColor,
+        'fill-color': theme.leisureGardenBackgroundFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'park'],
-        'fill-color': theme.leisureBackgroundParkFillColor,
+        'fill-color': theme.leisureParkBackgroundFillColor,
     },
 ];
 

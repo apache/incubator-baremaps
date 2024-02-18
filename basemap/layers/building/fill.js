@@ -26,8 +26,8 @@ export default {
     },
     paint: {
         'fill-antialias': false,
-        'fill-color': theme.buildingShapeFillColor,
-        'fill-outline-color': theme.buildingShapeFillOutlineColor,
+        'fill-color': theme.buildingFillColor,
+        'fill-outline-color': theme.buildingOutlineColor,
         'fill-opacity': [
             'interpolate',
             ['linear'],
