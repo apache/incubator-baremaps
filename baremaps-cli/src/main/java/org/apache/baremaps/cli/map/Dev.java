@@ -66,6 +66,10 @@ public class Dev implements Callable<Integer> {
       required = true)
   private Path stylePath;
 
+  @Option(names = {"--assets"}, paramLabel = "ASSETS", description = "The assets directory.",
+      required = false)
+  private Path assetsPath;
+
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
 
@@ -112,9 +116,13 @@ public class Dev implements Callable<Integer> {
     serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new TilesetResource(tilesetSupplier), jsonResponseConverter);
 
-    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/viewer.html");
+    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/static/viewer.html");
     serverBuilder.service("/", index.asService());
-    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/assets"));
+    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/static"));
+
+    if (assetsPath != null) {
+      serverBuilder.serviceUnder("/assets", FileService.of(assetsPath));
+    }
 
     serverBuilder.decorator(CorsService.builderForAnyOrigin()
         .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
@@ -122,6 +130,7 @@ public class Dev implements Callable<Integer> {
         .newDecorator());
 
     serverBuilder.serviceUnder("/docs", new DocService());
+
 
     serverBuilder.disableServerHeader();
     serverBuilder.disableDateHeader();

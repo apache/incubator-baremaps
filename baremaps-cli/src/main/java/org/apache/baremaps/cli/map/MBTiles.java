@@ -97,9 +97,9 @@ public class MBTiles implements Callable<Integer> {
     serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
 
-    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/server.html");
+    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/static/server.html");
     serverBuilder.service("/", index.asService());
-    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/assets"));
+    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/static"));
 
     serverBuilder.decorator(CorsService.builderForAnyOrigin()
         .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
