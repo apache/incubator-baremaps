@@ -20,6 +20,10 @@ import theme from "../../theme.js";
 
 let directives = [
     {
+        filter: ['==', ['get', 'landuse'], 'military'],
+        'fill-color': theme.landuseMilitaryOverlayFillColor,
+    },
+    {
         filter: ['==', ['get', 'landuse'], 'forest'],
         'fill-color': theme.landuseForestOverlayFillColor,
     },

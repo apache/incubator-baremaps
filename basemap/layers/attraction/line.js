@@ -14,31 +14,26 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-export default {
-    id: 'building',
-    type: 'fill',
+let directives = [
+    {
+        filter: ['==', ['get', 'attraction'], "water_slide"],
+        'line-color': theme.attractionWaterSlideLineColor,
+        'line-width-stops': theme.attractionWaterSlideLineWidth,
+    },
+
+];
+
+export default asLayerObject(withSortKeys(directives), {
+    id: 'attraction_line',
+    type: 'line',
     source: 'baremaps',
-    'source-layer': 'building',
+    'source-layer': 'attraction',
     layout: {
         visibility: 'visible',
+        'line-cap': 'round',
+        'line-join': 'round',
     },
-    paint: {
-        'fill-antialias': true,
-        'fill-color': theme.buildingFillColor,
-        'fill-outline-color': theme.buildingOutlineColor,
-        'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            13, 0,
-            13.5, 1
-        ]
-    },
-    filter: ['all',
-        ['==', ['geometry-type'], 'Polygon'],
-        ['!=', ['get', 'building'], 'no'],
-        ['!=', ['get', 'building:part'], 'no']
-    ],
-}
+});

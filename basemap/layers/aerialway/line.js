@@ -15,12 +15,12 @@
  limitations under the License.
  **/
 import theme from "../../theme.js";
-import {asLayerObject, withSortKeys} from "../../utils/utils";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 
 let directives = [
     {
-        filter: ['==', ["geometry-type"], 'LineString'],
+        filter: ['has', 'aerialway'],
         'line-color': theme.aerialwayLineColor,
         'line-width': 1,
     },
