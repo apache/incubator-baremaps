@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="7" height="7" viewBox="0 0 7 7" id="power_tower">
+  <path d="M 0.625,1 6,6.375 6.375,6 1,0.625 z"/>
+  <path d="M 6,0.625 0.625,6 1,6.375 6.375,1 z"/>
+</svg>

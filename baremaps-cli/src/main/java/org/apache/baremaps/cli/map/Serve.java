@@ -72,6 +72,10 @@ public class Serve implements Callable<Integer> {
       required = true)
   private Path stylePath;
 
+  @Option(names = {"--assets"}, paramLabel = "ASSETS", description = "The assets directory.",
+      required = false)
+  private Path assetsPath;
+
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
 
@@ -105,9 +109,13 @@ public class Serve implements Callable<Integer> {
     serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new SearchResource(datasource), jsonResponseConverter);
 
-    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/assets/server.html");
+    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/static/server.html");
     serverBuilder.service("/", index.asService());
-    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/assets"));
+    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/static"));
+
+    if (assetsPath != null) {
+      serverBuilder.serviceUnder("/assets", FileService.of(assetsPath));
+    }
 
     serverBuilder.decorator(CorsService.builderForAnyOrigin()
         .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
