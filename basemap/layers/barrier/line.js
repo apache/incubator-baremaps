@@ -23,6 +23,22 @@ let directives = [
         'line-color': theme.barrierHedgeLineColor,
         'line-width-stops': theme.barrierHedgeLineWidth,
     },
+    {
+        filter: ['==', ['get', 'barrier'], 'wall'],
+        'line-color': theme.barrierWallLineColor,
+        'line-width-stops': theme.barrierWallLineWidth,
+    },
+    {
+        filter: ['==', ['get', 'barrier'], 'wall'],
+        'line-color': theme.barrierFenceLineColor,
+        'line-width-stops': theme.barrierFenceLineWidth,
+    },
+    {
+        filter: ['==', ['get', 'barrier'], 'city_wall'],
+        'line-color': theme.barrierCityWallLineColor,
+        'line-width-stops': theme.barrierCityWallLineWidth,
+    },
+
 ];
 
 export default asLayerObject(withSortKeys(directives), {
