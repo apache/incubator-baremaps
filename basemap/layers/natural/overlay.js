@@ -19,10 +19,6 @@ import theme from "../../theme.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'natural'], 'wetland'],
-        'fill-color': theme.naturalWetlandOverlayFillColor
-    },
-    {
         filter: [
             'all',
             ['==', ['get', 'natural'], 'beach'],
@@ -45,6 +41,10 @@ let directives = [
             ['!=', ['get', 'water'], 'lake'],
         ],
         'fill-color': theme.naturalLakeOverlayFillColor
+    },
+    {
+        filter: ['==', ['get', 'natural'], 'wetland'],
+        'fill-color': theme.naturalWetlandOverlayFillColor
     },
 ];
 

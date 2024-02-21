@@ -15,9 +15,91 @@
  limitations under the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 
-import {directives} from './line.js'
+export let directives = [
+    {
+        'filter': [
+            'all',
+            ['==', ['get', 'railway'], 'rail'],
+            ['!', ['has', 'service']],
+        ],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayRailLineWidth,
+    },
+    {
+        'filter': ['all',
+            ['==', ['get', 'railway'], 'rail'],
+            ['has', 'service']
+        ],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayServiceLineWidth,
+    },
+    {
+        'filter': ['all',
+            ['==', ['get', 'railway'], 'turntable'],
+            ['has', 'service']
+        ],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayServiceLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'subway'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwaySubwayLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'tram'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayTramLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'preserved'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayPreservedLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'funicular'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayFunicularLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'monorail'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayMonorailLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'light_rail'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayLightRailLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'construction'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayConstructionLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'abandoned'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayAbandonedLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'disused'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayDisusedLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'miniature'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayMiniatureLineWidth,
+    },
+    {
+        'filter': ['==', ['get', 'railway'], 'narrow_gauge'],
+        'line-color': theme.railwayTunnelColor,
+        'line-width-stops': theme.railwayNarrowGaugeLineWidth,
+    },
+];
 
 export default asLayerObject(withSortKeys(directives), {
     'id': 'railway_tunnel',
@@ -28,9 +110,6 @@ export default asLayerObject(withSortKeys(directives), {
         'visibility': 'visible',
         'line-cap': 'round',
         'line-join': 'round',
-    },
-    'paint': {
-        'line-dasharray': [1, 2]
     },
     'filter': ['all',
         ['==', ['geometry-type'], 'LineString'],

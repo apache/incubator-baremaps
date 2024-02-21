@@ -15,6 +15,7 @@ Both spritezero and spreet can be used to generate the png and json files from t
 ```
 volta install node@10
 npm install -g @elastic/spritezero-cli
+spritezero --ratio=1 --sdf icons icons
 spritezero --ratio=1 --sdf icons@1x icons
 spritezero --ratio=1 --sdf icons@2x icons
 spritezero --ratio=1 --sdf icons@4x icons

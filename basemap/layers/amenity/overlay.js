@@ -19,14 +19,15 @@ import theme from "../../theme.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'amenity'], 'motorcycle_parking'],
-        'fill-color': theme.amenityMotorcycleParkingOverlayFillColor,
-    },
-    {
         filter: [
             'all',
             ['!=', ['get', 'layer'], '-1'],
-            ['==', ['get', 'amenity'], 'parking']
+            ['any',
+                ['==', ['get', 'amenity'], 'bicycle_parking'],
+                ['==', ['get', 'amenity'], 'motorcycle_parking'],
+                ['==', ['get', 'amenity'], 'parking_space'],
+                ['==', ['get', 'amenity'], 'parking'],
+            ],
         ],
         'fill-color': theme.amenityParkingOverlayFillColor,
         'fill-outline-color': theme.amenityParkingOverlayOutlineColor
@@ -42,7 +43,7 @@ export default asLayerObject(withSortKeys(directives), {
         visibility: 'visible',
     },
     paint: {
-        'fill-antialias': false,
+        'fill-antialias': true,
     },
     filter: ['==', ["geometry-type"], 'Polygon'],
 });

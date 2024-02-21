@@ -36,6 +36,15 @@ export let directives = [
         'line-color': theme.railwayAllRailsLineColor,
         'line-width-stops': theme.railwayServiceLineWidth,
     },
+
+    {
+        'filter': ['all',
+            ['==', ['get', 'railway'], 'turntable'],
+            ['has', 'service']
+        ],
+        'line-color': theme.railwayAllRailsLineColor,
+        'line-width-stops': theme.railwayServiceLineWidth,
+    },
     {
         'filter': ['==', ['get', 'railway'], 'subway'],
         'line-color': theme.railwaySubwayLineColor,
