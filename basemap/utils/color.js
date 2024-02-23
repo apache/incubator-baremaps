@@ -135,6 +135,9 @@ class RGB extends Color {
     }
 
     static fromString(color) {
+        if (typeof color !== 'string') {
+            return null;
+        }
         let rgb = color.replace(/\s*/g, '').match(/rgb\((\d*)\,(\d*)\,(\d*)\)/)
         if (rgb != null) {
             return new RGB(parseInt(rgb[1]), parseInt(rgb[2]), parseInt(rgb[3]), 1)
@@ -198,6 +201,9 @@ class HSL extends Color {
     }
 
     static fromString(color) {
+        if (typeof color !== 'string') {
+            return null;
+        }
         let hsl = color.replace(/\s*/g, '').match(/hsl\((\d*)\,(\d*)\,(\d*)\)/)
         if (hsl != null) {
             return new HSL(parseInt(hsl[1]), parseInt(hsl[2]), parseInt(hsl[3]), 1)
