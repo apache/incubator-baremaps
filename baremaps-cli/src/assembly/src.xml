@@ -46,7 +46,7 @@ limitations under the License.
                 <include>.asf.yaml</include>
                 <include>CONTRIBUTING.md</include>
                 <include>LICENSE</include>
-                <include>exemples/**</include>
+                <include>examples/**</include>
                 <include>.gitignore</include>
                 <include>RELEASE.md</include>
                 <include>.run/**</include>
