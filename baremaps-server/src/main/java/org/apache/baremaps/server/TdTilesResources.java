@@ -18,56 +18,58 @@
 package org.apache.baremaps.server;
 
 import static com.google.common.net.HttpHeaders.*;
+import static io.netty.handler.codec.http.HttpHeaders.Values.APPLICATION_JSON;
+import static io.netty.handler.codec.http.HttpHeaders.Values.BINARY;
 
+import com.linecorp.armeria.common.HttpData;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.ResponseHeaders;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
 import de.javagl.jgltf.model.NodeModel;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.sql.DataSource;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Response;
+
 import org.apache.baremaps.tdtiles.GltfBuilder;
 import org.apache.baremaps.tdtiles.TdTilesStore;
 import org.apache.baremaps.tdtiles.building.Building;
 import org.apache.baremaps.tdtiles.subtree.Availability;
 import org.apache.baremaps.tdtiles.subtree.Subtree;
 
-@Singleton
-@javax.ws.rs.Path("/")
 public class TdTilesResources {
+
+  private static final ResponseHeaders GLB_HEADERS = ResponseHeaders.builder(200)
+      .add(CONTENT_TYPE, BINARY)
+      .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+      .build();
+
+  private static final ResponseHeaders JSON_HEADERS = ResponseHeaders.builder(200)
+      .add(CONTENT_TYPE, APPLICATION_JSON)
+      .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+      .build();
+
   private final TdTilesStore tdTilesStore;
 
-  @Inject
   public TdTilesResources(DataSource dataSource) {
     this.tdTilesStore = new TdTilesStore(dataSource);
   }
 
-  @GET
-  @javax.ws.rs.Path("/subtrees/{level}.{x}.{y}.json")
-  public Response getSubtree(@PathParam("level") int level, @PathParam("x") int x,
-      @PathParam("y") int y) {
+  @Get("regex:^/subtrees/(?<level>[0-9]+).(?<x>[0-9]+).(?<y>[0-9]+).json")
+  public HttpResponse getSubtree(@Param("level") int level, @Param("x") int x, @Param("y") int y) {
     if (level == 18) {
-      return Response.ok()
-          .entity(
-              new Subtree(new Availability(false), new Availability(true), new Availability(false)))
-          .header(CONTENT_TYPE, "application/json").build();
+      return HttpResponse.ofJson(JSON_HEADERS,
+          new Subtree(new Availability(false), new Availability(true), new Availability(false)));
     }
-    return Response.ok()
-        .entity(new Subtree(new Availability(true), new Availability(true), new Availability(true)))
-        .header(CONTENT_TYPE, "application/json").build();
+    return HttpResponse.ofJson(JSON_HEADERS,
+        new Subtree(new Availability(true), new Availability(true), new Availability(true)));
   }
 
-  @GET
-  @javax.ws.rs.Path("/content/content_{level}__{x}_{y}.glb")
-  public Response getContent(@PathParam("level") int level, @PathParam("x") int x,
-      @PathParam("y") int y) throws Exception {
+  @Get("regex:^/content/content_(?<level>[0-9]+)__(?<x>[0-9]+)_(?<y>[0-9]+).glb")
+  public HttpResponse getContent(@Param("level") int level, @Param("x") int x, @Param("y") int y)
+      throws Exception {
     if (level < 14) {
-      return Response.ok().entity(
-          GltfBuilder.createGltf(new ArrayList<>())).build();
+      return HttpResponse.of(GLB_HEADERS, HttpData.wrap(GltfBuilder.createGltf(new ArrayList<>())));
     }
     float[] coords = xyzToLatLonRadians(x, y, level);
     List<NodeModel> nodes = new ArrayList<>();
@@ -77,23 +79,7 @@ public class TdTilesResources {
       float tolerance = level > 17 ? 0.00001f : level > 15 ? 0.00002f : 0.00004f;
       nodes.add(GltfBuilder.createNode(building, tolerance));
     }
-    return Response.ok().entity(
-        GltfBuilder.createGltf(nodes)).build();
-  }
-
-  @GET
-  @javax.ws.rs.Path("/{path:.*}")
-  public Response get(@PathParam("path") String path) {
-    if (path.equals("") || path.endsWith("/")) {
-      path += "index.html";
-    }
-    path = String.format("tdtiles/%s", path);
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-      var bytes = inputStream.readAllBytes();
-      return Response.ok().entity(bytes).build();
-    } catch (IOException e) {
-      return Response.status(404).build();
-    }
+    return HttpResponse.of(GLB_HEADERS, HttpData.wrap(GltfBuilder.createGltf(nodes)));
   }
 
   /**

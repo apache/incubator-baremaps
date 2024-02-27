@@ -19,16 +19,19 @@ package org.apache.baremaps.cli.tdtiles;
 
 
 
-import io.servicetalk.http.netty.HttpServers;
-import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
+
+import com.linecorp.armeria.common.HttpHeaderNames;
+import com.linecorp.armeria.common.HttpMethod;
+import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.annotation.JacksonResponseConverterFunction;
+import com.linecorp.armeria.server.cors.CorsService;
+import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.file.HttpFile;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.TdTilesResources;
 import org.apache.baremaps.utils.PostgresUtils;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -55,24 +58,39 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
+    var objectMapper = objectMapper();
     var datasource = PostgresUtils.createDataSource(database);
 
-    // Configure the application
-    var application =
-        new ResourceConfig().register(CorsFilter.class).register(TdTilesResources.class)
-            .register(new AbstractBinder() {
-              @Override
-              protected void configure() {
-                bind(datasource).to(DataSource.class);
-              }
-            });
+    var serverBuilder = Server.builder();
+    serverBuilder.http(port);
 
-    var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-    var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
+    serverBuilder.annotatedService(new TdTilesResources(datasource), jsonResponseConverter);
 
-    logger.info("Listening on {}", serverContext.listenAddress());
+    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/tdtiles/index.html");
+    serverBuilder.service("/", index.asService());
+    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/tdtiles"));
 
-    serverContext.awaitShutdown();
+    serverBuilder.decorator(CorsService.builderForAnyOrigin()
+        .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
+            HttpMethod.OPTIONS, HttpMethod.HEAD)
+        .allowRequestHeaders(HttpHeaderNames.ORIGIN, HttpHeaderNames.CONTENT_TYPE,
+            HttpHeaderNames.ACCEPT, HttpHeaderNames.AUTHORIZATION)
+        .allowCredentials()
+        .exposeHeaders(HttpHeaderNames.LOCATION)
+        .newDecorator());
+
+    serverBuilder.disableServerHeader();
+    serverBuilder.disableDateHeader();
+
+    var server = serverBuilder.build();
+
+    var startFuture = server.start();
+    startFuture.join();
+
+    var shutdownFuture = server.closeOnJvmShutdown();
+    shutdownFuture.join();
+
     return 0;
   }
 }
