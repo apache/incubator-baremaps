@@ -1,0 +1,24 @@
+{
+  "asset" : {
+    "version" : "1.1"
+  },
+  "geometricError" : 5000.0,
+  "root" : {
+    "boundingVolume" : {
+      "region" : [ -3.141592653589793238, -1.57079632679, 3.141592653589793238, 1.57079632679, 0, 1000]
+    },
+    "geometricError" : 100000.0,
+    "refine" : "REPLACE",
+    "content" : {
+      "uri" : "/content/content_{level}__{x}_{y}.glb"
+    },
+    "implicitTiling" : {
+      "subdivisionScheme" : "QUADTREE",
+      "subtreeLevels" : 3,
+      "availableLevels" : 5,
+      "subtrees" : {
+        "uri" : "/subtrees/{level}.{x}.{y}.json"
+      }
+    }
+  }
+}

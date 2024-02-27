@@ -93,6 +93,7 @@ limitations under the License.
     <version.lib.hikari>5.0.1</version.lib.hikari>
     <version.lib.ipresource>1.52</version.lib.ipresource>
     <version.lib.jackson>2.16.1</version.lib.jackson>
+    <version.lib.jgltf>2.0.3</version.lib.jgltf>
     <version.lib.jmh>1.35</version.lib.jmh>
     <version.lib.jts>1.19.0</version.lib.jts>
     <version.lib.junit>5.10.0</version.lib.junit>
@@ -195,6 +196,16 @@ limitations under the License.
         <groupId>de.bytefish</groupId>
         <artifactId>pgbulkinsert</artifactId>
         <version>${version.lib.pgbulkinsert}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.javagl</groupId>
+        <artifactId>jgltf-model</artifactId>
+        <version>${version.lib.jgltf}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.javagl</groupId>
+        <artifactId>jgltf-model-builder</artifactId>
+        <version>${version.lib.jgltf}</version>
       </dependency>
       <dependency>
         <groupId>info.picocli</groupId>
