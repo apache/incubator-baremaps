@@ -78,8 +78,8 @@ export default {
             "url": `${config.host}/tiles.json`
         }
     },
-    "sprite": `${config.host}/assets/icons`,
-    "glyphs": "https://baremaps.apache.org/fonts/{fontstack}/{range}.pbf",
+    "sprite": "https://baremaps.apache.org/assets/icons/icons",
+    "glyphs": "https://baremaps.apache.org/assets/fonts/{fontstack}/{range}.pbf",
     "layers": [
         background,
         power_background,

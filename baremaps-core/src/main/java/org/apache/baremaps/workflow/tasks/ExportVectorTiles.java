@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
@@ -36,6 +37,7 @@ import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
 import org.apache.baremaps.tilestore.pmtiles.PMTilesStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.SqliteUtils;
+import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.apache.baremaps.vectortile.tileset.TilesetQuery;
 import org.apache.baremaps.workflow.Task;
@@ -58,7 +60,11 @@ public class ExportVectorTiles implements Task {
   }
 
   private Path tileset;
+
+  private Path style;
+
   private Path repository;
+
   private Format format;
 
   /**
@@ -75,8 +81,9 @@ public class ExportVectorTiles implements Task {
    * @param repository the repository
    * @param format the format
    */
-  public ExportVectorTiles(Path tileset, Path repository, Format format) {
+  public ExportVectorTiles(Path tileset, Path style, Path repository, Format format) {
     this.tileset = tileset;
+    this.style = style;
     this.repository = repository;
     this.format = format;
   }
@@ -88,7 +95,35 @@ public class ExportVectorTiles implements Task {
   public void execute(WorkflowContext context) throws Exception {
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
+
     var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+    var style = objectMapper.readValue(configReader.read(this.style), Style.class);
+
+    // Write the static files
+    var directory = switch (format) {
+      case file -> repository;
+      case mbtiles -> repository.getParent();
+      case pmtiles -> repository.getParent();
+    };
+    Files.createDirectories(directory);
+    try (var html = this.getClass().getResourceAsStream("/static/server.html")) {
+      Files.write(
+          directory.resolve("index.html"),
+          html.readAllBytes(),
+          StandardOpenOption.CREATE,
+          StandardOpenOption.TRUNCATE_EXISTING);
+    }
+    Files.write(
+        directory.resolve("tiles.json"),
+        objectMapper.writeValueAsBytes(tileset),
+        StandardOpenOption.CREATE,
+        StandardOpenOption.TRUNCATE_EXISTING);
+    Files.write(
+        directory.resolve("style.json"),
+        objectMapper.writeValueAsBytes(style),
+        StandardOpenOption.CREATE,
+        StandardOpenOption.TRUNCATE_EXISTING);
+
     var datasource = context.getDataSource(tileset.getDatabase());
 
     try (var sourceTileStore = sourceTileStore(tileset, datasource);
@@ -137,7 +172,7 @@ public class ExportVectorTiles implements Task {
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
     switch (format) {
       case file:
-        return new FileTileStore(repository);
+        return new FileTileStore(repository.resolve("tiles"));
       case mbtiles:
         Files.deleteIfExists(repository);
         var dataSource = SqliteUtils.createDataSource(repository, false);
