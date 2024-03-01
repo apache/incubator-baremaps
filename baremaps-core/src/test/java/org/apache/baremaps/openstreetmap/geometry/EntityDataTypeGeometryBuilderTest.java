@@ -34,6 +34,7 @@ import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.store.MockDataMap;
+import org.apache.baremaps.utils.CRSUtils;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -52,7 +53,7 @@ class EntityDataTypeGeometryBuilderTest {
 
   static final CRSFactory CRS_FACTORY = new CRSFactory();
 
-  static final CoordinateReferenceSystem EPSG_4326 = CRS_FACTORY.createFromName("EPSG:4326");
+  static final CoordinateReferenceSystem EPSG_4326 = CRSUtils.createFromSrid(4326);
 
   static final CoordinateTransform COORDINATE_TRANSFORM = new CoordinateTransform() {
     @Override

@@ -10,7 +10,6 @@ releases may have incomplete or un-reviewed licensing conditions. What follows i
 the project is currently aware of (this list is likely to be incomplete):
 
  * Releases may have incomplete licensing conditions.
- * Releases contain the incompatible proj4j-epsg dependency.
  * Releases contain excerpts of the OpenStreetMap data.
  * Releases contain excerpts of the Natural Earth data.
  * Releases contain excerpts of the GeoNames data.
