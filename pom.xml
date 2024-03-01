@@ -79,36 +79,34 @@ limitations under the License.
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
     <sonar.organization>apache</sonar.organization>
     <sonar.projectKey>apache_baremaps</sonar.projectKey>
-    <version.lib.armeria>1.26.4</version.lib.armeria>
+    <version.lib.armeria>1.27.2</version.lib.armeria>
     <version.lib.awaitability>4.2.0</version.lib.awaitability>
-    <version.lib.awssdk>2.21.5</version.lib.awssdk>
+    <version.lib.awssdk>2.24.13</version.lib.awssdk>
     <version.lib.caffeine>3.1.8</version.lib.caffeine>
-    <version.lib.calcite>1.35.0</version.lib.calcite>
-    <version.lib.commons-compress>1.24.0</version.lib.commons-compress>
-    <version.lib.fastutil>8.5.12</version.lib.fastutil>
-    <version.lib.flatgeobuf>3.26.1</version.lib.flatgeobuf>
-    <version.lib.geopackage>6.6.3</version.lib.geopackage>
-    <version.lib.graalvm>23.0.2</version.lib.graalvm>
-    <version.lib.guava>32.1.3-jre</version.lib.guava>
-    <version.lib.hikari>5.0.1</version.lib.hikari>
+    <version.lib.calcite>1.36.0</version.lib.calcite>
+    <version.lib.commons-compress>1.26.0</version.lib.commons-compress>
+    <version.lib.fastutil>8.5.13</version.lib.fastutil>
+    <version.lib.flatgeobuf>3.26.2</version.lib.flatgeobuf>
+    <version.lib.geopackage>6.6.4</version.lib.geopackage>
+    <version.lib.graalvm>23.0.3</version.lib.graalvm>
+    <version.lib.guava>33.0.0-jre</version.lib.guava>
+    <version.lib.hikari>5.1.0</version.lib.hikari>
     <version.lib.ipresource>1.52</version.lib.ipresource>
     <version.lib.jackson>2.16.1</version.lib.jackson>
-    <version.lib.jmh>1.35</version.lib.jmh>
+    <version.lib.jmh>1.37</version.lib.jmh>
     <version.lib.jts>1.19.0</version.lib.jts>
-    <version.lib.junit>5.10.0</version.lib.junit>
-    <version.lib.junit-vintage>5.10.0</version.lib.junit-vintage>
-    <version.lib.log4j>3.0.0-alpha1</version.lib.log4j>
-    <version.lib.lucene>9.4.2</version.lib.lucene>
-    <version.lib.lucene-spatial>9.4.2</version.lib.lucene-spatial>
+    <version.lib.junit>5.10.2</version.lib.junit>
+    <version.lib.log4j>3.0.0-beta2</version.lib.log4j>
+    <version.lib.lucene>9.10.0</version.lib.lucene>
     <version.lib.pgbulkinsert>8.1.2</version.lib.pgbulkinsert>
     <version.lib.picocli>4.7.5</version.lib.picocli>
-    <version.lib.postgresql>42.6.0</version.lib.postgresql>
+    <version.lib.postgresql>42.7.2</version.lib.postgresql>
     <version.lib.proj4j>1.3.0</version.lib.proj4j>
-    <version.lib.protobuf>3.21.6</version.lib.protobuf>
-    <version.lib.roaringbitmap>1.0.0</version.lib.roaringbitmap>
-    <version.lib.slf4j>2.0.9</version.lib.slf4j>
-    <version.lib.sqlite>3.43.2.1</version.lib.sqlite>
-    <version.lib.testcontainers>1.19.1</version.lib.testcontainers>
+    <version.lib.protobuf>3.25.3</version.lib.protobuf>
+    <version.lib.roaringbitmap>1.0.1</version.lib.roaringbitmap>
+    <version.lib.slf4j>2.0.12</version.lib.slf4j>
+    <version.lib.sqlite>3.45.1.0</version.lib.sqlite>
+    <version.lib.testcontainers>1.19.6</version.lib.testcontainers>
     <version.plugin.jacoco-maven-plugin>0.8.11</version.plugin.jacoco-maven-plugin>
     <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
     <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
@@ -125,7 +123,7 @@ limitations under the License.
     <version.plugin.nexus-staging-maven-plugin>1.6.13</version.plugin.nexus-staging-maven-plugin>
     <version.plugin.os-maven-plugin>1.7.0</version.plugin.os-maven-plugin>
     <version.plugin.protobuf-maven-plugin>0.6.1</version.plugin.protobuf-maven-plugin>
-    <version.plugin.spotless-maven-plugin>2.40.0</version.plugin.spotless-maven-plugin>
+    <version.plugin.spotless-maven-plugin>2.43.0</version.plugin.spotless-maven-plugin>
   </properties>
 
   <dependencyManagement>
@@ -340,7 +338,7 @@ limitations under the License.
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>${version.lib.junit-vintage}</version>
+        <version>${version.lib.junit}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -511,8 +509,8 @@ limitations under the License.
             <importOrder />
             <removeUnusedImports />
             <eclipse>
-              <!-- versions 4.20.0 and newer don't with records -->
-              <version>4.19.0</version>
+              <!-- versions 4.20.0 and newer don't work with records -->
+              <version>4.19</version>
               <file>${maven.multiModuleProjectDirectory}/codestyle.xml</file>
             </eclipse>
             <licenseHeader>

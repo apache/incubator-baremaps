@@ -52,9 +52,9 @@ import ocean_overlay from '../basemap/layers/ocean/overlay.js';
 import route_line from "../basemap/layers/route/style.js"
 import building_fill from "../basemap/layers/building/fill.js";
 import building_extrusion from "../basemap/layers/building/extrusion.js";
-import man_made_bridge from "../basemap/layers/man_made/bridge.js";
-import man_made_pier_line from "../basemap/layers/man_made/pier_line.js";
-import man_made_pier_label from "../basemap/layers/man_made/pier_label.js";
+import man_made_fill from "../basemap/layers/man_made/man_made_fill.js";
+import man_made_line from "../basemap/layers/man_made/man_made_line.js";
+import man_made_label from "../basemap/layers/man_made/man_made_label.js";
 import waterway_line from "../basemap/layers/waterway/line.js"
 import waterway_area from "../basemap/layers/waterway/area.js"
 import waterway_label from "../basemap/layers/waterway/label.js"
@@ -94,7 +94,9 @@ export default {
         // landcover,
         waterway_line,
         waterway_area,
-        man_made_bridge,
+        man_made_fill,
+        man_made_line,
+        man_made_label,
         amenity_fountain,
         highway_tunnel_outline,
         highway_tunnel_line,
@@ -112,8 +114,6 @@ export default {
         route_line,
         power_cable,
         power_tower,
-        man_made_pier_line,
-        man_made_pier_label,
         natural_tree,
         natural_trunk,
         boundary_line,
