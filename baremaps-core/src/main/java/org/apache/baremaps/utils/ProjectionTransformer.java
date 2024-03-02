@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.GeometryTransformer;
-import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.ProjCoordinate;
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     this.targetSrid = targetSrid;
     this.transform = GeometryUtils.coordinateTransform(sourceSrid, targetSrid);
 
-    var targetCRS = new CRSFactory().createFromName(String.format("EPSG:%s", targetSrid));
+    var targetCRS = CRSUtils.createFromSrid(targetSrid);
     var lonlatTranform = GeometryUtils.coordinateTransform(4326, sourceSrid);
     min = lonlatTranform
         .transform(new ProjCoordinate(Math.toDegrees(targetCRS.getProjection().getMinLongitude()),

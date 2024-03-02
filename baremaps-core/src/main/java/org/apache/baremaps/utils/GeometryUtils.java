@@ -77,10 +77,8 @@ public class GeometryUtils {
    */
   public static CoordinateTransform coordinateTransform(Integer sourceSrid, Integer targetSrid) {
     CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS =
-        crsFactory.createFromName(String.format("EPSG:%d", sourceSrid));
-    CoordinateReferenceSystem targetCRS =
-        crsFactory.createFromName(String.format("EPSG:%d", targetSrid));
+    CoordinateReferenceSystem sourceCRS = CRSUtils.createFromSrid(sourceSrid);
+    CoordinateReferenceSystem targetCRS = CRSUtils.createFromSrid(targetSrid);
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     return coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }

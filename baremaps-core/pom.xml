@@ -118,11 +118,6 @@ limitations under the License.
       <groupId>org.locationtech.proj4j</groupId>
       <artifactId>proj4j</artifactId>
     </dependency>
-    <!-- TODO: Remove this dependency due to license incompatibility -->
-    <dependency>
-      <groupId>org.locationtech.proj4j</groupId>
-      <artifactId>proj4j-epsg</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
