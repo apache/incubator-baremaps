@@ -17,15 +17,7 @@
 
 package org.apache.baremaps.openstreetmap;
 
-import static org.apache.baremaps.testing.TestFiles.DATA_OSC_XML;
-import static org.apache.baremaps.testing.TestFiles.DATA_OSM_PBF;
-import static org.apache.baremaps.testing.TestFiles.DATA_OSM_XML;
-import static org.apache.baremaps.testing.TestFiles.DENSE_NODES_OSM_PBF;
-import static org.apache.baremaps.testing.TestFiles.MONACO_OSM_BZ2;
-import static org.apache.baremaps.testing.TestFiles.MONACO_OSM_PBF;
-import static org.apache.baremaps.testing.TestFiles.MONACO_STATE_TXT;
-import static org.apache.baremaps.testing.TestFiles.RELATIONS_OSM_PBF;
-import static org.apache.baremaps.testing.TestFiles.WAYS_OSM_PBF;
+import static org.apache.baremaps.testing.TestFiles.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -48,7 +40,7 @@ import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.baremaps.testing.OsmSample;
 import org.junit.jupiter.api.Test;
 
 class OpenStreetMapTest {
@@ -121,28 +113,27 @@ class OpenStreetMapTest {
   }
 
   @Test
-  void monacoStateTxt() throws URISyntaxException, IOException {
-    try (InputStream inputStream = Files.newInputStream(MONACO_STATE_TXT)) {
+  void sampleStateTxt() throws URISyntaxException, IOException {
+    try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_STATE_TXT)) {
       State state = new StateReader().readState(inputStream);
-      assertEquals(2788, state.getSequenceNumber());
-      assertEquals(LocalDateTime.parse("2020-11-10T21:42:03"), state.getTimestamp());
+      assertEquals(1, state.getSequenceNumber());
+      assertEquals(LocalDateTime.parse("2000-01-01T00:00:00"), state.getTimestamp());
     }
   }
 
   @Test
-  void monacoOsmPbf() throws IOException, URISyntaxException {
-    try (InputStream inputStream = Files.newInputStream(MONACO_OSM_PBF)) {
+  void sampleOsmPbf() throws IOException, URISyntaxException {
+    try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_OSM_PBF)) {
       Stream<Entity> stream = new PbfEntityReader().stream(inputStream);
-      process(stream, 1, 1, 25002, 4018, 243);
+      process(stream, 1, 1, 27, 7, 2);
     }
   }
 
   @Test
-  void monacoOsmBz2() throws IOException, URISyntaxException {
-    try (InputStream inputStream =
-        new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))) {
+  void sampleOsmXml() throws IOException {
+    try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_OSM_XML)) {
       Stream<Entity> stream = new XmlEntityReader().stream(inputStream);
-      process(stream, 1, 1, 24951, 4015, 243);
+      process(stream, 1, 1, 27, 7, 2);
     }
   }
 
@@ -156,14 +147,14 @@ class OpenStreetMapTest {
     stream.forEach(entity -> {
       if (entity instanceof Header header) {
         assertNotNull(header);
-        assertEquals("osmium/1.8.0", header.getWritingProgram());
+        assertEquals("osmium/1.16.0", header.getWritingProgram());
         headers.incrementAndGet();
       } else if (entity instanceof Bound bound) {
         assertNotNull(bound);
-        assertEquals(43.75169, bound.getMaxLat(), 0.000001);
-        assertEquals(7.448637, bound.getMaxLon(), 0.000001);
-        assertEquals(43.72335, bound.getMinLat(), 0.000001);
-        assertEquals(7.409205, bound.getMinLon(), 0.000001);
+        assertEquals(0.0, bound.getMinLat(), 0.000001);
+        assertEquals(0.0, bound.getMinLon(), 0.000001);
+        assertEquals(20.0, bound.getMaxLat(), 0.000001);
+        assertEquals(20.0, bound.getMaxLon(), 0.000001);
         bounds.incrementAndGet();
       } else if (entity instanceof Node node) {
         assertNotNull(node);

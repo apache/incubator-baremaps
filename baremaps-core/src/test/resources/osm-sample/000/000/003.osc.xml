@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<osmChange generator="sample" version="0.6">
+    <modify>
+        <node id="1" lat="0.5" lon="0.5" version="1" changeset="2" user="user" uid="1" visible="true" timestamp="2000-01-03T00:00:00Z">
+            <tag k="type" v="point"/>
+            <tag k="note" v="modified"/>
+        </node>
+    </modify>
+    <modify>
+        <node id="2" lat="1.2" lon="1.2" version="1" changeset="2" user="user" uid="1" visible="true" timestamp="2000-01-03T00:00:00Z"/>
+        <node id="3" lat="1.8" lon="1.8" version="1" changeset="2" user="user" uid="1" visible="true" timestamp="2000-01-03T00:00:00Z"/>
+        <way id="4" version="1" changeset="2" user="user" uid="1" visible="true" timestamp="2000-01-03T00:00:00Z">
+            <tag k="type" v="line"/>
+            <tag k="note" v="modified"/>
+            <nd ref="2"/>
+            <nd ref="3"/>
+        </way>
+    </modify>
+    <modify>
+        <!-- way (polygon) -->
+        <node id="5" lat="2.1" lon="2.1" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="6" lat="2.9" lon="2.1" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="7" lat="2.9" lon="2.9" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="8" lat="2.1" lon="2.9" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <way id="9" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="polygon"/>
+            <tag k="note" v="modified"/>
+            <nd ref="5"/>
+            <nd ref="6"/>
+            <nd ref="7"/>
+            <nd ref="8"/>
+            <nd ref="5"/>
+        </way>
+    </modify>
+    <modify>
+        <node id="10" lat="3.0" lon="3.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="11" lat="4.0" lon="3.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="12" lat="4.0" lon="4.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="13" lat="3.0" lon="4.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <way id="14" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="polygon"/>
+            <tag k="note" v="modified"/>
+            <nd ref="10"/>
+            <nd ref="11"/>
+            <nd ref="12"/>
+            <nd ref="13"/>
+            <nd ref="10"/>
+        </way>
+        <node id="15" lat="3.5" lon="3.5" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="16" lat="3.6" lon="3.5" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="17" lat="3.6" lon="3.6" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="18" lat="3.5" lon="3.6" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <way id="19" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="polygon"/>
+            <tag k="note" v="modified"/>
+            <nd ref="15"/>
+            <nd ref="16"/>
+            <nd ref="17"/>
+            <nd ref="18"/>
+            <nd ref="15"/>
+        </way>
+        <relation id="20" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="multipolygon"/>
+            <tag k="note" v="modified"/>
+            <member type="way" ref="14" role=""/>
+            <member type="way" ref="19" role=""/>
+        </relation>
+    </modify>
+    <modify>
+        <node id="21" lat="4.0" lon="4.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="22" lat="4.6" lon="4.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="23" lat="4.6" lon="4.6" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="24" lat="4.0" lon="4.6" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <way id="25" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="polygon"/>
+            <tag k="description" v="outer ring"/>
+            <tag k="note" v="modified"/>
+            <nd ref="21"/>
+            <nd ref="22"/>
+            <nd ref="23"/>
+            <nd ref="24"/>
+            <nd ref="21"/>
+        </way>
+        <node id="26" lat="4.2" lon="4.2" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="27" lat="4.4" lon="4.2" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="28" lat="4.4" lon="4.4" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="29" lat="4.2" lon="4.4" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <way id="30" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="polygon"/>
+            <tag k="description" v="inner ring"/>
+            <tag k="note" v="modified"/>
+            <nd ref="26"/>
+            <nd ref="27"/>
+            <nd ref="28"/>
+            <nd ref="29"/>
+            <nd ref="26"/>
+        </way>
+        <node id="31" lat="4.9" lon="4.9" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="32" lat="5.0" lon="4.9" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="33" lat="5.0" lon="5.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <node id="34" lat="4.9" lon="5.0" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z"/>
+        <way id="35" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="polygon"/>
+            <tag k="description" v="island"/>
+            <tag k="note" v="modified"/>
+            <nd ref="31"/>
+            <nd ref="32"/>
+            <nd ref="33"/>
+            <nd ref="34"/>
+            <nd ref="31"/>
+        </way>
+        <relation id="36" version="1" changeset="1" user="user" uid="1" visible="true" timestamp="2000-01-01T00:00:00Z">
+            <tag k="type" v="multipolygon"/>
+            <tag k="note" v="modified"/>
+            <member type="way" ref="25" role=""/>
+            <member type="way" ref="30" role=""/>
+            <member type="way" ref="35" role=""/>
+        </relation>
+    </modify>
+</osmChange>

@@ -28,9 +28,9 @@ import org.locationtech.jts.geom.*;
 /** A consumer that builds and sets the geometry of OpenStreetMap entities via side effects. */
 public class EntityGeometryBuilder implements Consumer<Entity> {
 
-  private final Consumer<Node> nodeGeometryBuilder;
-  private final Consumer<Way> wayGeometryBuilder;
-  private final Consumer<Relation> relationMultiPolygonBuilder;
+  private final Consumer<Entity> nodeGeometryBuilder;
+  private final Consumer<Entity> wayGeometryBuilder;
+  private final Consumer<Entity> relationMultiPolygonBuilder;
 
   /**
    * Constructs a consumer that uses the provided caches to create and set geometries.

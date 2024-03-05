@@ -39,20 +39,6 @@ public class TestFiles {
 
   public static final Path RELATIONS_OSM_PBF = resolve("relations.osm.pbf");
 
-  public static final Path LIECHTENSTEIN_DIR = resolve("liechtenstein");
-
-  public static final Path LIECHTENSTEIN_OSM_PBF = resolve("liechtenstein/liechtenstein.osm.pbf");
-
-  public static final Path MONACO_DIR = resolve("monaco");
-
-  public static final Path MONACO_OSC_GZ = resolve("monaco/monaco.osc.gz");
-
-  public static final Path MONACO_OSM_BZ2 = resolve("monaco/monaco.osm.bz2");
-
-  public static final Path MONACO_OSM_PBF = resolve("monaco/monaco.osm.pbf");
-
-  public static final Path MONACO_STATE_TXT = resolve("monaco/monaco-state.txt");
-
   public static final Path STYLE_JS = resolve("style.js");
 
   public static final Path FILE_BZ2 = resolve("archives/file.bz2");
