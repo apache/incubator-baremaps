@@ -48,7 +48,7 @@ public class GeonamesIndexTest {
     directory = Files.createTempDirectory(Paths.get("."), "geocoder_");
 
     // Create the geonames index
-    var data = TestFiles.resolve("geonames/LI.txt");
+    var data = TestFiles.resolve("geonames/sample.txt");
     var task = new CreateGeonamesIndex(data, directory);
     task.execute(new WorkflowContext());
     var dir = MMapDirectory.open(directory);
@@ -64,26 +64,33 @@ public class GeonamesIndexTest {
   @Test
   void testCreateIndex() throws Exception {
     var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz").countryCode("LI").build();
+        new GeonamesQueryBuilder().queryText("yverdon").countryCode("CH").build();
     var topDocs = searcher.search(geonamesQuery, 1);
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
-    assertEquals("Vaduz", doc.getField("name").stringValue());
+    assertEquals("Yverdon-les-bains", doc.getField("name").stringValue());
   }
 
   @Test
   void testOrQuery() throws Exception {
-    var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz berlin").countryCode("LI").build();
-    var topDocs = searcher.search(geonamesQuery, 1);
-    var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
-    assertEquals("Vaduz", doc.getField("name").stringValue());
+    var geonamesQuery = new GeonamesQueryBuilder()
+        .queryText("bains cheseaux")
+        .countryCode("CH")
+        .build();
+    var topDocs = searcher.search(geonamesQuery, 2);
+    assertEquals(2, topDocs.totalHits.value);
+    var doc0 = searcher.doc(topDocs.scoreDocs[0].doc);
+    assertEquals("Yverdon-les-bains", doc0.getField("name").stringValue());
+    var doc1 = searcher.doc(topDocs.scoreDocs[1].doc);
+    assertEquals("Route de Cheseaux 1", doc1.getField("name").stringValue());
   }
 
   @Test
   void testAndQueryNoHits() throws Exception {
-    var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz berlin").andOperator().countryCode("LI")
-            .build();
+    var geonamesQuery = new GeonamesQueryBuilder()
+        .queryText("bains cheseaux")
+        .andOperator()
+        .countryCode("CH")
+        .build();
     var topDocs = searcher.search(geonamesQuery, 1);
     assertEquals(0, topDocs.totalHits.value);
   }
@@ -91,10 +98,12 @@ public class GeonamesIndexTest {
   @Test
   void testAndQuery() throws Exception {
     var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("vaduz liechtenstein").andOperator()
-            .countryCode("LI").build();
+        new GeonamesQueryBuilder().queryText("yverdon bains")
+            .andOperator()
+            .countryCode("CH")
+            .build();
     var topDocs = searcher.search(geonamesQuery, 1);
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
-    assertEquals("Vaduz", doc.getField("name").stringValue());
+    assertEquals("Yverdon-les-bains", doc.getField("name").stringValue());
   }
 }

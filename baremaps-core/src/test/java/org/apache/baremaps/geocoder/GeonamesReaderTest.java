@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.stream.Collectors;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
@@ -29,12 +28,12 @@ class GeonamesReaderTest {
 
   @Test
   void read() throws IOException {
-    var data = TestFiles.resolve("geonames/geocoder_sample.txt");
+    var data = TestFiles.resolve("geonames/sample.txt");
     try (var inputStream = Files.newInputStream(data)) {
       var reader = new GeonamesReader();
       var stream = reader.stream(inputStream);
 
-      var list = stream.collect(Collectors.toList());
+      var list = stream.toList();
       assertEquals(5, list.size());
 
       var record = list.get(0);
