@@ -23,22 +23,6 @@ import java.nio.file.Path;
 
 public class TestFiles {
 
-  public static final Path DATA_OSM_PBF = resolve("data.osm.pbf");
-
-  public static final Path DATA_OSC_XML = resolve("data.osc.xml");
-
-  public static final Path DATA_OSM_XML = resolve("data.osm.xml");
-
-  public static final Path SIMPLE_DATA_DIR = resolve("simple");
-
-  public static final Path SIMPLE_DATA_OSM_PBF = resolve("simple/data.osm.pbf");
-
-  public static final Path DENSE_NODES_OSM_PBF = resolve("dense-nodes.osm.pbf");
-
-  public static final Path WAYS_OSM_PBF = resolve("ways.osm.pbf");
-
-  public static final Path RELATIONS_OSM_PBF = resolve("relations.osm.pbf");
-
   public static final Path STYLE_JS = resolve("style.js");
 
   public static final Path FILE_BZ2 = resolve("archives/file.bz2");

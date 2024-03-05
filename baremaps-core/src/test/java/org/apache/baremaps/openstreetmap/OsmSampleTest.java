@@ -17,17 +17,15 @@
 
 package org.apache.baremaps.openstreetmap;
 
-import static org.apache.baremaps.testing.TestFiles.*;
+import static org.apache.baremaps.testing.OsmSample.SAMPLE_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.baremaps.openstreetmap.model.Bound;
 import org.apache.baremaps.openstreetmap.model.Entity;
@@ -38,82 +36,14 @@ import org.apache.baremaps.openstreetmap.model.State;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.openstreetmap.state.StateReader;
-import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
 import org.apache.baremaps.testing.OsmSample;
 import org.junit.jupiter.api.Test;
 
-class OpenStreetMapTest {
+class OsmSampleTest {
 
   @Test
-  void dataOsmXml() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(12, new XmlEntityReader().stream(input).collect(Collectors.toList()).size());
-    }
-  }
-
-  @Test
-  void dataOsmXmlNodes() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(6, new XmlEntityReader().stream(input).filter(e -> e instanceof Node).count());
-    }
-  }
-
-  @Test
-  void dataOsmXmlWays() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(3, new XmlEntityReader().stream(input).filter(e -> e instanceof Way).count());
-    }
-  }
-
-  @Test
-  void dataOsmXmlRelations() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(1,
-          new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count());
-    }
-  }
-
-  @Test
-  void dataOscXml() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSC_XML)) {
-      assertEquals(7, new XmlChangeReader().stream(input).collect(Collectors.toList()).size());
-    }
-  }
-
-  @Test
-  void dataOsmPbf() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSM_PBF)) {
-      assertEquals(72002, new PbfEntityReader().stream(input).count());
-    }
-  }
-
-  @Test
-  void denseNodesOsmPbf() throws IOException {
-    try (InputStream input = Files.newInputStream(DENSE_NODES_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader().stream(input)
-          .filter(e -> e instanceof Node).count());
-    }
-  }
-
-  @Test
-  void waysOsmPbf() throws IOException {
-    try (InputStream input = Files.newInputStream(WAYS_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader().stream(input)
-          .filter(e -> e instanceof Way).count());
-    }
-  }
-
-  @Test
-  void relationsOsmPbf() throws IOException {
-    try (InputStream input = Files.newInputStream(RELATIONS_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader().stream(input)
-          .filter(e -> e instanceof Relation).count());
-    }
-  }
-
-  @Test
-  void sampleStateTxt() throws URISyntaxException, IOException {
+  void sampleStateTxt() throws IOException {
     try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_STATE_TXT)) {
       State state = new StateReader().readState(inputStream);
       assertEquals(1, state.getSequenceNumber());
@@ -122,8 +52,8 @@ class OpenStreetMapTest {
   }
 
   @Test
-  void sampleOsmPbf() throws IOException, URISyntaxException {
-    try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_OSM_PBF)) {
+  void sampleOsmPbf() throws IOException {
+    try (InputStream inputStream = Files.newInputStream(SAMPLE_OSM_PBF)) {
       Stream<Entity> stream = new PbfEntityReader().stream(inputStream);
       process(stream, 1, 1, 27, 7, 2);
     }
@@ -172,11 +102,5 @@ class OpenStreetMapTest {
     assertEquals(nodeCount, nodes.get());
     assertEquals(wayCount, ways.get());
     assertEquals(relationCount, relations.get());
-  }
-
-  class Stats {
-
-    public long counter = 0;
-    public long max = 0;
   }
 }

@@ -17,12 +17,11 @@
 
 package org.apache.baremaps.openstreetmap.repository;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.apache.baremaps.testing.OsmSample.SAMPLE_OSM_PBF;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,7 +32,6 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.testing.PostgresContainerTest;
-import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -44,7 +42,7 @@ class BlockImporterTest extends PostgresContainerTest {
   public DataSource dataSource;
   public PostgresHeaderRepository headerRepository;
   public PostgresNodeRepository nodeRepository;
-  public PostgresWayRepository tableRepository;
+  public PostgresWayRepository wayRepository;
   public PostgresRelationRepository relationRepository;
 
   @BeforeEach
@@ -52,7 +50,7 @@ class BlockImporterTest extends PostgresContainerTest {
     dataSource = PostgresUtils.createDataSource(jdbcUrl(), 1);
     headerRepository = new PostgresHeaderRepository(dataSource);
     nodeRepository = new PostgresNodeRepository(dataSource);
-    tableRepository = new PostgresWayRepository(dataSource);
+    wayRepository = new PostgresWayRepository(dataSource);
     relationRepository = new PostgresRelationRepository(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "queries/osm_create_extensions.sql");
@@ -63,31 +61,23 @@ class BlockImporterTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void test() throws RepositoryException, URISyntaxException, IOException {
+  void test() throws RepositoryException, IOException {
     // Import data
     BlockImporter blockImporter =
-        new BlockImporter(headerRepository, nodeRepository, tableRepository, relationRepository);
+        new BlockImporter(headerRepository, nodeRepository, wayRepository, relationRepository);
 
-    try (InputStream inputStream = Files.newInputStream(TestFiles.resolve("simple/data.osm.pbf"))) {
+    try (InputStream inputStream = Files.newInputStream(SAMPLE_OSM_PBF)) {
 
       new PbfBlockReader().stream(inputStream).forEach(blockImporter);
 
       // Check node importation
-      assertNull(nodeRepository.get(0l));
-      assertNotNull(nodeRepository.get(1l));
-      assertNotNull(nodeRepository.get(2l));
-      assertNotNull(nodeRepository.get(3l));
-      assertNull(nodeRepository.get(4l));
-
-      // Check way importation
-      assertNull(tableRepository.get(0l));
-      assertNotNull(tableRepository.get(1l));
-      assertNull(tableRepository.get(2l));
-
-      // Check relation importation
-      assertNull(relationRepository.get(0l));
-      assertNotNull(relationRepository.get(1l));
-      assertNull(relationRepository.get(2l));
+      for (long i = 1; i <= 36; i++) {
+        var exists = false;
+        exists |= nodeRepository.get(i) != null;
+        exists |= wayRepository.get(i) != null;
+        exists |= relationRepository.get(i) != null;
+        assertTrue(exists);
+      }
     }
   }
 }

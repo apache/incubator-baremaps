@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.openstreetmap.xml;
 
-import static org.apache.baremaps.testing.TestFiles.DATA_OSM_XML;
+import static org.apache.baremaps.testing.OsmSample.SAMPLE_OSM_XML;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,7 +35,7 @@ class XmlEntitySpliteratorTestDataType {
 
   @Test
   void tryAdvance() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
+    try (InputStream input = Files.newInputStream(SAMPLE_OSM_XML)) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
@@ -44,11 +44,11 @@ class XmlEntitySpliteratorTestDataType {
 
   @Test
   void forEachRemaining() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
+    try (InputStream input = Files.newInputStream(SAMPLE_OSM_XML)) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);
-      assertEquals(12, accumulator.values().size());
+      assertEquals(38, accumulator.values().size());
     }
   }
 }
