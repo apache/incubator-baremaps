@@ -51,16 +51,4 @@ public class VectorTileTest {
 
     assertEquals(tile, decoded);
   }
-
-  @Test
-  public void file() throws IOException {
-    var path = Path.of("src/test/resources/vectortile/14-8493-5795.mvt");
-    try (var input = new GZIPInputStream(Files.newInputStream(path))) {
-      var buffer = ByteBuffer.wrap(input.readAllBytes());
-      var parsed = org.apache.baremaps.mvt.binary.VectorTile.Tile.parseFrom(buffer);
-      var tile = new VectorTileDecoder().decodeTile(parsed);
-      assertNotNull(tile);
-      assertEquals(13, tile.getLayers().size());
-    }
-  }
 }

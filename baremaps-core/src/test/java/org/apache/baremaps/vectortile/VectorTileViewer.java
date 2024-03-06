@@ -33,22 +33,6 @@ import org.locationtech.jts.geom.Polygon;
  */
 public class VectorTileViewer {
 
-  public static void main(String... args) throws Exception {
-    String arg =
-        args.length > 0 ? args[0] : "baremaps-core/src/test/resources/vectortile/14-8493-5795.mvt";
-    var path = Path.of(arg);
-    try (var input = new GZIPInputStream(Files.newInputStream(path))) {
-      var buffer = ByteBuffer.wrap(input.readAllBytes());
-      var parsed = org.apache.baremaps.mvt.binary.VectorTile.Tile.parseFrom(buffer);
-      var tile = new VectorTileDecoder().decodeTile(parsed);
-      JFrame f = new JFrame("Vector Tile Viewer");
-      f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      f.add(new TilePanel(tile, 1000));
-      f.pack();
-      f.setVisible(true);
-    }
-  }
-
   public static class TilePanel extends JPanel {
 
     private final Tile tile;
