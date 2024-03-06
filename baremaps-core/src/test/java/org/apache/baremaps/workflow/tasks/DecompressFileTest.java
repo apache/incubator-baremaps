@@ -28,7 +28,7 @@ class DecompressFileTest {
 
   @Test
   void decompressBzip2() throws IOException {
-    var source = TestFiles.FILE_BZ2;
+    var source = TestFiles.ARCHIVE_FILE_BZ2;
     var target = Files.createTempFile("baremaps", ".txt");
     DecompressFile.decompressBzip2(source, target);
     assertTrue(Files.readString(target).contains("test"));
@@ -36,7 +36,7 @@ class DecompressFileTest {
 
   @Test
   void decompressGzip() throws IOException {
-    var source = TestFiles.FILE_GZ;
+    var source = TestFiles.ARCHIVE_FILE_GZ;
     var target = Files.createTempFile("baremaps", ".txt");
     DecompressFile.decompressGzip(source, target);
     assertTrue(Files.readString(target).contains("test"));
@@ -44,7 +44,7 @@ class DecompressFileTest {
 
   @Test
   void decompressTarGz() throws IOException {
-    var source = TestFiles.FILE_TAR_GZ;
+    var source = TestFiles.ARCHIVE_FILE_TAR_GZ;
     var target = Files.createTempDirectory("baremaps");
     DecompressFile.decompressTarGz(source, target);
     assertTrue(Files.readString(target.resolve("file.txt")).contains("test"));
@@ -52,7 +52,7 @@ class DecompressFileTest {
 
   @Test
   void decompressTarBz2() throws IOException {
-    var source = TestFiles.FILE_TAR_BZ2;
+    var source = TestFiles.ARCHIVE_FILE_TAR_BZ2;
     var target = Files.createTempDirectory("baremaps");
     DecompressFile.decompressTarBz2(source, target);
     assertTrue(Files.readString(target.resolve("file.txt")).contains("test"));
@@ -60,7 +60,7 @@ class DecompressFileTest {
 
   @Test
   void decompressZip() throws IOException {
-    var source = TestFiles.FILE_ZIP;
+    var source = TestFiles.ARCHIVE_FILE_ZIP;
     var target = Files.createTempDirectory("baremaps");
     DecompressFile.decompressZip(source, target);
     assertTrue(Files.readString(target.resolve("file.txt")).contains("test"));

@@ -23,17 +23,17 @@ import java.nio.file.Path;
 
 public class TestFiles {
 
-  public static final Path STYLE_JS = resolve("config/style.js");
+  public static final Path CONFIG_STYLE_JS = resolve("config/style.js");
 
-  public static final Path FILE_BZ2 = resolve("archives/file.bz2");
+  public static final Path ARCHIVE_FILE_BZ2 = resolve("archives/file.bz2");
 
-  public static final Path FILE_GZ = resolve("archives/file.gz");
+  public static final Path ARCHIVE_FILE_GZ = resolve("archives/file.gz");
 
-  public static final Path FILE_TAR_BZ2 = resolve("archives/file.tar.bz2");
+  public static final Path ARCHIVE_FILE_TAR_BZ2 = resolve("archives/file.tar.bz2");
 
-  public static final Path FILE_TAR_GZ = resolve("archives/file.tar.gz");
+  public static final Path ARCHIVE_FILE_TAR_GZ = resolve("archives/file.tar.gz");
 
-  public static final Path FILE_ZIP = resolve("archives/file.zip");
+  public static final Path ARCHIVE_FILE_ZIP = resolve("archives/file.zip");
 
   public static Path resolve(String resource) {
     Path cwd = Path.of("").toAbsolutePath();

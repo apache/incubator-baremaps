@@ -29,7 +29,7 @@ class ConfigReaderTest {
 
   @Test
   void readStyle() throws IOException {
-    var config = new ConfigReader().read(TestFiles.STYLE_JS);
+    var config = new ConfigReader().read(TestFiles.CONFIG_STYLE_JS);
     var style = new ObjectMapper().readValue(config, Style.class);
     var source = style.getSources().get("mymap");
     assertEquals("http://my.server.com/{z}/{y}/{x}.mvt", source.getTiles().get(0));
