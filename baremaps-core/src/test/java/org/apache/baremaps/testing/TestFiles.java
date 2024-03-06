@@ -23,7 +23,7 @@ import java.nio.file.Path;
 
 public class TestFiles {
 
-  public static final Path STYLE_JS = resolve("style.js");
+  public static final Path STYLE_JS = resolve("config/style.js");
 
   public static final Path FILE_BZ2 = resolve("archives/file.bz2");
 
