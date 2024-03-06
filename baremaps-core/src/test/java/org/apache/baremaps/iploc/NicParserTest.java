@@ -28,13 +28,13 @@ class NicParserTest {
   @Test
   void parseObjects() throws IOException {
     List<NicObject> nicObjects = NicData.sample("ripe/sample.txt");
-    assertEquals(11, nicObjects.size());
+    assertEquals(10, nicObjects.size());
   }
 
   @Test
   void parseAttributes() throws IOException {
     List<NicAttribute> nicAttributes = NicData.sample("ripe/sample.txt").stream()
         .map(NicObject::attributes).flatMap(List::stream).toList();
-    assertEquals(233, nicAttributes.size());
+    assertEquals(58, nicAttributes.size());
   }
 }

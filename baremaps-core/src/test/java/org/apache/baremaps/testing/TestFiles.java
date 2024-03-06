@@ -23,47 +23,17 @@ import java.nio.file.Path;
 
 public class TestFiles {
 
-  public static final Path DATA_OSM_PBF = resolve("data.osm.pbf");
+  public static final Path CONFIG_STYLE_JS = resolve("config/style.js");
 
-  public static final Path DATA_OSC_XML = resolve("data.osc.xml");
+  public static final Path ARCHIVE_FILE_BZ2 = resolve("archives/file.bz2");
 
-  public static final Path DATA_OSM_XML = resolve("data.osm.xml");
+  public static final Path ARCHIVE_FILE_GZ = resolve("archives/file.gz");
 
-  public static final Path SIMPLE_DATA_DIR = resolve("simple");
+  public static final Path ARCHIVE_FILE_TAR_BZ2 = resolve("archives/file.tar.bz2");
 
-  public static final Path SIMPLE_DATA_OSM_PBF = resolve("simple/data.osm.pbf");
+  public static final Path ARCHIVE_FILE_TAR_GZ = resolve("archives/file.tar.gz");
 
-  public static final Path DENSE_NODES_OSM_PBF = resolve("dense-nodes.osm.pbf");
-
-  public static final Path WAYS_OSM_PBF = resolve("ways.osm.pbf");
-
-  public static final Path RELATIONS_OSM_PBF = resolve("relations.osm.pbf");
-
-  public static final Path LIECHTENSTEIN_DIR = resolve("liechtenstein");
-
-  public static final Path LIECHTENSTEIN_OSM_PBF = resolve("liechtenstein/liechtenstein.osm.pbf");
-
-  public static final Path MONACO_DIR = resolve("monaco");
-
-  public static final Path MONACO_OSC_GZ = resolve("monaco/monaco.osc.gz");
-
-  public static final Path MONACO_OSM_BZ2 = resolve("monaco/monaco.osm.bz2");
-
-  public static final Path MONACO_OSM_PBF = resolve("monaco/monaco.osm.pbf");
-
-  public static final Path MONACO_STATE_TXT = resolve("monaco/monaco-state.txt");
-
-  public static final Path STYLE_JS = resolve("style.js");
-
-  public static final Path FILE_BZ2 = resolve("archives/file.bz2");
-
-  public static final Path FILE_GZ = resolve("archives/file.gz");
-
-  public static final Path FILE_TAR_BZ2 = resolve("archives/file.tar.bz2");
-
-  public static final Path FILE_TAR_GZ = resolve("archives/file.tar.gz");
-
-  public static final Path FILE_ZIP = resolve("archives/file.zip");
+  public static final Path ARCHIVE_FILE_ZIP = resolve("archives/file.zip");
 
   public static Path resolve(String resource) {
     Path cwd = Path.of("").toAbsolutePath();

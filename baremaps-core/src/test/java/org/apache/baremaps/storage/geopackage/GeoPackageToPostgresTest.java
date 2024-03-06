@@ -31,7 +31,7 @@ public class GeoPackageToPostgresTest extends PostgresContainerTest {
   @Tag("integration")
   void schema() {
     // Open the GeoPackage
-    var geoPackageSchema = new GeoPackageDataSchema(TestFiles.resolve("countries.gpkg"));
+    var geoPackageSchema = new GeoPackageDataSchema(TestFiles.resolve("data/countries.gpkg"));
     var geoPackageTable = geoPackageSchema.get("countries");
 
     // Copy the table to Postgres

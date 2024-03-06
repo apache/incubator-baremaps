@@ -155,8 +155,10 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private Node readNode() throws XMLStreamException {
     long id = Long.parseLong(reader.getAttributeValue(null, ATTRIBUTE_NAME_ID));
     Info info = readInfo();
-    double lat = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_LATITUDE));
-    double lon = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_LONGITUDE));
+    var latAttribute = reader.getAttributeValue(null, ATTRIBUTE_NAME_LATITUDE);
+    var lonAttribute = reader.getAttributeValue(null, ATTRIBUTE_NAME_LONGITUDE);
+    var latValue = latAttribute != null ? Double.parseDouble(latAttribute) : Double.NaN;
+    var lonValue = lonAttribute != null ? Double.parseDouble(lonAttribute) : Double.NaN;
 
     // read the content of the node
     Map<String, Object> tags = new HashMap<>();
@@ -172,7 +174,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
       }
     }
 
-    return new Node(id, info, tags, lon, lat);
+    return new Node(id, info, tags, lonValue, latValue);
   }
 
   private Way readWay() throws XMLStreamException {

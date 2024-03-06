@@ -35,39 +35,34 @@ class NicObjectTest {
 
   @Test
   void type() {
-    assertEquals("organisation", nicObjects.get(0).type());
-    assertEquals("mntner", nicObjects.get(1).type());
-    assertEquals("organisation", nicObjects.get(2).type());
-    assertEquals("inetnum", nicObjects.get(3).type());
+    assertEquals("inetnum", nicObjects.get(0).type());
+    assertEquals("organisation", nicObjects.get(8).type());
+    assertEquals("inet6num", nicObjects.get(9).type());
   }
 
   @Test
   void id() {
-    assertEquals("ORG-HEDI1-RIPE", nicObjects.get(0).id());
-    assertEquals("ch-heig-vd-1-mnt", nicObjects.get(1).id());
-    assertEquals("ORG-VA29373-RIPE", nicObjects.get(2).id());
-    assertEquals("193.135.138.0 - 193.135.138.255", nicObjects.get(3).id());
+    assertEquals("0.0.0.0 - 0.0.0.255", nicObjects.get(0).id());
+    assertEquals("ORG-VDN2-RIPE", nicObjects.get(8).id());
+    assertEquals("2001:7fa:0:2::/64", nicObjects.get(9).id());
   }
 
   @Test
   void attributes() {
-    assertEquals(21, nicObjects.get(0).attributes().size());
-    assertEquals(15, nicObjects.get(1).attributes().size());
-    assertEquals(18, nicObjects.get(2).attributes().size());
-    assertEquals(23, nicObjects.get(3).attributes().size());
+    assertEquals(7, nicObjects.get(0).attributes().size());
+    assertEquals(5, nicObjects.get(8).attributes().size());
+    assertEquals(7, nicObjects.get(9).attributes().size());
   }
 
   @Test
   void first() {
     NicObject nicObject = nicObjects.get(0);
-    assertEquals("RIPE-NCC-HM-MNT", nicObject.first("mnt-by").get());
-    assertEquals("****************************", nicObject.first("remarks").get());
+    assertEquals("Route de Cheseaux 1", nicObject.first("descr").get());
   }
 
   @Test
   void all() {
     NicObject nicObject = nicObjects.get(0);
-    assertEquals(2, nicObject.all("mnt-by").size());
-    assertEquals(7, nicObject.all("remarks").size());
+    assertEquals(3, nicObject.all("descr").size());
   }
 }

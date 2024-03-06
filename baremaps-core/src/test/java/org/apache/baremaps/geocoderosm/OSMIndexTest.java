@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.geocoderosm;
 
-import static org.apache.baremaps.testing.TestFiles.LIECHTENSTEIN_OSM_PBF;
+import static org.apache.baremaps.testing.OsmSample.SAMPLE_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,7 +62,7 @@ public class OSMIndexTest {
 
     // Create the geonames index
 
-    var task = new CreateGeocoderOpenStreetMap(LIECHTENSTEIN_OSM_PBF, directory);
+    var task = new CreateGeocoderOpenStreetMap(SAMPLE_OSM_PBF, directory);
     task.execute(new WorkflowContext());
     var dir = MMapDirectory.open(directory);
     var searcherManager = new SearcherManager(dir, new SearcherFactory());

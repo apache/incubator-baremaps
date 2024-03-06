@@ -1,11 +1,25 @@
 Apache Baremaps (incubating)
-Copyright 2022-2023 The Apache Software Foundation.
+Copyright 2022-2024 The Apache Software Foundation.
 
 Baremaps development team
 Copyright 2020-2022.
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
+
+This product includes test data copied from FlatGeobuf.
+BSD-2-Clause license.
+Please visit the following URL for the full text of the FlatGeobuf license:
+https://github.com/flatgeobuf/flatgeobuf/
+The copied files are located in:
+- baremaps-core/src/test/resources/data/
+
+This product includes test data copied from GeoPackage Java.
+MIT License.
+Please visit the following URL for the full text of the GeoPackage Java license:
+https://github.com/ngageoint/geopackage-java/
+The copied files are located in:
+- baremaps-core/src/test/resources/data/
 
 This product includes protocol buffers definitions derived from OSMPBF.
 MIT License.
@@ -16,6 +30,13 @@ The derived files are:
 - baremaps-core/src/main/proto/osmformat.proto
 - baremaps-core/src/main/proto/fileformat.proto
 
+This product includes test data copied from OSM Test Data.
+Public domain.
+Please visit the following URL for the full text of the OSM Test Data license:
+https://github.com/osmcode/osm-testdata?tab=readme-ov-file#license
+The copied files are located in:
+- baremaps-core/src/test/resources/osm-testdata/
+
 This product includes protocol buffers definitions derived from Mapbox Vector Tile.
 Creative Commons Public License.
 Please visit the following URL for the licensing information:
@@ -24,14 +45,14 @@ The derived files are:
 - baremaps-core/src/main/proto/vector_tile.proto
 
 This product includes code derived from Palantir Streams.
-Apache License, Version 2.0
+Apache License 2.0.
 Please visit the following URL for the full text of the Palantir license:
 https://github.com/palantir/streams/blob/develop/LICENSE
 The derived files are:
 - baremaps-core/src/main/java/org/apache/baremaps/stream/BufferedSpliterator.java
 
 This product includes code derived from Planetiler.
-Apache License, Version 2.0
+Apache License 2.0.
 Please visit the following URL for the full text of the Planetiler license:
 https://github.com/onthegomap/planetiler/blob/main/LICENSE
 The derived files are:
@@ -39,28 +60,16 @@ The derived files are:
 - baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicDataMap.java
 - baremaps-core/src/main/java/org/apache/baremaps/database/collection/MonotonicFixedSizeDataMap.java
 
+This product includes test data copied from PMTiles.
+BSD-3-Clause license.
+Please visit the following URL for the full text of the PMTiles license:
+https://github.com/protomaps/PMTiles
+The copied files are located in:
+- baremaps-core/src/test/resources/pmtiles/
+
 This product includes code derived from pyosmium.
 BSD 2-Clause "Simplified" License.
 Please visit the following URL for the full text of the pyosmium license:
 https://github.com/osmcode/pyosmium/blob/master/LICENSE.TXT
 The derived files are:
 - baremaps-core/src/main/java/org/apache/baremaps/openstreetmap/state/StateReader.java
-
-This product includes test data derived from OpenStreetMap.
-Open Data Commons Open Database License (ODbL).
-Please visit the following URL for the full text of the ODbL license:
-https://opendatacommons.org/licenses/odbl/1.0/
-
-This product includes test data derived from NaturalEarth.
-Public Domain.
-Please visit the following URL for the full text of the terms of use:
-https://www.naturalearthdata.com/about/terms-of-use/
-
-This product includes test data derived from GeoNames.
-Creative Commons Attribution 4.0 License.
-Please visit the following URL for the full text of the CC-BY license:
-https://creativecommons.org/licenses/by/4.0/
-
-This product includes test data derived from the RIPE NCC database.
-Please visit the following URL for the full text of the RIPE NCC Terms and Conditions:
-https://www.ripe.net/manage-ips-and-asns/db/support/documentation/terms

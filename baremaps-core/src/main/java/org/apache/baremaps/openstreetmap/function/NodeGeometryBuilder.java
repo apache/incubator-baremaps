@@ -20,18 +20,22 @@ package org.apache.baremaps.openstreetmap.function;
 import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
 import java.util.function.Consumer;
+import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.locationtech.jts.geom.*;
 
 /**
  * A consumer that builds and sets a node geometry via side effects.
  */
-public class NodeGeometryBuilder implements Consumer<Node> {
+public class NodeGeometryBuilder implements Consumer<Entity> {
 
   /** {@inheritDoc} */
   @Override
-  public void accept(Node node) {
-    Point point = GEOMETRY_FACTORY_WGS84.createPoint(new Coordinate(node.getLon(), node.getLat()));
-    node.setGeometry(point);
+  public void accept(Entity entity) {
+    if (entity instanceof Node node) {
+      Point point =
+          GEOMETRY_FACTORY_WGS84.createPoint(new Coordinate(node.getLon(), node.getLat()));
+      node.setGeometry(point);
+    }
   }
 }

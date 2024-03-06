@@ -34,7 +34,7 @@ import org.junit.Test;
 public class TileSetTest {
 
   private String tilesetFile = "/tilesets/tileset.json";
-  private String referenceFile = "/tilesets/osm.json";
+  private String tilejsonFile = "/tilesets/tilejson.json";
   private ObjectMapper objectMapper = objectMapper();
   ConfigReader configReader = new ConfigReader();
 
@@ -69,9 +69,9 @@ public class TileSetTest {
   @Test
   public void validateSpecificationExample() throws IOException {
     // Mapping to a POJO for baremaps-core and baremaps-server
-    var tileSet = objectMapper.readValue(resourceFile(referenceFile), Tileset.class);
+    var tileSet = objectMapper.readValue(resourceFile(tilejsonFile), Tileset.class);
     // Mapping to a POJO strictly following TileJSON specifications for API clients.
-    var tileJSON = objectMapper.readValue(resourceFile(referenceFile), TileJSON.class);
+    var tileJSON = objectMapper.readValue(resourceFile(tilejsonFile), TileJSON.class);
 
     assertNull(tileSet.getDatabase());
     assertEquals("telephone", tileJSON.getVectorLayers().get(0).id());

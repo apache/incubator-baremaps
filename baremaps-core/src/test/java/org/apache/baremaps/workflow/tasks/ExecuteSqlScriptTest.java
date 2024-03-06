@@ -30,7 +30,7 @@ class ExecuteSqlScriptTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void execute() throws Exception {
-    var task = new ExecuteSqlScript(jdbcUrl(), TestFiles.resolve("script.sql"));
+    var task = new ExecuteSqlScript(jdbcUrl(), TestFiles.resolve("queries/hello-world.sql"));
     task.execute(new WorkflowContext());
   }
 }

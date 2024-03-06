@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
+import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A consumer that builds and sets a way geometry via side effects.
  */
-public class WayGeometryBuilder implements Consumer<Way> {
+public class WayGeometryBuilder implements Consumer<Entity> {
 
   private static final Logger logger = LoggerFactory.getLogger(WayGeometryBuilder.class);
 
@@ -51,44 +52,46 @@ public class WayGeometryBuilder implements Consumer<Way> {
 
   /** {@inheritDoc} */
   @Override
-  public void accept(Way way) {
-    try {
-      // Build the coordinate list and remove duplicates.
-      List<Coordinate> list = new ArrayList<>();
-      Coordinate previous = null;
-      for (Long id : way.getNodes()) {
-        Coordinate coordinate = coordinateMap.get(id);
-        if (coordinate != null && !coordinate.equals(previous)) {
-          list.add(coordinate);
-          previous = coordinate;
-        }
-      }
-
-      Coordinate[] array = list.toArray(new Coordinate[0]);
-      LineString line = GEOMETRY_FACTORY_WGS84.createLineString(array);
-
-      if (!line.isEmpty()) {
-        // Ways can be open or closed depending on the geometry or the tags:
-        // https://wiki.openstreetmap.org/wiki/Way
-        if (!line.isClosed()
-            || way.getTags().containsKey("railway")
-            || way.getTags().containsKey("highway")
-            || way.getTags().containsKey("barrier")) {
-          way.setGeometry(line);
-        } else {
-          Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
-          if (polygon.isValid()) {
-            way.setGeometry(polygon);
-          } else {
-            var geometryFixer = new GeometryFixer(polygon);
-            var fixedGeometry = geometryFixer.getResult();
-            way.setGeometry(fixedGeometry);
+  public void accept(Entity entity) {
+    if (entity instanceof Way way) {
+      try {
+        // Build the coordinate list and remove duplicates.
+        List<Coordinate> list = new ArrayList<>();
+        Coordinate previous = null;
+        for (Long id : way.getNodes()) {
+          Coordinate coordinate = coordinateMap.get(id);
+          if (coordinate != null && !coordinate.equals(previous)) {
+            list.add(coordinate);
+            previous = coordinate;
           }
         }
+
+        Coordinate[] array = list.toArray(new Coordinate[0]);
+        LineString line = GEOMETRY_FACTORY_WGS84.createLineString(array);
+
+        if (!line.isEmpty()) {
+          // Ways can be open or closed depending on the geometry or the tags:
+          // https://wiki.openstreetmap.org/wiki/Way
+          if (!line.isClosed()
+              || way.getTags().containsKey("railway")
+              || way.getTags().containsKey("highway")
+              || way.getTags().containsKey("barrier")) {
+            way.setGeometry(line);
+          } else {
+            Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
+            if (polygon.isValid()) {
+              way.setGeometry(polygon);
+            } else {
+              var geometryFixer = new GeometryFixer(polygon);
+              var fixedGeometry = geometryFixer.getResult();
+              way.setGeometry(fixedGeometry);
+            }
+          }
+        }
+      } catch (Exception e) {
+        logger.debug("Unable to build the geometry for way #" + way.getId(), e);
+        way.setGeometry(GEOMETRY_FACTORY_WGS84.createEmpty(0));
       }
-    } catch (Exception e) {
-      logger.debug("Unable to build the geometry for way #" + way.getId(), e);
-      way.setGeometry(GEOMETRY_FACTORY_WGS84.createEmpty(0));
     }
   }
 }

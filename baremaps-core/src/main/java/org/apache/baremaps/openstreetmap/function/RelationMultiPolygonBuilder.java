@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.collection.DataMap;
+import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.Member.MemberType;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A consumer that builds and sets a relation geometry via side effects.
  */
-public class RelationMultiPolygonBuilder implements Consumer<Relation> {
+public class RelationMultiPolygonBuilder implements Consumer<Entity> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationMultiPolygonBuilder.class);
 
@@ -59,22 +60,24 @@ public class RelationMultiPolygonBuilder implements Consumer<Relation> {
 
   /** {@inheritDoc} */
   @Override
-  public void accept(Relation relation) {
-    try {
-      var start = System.currentTimeMillis();
+  public void accept(Entity entity) {
+    if (entity instanceof Relation relation) {
+      try {
+        var start = System.currentTimeMillis();
 
-      buildMultiPolygon(relation);
+        buildMultiPolygon(relation);
 
-      var end = System.currentTimeMillis();
-      var duration = end - start;
-      if (duration > 60 * 1000) {
-        logger.debug("Relation #{} processed in {} ms", relation.getId(), duration);
+        var end = System.currentTimeMillis();
+        var duration = end - start;
+        if (duration > 60 * 1000) {
+          logger.debug("Relation #{} processed in {} ms", relation.getId(), duration);
+        }
+
+      } catch (Exception e) {
+        logger.debug("Unable to build the geometry for relation #" + relation.getId(), e);
+        var emptyMultiPolygon = GEOMETRY_FACTORY_WGS84.createMultiPolygon();
+        relation.setGeometry(emptyMultiPolygon);
       }
-
-    } catch (Exception e) {
-      logger.debug("Unable to build the geometry for relation #" + relation.getId(), e);
-      var emptyMultiPolygon = GEOMETRY_FACTORY_WGS84.createMultiPolygon();
-      relation.setGeometry(emptyMultiPolygon);
     }
   }
 

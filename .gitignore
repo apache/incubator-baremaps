@@ -49,9 +49,6 @@ examples/openstreetmap/tiles/
 
 examples/transformation/*.pbf
 
-# JMH
-jmh-result.json
-
 # Docs
 .jekyll-cache/
 _site/

@@ -17,16 +17,12 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
-
 import java.io.BufferedInputStream;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.database.collection.DataMap;
-import org.apache.baremaps.openstreetmap.function.ChangeEntitiesHandler;
-import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
-import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
+import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -38,7 +34,6 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresReferenceMap;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.repository.*;
-import org.apache.baremaps.openstreetmap.repository.PutChangeImporter;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.workflow.Task;
@@ -146,14 +141,34 @@ public class UpdateOsmDatabase implements Task {
     logger.info("Updating the database with the changeset: {}", changeUrl);
 
     // Process the changeset and update the database
-    var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
-    var reprojectGeometry = new EntityProjectionTransformer(4326, databaseSrid);
-    var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
-    var prepareChange = consumeThenReturn(prepareGeometries);
-    var importChange = new PutChangeImporter(nodeRepository, wayRepository, relationRepository);
+    var buildNodeGeometry = new NodeGeometryBuilder();
+    var reprojectNodeGeometry = new EntityProjectionTransformer(4326, databaseSrid);
+    var prepareNodeGeometry =
+        new ChangeEntitiesHandler(buildNodeGeometry.andThen(reprojectNodeGeometry));
+    var importNodes = new ChangeElementsImporter<>(Node.class, nodeRepository);
+
+    var buildWayGeometry = new WayGeometryBuilder(coordinateMap);
+    var reprojectWayGeometry = new EntityProjectionTransformer(4326, databaseSrid);
+    var prepareWayGeometry =
+        new ChangeEntitiesHandler(buildWayGeometry.andThen(reprojectWayGeometry));
+    var importWays = new ChangeElementsImporter<>(Way.class, wayRepository);
+
+    var buildRelationGeometry = new RelationMultiPolygonBuilder(coordinateMap, referenceMap);
+    var reprojectRelationGeometry = new EntityProjectionTransformer(4326, databaseSrid);
+    var prepareRelationGeometry =
+        new ChangeEntitiesHandler(buildRelationGeometry.andThen(reprojectRelationGeometry));
+    var importRelations = new ChangeElementsImporter<>(Relation.class, relationRepository);
+
+    var entityProcessor = prepareNodeGeometry
+        .andThen(importNodes)
+        .andThen(prepareWayGeometry)
+        .andThen(importWays)
+        .andThen(prepareRelationGeometry)
+        .andThen(importRelations);
+
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
+      new XmlChangeReader().stream(changeInputStream).forEach(entityProcessor);
     }
 
     // Add the new header to the database

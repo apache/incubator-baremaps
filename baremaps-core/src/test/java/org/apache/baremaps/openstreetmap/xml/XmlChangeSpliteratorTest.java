@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.openstreetmap.xml;
 
-import static org.apache.baremaps.testing.TestFiles.DATA_OSC_XML;
+import static org.apache.baremaps.testing.OsmSample.SAMPLE_OSC_XML_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Spliterator;
-import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.stream.AccumulatingConsumer;
 import org.apache.baremaps.stream.HoldingConsumer;
@@ -36,7 +36,7 @@ class XmlChangeSpliteratorTest {
 
   @Test
   void tryAdvance() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSC_XML)) {
+    try (InputStream input = new GZIPInputStream(Files.newInputStream(SAMPLE_OSC_XML_2))) {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
@@ -45,13 +45,14 @@ class XmlChangeSpliteratorTest {
 
   @Test
   void forEachRemaining() throws IOException {
-    try (InputStream input = Files.newInputStream(DATA_OSC_XML)) {
+    try (InputStream input = new GZIPInputStream(Files.newInputStream(SAMPLE_OSC_XML_2))) {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);
-      assertEquals(accumulator.values().size(), 7);
-      assertEquals(accumulator.values().stream().flatMap(change -> change.getEntities().stream())
-          .collect(Collectors.toList()).size(), 51);
+      assertEquals(accumulator.values().size(), 5);
+      assertEquals(accumulator.values().stream()
+          .flatMap(change -> change.getEntities().stream())
+          .toList().size(), 36);
     }
   }
 }

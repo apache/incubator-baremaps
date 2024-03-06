@@ -1,0 +1,41 @@
+{
+  "tilejson": "3.0.0",
+  "name": "A sample file",
+  "description": "A sample file used for testing purposes",
+  "version": "1.0.0",
+  "attribution": "Some attribution",
+  "scheme": "xyz",
+  "tiles": [
+    "https://a.example.com/{z}/{x}/{y}.mvt",
+    "https://b.example.com/{z}/{x}/{y}.mvt",
+    "https://c.example.com/{z}/{x}/{y}.mvt"
+  ],
+  "minzoom": 0,
+  "maxzoom": 18,
+  "bounds": [ -180, -85, 180, 85 ],
+  "fillzoom": 6,
+  "something_custom": "A custom attribute",
+  "vector_layers": [
+    {
+      "id": "layer_a",
+      "fields": {
+        "attribute_1": "value_1",
+        "attribute_2": "value_2"
+      }
+    },
+    {
+      "id": "layer_b",
+      "fields": {
+        "attribute_1": "value_1",
+        "attribute_2": "value_2"
+      }
+    },
+    {
+      "id": "layer_c",
+      "fields": {
+        "attribute_1": "value_1",
+        "attribute_2": "value_2"
+      }
+    }
+  ]
+}
