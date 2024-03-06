@@ -19,10 +19,6 @@ package org.apache.baremaps.vectortile;
 
 import java.awt.*;
 import java.awt.Dimension;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.zip.GZIPInputStream;
 import javax.swing.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Point;

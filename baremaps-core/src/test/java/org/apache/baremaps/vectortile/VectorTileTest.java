@@ -18,16 +18,10 @@
 package org.apache.baremaps.vectortile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.awt.*;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 import javax.swing.*;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
