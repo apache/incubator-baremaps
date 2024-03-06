@@ -48,7 +48,6 @@ limitations under the License.
   </developers>
 
   <modules>
-    <module>baremaps-benchmark</module>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-server</module>
@@ -93,7 +92,6 @@ limitations under the License.
     <version.lib.hikari>5.1.0</version.lib.hikari>
     <version.lib.ipresource>1.52</version.lib.ipresource>
     <version.lib.jackson>2.16.1</version.lib.jackson>
-    <version.lib.jmh>1.37</version.lib.jmh>
     <version.lib.jts>1.19.0</version.lib.jts>
     <version.lib.junit>5.10.2</version.lib.junit>
     <version.lib.log4j>3.0.0-beta2</version.lib.log4j>
@@ -213,11 +211,6 @@ limitations under the License.
         <groupId>net.ripe.ipresource</groupId>
         <artifactId>ipresource</artifactId>
         <version>${version.lib.ipresource}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-benchmark</artifactId>
-        <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
