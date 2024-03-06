@@ -210,10 +210,12 @@
    distribution of this product is subject to the following
    additional license terms:
 
+       - FlatGeobuf, BSD-2-Clause license
+       - GeoPackage Java, MIT License
        - OSMPBF, MIT License
+       - OSM Test Data, Public domain
        - Mapbox Vector Tile, Creative Commons Public License
        - Palantir Streams, Apache License 2.0
        - Planetiler, Apache License 2.0
+       - PMTiles, BSD-3-Clause license
        - pyosmium, BSD 2-Clause "Simplified" License
-       - FlatGeobuf,  BSD-2-Clause license
-       - GeoPackage Java, MIT License
