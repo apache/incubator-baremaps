@@ -698,17 +698,6 @@ limitations under the License.
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${version.plugin.nexus-staging-maven-plugin}</version>
-            <extensions>true</extensions>
-            <configuration>
-              <serverId>maven</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>false</autoReleaseAfterClose>
-            </configuration>
-          </plugin>
         </plugins>
       </build>
     </profile>
