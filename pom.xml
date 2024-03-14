@@ -27,6 +27,12 @@ limitations under the License.
         publishing, and operating online maps.</description>
   <url>https://github.com/apache/baremaps</url>
 
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>23</version>
+  </parent>
+
   <organization>
     <name>baremaps</name>
     <url>https://www.baremaps.com/</url>
