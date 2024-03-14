@@ -20,16 +20,11 @@ jobs:
           java-version: 17
           distribution: temurin
           cache: maven
-          server-id: apache
-          server-username: ${{ secrets.SERVER_USERNAME }}
-          server-password: ${{ secrets.SERVER_PASSWORD }}
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - name: Extract version
         run: echo ::set-output name=value::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
         id: version
       - name: Build project
-        run: mvn install -P release -B
+        run: mvn install -B
 
       # Create a GitHub release draft
       - name: Create GitHub Release
@@ -47,9 +42,9 @@ jobs:
       - name: Sign and hash source release
         shell: bash
         run: |
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch
           shasum -a 512 "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz" > "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.sha512"
-          gpg --no-tty --quiet --pinentry-mode loopback --default-key "$GPG_KEY_ID" --batch --yes --passphrase "$GPG_PASSPHRASE" --output "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.asc" --detach-sign --armor "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.asc" --detach-sign --armor "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz"
       - name: Upload source release
         id: upload-source-release
         uses: actions/upload-release-asset@v1
@@ -85,9 +80,9 @@ jobs:
       - name: Sign and hash source release
         shell: bash
         run: |
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch
           shasum -a 512 "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz" > "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.sha512"
-          gpg --no-tty --quiet --pinentry-mode loopback --default-key "$GPG_KEY_ID" --batch --yes --passphrase "$GPG_PASSPHRASE" --output "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz"
       - name: Upload binary release
         id: upload-binary-release
         uses: actions/upload-release-asset@v1
@@ -119,11 +114,30 @@ jobs:
           asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc
           asset_content_type: text/plain
 
-
-
-#      - name: Publish artifacts
-#        run: mvn deploy -P release -B
-#        env:
-#          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-#          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
-#          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+  release-maven:
+    name: Release on Maven
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code, set up Java 17, extract version, and deploy project
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
+          server-id: apache
+          server-username: SERVER_USERNAME
+          server-password: SERVER_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+      - name: Extract version
+        run: echo ::set-output name=value::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+        id: version
+      - name: Deploy project
+        env:
+          SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn deploy -P release -B
