@@ -118,7 +118,7 @@ jobs:
     name: Release on Maven
     runs-on: ubuntu-latest
     steps:
-      # Checkout code, set up Java 17, extract version, and deploy project
+      # Checkout code, set up Java 17, and deploy project
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Java 17
@@ -128,16 +128,13 @@ jobs:
           distribution: temurin
           cache: maven
           server-id: apache
-          server-username: SERVER_USERNAME
-          server-password: SERVER_PASSWORD
+          server-username: NEXUS_USERNAME
+          server-password: NEXUS_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
-      - name: Extract version
-        run: echo ::set-output name=value::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
-        id: version
       - name: Deploy project
         env:
-          SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
-          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+          SERVER_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: mvn deploy -P release -B
