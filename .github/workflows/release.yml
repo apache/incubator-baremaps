@@ -6,14 +6,14 @@ on:
       - 'v*'
 
 jobs:
-
   release-github:
     name: Release on GitHub
     runs-on: ubuntu-latest
     steps:
+
       # Checkout code, set up Java 17, build project, and extract version
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Java 17
         uses: actions/setup-java@v3
         with:
@@ -38,7 +38,7 @@ jobs:
           draft: true
           prerelease: true
 
-      # Sign, hash, and upload source release
+      # Sign, hash, and upload source release to GitHub
       - name: Sign and hash source release
         shell: bash
         run: |
@@ -76,7 +76,7 @@ jobs:
           asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.asc
           asset_content_type: text/plain
 
-      # Sign, hash, and upload binary release
+      # Sign, hash, and upload binary release to GitHub
       - name: Sign and hash source release
         shell: bash
         run: |
@@ -113,28 +113,3 @@ jobs:
           asset_path: ./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc
           asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc
           asset_content_type: text/plain
-
-  release-maven:
-    name: Release on Maven
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout code, set up Java 17, and deploy project
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Set up Java 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: temurin
-          cache: maven
-          server-id: apache
-          server-username: NEXUS_USERNAME
-          server-password: NEXUS_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
-      - name: Deploy project
-        env:
-          SERVER_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          SERVER_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn deploy -P release -B
