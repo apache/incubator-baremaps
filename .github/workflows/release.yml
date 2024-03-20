@@ -11,111 +11,52 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # Checkout code, set up Java 17, build project, and extract version
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up Java 17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: temurin
           cache: maven
-      - name: Extract version
-        run: echo ::set-output name=value::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
-        id: version
+
+      - name: Extract variables
+        id: variables
+        run: |
+          echo ::set-output name=git_tag::${GITHUB_REF#refs/tags/}
+          echo ::set-output name=git_version::${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=mvn_version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+
       - name: Build project
         run: mvn install -B
 
-      # Create a GitHub release draft
-      - name: Create GitHub Release
-        id: create_release
+      - name: Sign and hash source release
+        shell: bash
         run: |
-          export UPLOAD_URL=$(gh release create "${{ github.ref }}" \
-            --draft \
-            --prerelease \
-            --title "Apache Baremaps ${{ steps.version.outputs.value }} (incubating)" \
-            --repo ${{ github.repository }} \
-            --generate-notes)
-          echo "upload_url=$UPLOAD_URL" >> $GITHUB_OUTPUT
+          cd ./baremaps-cli/target
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch
+          
+          mv apache-baremaps-${{ steps.variables.outputs.mvn_version }}-incubating-src.tar.gz apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
+          shasum -a 512 "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz" > "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.sha512"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz"
+
+          mv apache-baremaps-${{ steps.variables.outputs.mvn_version }}-incubating-bin.tar.gz apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz
+          shasum -a 512 "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz" > "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.sha512"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz"
+          cd -
+
+      - name: Create release on GitHub
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Sign, hash, and upload source release to GitHub
-      - name: Sign and hash source release
-        shell: bash
         run: |
-          cd ./baremaps-cli/target
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch
-          shasum -a 512 "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz" > "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.sha512"
-          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz"
-          cd -
-      - name: Upload source release
-        id: upload-source-release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz
-          asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz
-          asset_content_type: application/x-gzip
-      - name: Upload source release sha512
-        id: upload-source-release-sha512
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.sha512
-          asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.sha512
-          asset_content_type: text/plain
-      - name: Upload source release asc
-        id: upload-source-release-asc
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.asc
-          asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-src.tar.gz.asc
-          asset_content_type: text/plain
+          gh release create "${{ steps.variables.outputs.git_tag }}" --draft --prerelease --title "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" --repo ${{ github.repository }} --generate-notes
+          
+          gh release upload "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
+          gh release upload "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.sha512
+          gh release upload "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.asc
+          
+          gh release upload "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz
+          gh release upload "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.sha512
+          gh release upload "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc
 
-      # Sign, hash, and upload binary release to GitHub
-      - name: Sign and hash source release
-        shell: bash
-        run: |
-          cd ./baremaps-cli/target
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch
-          shasum -a 512 "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz" > "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.sha512"
-          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz"
-          cd -
-      - name: Upload binary release
-        id: upload-binary-release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz
-          asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz
-          asset_content_type: application/x-gzip
-      - name: Upload binary release sha512
-        id: upload-binary-release-sha512
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.sha512
-          asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.sha512
-          asset_content_type: text/plain
-      - name: Upload binary release asc
-        id: upload-binary-release-asc
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc
-          asset_name: apache-baremaps-${{ steps.version.outputs.value }}-incubating-bin.tar.gz.asc
-          asset_content_type: text/plain
