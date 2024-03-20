@@ -24,9 +24,9 @@ jobs:
       - name: Extract variables
         id: variables
         run: |
-          echo ::set-output name=git_tag::${GITHUB_REF#refs/tags/}
-          echo ::set-output name=git_version::${GITHUB_REF#refs/tags/v}
-          echo ::set-output name=mvn_version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          echo "git_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "git_version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "mvn_version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
 
       - name: Build project
         run: mvn install -B
