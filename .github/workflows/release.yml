@@ -27,16 +27,21 @@ jobs:
         run: mvn install -B
 
       # Create a GitHub release draft
+      - name: Setup GitHub CLI
+        uses: actions/setup-cli@v1
+        with:
+          version: latest
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Apache Baremaps ${{ steps.version.outputs.value }} (incubating)
-          draft: true
-          prerelease: true
+        run: |
+          gh release create "${{ github.ref }}" \
+            --draft \
+            --prerelease \
+            --title "Apache Baremaps ${{ steps.version.outputs.value }} (incubating)" \
+            --repo ${{ github.repository }} \
+            --generate-notes
 
       # Sign, hash, and upload source release to GitHub
       - name: Sign and hash source release
