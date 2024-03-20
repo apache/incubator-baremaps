@@ -49,6 +49,10 @@ git commit -a -m "Release Baremaps <release>"
 git tag v<release>-rc<candidate>
 ```
 
+> TODO: The following step is not yet fully automated. We need to add secrets and steps to publish the artifacts to the [dev directory](https://dist.apache.org/repos/dist/dev/incubator/baremaps/) (SVN_USERNAME, SVN_PASSWORD) and to the maven repository (NEXUS_USERNAME, NEXUS_PASSWORD).
+
+```bash
+
 - [ ] Push the tag to the remote repository (this will trigger GitHub Action to build the release candidate, publish the artifacts to the [dev directory](https://dist.apache.org/repos/dist/dev/incubator/baremaps/) of dist.apache.org repository, and draft a release on GitHub):
 
 ```bash
@@ -60,6 +64,7 @@ git push origin v<release>-rc<candidate>
 - [ ] If the release candidate is not approved by the community, commit the necessary changes, clean the git history, 
   and go back to step 5.
 
+> TODO: The following step is not yet fully automated. We need to add secrets and steps to publish the artifacts to the [dev directory](https://dist.apache.org/repos/dist/dev/incubator/baremaps/) (SVN_USERNAME, SVN_PASSWORD) and to the maven repository (NEXUS_USERNAME, NEXUS_PASSWORD).
 
 - [ ] If the release candidate is approved by the community, tag the release commit with the release version (this will trigger GitHub Action to build the release candidate, publish the artifacts to the [release directory](https://dist.apache.org/repos/dist/release/incubator/baremaps/) of dist.apache.org repository, and draft a release on GitHub):
 
