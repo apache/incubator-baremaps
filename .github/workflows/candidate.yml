@@ -1,4 +1,4 @@
-name: Candidate
+name: Publish candidate
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
           java-version: 17
           distribution: temurin
           cache: maven
-          server-id: apache
+          server-id: apache.snapshots.https
           server-username: NEXUS_USERNAME
           server-password: NEXUS_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -79,5 +79,5 @@ jobs:
           SERVER_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |
           # TODO: Deploy the candidate on the Apache Maven repository
-          # mvn deploy -B
+          # mvn deploy
 
