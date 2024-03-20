@@ -26,7 +26,7 @@ limitations under the License.
 
   <groupId>org.apache.baremaps</groupId>
   <artifactId>baremaps</artifactId>
-  <version>0.7.3-SNAPSHOT</version>
+  <version>0.7.3</version>
   <packaging>pom</packaging>
   <name>baremaps</name>
   <description>Apache Baremaps (incubating) is a toolkit and a set of infrastructure components for creating,
@@ -70,7 +70,7 @@ limitations under the License.
     <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <project.build.outputTimestamp>2024-03-18T11:01:08Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2024-03-20T06:04:00Z</project.build.outputTimestamp>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
