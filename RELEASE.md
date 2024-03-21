@@ -76,6 +76,7 @@ git tag -a v$RELEASE_VERSION
 git push origin v$RELEASE_VERSION
 ```
 
+- [ ] Register the release on [reporter.apache.org](https://reporter.apache.org/addrelease.html?incubator-baremaps).
 - [ ] Set the version of the next iteration and commit the changes:
 
 ```bash
