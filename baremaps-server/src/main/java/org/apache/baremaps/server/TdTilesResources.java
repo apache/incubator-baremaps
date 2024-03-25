@@ -30,7 +30,6 @@ import de.javagl.jgltf.model.NodeModel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
-
 import org.apache.baremaps.tdtiles.GltfBuilder;
 import org.apache.baremaps.tdtiles.TdTilesStore;
 import org.apache.baremaps.tdtiles.building.Building;
