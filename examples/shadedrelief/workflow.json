@@ -7,7 +7,8 @@
         {
           "type": "DownloadUrl",
           "source": "http://www.shadedrelief.com/ne-draft/World-Base-Map-Shapefiles.zip",
-          "target": "shadedrelief.zip"
+          "target": "shadedrelief.zip",
+          "replaceExisting": true
         },
         {
           "type": "DecompressFile",

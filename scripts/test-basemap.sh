@@ -38,8 +38,9 @@ echo "--------------------------------------------------------------------"
 echo ""
 
 nohup baremaps map dev --tileset 'tileset.js' --style 'style.js' > /dev/null 2>&1 &
-sleep 1
 baremaps=$!
+
+sleep 10
 
 echo "Get the status of the root (/):"
 curl -I http://localhost:9000/
@@ -66,6 +67,7 @@ echo ""
 
 baremaps map export \
   --tileset 'tileset.js' \
+  --style 'style.js' \
   --repository 'tiles/' \
   --format file
 
@@ -73,6 +75,7 @@ du -h tiles
 
 baremaps map export \
   --tileset 'tileset.js' \
+  --style 'style.js' \
   --repository 'tiles.mbtiles' \
   --format mbtiles
 

@@ -62,7 +62,8 @@ export default {"steps": [
                 return {
                     type: "DownloadUrl",
                     source: nic.url,
-                    target: `downloads/${nic.filename}.gz`
+                    target: `downloads/${nic.filename}.gz`,
+                    replaceExisting: true
                 }
             }),
             ...nics.map(nic => {
@@ -77,7 +78,7 @@ export default {"steps": [
                 type: "DownloadUrl",
                 source: "https://download.geonames.org/export/dump/allCountries.zip",
                 target: "downloads/geonames-allcountries.zip",
-                force: true
+                replaceExisting: true
             },
             {
                 type: "DecompressFile",

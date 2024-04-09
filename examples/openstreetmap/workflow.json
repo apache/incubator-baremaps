@@ -7,7 +7,8 @@
         {
           "type": "DownloadUrl",
           "source": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-          "target": "liechtenstein-latest.osm.pbf"
+          "target": "liechtenstein-latest.osm.pbf",
+          "replaceExisting": true
         }
       ]
     },
@@ -21,7 +22,8 @@
           "type": "ImportOsmPbf",
           "file": "liechtenstein-latest.osm.pbf",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "databaseSrid": 3857
+          "databaseSrid": 3857,
+          "replaceExisting": true
         }
       ]
     },

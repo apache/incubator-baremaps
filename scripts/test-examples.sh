@@ -35,8 +35,9 @@ echo "--------------------------------------------------------------------"
 echo ""
 
 nohup baremaps map dev --tileset 'tileset.json' --style 'style.json' > /dev/null 2>&1 &
-sleep 1
 baremaps=$!
+
+sleep 1
 
 echo "Get the status of the root (/):"
 curl -I http://localhost:9000/
@@ -63,6 +64,7 @@ echo ""
 
 baremaps map export \
   --tileset 'tileset.json' \
+  --style 'style.json' \
   --repository 'tiles/'
 
 echo "Display the size of the tiles:"
@@ -76,6 +78,7 @@ echo ""
 
 baremaps map export \
   --tileset 'tileset.json' \
+  --style 'style.json' \
   --repository 'tiles.mbtiles' \
   --format mbtiles
 
@@ -101,8 +104,8 @@ echo "--------------------------------------------------------------------"
 echo ""
 
 nohup baremaps map dev --tileset 'tileset.json' --style 'style.json' > /dev/null 2>&1 &
-sleep 1
 baremaps=$!
+sleep 1
 
 echo "Get the status of the root (/):"
 curl -I http://localhost:9000/
@@ -129,6 +132,7 @@ echo ""
 
 baremaps map export \
   --tileset 'tileset.json' \
+  --style 'style.json' \
   --repository 'tiles/'
 
 echo "Display the size of the tiles:"
