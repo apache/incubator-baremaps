@@ -39,6 +39,7 @@ import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.SimpleGroup;
 import org.apache.parquet.example.data.simple.convert.GroupRecordConverter;
 import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.FileMetaData;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.hadoop.util.HadoopInputFile;
 import org.apache.parquet.io.ColumnIOFactory;
@@ -58,9 +59,9 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
 
   private Map<FileStatus, FileInfo> metadata = new HashMap<>();
 
-  private Set<String> geometryColumns;
-
   private DataRowType rowType;
+
+  private Set<String> geometryColumns;
 
   private long rowCount;
 
@@ -75,37 +76,47 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
         this.configuration = getConfiguration();
 
         try {
+            // List all the files that match the glob pattern
             URI fullUri = FileStatusIterator.getFullUri(uri);
             Path globPath = new Path(fullUri.getPath());
-
             URI rootUri = FileStatusIterator.getRootUri(fullUri);
             FileSystem fileSystem = FileSystem.get(rootUri, configuration);
-
             List<FileStatus> files = Arrays.asList(fileSystem.globStatus(globPath));
 
+            // Read the metadata of each file
             for (FileStatus fileStatus : files) {
+
+                // Open the Parquet file
                 try (ParquetFileReader reader = ParquetFileReader
                         .open(HadoopInputFile.fromPath(fileStatus.getPath(), configuration))) {
 
+                    // Read the number of rows in the Parquet file
                     long rowCount = reader.getRecordCount();
-                    ParquetMetadata parquetMetadata = reader.getFooter();
 
-                    String json = reader.getFooter().getFileMetaData().getKeyValueMetaData().get("geo");
-                    GeoParquetMetadata fileMetadata = new ObjectMapper()
+                    // Read the metadata of the Parquet file
+                    ParquetMetadata parquetMetadata = reader.getFooter();
+                    FileMetaData fileMetadata = parquetMetadata.getFileMetaData();
+
+                    // Read the GeoParquet metadata of the Parquet file
+                    String json = fileMetadata.getKeyValueMetaData().get("geo");
+                    GeoParquetMetadata geoParquetMetadata = new ObjectMapper()
                             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                             .readValue(json, GeoParquetMetadata.class);
 
+                    // Read the schema of the Parquet file and create the corresponding row type
                     List<DataColumn> dataColumns = new ArrayList<>();
-                    List<Type> types = parquetMetadata.getFileMetaData().getSchema().getFields();
+                    List<Type> types = fileMetadata.getSchema().getFields();
                     for (Type type : types) {
                         String name = type.getName();
+
+                        // Handle the primitive types
                         if (type.isPrimitive()) {
                             PrimitiveType primitiveType = type.asPrimitiveType();
+
+                            // Map the Parquet primitive types to the data column types
                             DataColumn.Type columnType = switch (primitiveType.getPrimitiveTypeName()) {
                                 case BINARY -> {
-                                    if (fileMetadata.getColumns().containsKey(name)) {
-                                        yield DataColumn.Type.GEOMETRY;
-                                    } else if (primitiveType.getLogicalTypeAnnotation() == LogicalTypeAnnotation.stringType()) {
+                                    if (primitiveType.getLogicalTypeAnnotation() == LogicalTypeAnnotation.stringType()) {
                                         yield DataColumn.Type.STRING;
                                     } else {
                                         yield DataColumn.Type.BYTE_ARRAY;
@@ -119,18 +130,27 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
                                 case INT96 -> DataColumn.Type.BYTE_ARRAY;
                                 case FIXED_LEN_BYTE_ARRAY -> DataColumn.Type.BYTE_ARRAY;
                             };
+
+                            // Map the GeoParquet geometry columns to the data column types
+                            if (geoParquetMetadata.getColumns().containsKey(name)) {
+                                columnType = DataColumn.Type.GEOMETRY;
+                            }
+
                             dataColumns.add(new DataColumnImpl(name, columnType));
                         }
                     }
-
                     DataRowType dataRowType = new DataRowTypeImpl(uri, dataColumns);
-                    this.metadata.put(fileStatus, new FileInfo(rowCount, parquetMetadata, fileMetadata, dataRowType));
+
+                    // Store the metadata of the Parquet file
+                    this.metadata.put(fileStatus, new FileInfo(rowCount, parquetMetadata, geoParquetMetadata, dataRowType));
                 }
             }
 
+            // Compute the total number of rows,
+            // check the consistency of the row types,
+            // and store the geometry columns
             for (FileInfo fileInfo : metadata.values()) {
                 rowCount += fileInfo.rowCount();
-
                 if (rowType == null) {
                     rowType = fileInfo.dataRowType();
                     geometryColumns = fileInfo.geoParquetMetadata().getColumns().keySet();
@@ -143,6 +163,15 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
             throw new RuntimeException(e);
         }
     }
+
+  private static Configuration getConfiguration() {
+    Configuration configuration = new Configuration();
+    configuration.set("fs.s3a.aws.credentials.provider",
+        "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider");
+    configuration.setBoolean("fs.s3a.path.style.access", true);
+    configuration.setBoolean(AvroReadSupport.READ_INT96_AS_FIXED, true);
+    return configuration;
+  }
 
   @Override
   public Iterator<DataRow> iterator() {
@@ -167,15 +196,6 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
     return rowType;
   }
 
-  private static Configuration getConfiguration() {
-    Configuration configuration = new Configuration();
-    configuration.set("fs.s3a.aws.credentials.provider",
-        "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider");
-    configuration.setBoolean("fs.s3a.path.style.access", true);
-    configuration.setBoolean(AvroReadSupport.READ_INT96_AS_FIXED, true);
-    return configuration;
-  }
-
   private List<Object> asValues(GeoParquetMetadata geoParquetMetadata, SimpleGroup simpleGroup) {
         List<Object> values = new ArrayList<>();
         List<Type> fields = simpleGroup.getType().getFields();
@@ -188,13 +208,7 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
                 try {
                     value = switch (primitiveType.getPrimitiveTypeName()) {
                         case BINARY -> {
-                            if (geometryColumns.contains(name)) {
-                                byte[] bytes = simpleGroup.getBinary(i, 0).getBytes();
-                                Geometry geometry = wkbReader.read(bytes);
-                                int srid = getSrid(geoParquetMetadata, name);
-                                geometry.setSRID(srid);
-                                yield geometry;
-                            } else if (primitiveType.getLogicalTypeAnnotation() == LogicalTypeAnnotation.stringType()) {
+                            if (primitiveType.getLogicalTypeAnnotation() == LogicalTypeAnnotation.stringType()) {
                                 yield simpleGroup.getString(i, 0);
                             } else {
                                 yield simpleGroup.getBinary(i, 0).getBytes();
@@ -208,6 +222,12 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
                         case INT96 -> simpleGroup.getInt96(i, 0).getBytes();
                         case FIXED_LEN_BYTE_ARRAY -> simpleGroup.getBinary(i, 0).getBytes();
                     };
+                    if (geometryColumns.contains(name) && value instanceof byte[] bytes) {
+                        Geometry geometry = wkbReader.read(bytes);
+                        int srid = getSrid(geoParquetMetadata, name);
+                        geometry.setSRID(srid);
+                        value = geometry;
+                    }
                 } catch (Exception e) {
                     value = null;
                 }
