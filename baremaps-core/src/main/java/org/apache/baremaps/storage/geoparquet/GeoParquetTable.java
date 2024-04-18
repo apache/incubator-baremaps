@@ -184,18 +184,15 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
             String name = field.getName();
             if (field.isPrimitive()) {
                 PrimitiveType primitiveType = field.asPrimitiveType();
-                Object value = null;
+                Object value;
                 try {
                     value = switch (primitiveType.getPrimitiveTypeName()) {
                         case BINARY -> {
                             if (geometryColumns.contains(name)) {
                                 byte[] bytes = simpleGroup.getBinary(i, 0).getBytes();
                                 Geometry geometry = wkbReader.read(bytes);
-
-                                // TODO: set the SRID correctly
-                                int srid = geoParquetMetadata.getColumns().get(name).getCrs().get("id").get("code").asInt(4326);
+                                int srid = getSrid(geoParquetMetadata, name);
                                 geometry.setSRID(srid);
-
                                 yield geometry;
                             } else if (primitiveType.getLogicalTypeAnnotation() == LogicalTypeAnnotation.stringType()) {
                                 yield simpleGroup.getString(i, 0);
@@ -212,14 +209,26 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
                         case FIXED_LEN_BYTE_ARRAY -> simpleGroup.getBinary(i, 0).getBytes();
                     };
                 } catch (Exception e) {
-                    // not found
+                    value = null;
                 }
                 values.add(value);
             }
         }
-
         return values;
     }
+
+  private static int getSrid(GeoParquetMetadata geoParquetMetadata, String name) {
+    JsonNode crsId = geoParquetMetadata.getColumns().get(name).getCrs().get("id");
+    int srid = switch (crsId.get("authority").asText()) {
+      case "OGC" -> switch (crsId.get("code").asText()) {
+          case "CRS84" -> 4326;
+          default -> 0;
+        };
+      case "EPSG" -> crsId.get("code").asInt();
+      default -> 0;
+    };
+    return srid;
+  }
 
   private class DataRowIterator implements Iterator<List<Object>> {
 

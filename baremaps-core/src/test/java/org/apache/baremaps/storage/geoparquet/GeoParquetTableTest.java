@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.storage.geoparquet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
