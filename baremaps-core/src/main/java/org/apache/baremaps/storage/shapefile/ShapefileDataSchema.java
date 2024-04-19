@@ -78,6 +78,14 @@ public class ShapefileDataSchema implements DataSchema {
    * {@inheritDoc}
    */
   @Override
+  public void add(String name, DataTable value) throws DataTableException {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public void remove(String name) {
     throw new UnsupportedOperationException();
   }

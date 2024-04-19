@@ -47,6 +47,14 @@ public interface DataSchema {
   void add(DataTable value) throws DataTableException;
 
   /**
+   * Adds a table to the schema.
+   *
+   * @param name the name of the table
+   * @param value the table
+   */
+  void add(String name, DataTable value) throws DataTableException;
+
+  /**
    * Removes a table from the schema.
    * 
    * @param name the name of the table

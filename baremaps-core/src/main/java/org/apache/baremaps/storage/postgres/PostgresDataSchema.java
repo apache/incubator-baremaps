@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
  */
 public class PostgresDataSchema implements DataSchema {
 
+  private static final String regex = "[^a-zA-Z0-9]";
+
   private static final Logger logger = LoggerFactory.getLogger(PostgresDataSchema.class);
 
   private static final String[] TYPES = new String[] {"TABLE", "VIEW"};
@@ -88,9 +90,16 @@ public class PostgresDataSchema implements DataSchema {
    */
   @Override
   public void add(DataTable table) {
+    var name = table.rowType().name().replaceAll(regex, "_").toLowerCase();
+    add(name, table);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void add(String name, DataTable table) throws DataTableException {
     try (var connection = dataSource.getConnection()) {
-      var regex = "[^a-zA-Z0-9]";
-      var name = table.rowType().name().replaceAll(regex, "_").toLowerCase();
       var mapping = new HashMap<String, String>();
       var properties = new ArrayList<DataColumn>();
       for (DataColumn column : table.rowType().columns()) {

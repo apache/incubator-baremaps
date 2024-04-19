@@ -19,31 +19,35 @@ package org.apache.baremaps.storage.geoparquet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.baremaps.storage.postgres.PostgresDataSchema;
+import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class GeoParquetTableTest {
+public class GeoParquetToPostgresTest extends PostgresContainerTest {
 
   @Test
-  void getRowType() {
+  @Tag("integration")
+  void schema() {
+    // Copy the table to Postgres
     var file = TestFiles
         .resolve("geoparquet/example.parquet")
         .toAbsolutePath()
         .toUri();
     var table = new GeoParquetTable(file);
-    var columns = table.rowType().columns();
-    assertEquals(6, columns.size());
-  }
 
-  @Test
-  void getRows() {
-    var file = TestFiles.resolve("geoparquet/example.parquet")
-        .toAbsolutePath()
-        .toUri();
-    var table = new GeoParquetTable(file);
-    assertEquals(5, table.size());
-    assertEquals(5, table.stream().count());
-    assertEquals(5, table.stream().toList().size());
-  }
+    var postgresStore = new PostgresDataSchema(dataSource());
+    postgresStore.add("example", table);
 
+    // Check the table in Postgres
+    var postgresTable = postgresStore.get("example");
+    assertEquals("example", postgresTable.rowType().name());
+    assertEquals(6, postgresTable.rowType().columns().size());
+    assertEquals(5, postgresTable.sizeAsLong());
+
+    for (var row : postgresTable) {
+      System.out.println(row);
+    }
+  }
 }

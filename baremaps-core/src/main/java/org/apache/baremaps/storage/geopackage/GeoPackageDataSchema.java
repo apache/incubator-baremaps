@@ -78,6 +78,14 @@ public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
+  public void add(String name, DataTable value) throws DataTableException {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public void remove(String name) throws DataTableException {
     throw new UnsupportedOperationException();
   }

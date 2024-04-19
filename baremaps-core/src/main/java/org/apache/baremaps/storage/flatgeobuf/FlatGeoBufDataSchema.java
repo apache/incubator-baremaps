@@ -82,6 +82,14 @@ public class FlatGeoBufDataSchema implements DataSchema {
    * {@inheritDoc}
    */
   @Override
+  public void add(String name, DataTable value) throws DataTableException {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public void remove(String name) throws DataTableException {
     var path = directory.resolve(name);
     if (name.equals(path.getFileName().toString())) {

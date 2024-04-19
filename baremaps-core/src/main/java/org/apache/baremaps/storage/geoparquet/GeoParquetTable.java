@@ -53,6 +53,8 @@ import org.locationtech.jts.io.WKBReader;
 
 public class GeoParquetTable extends AbstractDataCollection<DataRow> implements DataTable {
 
+  private URI uri;
+
   private Configuration configuration;
 
   private WKBReader wkbReader = new WKBReader();
@@ -72,14 +74,14 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
       DataRowType dataRowType) {
   }
 
-  public GeoParquetTable(String uri) {
+  public GeoParquetTable(URI uri) {
+      this.uri = uri;
         this.configuration = getConfiguration();
 
         try {
             // List all the files that match the glob pattern
-            URI fullUri = FileStatusIterator.getFullUri(uri);
-            Path globPath = new Path(fullUri.getPath());
-            URI rootUri = FileStatusIterator.getRootUri(fullUri);
+            Path globPath = new Path(uri.getPath());
+            URI rootUri = getRootUri(uri);
             FileSystem fileSystem = FileSystem.get(rootUri, configuration);
             List<FileStatus> files = Arrays.asList(fileSystem.globStatus(globPath));
 
@@ -139,7 +141,7 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
                             dataColumns.add(new DataColumnImpl(name, columnType));
                         }
                     }
-                    DataRowType dataRowType = new DataRowTypeImpl(uri, dataColumns);
+                    DataRowType dataRowType = new DataRowTypeImpl(uri.toString(), dataColumns);
 
                     // Store the metadata of the Parquet file
                     this.metadata.put(fileStatus, new FileInfo(rowCount, parquetMetadata, geoParquetMetadata, dataRowType));
@@ -250,6 +252,22 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
     return srid;
   }
 
+  private static URI getRootUri(URI uri) throws URISyntaxException {
+    String path = uri.getPath();
+    int index = path.indexOf("*");
+    if (index != -1) {
+      path = path.substring(0, path.lastIndexOf("/", index) + 1);
+    }
+    return new URI(
+        uri.getScheme(),
+        uri.getUserInfo(),
+        uri.getHost(),
+        uri.getPort(),
+        path,
+        null,
+        null);
+  }
+
   private class DataRowIterator implements Iterator<List<Object>> {
 
     private Iterator<Map.Entry<FileStatus, FileInfo>> fileIterator;
@@ -304,13 +322,13 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
     }
   }
 
-  private static class FileStatusIterator implements Iterator<FileStatus> {
+  private class FileStatusIterator implements Iterator<FileStatus> {
 
     private final Iterator<FileStatus> fileStatusIterator;
 
-    public FileStatusIterator(String uri, Configuration configuration)
+    public FileStatusIterator(Configuration configuration)
         throws URISyntaxException, IOException {
-      URI fullUri = getFullUri(uri);
+      URI fullUri = uri;
       Path globPath = new Path(fullUri.getPath());
 
       URI rootUri = getRootUri(fullUri);
@@ -318,15 +336,6 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
 
       FileStatus[] files = fileSystem.globStatus(globPath);
       fileStatusIterator = Arrays.asList(files).iterator();
-    }
-
-    private static URI getFullUri(String uri) throws URISyntaxException {
-      return new URI(uri);
-    }
-
-    private static URI getRootUri(URI uri) throws URISyntaxException {
-      return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), null, null,
-          null);
     }
 
     @Override
