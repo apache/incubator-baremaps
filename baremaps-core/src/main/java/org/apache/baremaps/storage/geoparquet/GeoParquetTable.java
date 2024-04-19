@@ -74,14 +74,14 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
       DataRowType dataRowType) {
   }
 
-  public GeoParquetTable(URI uri) {
-      this.uri = uri;
+  public GeoParquetTable(String uri) {
+      this.uri = URI.create(uri);
         this.configuration = getConfiguration();
 
         try {
             // List all the files that match the glob pattern
-            Path globPath = new Path(uri.getPath());
-            URI rootUri = getRootUri(uri);
+            Path globPath = new Path(this.uri.getPath());
+            URI rootUri = getRootUri(this.uri);
             FileSystem fileSystem = FileSystem.get(rootUri, configuration);
             List<FileStatus> files = Arrays.asList(fileSystem.globStatus(globPath));
 
@@ -319,33 +319,6 @@ public class GeoParquetTable extends AbstractDataCollection<DataRow> implements 
     public List<Object> next() {
       currentSimpleGroup = simpleGroupIterator.next();
       return asValues(currentFileStatus.getValue().geoParquetMetadata(), currentSimpleGroup);
-    }
-  }
-
-  private class FileStatusIterator implements Iterator<FileStatus> {
-
-    private final Iterator<FileStatus> fileStatusIterator;
-
-    public FileStatusIterator(Configuration configuration)
-        throws URISyntaxException, IOException {
-      URI fullUri = uri;
-      Path globPath = new Path(fullUri.getPath());
-
-      URI rootUri = getRootUri(fullUri);
-      FileSystem fileSystem = FileSystem.get(rootUri, configuration);
-
-      FileStatus[] files = fileSystem.globStatus(globPath);
-      fileStatusIterator = Arrays.asList(files).iterator();
-    }
-
-    @Override
-    public boolean hasNext() {
-      return fileStatusIterator.hasNext();
-    }
-
-    @Override
-    public FileStatus next() {
-      return fileStatusIterator.next();
     }
   }
 

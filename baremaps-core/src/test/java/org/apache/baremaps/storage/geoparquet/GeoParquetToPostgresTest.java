@@ -34,7 +34,8 @@ public class GeoParquetToPostgresTest extends PostgresContainerTest {
     var file = TestFiles
         .resolve("geoparquet/example.parquet")
         .toAbsolutePath()
-        .toUri();
+        .toUri()
+        .toString();
     var table = new GeoParquetTable(file);
 
     var postgresStore = new PostgresDataSchema(dataSource());

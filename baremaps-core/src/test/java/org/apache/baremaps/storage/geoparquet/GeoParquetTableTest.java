@@ -29,7 +29,8 @@ class GeoParquetTableTest {
     var file = TestFiles
         .resolve("geoparquet/example.parquet")
         .toAbsolutePath()
-        .toUri();
+        .toUri()
+        .toString();
     var table = new GeoParquetTable(file);
     var columns = table.rowType().columns();
     assertEquals(6, columns.size());
@@ -39,7 +40,8 @@ class GeoParquetTableTest {
   void getRows() {
     var file = TestFiles.resolve("geoparquet/example.parquet")
         .toAbsolutePath()
-        .toUri();
+        .toUri()
+        .toString();
     var table = new GeoParquetTable(file);
     assertEquals(5, table.size());
     assertEquals(5, table.stream().count());
