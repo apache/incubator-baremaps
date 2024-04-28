@@ -164,26 +164,21 @@ subject: [ANNOUNCE] Apache Baremaps <version> (incubating) released
 
 Hello Everyone,
 
-The Apache Baremaps community is pleased to announce the release of Apache Baremaps 0.7.1 (incubating).
+The Apache Baremaps community is pleased to announce the release of Apache Baremaps <version> (incubating). 
+Thank you to everyone who contributed to this release.
+
 Apache Baremaps is a toolkit and a set of infrastructure components for creating, publishing, and operating online maps.
-
-This is our first release since joining the Apache Software Foundation and an important milestone in the project's
-history.
-Thank you to everyone who contributed to this release and thank you to the mentors for their guidance and support.
-
-We are looking to grow the community and welcome new contributors.
-If you are interested in contributing to the project, please contact us on the mailing list or on GitHub.
-We will be happy to help you get started.
+<short description of the release which should include release highlights>
 
 The release notes are available here:
 https://github.com/apache/incubator-baremaps/releases/tag/v<version>
 
-The artifacts are available here:
-https://dist.apache.org/repos/dist/release/incubator/baremaps/<version>
+The download page is located here:
+https://baremaps.apache.org/download/release-<version>
 
-The hashes of the artifacts are as follows:
-<src>
-<bin>
+We are looking to grow our community and welcome new contributors.
+If you are interested in contributing to the project, please contact us on the mailing list or on GitHub.
+We will be happy to help you get started.
 
 The repository is available here:
 https://github.com/apache/incubator-baremaps
