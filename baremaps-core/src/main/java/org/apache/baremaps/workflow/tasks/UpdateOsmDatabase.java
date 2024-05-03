@@ -19,9 +19,9 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.io.BufferedInputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
@@ -107,8 +107,9 @@ public class UpdateOsmDatabase implements Task {
    * @param databaseSrid the SRID
    * @throws Exception if something went wrong
    */
-  public static void execute(DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
+  public static void execute(
+      Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
       Integer databaseSrid,

@@ -21,8 +21,8 @@ import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.Member.MemberType;
@@ -42,8 +42,8 @@ public class RelationMultiPolygonBuilder implements Consumer<Entity> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationMultiPolygonBuilder.class);
 
-  private final DataMap<Long, Coordinate> coordinateMap;
-  private final DataMap<Long, List<Long>> referenceMap;
+  private final Map<Long, Coordinate> coordinateMap;
+  private final Map<Long, List<Long>> referenceMap;
 
   /**
    * Constructs a relation geometry builder.
@@ -52,8 +52,8 @@ public class RelationMultiPolygonBuilder implements Consumer<Entity> {
    * @param referenceMap the references map
    */
   public RelationMultiPolygonBuilder(
-      DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap) {
+      Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap) {
     this.coordinateMap = coordinateMap;
     this.referenceMap = referenceMap;
   }

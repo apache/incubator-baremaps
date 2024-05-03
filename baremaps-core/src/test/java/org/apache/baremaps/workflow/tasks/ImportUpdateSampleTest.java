@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import org.apache.baremaps.database.collection.AppendOnlyBuffer;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.database.collection.IndexedDataMap;
 import org.apache.baremaps.database.memory.OnHeapMemory;
 import org.apache.baremaps.database.type.LongListDataType;
@@ -58,9 +58,9 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     // Initialize the data maps
-    DataMap<Long, Coordinate> coordinateMap =
+    Map<Long, Coordinate> coordinateMap =
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new CoordinateDataType(), new OnHeapMemory()));
-    DataMap<Long, List<Long>> referenceMap =
+    Map<Long, List<Long>> referenceMap =
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import the sample data

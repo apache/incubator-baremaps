@@ -21,8 +21,8 @@ package org.apache.baremaps.openstreetmap.pbf;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
 import org.locationtech.jts.geom.Coordinate;
 
@@ -78,7 +78,7 @@ public interface PbfReader<T> extends OsmReader<T> {
    *
    * @return the map of coordinates
    */
-  DataMap<Long, Coordinate> coordinateMap();
+  Map<Long, Coordinate> coordinateMap();
 
   /**
    * Sets the map used to store coordinates for generating geometries.
@@ -86,14 +86,14 @@ public interface PbfReader<T> extends OsmReader<T> {
    * @param coordinateMap the map of coordinates
    * @return the reader
    */
-  PbfReader<T> coordinateMap(DataMap<Long, Coordinate> coordinateMap);
+  PbfReader<T> coordinateMap(Map<Long, Coordinate> coordinateMap);
 
   /**
    * Gets the map used to store references for generating geometries.
    *
    * @return the map of references
    */
-  DataMap<Long, List<Long>> referenceMap();
+  Map<Long, List<Long>> referenceMap();
 
   /**
    * Sets the map used to store references for generating geometries.
@@ -101,7 +101,7 @@ public interface PbfReader<T> extends OsmReader<T> {
    * @param referenceMap the map of references
    * @return the reader
    */
-  PbfReader<T> referenceMap(DataMap<Long, List<Long>> referenceMap);
+  PbfReader<T> referenceMap(Map<Long, List<Long>> referenceMap);
 
   /**
    * Creates an ordered stream of osm objects.

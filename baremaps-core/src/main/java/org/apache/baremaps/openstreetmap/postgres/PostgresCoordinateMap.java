@@ -29,7 +29,7 @@ import org.locationtech.jts.geom.Coordinate;
 /**
  * A read-only {@link DataMap} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL.
  */
-public class PostgresCoordinateMap extends DataMap<Long, Coordinate> {
+public class PostgresCoordinateMap extends PostgresMap<Long, Coordinate> {
 
   private final DataSource dataSource;
 

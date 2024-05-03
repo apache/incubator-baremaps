@@ -32,7 +32,7 @@ import org.apache.baremaps.database.collection.DataMap;
 /**
  * A read-only {@code LongDataMap} for references baked by OpenStreetMap ways stored in Postgres.
  */
-public class PostgresReferenceMap extends DataMap<Long, List<Long>> {
+public class PostgresReferenceMap extends PostgresMap<Long, List<Long>> {
 
   private final DataSource dataSource;
 

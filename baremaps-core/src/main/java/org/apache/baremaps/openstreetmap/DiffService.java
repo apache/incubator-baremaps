@@ -23,15 +23,11 @@ import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityToGeometryMapper;
 import org.apache.baremaps.openstreetmap.model.*;
@@ -50,8 +46,8 @@ public class DiffService implements Callable<List<TileCoord>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final DataMap<Long, Coordinate> coordinateMap;
-  private final DataMap<Long, List<Long>> referenceMap;
+  private final Map<Long, Coordinate> coordinateMap;
+  private final Map<Long, List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -59,8 +55,8 @@ public class DiffService implements Callable<List<TileCoord>> {
   private final int srid;
   private final int zoom;
 
-  public DiffService(DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
+  public DiffService(Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
       int zoom) {

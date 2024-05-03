@@ -21,8 +21,8 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.stream.StreamUtils;
@@ -37,9 +37,9 @@ public class PbfBlockReader implements PbfReader<Block> {
 
   private int srid = 4326;
 
-  private DataMap<Long, Coordinate> coordinateMap;
+  private Map<Long, Coordinate> coordinateMap;
 
-  private DataMap<Long, List<Long>> referenceMap;
+  private Map<Long, List<Long>> referenceMap;
 
   @Override
   public int buffer() {
@@ -79,23 +79,23 @@ public class PbfBlockReader implements PbfReader<Block> {
   }
 
   @Override
-  public DataMap<Long, Coordinate> coordinateMap() {
+  public Map<Long, Coordinate> coordinateMap() {
     return coordinateMap;
   }
 
   @Override
-  public PbfBlockReader coordinateMap(DataMap<Long, Coordinate> coordinateMap) {
+  public PbfBlockReader coordinateMap(Map<Long, Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
     return this;
   }
 
   @Override
-  public DataMap<Long, List<Long>> referenceMap() {
+  public Map<Long, List<Long>> referenceMap() {
     return referenceMap;
   }
 
   @Override
-  public PbfBlockReader referenceMap(DataMap<Long, List<Long>> referenceMap) {
+  public PbfBlockReader referenceMap(Map<Long, List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
     return this;
   }

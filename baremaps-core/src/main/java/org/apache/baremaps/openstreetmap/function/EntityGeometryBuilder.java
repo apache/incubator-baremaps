@@ -20,8 +20,8 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.locationtech.jts.geom.*;
 
@@ -39,8 +39,8 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
    * @param referenceMap the reference cache
    */
   public EntityGeometryBuilder(
-      DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap) {
+      Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap) {
     this.nodeGeometryBuilder = new NodeGeometryBuilder();
     this.wayGeometryBuilder = new WayGeometryBuilder(coordinateMap);
     this.relationMultiPolygonBuilder = new RelationMultiPolygonBuilder(coordinateMap, referenceMap);

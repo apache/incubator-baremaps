@@ -21,8 +21,8 @@ package org.apache.baremaps.openstreetmap.pbf;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.HeaderBlock;
@@ -75,23 +75,23 @@ public class PbfEntityReader implements PbfReader<Entity> {
   }
 
   @Override
-  public DataMap<Long, Coordinate> coordinateMap() {
+  public Map<Long, Coordinate> coordinateMap() {
     return reader.coordinateMap();
   }
 
   @Override
-  public PbfEntityReader coordinateMap(DataMap<Long, Coordinate> coordinateMap) {
+  public PbfEntityReader coordinateMap(Map<Long, Coordinate> coordinateMap) {
     reader.coordinateMap(coordinateMap);
     return this;
   }
 
   @Override
-  public DataMap<Long, List<Long>> referenceMap() {
+  public Map<Long, List<Long>> referenceMap() {
     return reader.referenceMap();
   }
 
   @Override
-  public PbfEntityReader referenceMap(DataMap<Long, List<Long>> referenceMap) {
+  public PbfEntityReader referenceMap(Map<Long, List<Long>> referenceMap) {
     reader.referenceMap(referenceMap);
     return this;
   }
