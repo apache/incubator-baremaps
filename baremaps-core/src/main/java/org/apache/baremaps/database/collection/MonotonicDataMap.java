@@ -40,7 +40,7 @@ public class MonotonicDataMap<E> extends DataMap<Long, E> {
 
   private final DataList<Long> offsets;
   private final DataList<Pair<Long, Long>> keys;
-  private final AppendOnlyBuffer<E> values;
+  private final AppendOnlyLog<E> values;
 
   private long lastChunk = -1;
 
@@ -49,7 +49,7 @@ public class MonotonicDataMap<E> extends DataMap<Long, E> {
    *
    * @param values the buffer of values
    */
-  public MonotonicDataMap(AppendOnlyBuffer<E> values) {
+  public MonotonicDataMap(AppendOnlyLog<E> values) {
     this(
         new MemoryAlignedDataList<>(new LongDataType()),
         new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType())),
@@ -62,7 +62,7 @@ public class MonotonicDataMap<E> extends DataMap<Long, E> {
    * @param keys the list of keys
    * @param values the buffer of values
    */
-  public MonotonicDataMap(DataList<Pair<Long, Long>> keys, AppendOnlyBuffer<E> values) {
+  public MonotonicDataMap(DataList<Pair<Long, Long>> keys, AppendOnlyLog<E> values) {
     this(
         new MemoryAlignedDataList<>(new LongDataType()),
         keys,
@@ -77,7 +77,7 @@ public class MonotonicDataMap<E> extends DataMap<Long, E> {
    * @param values the buffer of values
    */
   public MonotonicDataMap(DataList<Long> offsets, DataList<Pair<Long, Long>> keys,
-      AppendOnlyBuffer<E> values) {
+      AppendOnlyLog<E> values) {
     this.offsets = offsets;
     this.keys = keys;
     this.values = values;
@@ -93,7 +93,7 @@ public class MonotonicDataMap<E> extends DataMap<Long, E> {
       }
       lastChunk = chunk;
     }
-    long position = values.addPositioned(value);
+    long position = values.add(value);
     keys.add(new Pair<>(key, position));
     return null;
   }

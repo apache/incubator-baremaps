@@ -35,14 +35,14 @@ public class IndexedDataMap<E> extends DataMap<Long, E> {
 
   private final Map<Long, Long> index;
 
-  private final AppendOnlyBuffer<E> values;
+  private final AppendOnlyLog<E> values;
 
   /**
    * Constructs a map.
    *
    * @param values the values
    */
-  public IndexedDataMap(AppendOnlyBuffer<E> values) {
+  public IndexedDataMap(AppendOnlyLog<E> values) {
     this(new Long2LongOpenHashMap(), values);
   }
 
@@ -52,7 +52,7 @@ public class IndexedDataMap<E> extends DataMap<Long, E> {
    * @param index the index
    * @param values the values
    */
-  public IndexedDataMap(Map<Long, Long> index, AppendOnlyBuffer<E> values) {
+  public IndexedDataMap(Map<Long, Long> index, AppendOnlyLog<E> values) {
     this.index = index;
     this.values = values;
   }
@@ -63,7 +63,7 @@ public class IndexedDataMap<E> extends DataMap<Long, E> {
   @Override
   public E put(Long key, E value) {
     var oldIndex = index.get(key);
-    var position = values.addPositioned(value);
+    var position = values.add(value);
     index.put(key, position);
     return oldIndex == null ? null : values.read(oldIndex);
   }

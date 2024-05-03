@@ -77,7 +77,7 @@ class DataListTest {
     return Stream.of(
         Arguments.of(new FixedSizeDataList<>(new LongDataType())),
         Arguments.of(new IndexedDataList<>(new MemoryAlignedDataList<>(new LongDataType()),
-            new AppendOnlyBuffer<>(new LongDataType()))),
+            new AppendOnlyLog<>(new LongDataType()))),
         Arguments.of(new MemoryAlignedDataList<>(new LongDataType())));
   }
 }

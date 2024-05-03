@@ -30,16 +30,16 @@ import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.DataType;
 
 /**
- * A buffer of elements backed by a {@link DataType} and a {@link Memory}. Elements are appended to
- * the buffer and can be accessed by their position in the {@link Memory}. Appending elements to the
+ * A log of records backed by a {@link DataType} and a {@link Memory}. Elements are appended to the
+ * buffer and can be accessed by their position in the {@link Memory}. Appending elements to the
  * buffer is thread-safe.
  *
  * @param <E> The type of the data.
  */
-public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
+public class AppendOnlyLog<E> implements Iterable<E> {
 
   private final DataType<E> dataType;
-  private final Memory memory;
+  private final Memory<?> memory;
   private final long segmentSize;
   private long offset;
   private long size;
@@ -51,7 +51,7 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
    *
    * @param dataType the data type
    */
-  public AppendOnlyBuffer(DataType<E> dataType) {
+  public AppendOnlyLog(DataType<E> dataType) {
     this(dataType, new OffHeapMemory());
   }
 
@@ -61,7 +61,7 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public AppendOnlyBuffer(DataType<E> dataType, Memory memory) {
+  public AppendOnlyLog(DataType<E> dataType, Memory<?> memory) {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
@@ -75,7 +75,7 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
    * @param value the value
    * @return the position of the value in the memory.
    */
-  public long addPositioned(E value) {
+  public long add(E value) {
     int valueSize = dataType.size(value);
     if (valueSize > segmentSize) {
       throw new DataCollectionException("The value is too big to fit in a segment");
@@ -102,15 +102,6 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean add(E value) {
-    addPositioned(value);
-    return true;
-  }
-
-  /**
    * Returns a values at the specified position in the memory.
    *
    * @param position the position of the value
@@ -123,17 +114,25 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
     return dataType.read(buffer, (int) segmentOffset);
   }
 
-  /** {@inheritDoc} */
-  public long sizeAsLong() {
+  /**
+   * Returns the size of the log.
+   *
+   * @return the size of the log
+   */
+  public long size() {
     return size;
   }
 
+  /**
+   * Closes the log.
+   */
   public void close() {
     memory.segment(0).putLong(0, size);
   }
 
-  /** {@inheritDoc} */
-  @Override
+  /**
+   * Clears the log.
+   */
   public void clear() {
     try {
       memory.clear();
@@ -143,12 +142,27 @@ public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
   }
 
   /**
-   * {@inheritDoc}
+   * Returns an iterator over the values of the log.
+   * @return an iterator over the values of the log
    */
   @Override
   public BufferIterator iterator() {
-    final long size = sizeAsLong();
+    final long size = size();
     return new BufferIterator(size);
+  }
+
+  /**
+   * Returns true if the log contains the specified value.
+   * @param value the value
+   * @return true if the log contains the specified value
+   */
+  public boolean contains(Object value) {
+    for (E e : this) {
+      if (e.equals(value)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public class BufferIterator implements Iterator<E> {

@@ -89,7 +89,7 @@ public class WorkflowContext {
         new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),
             new MemoryMappedDirectory(keysDir)),
-        new AppendOnlyBuffer<>(
+        new AppendOnlyLog<>(
             dataType,
             new MemoryMappedDirectory(valuesDir)));
   }

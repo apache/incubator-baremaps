@@ -32,7 +32,7 @@ public class IndexedDataList<E> extends DataList<E> {
 
   private final DataList<Long> index;
 
-  private final AppendOnlyBuffer<E> values;
+  private final AppendOnlyLog<E> values;
 
 
   /**
@@ -40,7 +40,7 @@ public class IndexedDataList<E> extends DataList<E> {
    *
    * @param values the values
    */
-  public IndexedDataList(AppendOnlyBuffer<E> values) {
+  public IndexedDataList(AppendOnlyLog<E> values) {
     this(new MemoryAlignedDataList<>(new LongDataType()), values);
   }
 
@@ -50,7 +50,7 @@ public class IndexedDataList<E> extends DataList<E> {
    * @param index the index
    * @param values the values
    */
-  public IndexedDataList(DataList<Long> index, AppendOnlyBuffer<E> values) {
+  public IndexedDataList(DataList<Long> index, AppendOnlyLog<E> values) {
     this.index = index;
     this.values = values;
   }
@@ -60,7 +60,7 @@ public class IndexedDataList<E> extends DataList<E> {
    */
   @Override
   public long addIndexed(E value) {
-    long position = values.addPositioned(value);
+    long position = values.add(value);
     return index.addIndexed(position);
   }
 
@@ -69,7 +69,7 @@ public class IndexedDataList<E> extends DataList<E> {
    */
   @Override
   public void set(long index, E value) {
-    long position = values.addPositioned(value);
+    long position = values.add(value);
     this.index.set(index, position);
   }
 

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Random;
-import org.apache.baremaps.database.collection.AppendOnlyBuffer;
+import org.apache.baremaps.database.collection.AppendOnlyLog;
 import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.DataType;
 import org.apache.baremaps.database.type.IntegerDataType;
@@ -31,13 +31,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class AppendOnlyBufferTest {
+class AppendOnlyLogTest {
 
   @Test
   void addFixedSizeData() {
-    var collection = new AppendOnlyBuffer<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
+    var collection = new AppendOnlyLog<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(Long.BYTES + (i << 2), collection.addPositioned(i));
+      assertEquals(Long.BYTES + (i << 2), collection.add(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
       assertEquals(i, collection.read(Long.BYTES + (i << 2)));
@@ -46,7 +46,7 @@ class AppendOnlyBufferTest {
 
   @Test
   void addVariableSizeValues() {
-    var collection = new AppendOnlyBuffer<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
+    var collection = new AppendOnlyLog<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
     var random = new Random(0);
     var positions = new ArrayList<Long>();
     var values = new ArrayList<ArrayList<Integer>>();
@@ -56,7 +56,7 @@ class AppendOnlyBufferTest {
       for (int j = 0; j < size; j++) {
         value.add(random.nextInt(1 << 20));
       }
-      positions.add(collection.addPositioned(value));
+      positions.add(collection.add(value));
       values.add(value);
     }
     for (int i = 0; i < positions.size(); i++) {
@@ -69,11 +69,11 @@ class AppendOnlyBufferTest {
   @MethodSource("org.apache.baremaps.database.type.DataTypeProvider#dataTypes")
   void testAllDataTypes(DataType dataType, Object value) {
     var num = 1000;
-    var collection = new AppendOnlyBuffer<>(dataType, new OffHeapMemory(1 << 22));
+    var collection = new AppendOnlyLog<>(dataType, new OffHeapMemory(1 << 22));
 
     // write values
     for (int i = 0; i < num; i++) {
-      collection.addPositioned(value);
+      collection.add(value);
     }
     collection.close();
 

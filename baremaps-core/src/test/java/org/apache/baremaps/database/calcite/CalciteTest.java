@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableList;
 import java.sql.*;
 import java.util.List;
 import java.util.Properties;
-import org.apache.baremaps.database.collection.AppendOnlyBuffer;
+import org.apache.baremaps.database.collection.AppendOnlyLog;
 import org.apache.baremaps.database.collection.IndexedDataList;
 import org.apache.baremaps.database.schema.*;
 import org.apache.baremaps.database.schema.DataColumn.Type;
@@ -81,7 +81,7 @@ public class CalciteTest {
           new DataColumnImpl("geometry", Type.GEOMETRY)));
       DataTable cityDataTable = new DataTableImpl(
           cityRowType,
-          new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(cityRowType))));
+          new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(cityRowType))));
       cityDataTable.add(new DataRowImpl(cityDataTable.rowType(),
           List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
       cityDataTable.add(new DataRowImpl(cityDataTable.rowType(),
@@ -95,7 +95,7 @@ public class CalciteTest {
           new DataColumnImpl("population", Type.INTEGER)));
       DataTable populationDataTable = new DataTableImpl(
           populationRowType,
-          new IndexedDataList<>(new AppendOnlyBuffer<>(new RowDataType(populationRowType))));
+          new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(populationRowType))));
       populationDataTable
           .add(new DataRowImpl(populationDataTable.rowType(), List.of(1, 2_161_000)));
       populationDataTable
