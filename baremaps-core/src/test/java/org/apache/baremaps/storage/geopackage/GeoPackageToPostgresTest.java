@@ -42,7 +42,7 @@ public class GeoPackageToPostgresTest extends PostgresContainerTest {
     var postgresTable = postgresStore.get("countries");
     assertEquals("countries", postgresTable.rowType().name());
     assertEquals(4, postgresTable.rowType().columns().size());
-    assertEquals(179l, postgresTable.sizeAsLong());
+    assertEquals(179l, postgresTable.size());
     assertEquals(179l, postgresTable.stream().count());
   }
 }

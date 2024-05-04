@@ -38,7 +38,7 @@ public class BinarySearch {
    * @param <E> the type of the elements in the list
    */
   public static <E> Long binarySearch(DataList<E> list, E value, Comparator<E> comparator) {
-    return binarySearch(list, value, comparator, 0, list.sizeAsLong() - 1l);
+    return binarySearch(list, value, comparator, 0, list.size() - 1l);
   }
 
   /**
@@ -87,7 +87,7 @@ public class BinarySearch {
       A value,
       Comparator<A> comparator) {
     long lo = 0;
-    long hi = list.sizeAsLong() - 1l;
+    long hi = list.size() - 1l;
     while (lo <= hi) {
       long mi = (lo + hi) >>> 1;
       E e = list.get(mi);

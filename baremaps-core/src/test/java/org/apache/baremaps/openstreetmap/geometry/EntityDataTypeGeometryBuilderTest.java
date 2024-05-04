@@ -23,9 +23,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Member;
@@ -33,7 +34,6 @@ import org.apache.baremaps.openstreetmap.model.Member.MemberType;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.openstreetmap.store.MockDataMap;
 import org.apache.baremaps.utils.CRSUtils;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -110,7 +110,7 @@ class EntityDataTypeGeometryBuilderTest {
 
   static final Node NODE_15 = new Node(15L, INFO, ImmutableMap.of(), 3d, 1d);
 
-  static final DataMap<Long, Coordinate> COORDINATE_CACHE = new MockDataMap(Arrays
+  static final Map<Long, Coordinate> COORDINATE_CACHE = new HashMap<>(Arrays
       .asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
           NODE_10, NODE_11, NODE_12, NODE_13, NODE_14, NODE_15)
       .stream()
@@ -132,8 +132,8 @@ class EntityDataTypeGeometryBuilderTest {
   static final Way WAY_5 =
       new Way(5L, INFO, ImmutableMap.of(), ImmutableList.of(12L, 13L, 14L, 15L, 12L));
 
-  static final DataMap<Long, List<Long>> REFERENCE_CACHE =
-      new MockDataMap(Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
+  static final Map<Long, List<Long>> REFERENCE_CACHE =
+      new HashMap<>(Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
           .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
 
   static final Relation RELATION_0 = new Relation(0L, INFO, ImmutableMap.of(), List.of());

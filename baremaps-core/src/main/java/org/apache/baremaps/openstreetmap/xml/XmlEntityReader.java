@@ -23,9 +23,9 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
 import org.apache.baremaps.openstreetmap.function.CoordinateMapBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
@@ -41,9 +41,9 @@ public class XmlEntityReader implements OsmReader<Entity> {
 
   private int srid = 4326;
 
-  private DataMap<Long, Coordinate> coordinateMap;
+  private Map<Long, Coordinate> coordinateMap;
 
-  private DataMap<Long, List<Long>> referenceMap;
+  private Map<Long, List<Long>> referenceMap;
 
   public boolean geometries() {
     return geometry;
@@ -63,20 +63,20 @@ public class XmlEntityReader implements OsmReader<Entity> {
     return this;
   }
 
-  public DataMap<Long, Coordinate> coordinateMap() {
+  public Map<Long, Coordinate> coordinateMap() {
     return coordinateMap;
   }
 
-  public XmlEntityReader coordinateMap(DataMap<Long, Coordinate> coordinateMap) {
+  public XmlEntityReader coordinateMap(Map<Long, Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
     return this;
   }
 
-  public DataMap<Long, List<Long>> referenceMap() {
+  public Map<Long, List<Long>> referenceMap() {
     return referenceMap;
   }
 
-  public XmlEntityReader referenceMap(DataMap<Long, List<Long>> referenceMap) {
+  public XmlEntityReader referenceMap(Map<Long, List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
     return this;
   }

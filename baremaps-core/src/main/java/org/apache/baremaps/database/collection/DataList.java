@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
  *
  * @param <E> The type of the data.
  */
-public abstract class DataList<E> extends AbstractDataCollection<E> {
+public interface DataList<E> extends DataCollection<E> {
 
   /**
    * Appends a value to the list and returns its index.
@@ -35,13 +35,13 @@ public abstract class DataList<E> extends AbstractDataCollection<E> {
    * @param value the value
    * @return the index of the value.
    */
-  public abstract long addIndexed(E value);
+  long addIndexed(E value);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean add(E value) {
+  default boolean add(E value) {
     addIndexed(value);
     return true;
   }
@@ -52,7 +52,7 @@ public abstract class DataList<E> extends AbstractDataCollection<E> {
    * @param index the index
    * @param value the value
    */
-  public abstract void set(long index, E value);
+  void set(long index, E value);
 
   /**
    * Returns the value at the specified index.
@@ -60,20 +60,16 @@ public abstract class DataList<E> extends AbstractDataCollection<E> {
    * @param index the index
    * @return the value
    */
-  public abstract E get(long index);
+  E get(long index);
 
   /** {@inheritDoc} */
   @Override
-  public abstract void clear();
-
-  /** {@inheritDoc} */
-  @Override
-  public Iterator<E> iterator() {
+  default Iterator<E> iterator() {
     return new Iterator<>() {
 
       private long index = 0;
 
-      private long size = sizeAsLong();
+      private long size = size();
 
       @Override
       public boolean hasNext() {

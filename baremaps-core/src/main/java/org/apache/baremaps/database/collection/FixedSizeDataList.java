@@ -19,7 +19,6 @@ package org.apache.baremaps.database.collection;
 
 
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.baremaps.database.memory.Memory;
@@ -33,7 +32,7 @@ import org.apache.baremaps.database.type.FixedSizeDataType;
  *
  * @param <E> The type of the elements.
  */
-public class FixedSizeDataList<E> extends DataList<E> {
+public class FixedSizeDataList<E> implements DataList<E> {
 
   private final FixedSizeDataType<E> dataType;
 
@@ -88,7 +87,7 @@ public class FixedSizeDataList<E> extends DataList<E> {
    */
   @Override
   public void set(long index, E value) {
-    if (index >= sizeAsLong()) {
+    if (index >= size()) {
       throw new IndexOutOfBoundsException();
     }
     write(index, value);
@@ -110,7 +109,7 @@ public class FixedSizeDataList<E> extends DataList<E> {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size() {
     return size.get();
   }
 
@@ -119,11 +118,6 @@ public class FixedSizeDataList<E> extends DataList<E> {
    */
   @Override
   public void clear() {
-    try {
-      size.set(0);
-      memory.clear();
-    } catch (IOException e) {
-      throw new DataCollectionException(e);
-    }
+    size.set(0);
   }
 }

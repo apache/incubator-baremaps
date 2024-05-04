@@ -22,6 +22,7 @@ package org.apache.baremaps.database.collection;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.database.memory.Memory;
 import org.apache.baremaps.database.type.FixedSizeDataType;
@@ -32,7 +33,7 @@ import org.apache.baremaps.database.type.FixedSizeDataType;
  * <p>
  * This code has been adapted from Planetiler (Apache license).
  */
-public class MemoryAlignedDataMap<E> extends DataMap<Long, E> {
+public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
 
   private final FixedSizeDataType<E> dataType;
 
@@ -108,12 +109,18 @@ public class MemoryAlignedDataMap<E> extends DataMap<Long, E> {
   /** {@inheritDoc} */
   @Override
   public boolean containsValue(Object value) {
-    return values().contains(value);
+    Iterator<E> iterator = valueIterator();
+    while (iterator.hasNext()) {
+      if (iterator.next().equals(value)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** {@inheritDoc} */
   @Override
-  public long sizeAsLong() {
+  public long size() {
     return memory.size() / dataType.size();
   }
 
@@ -125,12 +132,12 @@ public class MemoryAlignedDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   @Override
-  protected Iterator<Long> keyIterator() {
+  public Iterator<Long> keyIterator() {
     return new Iterator<>() {
 
       private long index = 0;
 
-      private long size = sizeAsLong();
+      private long size = size();
 
       @Override
       public boolean hasNext() {
@@ -149,12 +156,12 @@ public class MemoryAlignedDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   @Override
-  protected Iterator<E> valueIterator() {
+  public Iterator<E> valueIterator() {
     return new Iterator<>() {
 
       private long index = 0;
 
-      private long size = sizeAsLong();
+      private long size = size();
 
       @Override
       public boolean hasNext() {
@@ -171,14 +178,13 @@ public class MemoryAlignedDataMap<E> extends DataMap<Long, E> {
     };
   }
 
-  /** {@inheritDoc} */
   @Override
-  protected Iterator<Entry<Long, E>> entryIterator() {
+  public Iterator<Entry<Long, E>> entryIterator() {
     return new Iterator<>() {
 
       private long index = 0;
 
-      private long size = sizeAsLong();
+      private long size = size();
 
       @Override
       public boolean hasNext() {
@@ -195,4 +201,5 @@ public class MemoryAlignedDataMap<E> extends DataMap<Long, E> {
       }
     };
   }
+
 }

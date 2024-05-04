@@ -18,19 +18,81 @@
 package org.apache.baremaps.database.collection;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-public interface DataCollection<E> extends Collection<E> {
+public interface DataCollection<E> extends Iterable<E> {
 
   /**
-   * Returns the number of values stored in the data store.
+   * Returns the number of values stored in the data collection.
    *
    * @return the number of values
    */
-  long sizeAsLong();
+  long size();
 
-  /** {@inheritDoc} */
-  default int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+  default boolean isEmpty() {
+    return size() == 0;
   }
+
+  Iterator<E> iterator();
+
+  default Spliterator<E> spliterator() {
+    return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
+  }
+
+  default Stream<E> stream() {
+    return StreamSupport.stream(spliterator(), false);
+  }
+
+  default boolean add(E e) {
+    throw new UnsupportedOperationException();
+  }
+
+  default boolean addAll(Collection<? extends E> c) {
+    boolean modified = false;
+    for (E e : c) {
+      if (add(e)) {
+        modified = true;
+      }
+    }
+    return modified;
+  }
+
+  default boolean remove(Object o) {
+    throw new UnsupportedOperationException();
+  }
+
+  default boolean removeAll(Collection<?> c) {
+    boolean modified = false;
+    for (Object o : c) {
+      if (remove(o)) {
+        modified = true;
+      }
+    }
+    return modified;
+  }
+
+  default boolean contains(Object o) {
+    for (E e : this) {
+      if (e.equals(o)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  default boolean containsAll(Collection<?> c) {
+    for (Object o : c) {
+      if (!contains(o)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void clear();
 
 }

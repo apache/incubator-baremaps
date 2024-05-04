@@ -61,7 +61,7 @@ class ExternalMergeSortTest {
 
   public List<String> stringList(DataList<String> list) {
     var l = new ArrayList<String>();
-    for (long i = 0; i < list.sizeAsLong(); i++) {
+    for (long i = 0; i < list.size(); i++) {
       l.add(list.get(i));
     }
     return l;

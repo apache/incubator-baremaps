@@ -33,7 +33,7 @@ import org.apache.baremaps.database.type.FixedSizeDataType;
  *
  * @param <E> The type of the elements.
  */
-public class MemoryAlignedDataList<E> extends DataList<E> {
+public class MemoryAlignedDataList<E> implements DataList<E> {
 
   private final FixedSizeDataType<E> dataType;
 
@@ -114,7 +114,7 @@ public class MemoryAlignedDataList<E> extends DataList<E> {
 
   /** {@inheritDoc} */
   @Override
-  public long sizeAsLong() {
+  public long size() {
     return size.get();
   }
 

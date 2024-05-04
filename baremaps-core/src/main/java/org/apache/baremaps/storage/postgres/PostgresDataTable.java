@@ -23,17 +23,17 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.schema.AbstractDataTable;
 import org.apache.baremaps.database.schema.DataRow;
 import org.apache.baremaps.database.schema.DataRowImpl;
 import org.apache.baremaps.database.schema.DataRowType;
+import org.apache.baremaps.database.schema.DataTable;
 import org.apache.baremaps.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 
 /**
  * A table that stores rows in a Postgres table.
  */
-public class PostgresDataTable extends AbstractDataTable {
+public class PostgresDataTable implements DataTable {
 
   private final DataSource dataSource;
 
@@ -73,7 +73,7 @@ public class PostgresDataTable extends AbstractDataTable {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public long size() {
     var countQuery = count(rowType);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(countQuery);
@@ -124,6 +124,11 @@ public class PostgresDataTable extends AbstractDataTable {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public void clear() {
+
   }
 
   /**

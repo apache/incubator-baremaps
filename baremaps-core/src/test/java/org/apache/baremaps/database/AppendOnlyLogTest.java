@@ -37,7 +37,7 @@ class AppendOnlyLogTest {
   void addFixedSizeData() {
     var collection = new AppendOnlyLog<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(Long.BYTES + (i << 2), collection.add(i));
+      assertEquals(Long.BYTES + (i << 2), collection.addPositioned(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
       assertEquals(i, collection.read(Long.BYTES + (i << 2)));
@@ -56,7 +56,7 @@ class AppendOnlyLogTest {
       for (int j = 0; j < size; j++) {
         value.add(random.nextInt(1 << 20));
       }
-      positions.add(collection.add(value));
+      positions.add(collection.addPositioned(value));
       values.add(value);
     }
     for (int i = 0; i < positions.size(); i++) {
@@ -73,7 +73,7 @@ class AppendOnlyLogTest {
 
     // write values
     for (int i = 0; i < num; i++) {
-      collection.add(value);
+      collection.addPositioned(value);
     }
     collection.close();
 

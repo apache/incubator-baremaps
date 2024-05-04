@@ -22,6 +22,7 @@ package org.apache.baremaps.database.collection;
 import com.google.common.collect.Streams;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.baremaps.database.type.LongDataType;
 
 /**
@@ -35,7 +36,7 @@ import org.apache.baremaps.database.type.LongDataType;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class MonotonicFixedSizeDataMap<E> extends DataMap<Long, E> {
+public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
 
   private final DataList<Long> offsets;
   private final DataList<Long> keys;
@@ -76,8 +77,8 @@ public class MonotonicFixedSizeDataMap<E> extends DataMap<Long, E> {
       return null;
     }
     long lo = offsets.get(chunk);
-    long hi = Math.min(keys.sizeAsLong(),
-        chunk >= offsets.sizeAsLong() - 1 ? keys.sizeAsLong() : offsets.get(chunk + 1)) - 1;
+    long hi = Math.min(keys.size(),
+        chunk >= offsets.size() - 1 ? keys.size() : offsets.get(chunk + 1)) - 1;
     while (lo <= hi) {
       long index = (lo + hi) >>> 1;
       long value = keys.get(index);
@@ -94,10 +95,10 @@ public class MonotonicFixedSizeDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   public E put(Long key, E value) {
-    long size = keys.sizeAsLong();
+    long size = keys.size();
     long chunk = key >>> 8;
     if (chunk != lastChunk) {
-      while (offsets.sizeAsLong() <= chunk) {
+      while (offsets.size() <= chunk) {
         offsets.add(size);
       }
       lastChunk = chunk;
@@ -115,8 +116,8 @@ public class MonotonicFixedSizeDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   @Override
-  public long sizeAsLong() {
-    return keys.sizeAsLong();
+  public long size() {
+    return keys.size();
   }
 
   /** {@inheritDoc} */
@@ -133,23 +134,23 @@ public class MonotonicFixedSizeDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   @Override
-  protected Iterator<Long> keyIterator() {
+  public Iterator<Long> keyIterator() {
     return keys.iterator();
   }
 
   /** {@inheritDoc} */
   @Override
-  protected Iterator<E> valueIterator() {
+  public Iterator<E> valueIterator() {
     return values.iterator();
   }
 
   /** {@inheritDoc} */
   @Override
-  protected Iterator<Entry<Long, E>> entryIterator() {
+  public Iterator<Entry<Long, E>> entryIterator() {
     return Streams.zip(
         Streams.stream(keyIterator()),
         Streams.stream(valueIterator()),
-        (k, v) -> Map.entry(k, v)).iterator();
+        Map::entry).iterator();
   }
 
   /** {@inheritDoc} */
@@ -159,4 +160,5 @@ public class MonotonicFixedSizeDataMap<E> extends DataMap<Long, E> {
     keys.clear();
     values.clear();
   }
+
 }

@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.database.schema.AbstractDataTable;
 import org.apache.baremaps.database.schema.DataRow;
 import org.apache.baremaps.database.schema.DataRowType;
+import org.apache.baremaps.database.schema.DataTable;
 import org.apache.baremaps.database.schema.DataTableException;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A table that stores rows in a shapefile.
  */
-public class ShapefileDataTable extends AbstractDataTable {
+public class ShapefileDataTable implements DataTable {
 
   private static final Logger logger = LoggerFactory.getLogger(ShapefileDataTable.class);
 
@@ -61,6 +61,11 @@ public class ShapefileDataTable extends AbstractDataTable {
     }
   }
 
+  @Override
+  public long size() {
+    return 0;
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -73,14 +78,10 @@ public class ShapefileDataTable extends AbstractDataTable {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public long sizeAsLong() {
-    return Long.MAX_VALUE;
-  }
+  public void clear() {
 
+  }
 
   /**
    * An iterator over the rows of a shapefile.

@@ -17,25 +17,33 @@
 
 package org.apache.baremaps.database.collection;
 
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.Set;
 
+public class MapAdapter<K, V> extends AbstractMap<K, V> {
 
-import java.util.AbstractCollection;
+  private final DataMap<K, V> dataMap;
+  private final int size;
 
-/**
- * An abstract collection of data elements that can hold a large number of elements.
- *
- * @param <E> The type of the data.
- */
-public abstract class AbstractDataCollection<E> extends AbstractCollection<E>
-    implements DataCollection<E> {
-
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+  public MapAdapter(DataMap<K, V> dataMap) {
+    this.dataMap = dataMap;
+    this.size = (int) dataMap.size();
   }
 
+  @Override
+  public Set<Entry<K, V>> entrySet() {
+    return new AbstractSet<>() {
+      @Override
+      public Iterator<Entry<K, V>> iterator() {
+        return dataMap.entryIterator();
+      }
+
+      @Override
+      public int size() {
+        return size;
+      }
+    };
+  }
 }

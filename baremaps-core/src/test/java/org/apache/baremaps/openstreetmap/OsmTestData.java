@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
-import org.apache.baremaps.openstreetmap.store.MockDataMap;
 import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.RoundingTransformer;
@@ -70,13 +69,13 @@ public class OsmTestData {
         String.format(displayNameFormat, osmTest.getId(), "pbf", osmTest.getDescription());
     return Stream.<DynamicTest>builder()
         .add(DynamicTest.dynamicTest(xmlDisplayName, () -> runTest(osmTest, new XmlEntityReader()
-            .coordinateMap(new MockDataMap<>())
-            .referenceMap(new MockDataMap<>())
+            .coordinateMap(new HashMap<>())
+            .referenceMap(new HashMap<>())
             .geometries(true)
             .stream(Files.newInputStream(osmTest.getOsmXml())))))
         .add(DynamicTest.dynamicTest(pbfDisplayName, () -> runTest(osmTest, new PbfEntityReader()
-            .coordinateMap(new MockDataMap<>())
-            .referenceMap(new MockDataMap<>())
+            .coordinateMap(new HashMap<>())
+            .referenceMap(new HashMap<>())
             .geometries(true)
             .stream(Files.newInputStream(osmTest.getOsmPbf())))))
         .build();

@@ -78,7 +78,7 @@ public class ExternalMergeSort {
         new PriorityQueue<>(batches.size(), (i, j) -> comparator.compare(i.peek(), j.peek()));
 
     for (DataList<T> input : batches) {
-      if (input.sizeAsLong() == 0) {
+      if (input.size() == 0) {
         continue;
       }
       DataStack stack = new DataStack(input);
@@ -221,7 +221,7 @@ public class ExternalMergeSort {
     }
 
     public boolean empty() {
-      return this.index > list.sizeAsLong();
+      return this.index > list.size();
     }
 
     public T peek() {

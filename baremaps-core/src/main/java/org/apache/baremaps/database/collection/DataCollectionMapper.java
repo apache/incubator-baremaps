@@ -24,21 +24,26 @@ import java.util.function.Function;
 /**
  * A decorator for a table that transforms the geometries of the rows.
  */
-public class DataCollectionAdapter<S, T> extends AbstractDataCollection<T> {
+public class DataCollectionMapper<S, T> implements DataCollection<T> {
 
   private final DataCollection<S> collection;
 
-  private final Function<S, T> transformer;
+  private final Function<S, T> mapper;
 
   /**
    * Constructs a new table decorator.
    *
    * @param collection the table to decorate
-   * @param transformer the row transformer
+   * @param mapper the row transformer
    */
-  public DataCollectionAdapter(DataCollection<S> collection, Function<S, T> transformer) {
+  public DataCollectionMapper(DataCollection<S> collection, Function<S, T> mapper) {
     this.collection = collection;
-    this.transformer = transformer;
+    this.mapper = mapper;
+  }
+
+  @Override
+  public long size() {
+    return collection.size();
   }
 
   /**
@@ -46,14 +51,11 @@ public class DataCollectionAdapter<S, T> extends AbstractDataCollection<T> {
    */
   @Override
   public Iterator<T> iterator() {
-    return collection.stream().map(this.transformer).iterator();
+    return collection.stream().map(this.mapper).iterator();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public long sizeAsLong() {
-    return collection.sizeAsLong();
+  public void clear() {
+    collection.clear();
   }
 }

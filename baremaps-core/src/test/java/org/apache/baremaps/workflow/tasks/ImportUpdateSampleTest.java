@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.database.collection.AppendOnlyLog;
 import org.apache.baremaps.database.collection.IndexedDataMap;
+import org.apache.baremaps.database.collection.MapAdapter;
 import org.apache.baremaps.database.memory.OnHeapMemory;
 import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.geometry.CoordinateDataType;
@@ -58,10 +59,10 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     // Initialize the data maps
-    Map<Long, Coordinate> coordinateMap =
-        new IndexedDataMap<>(new AppendOnlyLog<>(new CoordinateDataType(), new OnHeapMemory()));
-    Map<Long, List<Long>> referenceMap =
-        new IndexedDataMap<>(new AppendOnlyLog<>(new LongListDataType(), new OnHeapMemory()));
+    Map<Long, Coordinate> coordinateMap = new MapAdapter<>(
+        new IndexedDataMap<>(new AppendOnlyLog<>(new CoordinateDataType(), new OnHeapMemory())));
+    Map<Long, List<Long>> referenceMap = new MapAdapter<>(
+        new IndexedDataMap<>(new AppendOnlyLog<>(new LongListDataType(), new OnHeapMemory())));
 
     // Import the sample data
     ImportOsmPbf.execute(OsmSample.SAMPLE_OSM_PBF, coordinateMap, referenceMap, headerRepository,

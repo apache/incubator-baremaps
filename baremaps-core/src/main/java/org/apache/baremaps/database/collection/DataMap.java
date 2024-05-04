@@ -18,20 +18,32 @@
 package org.apache.baremaps.database.collection;
 
 
-
 import com.google.common.collect.Streams;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * An abstract map of data elements that can hold a large number of elements.
  *
  * @param <V> The type of the elements.
  */
-public abstract class DataMap<K, V> implements Map<K, V> {
+public interface DataMap<K, V> {
 
-  /** {@inheritDoc} */
-  @Override
-  public void putAll(Map<? extends K, ? extends V> m) {
+  long size();
+
+  V get(Object key);
+
+  V put(K key, V value);
+
+  V remove(Object key);
+
+  void clear();
+
+  boolean containsKey(Object key);
+
+  boolean containsValue(Object value);
+
+  default void putAll(Map<? extends K, ? extends V> m) {
     m.forEach(this::put);
   }
 
@@ -41,26 +53,13 @@ public abstract class DataMap<K, V> implements Map<K, V> {
    * @param keys the keys
    * @return the values
    */
-  public List<V> getAll(List<K> keys) {
+  default List<V> getAll(List<K> keys) {
     return Streams.stream(keys).map(this::get).toList();
   }
 
   /** {@inheritDoc} */
-  @Override
-  public boolean isEmpty() {
+  default boolean isEmpty() {
     return size() == 0;
-  }
-
-  /**
-   * Returns the size of the map as a long.
-   *
-   * @return the size of the map
-   */
-  public abstract long sizeAsLong();
-
-  /** {@inheritDoc} */
-  public int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
   }
 
   /**
@@ -68,73 +67,37 @@ public abstract class DataMap<K, V> implements Map<K, V> {
    *
    * @return an iterator
    */
-  protected abstract Iterator<K> keyIterator();
-
-  /** {@inheritDoc} */
-  @Override
-  public Set<K> keySet() {
-    return new KeySet();
-  }
-
-  private class KeySet extends AbstractSet<K> {
-    @Override
-    public Iterator<K> iterator() {
-      return keyIterator();
-    }
-
-    @Override
-    public int size() {
-      return DataMap.this.size();
-    }
-  }
+  Iterator<K> keyIterator();
 
   /**
    * Returns an iterator over the values of the map.
    *
    * @return an iterator
    */
-  protected abstract Iterator<V> valueIterator();
-
-  /** {@inheritDoc} */
-  @Override
-  public Collection<V> values() {
-    return new ValueCollection();
-  }
-
-  private class ValueCollection extends AbstractCollection<V> {
-    @Override
-    public Iterator<V> iterator() {
-      return valueIterator();
-    }
-
-    @Override
-    public int size() {
-      return DataMap.this.size();
-    }
-  }
+  Iterator<V> valueIterator();
 
   /**
    * Returns an iterator over the entries of the map.
    *
    * @return an iterator
    */
-  protected abstract Iterator<Entry<K, V>> entryIterator();
+  Iterator<Entry<K, V>> entryIterator();
 
   /** {@inheritDoc} */
-  @Override
-  public Set<Entry<K, V>> entrySet() {
-    return new EntrySet();
+  default Set<Entry<K, V>> entrySet() {
+    int size = (int) size();
+    return new AbstractSet<>() {
+
+      @Override
+      public Iterator<Entry<K, V>> iterator() {
+        return entryIterator();
+      }
+
+      @Override
+      public int size() {
+        return size;
+      }
+    };
   }
 
-  private class EntrySet extends AbstractSet<Entry<K, V>> {
-    @Override
-    public Iterator<Entry<K, V>> iterator() {
-      return entryIterator();
-    }
-
-    @Override
-    public int size() {
-      return DataMap.this.size();
-    }
-  }
 }

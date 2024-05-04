@@ -36,7 +36,7 @@ import org.apache.baremaps.database.type.DataType;
  *
  * @param <E> The type of the data.
  */
-public class AppendOnlyLog<E> implements Iterable<E> {
+public class AppendOnlyLog<E> implements DataCollection<E> {
 
   private final DataType<E> dataType;
   private final Memory<?> memory;
@@ -75,7 +75,7 @@ public class AppendOnlyLog<E> implements Iterable<E> {
    * @param value the value
    * @return the position of the value in the memory.
    */
-  public long add(E value) {
+  public long addPositioned(E value) {
     int valueSize = dataType.size(value);
     if (valueSize > segmentSize) {
       throw new DataCollectionException("The value is too big to fit in a segment");
@@ -100,6 +100,13 @@ public class AppendOnlyLog<E> implements Iterable<E> {
 
     return position;
   }
+
+  @Override
+  public boolean add(E e) {
+    addPositioned(e);
+    return true;
+  }
+
 
   /**
    * Returns a values at the specified position in the memory.
@@ -143,6 +150,7 @@ public class AppendOnlyLog<E> implements Iterable<E> {
 
   /**
    * Returns an iterator over the values of the log.
+   * 
    * @return an iterator over the values of the log
    */
   @Override
@@ -153,6 +161,7 @@ public class AppendOnlyLog<E> implements Iterable<E> {
 
   /**
    * Returns true if the log contains the specified value.
+   * 
    * @param value the value
    * @return true if the log contains the specified value
    */

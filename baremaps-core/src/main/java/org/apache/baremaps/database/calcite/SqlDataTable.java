@@ -17,8 +17,8 @@
 
 package org.apache.baremaps.database.calcite;
 
-import java.util.Collection;
-import org.apache.baremaps.database.collection.DataCollectionAdapter;
+import org.apache.baremaps.database.collection.DataCollection;
+import org.apache.baremaps.database.collection.DataCollectionMapper;
 import org.apache.baremaps.database.schema.DataColumn;
 import org.apache.baremaps.database.schema.DataTable;
 import org.apache.calcite.DataContext;
@@ -44,8 +44,8 @@ class SqlDataTable extends AbstractTable implements ScannableTable {
 
   @Override
   public Enumerable<Object[]> scan(final DataContext root) {
-    Collection<Object[]> collection =
-        new DataCollectionAdapter<>(table, row -> row.values().toArray());
+    DataCollection<Object[]> collection =
+        new DataCollectionMapper<>(table, row -> row.values().toArray());
     return Linq4j.asEnumerable(collection);
   }
 

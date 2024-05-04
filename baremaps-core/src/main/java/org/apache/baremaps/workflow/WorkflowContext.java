@@ -64,12 +64,12 @@ public class WorkflowContext {
     return dataSources.computeIfAbsent(database, PostgresUtils::createDataSourceFromObject);
   }
 
-  public DataMap<Long, Coordinate> getCoordinateMap() throws IOException {
-    return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
+  public Map<Long, Coordinate> getCoordinateMap() throws IOException {
+    return new MapAdapter<>(getMemoryAlignedDataMap("coordinates", new LonLatDataType()));
   }
 
-  public DataMap<Long, List<Long>> getReferenceMap() throws IOException {
-    return getMonotonicDataMap("references", new LongListDataType());
+  public Map<Long, List<Long>> getReferenceMap() throws IOException {
+    return new MapAdapter<>(getMonotonicDataMap("references", new LongListDataType()));
   }
 
   public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)

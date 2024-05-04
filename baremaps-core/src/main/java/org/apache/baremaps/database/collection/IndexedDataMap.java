@@ -23,6 +23,7 @@ import com.google.common.collect.Streams;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A map that can hold a large number of variable size data elements.
@@ -31,7 +32,7 @@ import java.util.Map;
  *
  * @param <E> The type of the elements.
  */
-public class IndexedDataMap<E> extends DataMap<Long, E> {
+public class IndexedDataMap<E> implements DataMap<Long, E> {
 
   private final Map<Long, Long> index;
 
@@ -63,7 +64,7 @@ public class IndexedDataMap<E> extends DataMap<Long, E> {
   @Override
   public E put(Long key, E value) {
     var oldIndex = index.get(key);
-    var position = values.add(value);
+    var position = values.addPositioned(value);
     index.put(key, position);
     return oldIndex == null ? null : values.read(oldIndex);
   }
@@ -81,7 +82,7 @@ public class IndexedDataMap<E> extends DataMap<Long, E> {
    * {@inheritDoc}
    */
   @Override
-  protected Iterator<Long> keyIterator() {
+  public Iterator<Long> keyIterator() {
     return index.keySet().iterator();
   }
 
@@ -89,15 +90,12 @@ public class IndexedDataMap<E> extends DataMap<Long, E> {
    * {@inheritDoc}
    */
   @Override
-  protected Iterator<E> valueIterator() {
+  public Iterator<E> valueIterator() {
     return Streams.stream(keyIterator()).map(this::get).iterator();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  protected Iterator<Entry<Long, E>> entryIterator() {
+  public Iterator<Entry<Long, E>> entryIterator() {
     return Streams.stream(keyIterator()).map(k -> Map.entry(k, get(k))).iterator();
   }
 
@@ -113,12 +111,8 @@ public class IndexedDataMap<E> extends DataMap<Long, E> {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
-    if (index instanceof DataMap<?, ?>dataMap) {
-      return dataMap.sizeAsLong();
-    } else {
-      return index.size();
-    }
+  public long size() {
+    return index.size();
   }
 
   /**

@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoderosm.GeocoderOsmConsumerEntity;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
@@ -86,8 +86,8 @@ public class CreateGeocoderOpenStreetMap implements Task {
 
   public static void execute(
       Path path,
-      DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
+      Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap,
       GeocoderOsmConsumerEntity importer) throws IOException {
 
     // configure the block reader

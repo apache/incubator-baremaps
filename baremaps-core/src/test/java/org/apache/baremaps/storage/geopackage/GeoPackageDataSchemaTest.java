@@ -37,7 +37,7 @@ class GeoPackageDataSchemaTest {
   void read() {
     var geoPackageStore = new GeoPackageDataSchema(TestFiles.resolve("data/countries.gpkg"));
     var table = geoPackageStore.get("countries");
-    assertEquals(179, table.sizeAsLong());
+    assertEquals(179, table.size());
     assertEquals(179, table.stream().count());
   }
 }

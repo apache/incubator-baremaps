@@ -28,7 +28,7 @@ import org.apache.baremaps.database.type.LongDataType;
  *
  * @param <E> The type of the elements.
  */
-public class IndexedDataList<E> extends DataList<E> {
+public class IndexedDataList<E> implements DataList<E> {
 
   private final DataList<Long> index;
 
@@ -60,7 +60,7 @@ public class IndexedDataList<E> extends DataList<E> {
    */
   @Override
   public long addIndexed(E value) {
-    long position = values.add(value);
+    long position = values.addPositioned(value);
     return index.addIndexed(position);
   }
 
@@ -69,7 +69,7 @@ public class IndexedDataList<E> extends DataList<E> {
    */
   @Override
   public void set(long index, E value) {
-    long position = values.add(value);
+    long position = values.addPositioned(value);
     this.index.set(index, position);
   }
 
@@ -82,17 +82,11 @@ public class IndexedDataList<E> extends DataList<E> {
     return values.read(position);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public long sizeAsLong() {
-    return index.sizeAsLong();
+  public long size() {
+    return index.size();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void clear() {
     index.clear();

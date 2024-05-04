@@ -21,6 +21,7 @@ package org.apache.baremaps.database.collection;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.baremaps.database.type.LongDataType;
 import org.apache.baremaps.database.type.PairDataType.Pair;
 
@@ -29,7 +30,7 @@ import org.apache.baremaps.database.type.PairDataType.Pair;
  * their key and inserted in a monotonic way. The elements cannot be removed or updated once
  * inserted.
  */
-public class MonotonicPairedDataMap<E> extends DataMap<Long, E> {
+public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
 
   private final DataList<Long> offsets;
   private final MemoryAlignedDataList<Pair<Long, E>> values;
@@ -54,10 +55,10 @@ public class MonotonicPairedDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   public E put(Long key, E value) {
-    long index = values.sizeAsLong();
+    long index = values.size();
     long chunk = key >>> 8;
     if (chunk != lastChunk) {
-      while (offsets.sizeAsLong() <= chunk) {
+      while (offsets.size() <= chunk) {
         offsets.add(index);
       }
       lastChunk = chunk;
@@ -70,15 +71,15 @@ public class MonotonicPairedDataMap<E> extends DataMap<Long, E> {
   public E get(Object keyObject) {
     long key = (long) keyObject;
     long chunk = key >>> 8;
-    if (chunk >= offsets.sizeAsLong()) {
+    if (chunk >= offsets.size()) {
       return null;
     }
     long lo = offsets.get(chunk);
     long hi =
         Math.min(
-            values.sizeAsLong(),
-            chunk >= offsets.sizeAsLong() - 1
-                ? values.sizeAsLong()
+            values.size(),
+            chunk >= offsets.size() - 1
+                ? values.size()
                 : offsets.get(chunk + 1))
             - 1;
     while (lo <= hi) {
@@ -99,19 +100,18 @@ public class MonotonicPairedDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   @Override
-  protected Iterator<Long> keyIterator() {
+  public Iterator<Long> keyIterator() {
     return values.stream().map(Pair::left).iterator();
   }
 
   /** {@inheritDoc} */
   @Override
-  protected Iterator<E> valueIterator() {
+  public Iterator<E> valueIterator() {
     return values.stream().map(Pair::right).iterator();
   }
 
-  /** {@inheritDoc} */
   @Override
-  protected Iterator<Entry<Long, E>> entryIterator() {
+  public Iterator<Entry<Long, E>> entryIterator() {
     return values.stream()
         .map(p -> Map.entry(p.left(), p.right()))
         .iterator();
@@ -119,8 +119,8 @@ public class MonotonicPairedDataMap<E> extends DataMap<Long, E> {
 
   /** {@inheritDoc} */
   @Override
-  public long sizeAsLong() {
-    return values.sizeAsLong();
+  public long size() {
+    return values.size();
   }
 
   /** {@inheritDoc} */

@@ -105,7 +105,7 @@ class DataMapTest {
       set.add(i);
       map.put(i, i);
     }
-    var res = map.keySet();
+    var res = new MapAdapter<>(map).keySet();
     assertEquals(set, res);
   }
 
@@ -117,7 +117,7 @@ class DataMapTest {
       set.add(i);
       map.put(i, i);
     }
-    assertEquals(set, new HashSet(map.values()));
+    assertEquals(set, new HashSet(new MapAdapter<>(map).values()));
   }
 
   @ParameterizedTest
@@ -156,7 +156,7 @@ class DataMapTest {
     assertEquals(15l, map.get(15l));
     assertEquals(20l, map.get(20l));
 
-    assertEquals(Set.of(10l, 15l, 20l), map.keySet());;
+    assertEquals(Set.of(10l, 15l, 20l), new MapAdapter<>(map).keySet());;
   }
 
 

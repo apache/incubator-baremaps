@@ -20,12 +20,11 @@ package org.apache.baremaps.database.schema;
 
 import java.util.Iterator;
 import java.util.function.Function;
-import org.apache.baremaps.database.collection.AbstractDataCollection;
 
 /**
  * A decorator for a table that transforms the geometries of the rows.
  */
-public class DataTableAdapter extends AbstractDataCollection<DataRow> implements DataTable {
+public class DataTableAdapter implements DataTable {
 
   private final DataTable table;
 
@@ -50,6 +49,11 @@ public class DataTableAdapter extends AbstractDataCollection<DataRow> implements
     return table.rowType();
   }
 
+  @Override
+  public long size() {
+    return table.size();
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -58,11 +62,9 @@ public class DataTableAdapter extends AbstractDataCollection<DataRow> implements
     return table.stream().map(this.transformer).iterator();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public long sizeAsLong() {
-    return table.sizeAsLong();
+  public void clear() {
+    table.clear();
   }
+
 }
