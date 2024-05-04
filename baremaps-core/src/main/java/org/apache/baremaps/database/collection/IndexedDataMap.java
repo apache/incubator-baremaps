@@ -135,7 +135,7 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
    * {@inheritDoc}
    */
   @Override
-  public E remove(Object key) {
+  public E remove(Long key) {
     return values.read(index.remove(key));
   }
 

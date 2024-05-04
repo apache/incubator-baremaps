@@ -26,8 +26,8 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.database.collection.AppendOnlyLog;
+import org.apache.baremaps.database.collection.DataConversions;
 import org.apache.baremaps.database.collection.IndexedDataMap;
-import org.apache.baremaps.database.collection.MapAdapter;
 import org.apache.baremaps.database.memory.OnHeapMemory;
 import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.geometry.CoordinateDataType;
@@ -59,9 +59,9 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     // Initialize the data maps
-    Map<Long, Coordinate> coordinateMap = new MapAdapter<>(
+    Map<Long, Coordinate> coordinateMap = DataConversions.asMap(
         new IndexedDataMap<>(new AppendOnlyLog<>(new CoordinateDataType(), new OnHeapMemory())));
-    Map<Long, List<Long>> referenceMap = new MapAdapter<>(
+    Map<Long, List<Long>> referenceMap = DataConversions.asMap(
         new IndexedDataMap<>(new AppendOnlyLog<>(new LongListDataType(), new OnHeapMemory())));
 
     // Import the sample data

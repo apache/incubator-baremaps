@@ -75,7 +75,6 @@ class AppendOnlyLogTest {
     for (int i = 0; i < num; i++) {
       collection.addPositioned(value);
     }
-    collection.close();
 
     // read values
     int count = 0;

@@ -82,11 +82,17 @@ public class IndexedDataList<E> implements DataList<E> {
     return values.read(position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long size() {
     return index.size();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
     index.clear();

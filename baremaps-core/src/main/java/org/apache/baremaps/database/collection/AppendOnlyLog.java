@@ -101,6 +101,9 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
     return position;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean add(E e) {
     addPositioned(e);
@@ -128,13 +131,6 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
    */
   public long size() {
     return size;
-  }
-
-  /**
-   * Closes the log.
-   */
-  public void close() {
-    memory.segment(0).putLong(0, size);
   }
 
   /**

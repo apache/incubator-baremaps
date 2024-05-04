@@ -92,7 +92,7 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
 
   /** {@inheritDoc} */
   @Override
-  public E remove(Object key) {
+  public E remove(Long key) {
     throw new UnsupportedOperationException();
   }
 

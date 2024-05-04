@@ -22,28 +22,4 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class MapAdapter<K, V> extends AbstractMap<K, V> {
 
-  private final DataMap<K, V> dataMap;
-  private final int size;
-
-  public MapAdapter(DataMap<K, V> dataMap) {
-    this.dataMap = dataMap;
-    this.size = (int) dataMap.size();
-  }
-
-  @Override
-  public Set<Entry<K, V>> entrySet() {
-    return new AbstractSet<>() {
-      @Override
-      public Iterator<Entry<K, V>> iterator() {
-        return dataMap.entryIterator();
-      }
-
-      @Override
-      public int size() {
-        return size;
-      }
-    };
-  }
-}

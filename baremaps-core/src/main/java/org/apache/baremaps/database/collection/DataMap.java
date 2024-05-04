@@ -29,23 +29,20 @@ import java.util.Map.Entry;
  */
 public interface DataMap<K, V> {
 
+  /**
+   * Returns the number of values stored in the data map.
+   *
+   * @return the number of values
+   */
   long size();
 
+  /**
+   * Returns the value associated with the specified key or null if the key is not present.
+   *
+   * @param key the key
+   * @return the value
+   */
   V get(Object key);
-
-  V put(K key, V value);
-
-  V remove(Object key);
-
-  void clear();
-
-  boolean containsKey(Object key);
-
-  boolean containsValue(Object value);
-
-  default void putAll(Map<? extends K, ? extends V> m) {
-    m.forEach(this::put);
-  }
 
   /**
    * Returns the value associated with the specified key or null if the key is not present.
@@ -57,7 +54,50 @@ public interface DataMap<K, V> {
     return Streams.stream(keys).map(this::get).toList();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Associates the specified value with the specified key in the map.
+   * 
+   * @param key the key
+   * @param value the value
+   * @return the previous value associated with the key, or null if there was no mapping for the
+   *         key.
+   */
+  V put(K key, V value);
+
+  /**
+   * Removes the mapping for the specified key from the map if present.
+   *
+   * @param key the key
+   * @return the previous value associated with the key, or null if there was no mapping for the
+   *         key.
+   */
+  V remove(K key);
+
+  /**
+   * Returns true if the map contains a mapping for the specified key.
+   *
+   * @param key the key
+   * @return true if the map contains a mapping for the key
+   */
+  boolean containsKey(Object key);
+
+  /**
+   * Returns true if the map contains a mapping for the specified value.
+   *
+   * @param value the value
+   * @return true if the map contains a mapping for the value
+   */
+  boolean containsValue(V value);
+
+  /**
+   * Clears the map.
+   */
+  void clear();
+
+  /**
+   * Returns true if the map contains no elements.
+   * @return true if the map contains no elements
+   */
   default boolean isEmpty() {
     return size() == 0;
   }

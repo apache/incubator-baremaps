@@ -33,20 +33,46 @@ public interface DataCollection<E> extends Iterable<E> {
    */
   long size();
 
+  /**
+   * Returns true if the data collection is empty.
+   *
+   * @return true if the data collection is empty
+   */
   default boolean isEmpty() {
     return size() == 0;
   }
 
+  /**
+   * Returns an iterator over the elements in the data collection.
+   *
+   * @return an iterator
+   */
   Iterator<E> iterator();
 
+  /**
+   * Returns a spliterator over the elements in the data collection.
+   *
+   * @return a spliterator
+   */
   default Spliterator<E> spliterator() {
     return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
   }
 
+  /**
+   * Returns a stream over the elements in the data collection.
+   *
+   * @return a stream
+   */
   default Stream<E> stream() {
     return StreamSupport.stream(spliterator(), false);
   }
 
+  /**
+   * Adds a value to the data collection.
+   *
+   * @param e the value to add
+   * @return true if the data collection has been modified
+   */
   default boolean add(E e) {
     throw new UnsupportedOperationException();
   }
