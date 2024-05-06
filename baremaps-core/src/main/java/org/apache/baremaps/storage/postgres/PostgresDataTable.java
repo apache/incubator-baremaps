@@ -27,7 +27,7 @@ import org.apache.baremaps.database.schema.DataRow;
 import org.apache.baremaps.database.schema.DataRowImpl;
 import org.apache.baremaps.database.schema.DataRowType;
 import org.apache.baremaps.database.schema.DataTable;
-import org.apache.baremaps.utils.GeometryUtils;
+import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 
 /**

@@ -96,6 +96,7 @@ public interface DataMap<K, V> {
 
   /**
    * Returns true if the map contains no elements.
+   * 
    * @return true if the map contains no elements
    */
   default boolean isEmpty() {

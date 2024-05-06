@@ -21,7 +21,7 @@ package org.apache.baremaps.openstreetmap.repository;
 
 import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.*;
-import org.apache.baremaps.stream.StreamException;
+import org.apache.baremaps.openstreetmap.stream.StreamException;
 
 /** A consumer for importing OpenStreetMap blocks in a database. */
 public class BlockImporter implements Consumer<Block> {

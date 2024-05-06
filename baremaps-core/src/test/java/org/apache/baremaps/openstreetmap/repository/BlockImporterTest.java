@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.openstreetmap.repository;
 
-import static org.apache.baremaps.testing.OsmSample.SAMPLE_OSM_PBF;
+import static org.apache.baremaps.openstreetmap.OsmSample.SAMPLE_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;

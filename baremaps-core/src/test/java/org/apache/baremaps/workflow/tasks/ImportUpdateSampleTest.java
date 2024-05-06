@@ -17,8 +17,8 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import static org.apache.baremaps.openstreetmap.OsmSample.*;
 import static org.apache.baremaps.testing.GeometryAssertions.assertGeometryEquals;
-import static org.apache.baremaps.testing.OsmSample.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -31,6 +31,7 @@ import org.apache.baremaps.database.collection.IndexedDataMap;
 import org.apache.baremaps.database.memory.OnHeapMemory;
 import org.apache.baremaps.database.type.LongListDataType;
 import org.apache.baremaps.database.type.geometry.CoordinateDataType;
+import org.apache.baremaps.openstreetmap.OsmSample;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.postgres.PostgresCoordinateMap;
 import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
@@ -40,7 +41,6 @@ import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRepositoryTest;
 import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.state.StateReader;
-import org.apache.baremaps.testing.OsmSample;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;

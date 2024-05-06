@@ -26,7 +26,7 @@ import java.util.StringJoiner;
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoderosm.GeocoderOsmConsumerEntity;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
-import org.apache.baremaps.stream.StreamUtils;
+import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.index.IndexWriter;

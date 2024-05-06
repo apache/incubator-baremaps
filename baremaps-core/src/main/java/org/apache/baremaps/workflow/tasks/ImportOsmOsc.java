@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
+import static org.apache.baremaps.openstreetmap.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
 import java.nio.file.Files;

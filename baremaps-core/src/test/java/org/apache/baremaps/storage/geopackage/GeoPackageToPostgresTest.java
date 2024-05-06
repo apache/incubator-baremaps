@@ -19,9 +19,9 @@ package org.apache.baremaps.storage.geopackage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.baremaps.openstreetmap.TestFiles;
 import org.apache.baremaps.storage.postgres.PostgresDataSchema;
 import org.apache.baremaps.testing.PostgresContainerTest;
-import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 

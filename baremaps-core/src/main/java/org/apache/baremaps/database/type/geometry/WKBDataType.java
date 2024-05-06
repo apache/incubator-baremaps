@@ -21,7 +21,7 @@ package org.apache.baremaps.database.type.geometry;
 
 import java.nio.ByteBuffer;
 import org.apache.baremaps.database.type.DataType;
-import org.apache.baremaps.utils.GeometryUtils;
+import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.Geometry;
 
 /** A {@link DataType} for reading and writing {@link Geometry} in {@link ByteBuffer}s. */

@@ -17,8 +17,6 @@
 
 package org.apache.baremaps.openstreetmap;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
-
 import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -30,13 +28,14 @@ import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityToGeometryMapper;
+import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.openstreetmap.repository.HeaderRepository;
 import org.apache.baremaps.openstreetmap.repository.Repository;
+import org.apache.baremaps.openstreetmap.stream.ConsumerUtils;
+import org.apache.baremaps.openstreetmap.stream.StreamException;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
-import org.apache.baremaps.stream.StreamException;
 import org.apache.baremaps.tilestore.TileCoord;
-import org.apache.baremaps.utils.ProjectionTransformer;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -135,7 +134,8 @@ public class DiffService implements Callable<List<TileCoord>> {
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
     return change.getEntities().stream()
-        .map(consumeThenReturn(new EntityGeometryBuilder(coordinateMap, referenceMap)))
+        .map(
+            ConsumerUtils.consumeThenReturn(new EntityGeometryBuilder(coordinateMap, referenceMap)))
         .flatMap(new EntityToGeometryMapper().andThen(Optional::stream));
   }
 
