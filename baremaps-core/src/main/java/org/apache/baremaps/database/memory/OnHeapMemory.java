@@ -22,7 +22,7 @@ package org.apache.baremaps.database.memory;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-/** A memory that stores segments on-heap using regular byte buffers. */
+/** A {@link Memory} that stores segments on-heap using regular byte buffers. */
 public class OnHeapMemory extends Memory<ByteBuffer> {
 
   /** Constructs an {@link OnHeapMemory} with a default segment size of 1mb. */

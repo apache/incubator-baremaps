@@ -26,9 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * A map that can hold a large number of variable size data elements.
- *
- * This map is backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ * A {@link DataMap} that can hold a large number of variable size data elements. This data map is
+ * backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
  *
  * @param <E> The type of the elements.
  */
@@ -39,7 +38,7 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
   private final AppendOnlyLog<E> values;
 
   /**
-   * Constructs a map.
+   * Constructs a {@link IndexedDataMap}.
    *
    * @param values the values
    */
@@ -48,7 +47,7 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Constructs a map.
+   * Constructs a {@link IndexedDataMap}.
    *
    * @param index the index
    * @param values the values
@@ -58,90 +57,65 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
     this.values = values;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public E put(Long key, E value) {
     var oldIndex = index.get(key);
     var position = values.addPositioned(value);
     index.put(key, position);
-    return oldIndex == null ? null : values.read(oldIndex);
+    return oldIndex == null ? null : values.getPositioned(oldIndex);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public E get(Object key) {
     var position = index.get(key);
-    return position == null ? null : values.read(position);
+    return position == null ? null : values.getPositioned(position);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Iterator<Long> keyIterator() {
     return index.keySet().iterator();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Iterator<E> valueIterator() {
     return Streams.stream(keyIterator()).map(this::get).iterator();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Iterator<Entry<Long, E>> entryIterator() {
     return Streams.stream(keyIterator()).map(k -> Map.entry(k, get(k))).iterator();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isEmpty() {
     return index.isEmpty();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long size() {
     return index.size();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean containsKey(Object key) {
     return index.containsKey(key);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean containsValue(Object value) {
-    return index.values().stream().map(values::read).anyMatch(value::equals);
+    return index.values().stream().map(values::getPositioned).anyMatch(value::equals);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public E remove(Long key) {
-    return values.read(index.remove(key));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void clear() {
     index.clear();

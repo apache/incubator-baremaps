@@ -123,12 +123,13 @@ class DataMapTest {
   @ParameterizedTest
   @MethodSource("mapProvider")
   void entrySet(DataMap<Long, Long> map) {
-    var set = new HashSet<Entry<Long, Long>>();
+    var set1 = new HashSet<Entry<Long, Long>>();
     for (long i = 0; i < 1000; i++) {
-      set.add(Map.entry(i, i));
+      set1.add(Map.entry(i, i));
       map.put(i, i);
     }
-    assertEquals(set, map.entrySet());
+    var set2 = DataConversions.asMap(map).entrySet();
+    assertEquals(set1, set2);
   }
 
   @ParameterizedTest

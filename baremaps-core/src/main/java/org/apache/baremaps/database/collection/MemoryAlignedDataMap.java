@@ -28,7 +28,7 @@ import org.apache.baremaps.database.memory.Memory;
 import org.apache.baremaps.database.type.FixedSizeDataType;
 
 /**
- * A map that can hold a large number of fixed-size memory-aligned data elements.
+ * A {@link DataMap} that can hold a large number of fixed-size memory-aligned data elements.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -46,7 +46,7 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
   private final long segmentMask;
 
   /**
-   * Constructs a map.
+   * Constructs a {@link MemoryAlignedDataMap}.
    *
    * @param dataType the data type
    * @param memory the memory
@@ -88,12 +88,6 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public E remove(Long key) {
-    throw new UnsupportedOperationException();
   }
 
   /** {@inheritDoc} */

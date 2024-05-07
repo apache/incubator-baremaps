@@ -40,7 +40,7 @@ class AppendOnlyLogTest {
       assertEquals(Long.BYTES + (i << 2), collection.addPositioned(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i, collection.read(Long.BYTES + (i << 2)));
+      assertEquals(i, collection.getPositioned(Long.BYTES + (i << 2)));
     }
   }
 
@@ -60,7 +60,7 @@ class AppendOnlyLogTest {
       values.add(value);
     }
     for (int i = 0; i < positions.size(); i++) {
-      var value = collection.read(positions.get(i));
+      var value = collection.getPositioned(positions.get(i));
       assertEquals(values.get(i), value);
     }
   }

@@ -19,6 +19,7 @@ package org.apache.baremaps.database.memory;
 
 /** Signals that an exception occurred in a memory. */
 public class MemoryException extends RuntimeException {
+
   /** Constructs a {@link MemoryException} with {@code null} as its error detail message. */
   public MemoryException() {}
 

@@ -19,6 +19,7 @@ package org.apache.baremaps.database.collection;
 
 /** Signals that an exception occurred in a store. */
 public class DataCollectionException extends RuntimeException {
+
   /** Constructs a {@code DataCollectionException} with {@code null} as its error detail message. */
   public DataCollectionException() {}
 

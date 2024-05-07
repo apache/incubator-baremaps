@@ -17,13 +17,15 @@
 
 package org.apache.baremaps.database.collection;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * A {@code DataCollection<E>} is a group of elements that can be iterated over. It is similar to a
+ * {@link java.util.Collection<E> Collection<E>}, but can hold up to {@link Long#MAX_VALUE}
+ * elements.
+ */
 public interface DataCollection<E> extends Iterable<E> {
 
   /**
@@ -68,6 +70,15 @@ public interface DataCollection<E> extends Iterable<E> {
   }
 
   /**
+   * Returns a parallel stream over the elements in the data collection.
+   *
+   * @return a parallel stream
+   */
+  default Stream<E> parallelStream() {
+    return StreamSupport.stream(spliterator(), true);
+  }
+
+  /**
    * Adds a value to the data collection.
    *
    * @param e the value to add
@@ -77,7 +88,13 @@ public interface DataCollection<E> extends Iterable<E> {
     throw new UnsupportedOperationException();
   }
 
-  default boolean addAll(Collection<? extends E> c) {
+  /**
+   * Adds all the values in the specified collection to the data collection.
+   *
+   * @param c the collection of values to add
+   * @return true if the data collection has been modified
+   */
+  default boolean addAll(Iterable<? extends E> c) {
     boolean modified = false;
     for (E e : c) {
       if (add(e)) {
@@ -87,20 +104,11 @@ public interface DataCollection<E> extends Iterable<E> {
     return modified;
   }
 
-  default boolean remove(Object o) {
-    throw new UnsupportedOperationException();
-  }
-
-  default boolean removeAll(Collection<?> c) {
-    boolean modified = false;
-    for (Object o : c) {
-      if (remove(o)) {
-        modified = true;
-      }
-    }
-    return modified;
-  }
-
+  /**
+   * Returns true if the data collection contains the specified value.
+   *
+   * @param o the value to search for
+   */
   default boolean contains(Object o) {
     for (E e : this) {
       if (e.equals(o)) {
@@ -110,7 +118,13 @@ public interface DataCollection<E> extends Iterable<E> {
     return false;
   }
 
-  default boolean containsAll(Collection<?> c) {
+  /**
+   * Returns true if the data collection contains all the values in the specified collection.
+   *
+   * @param c the collection of values to search for
+   * @return true if the data collection contains all the values
+   */
+  default boolean containsAll(Iterable<?> c) {
     for (Object o : c) {
       if (!contains(o)) {
         return false;
@@ -119,6 +133,9 @@ public interface DataCollection<E> extends Iterable<E> {
     return true;
   }
 
+  /**
+   * Removes all the values from the data collection.
+   */
   void clear();
 
 }

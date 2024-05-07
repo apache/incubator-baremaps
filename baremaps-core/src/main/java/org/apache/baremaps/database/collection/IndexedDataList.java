@@ -22,9 +22,8 @@ package org.apache.baremaps.database.collection;
 import org.apache.baremaps.database.type.LongDataType;
 
 /**
- * A list that can hold a large number of variable size data elements.
- *
- * This list is backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ * A data list that can hold a large number of variable size data elements. This data list is backed
+ * by an index and a buffer that can be either heap, off-heap, or memory mapped.
  *
  * @param <E> The type of the elements.
  */
@@ -34,9 +33,8 @@ public class IndexedDataList<E> implements DataList<E> {
 
   private final AppendOnlyLog<E> values;
 
-
   /**
-   * Constructs a list.
+   * Constructs a {@link IndexedDataList}.
    *
    * @param values the values
    */
@@ -45,7 +43,7 @@ public class IndexedDataList<E> implements DataList<E> {
   }
 
   /**
-   * Constructs a list.
+   * Constructs a {@link IndexedDataList}.
    *
    * @param index the index
    * @param values the values
@@ -55,44 +53,34 @@ public class IndexedDataList<E> implements DataList<E> {
     this.values = values;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long addIndexed(E value) {
     long position = values.addPositioned(value);
     return index.addIndexed(position);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void set(long index, E value) {
     long position = values.addPositioned(value);
     this.index.set(index, position);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public E get(long index) {
     long position = this.index.get(index);
-    return values.read(position);
+    return values.getPositioned(position);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long size() {
     return index.size();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void clear() {
     index.clear();

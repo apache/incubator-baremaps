@@ -28,7 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.apache.baremaps.utils.MappedByteBufferUtils;
 
-/** A memory that stores segments on-disk using mapped byte buffers in a file. */
+/** A {@link Memory} that stores segments on-disk using mapped byte buffers in a file. */
 public class MemoryMappedFile extends Memory<MappedByteBuffer> {
 
   private final Path file;

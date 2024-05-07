@@ -41,19 +41,19 @@ public class DataCollectionMapper<S, T> implements DataCollection<T> {
     this.mapper = mapper;
   }
 
+  /** {@inheritDoc} */
   @Override
   public long size() {
     return collection.size();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Iterator<T> iterator() {
     return collection.stream().map(this.mapper).iterator();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void clear() {
     collection.clear();

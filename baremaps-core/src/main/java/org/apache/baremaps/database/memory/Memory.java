@@ -36,6 +36,11 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
 
   protected final List<T> segments = new ArrayList<>();
 
+  /**
+   * Constructs a memory with a given segment size.
+   *
+   * @param segmentSize the size of the segments
+   */
   protected Memory(int segmentSize) {
     if ((segmentSize & -segmentSize) != segmentSize) {
       throw new IllegalArgumentException("The segment size must be a power of 2");

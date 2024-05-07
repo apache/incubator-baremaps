@@ -18,14 +18,17 @@
 package org.apache.baremaps.database.collection;
 
 
-import com.google.common.collect.Streams;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 
 /**
- * An abstract map of data elements that can hold a large number of elements.
+ * A {@code DataMap<E>} maps keys to values. It is similar to a {@link java.util.Map<K, V> Map<K,
+ * V>}, but can hold up to {@link Long#MAX_VALUE} entries.
  *
- * @param <V> The type of the elements.
+ * @param <K> The type of the keys.
+ * @param <V> The type of the values.
  */
 public interface DataMap<K, V> {
 
@@ -45,100 +48,120 @@ public interface DataMap<K, V> {
   V get(Object key);
 
   /**
-   * Returns the value associated with the specified key or null if the key is not present.
+   * Returns the values associated with the specified keys or null if the key is not present.
    *
    * @param keys the keys
    * @return the values
    */
   default List<V> getAll(List<K> keys) {
-    return Streams.stream(keys).map(this::get).toList();
+    return keys.stream().map(this::get).toList();
   }
 
   /**
-   * Associates the specified value with the specified key in the map.
-   * 
+   * Associates the specified value with the specified key in the data map.
+   *
    * @param key the key
    * @param value the value
-   * @return the previous value associated with the key, or null if there was no mapping for the
-   *         key.
+   * @return the previous value associated with the key, or null if there was no mapping for the key
    */
   V put(K key, V value);
 
   /**
-   * Removes the mapping for the specified key from the map if present.
+   * Associates the specified values with the specified keys in the data map.
    *
-   * @param key the key
-   * @return the previous value associated with the key, or null if there was no mapping for the
-   *         key.
+   * @param entries the entries
    */
-  V remove(K key);
+  default void putAll(Iterable<Entry<K, V>> entries) {
+    entries.forEach(entry -> put(entry.getKey(), entry.getValue()));
+  }
 
   /**
-   * Returns true if the map contains a mapping for the specified key.
+   * Returns true if the data map contains a mapping for the specified key.
    *
    * @param key the key
-   * @return true if the map contains a mapping for the key
+   * @return true if the data map contains a mapping for the key
    */
   boolean containsKey(Object key);
 
   /**
-   * Returns true if the map contains a mapping for the specified value.
+   * Returns true if the data map contains a mapping for the specified value.
    *
    * @param value the value
-   * @return true if the map contains a mapping for the value
+   * @return true if the data map contains a mapping for the value
    */
   boolean containsValue(V value);
 
   /**
-   * Clears the map.
+   * Clears the data map.
    */
   void clear();
 
   /**
-   * Returns true if the map contains no elements.
+   * Returns true if the data map contains no elements.
    * 
-   * @return true if the map contains no elements
+   * @return true if the data map contains no elements
    */
   default boolean isEmpty() {
     return size() == 0;
   }
 
   /**
-   * Returns an iterator over the keys of the map.
+   * Returns an iterator over the keys of the data map.
    *
    * @return an iterator
    */
   Iterator<K> keyIterator();
 
   /**
-   * Returns an iterator over the values of the map.
+   * Returns an iterable over the keys of the data map.
+   *
+   * @return an iterable
+   */
+  default Iterable<K> keys() {
+    return this::keyIterator;
+  }
+
+  /**
+   * Returns an iterator over the values of the data map.
    *
    * @return an iterator
    */
   Iterator<V> valueIterator();
 
   /**
-   * Returns an iterator over the entries of the map.
+   * Returns an iterable over the values of the data map.
+   *
+   * @return an iterable
+   */
+  default Iterable<V> values() {
+    return this::valueIterator;
+  }
+
+  /**
+   * Returns an iterator over the entries of the data map.
    *
    * @return an iterator
    */
   Iterator<Entry<K, V>> entryIterator();
 
-  /** {@inheritDoc} */
-  default Set<Entry<K, V>> entrySet() {
-    int size = (int) size();
-    return new AbstractSet<>() {
+  /**
+   * Returns an iterable over the entries of the data map.
+   *
+   * @return an iterable
+   */
+  default Iterable<Entry<K, V>> entries() {
+    return this::entryIterator;
+  }
 
-      @Override
-      public Iterator<Entry<K, V>> iterator() {
-        return entryIterator();
-      }
-
-      @Override
-      public int size() {
-        return size;
-      }
-    };
+  /**
+   * Performs the given action for each entry in the data map.
+   *
+   * @param action the action to be performed
+   */
+  default void forEach(BiConsumer<? super K, ? super V> action) {
+    for (Entry<K, V> entry : entries()) {
+      action.accept(entry.getKey(), entry.getValue());
+    }
   }
 
 }

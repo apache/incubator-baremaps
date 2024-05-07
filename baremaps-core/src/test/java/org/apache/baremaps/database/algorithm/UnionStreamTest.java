@@ -20,6 +20,8 @@ package org.apache.baremaps.database.algorithm;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import org.apache.baremaps.database.collection.DataConversions;
+import org.apache.baremaps.database.collection.DataList;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -59,7 +61,8 @@ class UnionStreamTest {
         new Coordinate(5, 0),
         new Coordinate(4, 0)
     });
-    List<Geometry> list = List.of(polygon1, polygon2, polygon3, polygon4);
+    DataList<Geometry> list =
+        DataConversions.asDataList(List.of(polygon1, polygon2, polygon3, polygon4));
     var union = new UnionStream(list).union().toList();
     assertEquals(union.size(), 2);
     assertEquals(union.get(0), UnaryUnionOp.union(List.of(polygon1, polygon2, polygon3)));

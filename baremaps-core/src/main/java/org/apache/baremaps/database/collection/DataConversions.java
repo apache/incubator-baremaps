@@ -20,8 +20,79 @@ package org.apache.baremaps.database.collection;
 import java.util.*;
 import java.util.Map.Entry;
 
+/**
+ * Utility class for converting between collections and data collections.
+ */
 public class DataConversions {
 
+  private DataConversions() {
+    // Utility class
+  }
+
+  /**
+   * Converts a {@code DataCollection} to a {@code Collection}.
+   * 
+   * @param dataCollection
+   * @return
+   * @param <E>
+   */
+  public static <E> Collection<E> asCollection(DataCollection<E> dataCollection) {
+    if (dataCollection instanceof DataCollectionAdapter<E>adapter) {
+      return adapter.collection;
+    } else {
+      return new CollectionAdapter<>(dataCollection);
+    }
+  }
+
+  /**
+   * Converts a {@code Collection} to a {@code DataCollection}.
+   *
+   * @param collection
+   * @return
+   * @param <E>
+   */
+  public static <E> DataCollection<E> asDataCollection(Collection<E> collection) {
+    if (collection instanceof CollectionAdapter<E>adapter) {
+      return adapter.collection;
+    } else {
+      return new DataCollectionAdapter<>(collection);
+    }
+  }
+
+  /**
+   * Converts a {@code DataList} to a {@code List}.
+   *
+   * @param dataList the data list
+   * @return the list
+   */
+  public static <E> List<E> asList(DataList<E> dataList) {
+    if (dataList instanceof DataListAdapter<E>adapter) {
+      return adapter.list;
+    } else {
+      return new ListAdapter<>(dataList);
+    }
+  }
+
+  /**
+   * Converts a {@code List} to a {@code DataList}.
+   *
+   * @param list the list
+   * @return the data list
+   */
+  public static <E> DataList<E> asDataList(List<E> list) {
+    if (list instanceof ListAdapter<E>adapter) {
+      return adapter.list;
+    } else {
+      return new DataListAdapter<>(list);
+    }
+  }
+
+  /**
+   * Converts a {@code DataMap} to a {@code Map}.
+   *
+   * @param dataMap the data map
+   * @return the map
+   */
   public static <K, V> Map<K, V> asMap(DataMap<K, V> dataMap) {
     if (dataMap instanceof DataMapAdapter<K, V>adapter) {
       return adapter.map;
@@ -30,6 +101,12 @@ public class DataConversions {
     }
   }
 
+  /**
+   * Converts a {@code Map} to a {@code DataMap}.
+   *
+   * @param map the map
+   * @return the data map
+   */
   public static <K, V> DataMap<K, V> asDataMap(Map<K, V> map) {
     if (map instanceof MapAdapter<K, V>adapter) {
       return adapter.map;
@@ -38,7 +115,125 @@ public class DataConversions {
     }
   }
 
-  public static class MapAdapter<K, V> extends AbstractMap<K, V> {
+  private static class CollectionAdapter<E> extends AbstractCollection<E> {
+
+    private final DataCollection<E> collection;
+    private final int size;
+
+    public CollectionAdapter(DataCollection<E> dataCollection) {
+      this.collection = dataCollection;
+      this.size = (int) dataCollection.size();
+    }
+
+    @Override
+    public int size() {
+      return size;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+      return collection.iterator();
+    }
+  }
+
+  private static class DataCollectionAdapter<E> implements DataCollection<E> {
+
+    private final Collection<E> collection;
+
+    public DataCollectionAdapter(Collection<E> collection) {
+      this.collection = collection;
+    }
+
+    @Override
+    public long size() {
+      return collection.size();
+    }
+
+    @Override
+    public boolean add(E value) {
+      return collection.add(value);
+    }
+
+    @Override
+    public void clear() {
+      collection.clear();
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+      return collection.iterator();
+    }
+  }
+
+  private static class ListAdapter<E> extends AbstractList<E> {
+
+    private final DataList<E> list;
+    private final int size;
+
+    public ListAdapter(DataList<E> dataList) {
+      this.list = dataList;
+      this.size = (int) dataList.size();
+    }
+
+    @Override
+    public boolean add(E value) {
+      return list.add(value);
+    }
+
+    @Override
+    public E set(int index, E value) {
+      var oldValue = list.get(index);
+      list.set(index, value);
+      return oldValue;
+    }
+
+    @Override
+    public E get(int index) {
+      return list.get(index);
+    }
+
+    @Override
+    public int size() {
+      return size;
+    }
+  }
+
+  private static class DataListAdapter<E> implements DataList<E> {
+
+    private final List<E> list;
+
+    public DataListAdapter(List<E> list) {
+      this.list = list;
+    }
+
+    @Override
+    public long size() {
+      return list.size();
+    }
+
+    @Override
+    public void clear() {
+      list.clear();
+    }
+
+    @Override
+    public long addIndexed(E value) {
+      list.add(value);
+      return list.size() - 1;
+    }
+
+    @Override
+    public void set(long index, E value) {
+      list.set((int) index, value);
+    }
+
+    @Override
+    public E get(long index) {
+      return list.get((int) index);
+    }
+  }
+
+  private static class MapAdapter<K, V> extends AbstractMap<K, V> {
 
     private final DataMap<K, V> map;
     private final int size;
@@ -64,14 +259,13 @@ public class DataConversions {
     }
   }
 
-  public static class DataMapAdapter<K, V> implements DataMap<K, V> {
+  private static class DataMapAdapter<K, V> implements DataMap<K, V> {
 
     private final Map<K, V> map;
 
     public DataMapAdapter(Map<K, V> map) {
       this.map = map;
     }
-
 
     @Override
     public long size() {
@@ -86,11 +280,6 @@ public class DataConversions {
     @Override
     public V put(K key, V value) {
       return map.put(key, value);
-    }
-
-    @Override
-    public V remove(K key) {
-      return map.remove(key);
     }
 
     @Override

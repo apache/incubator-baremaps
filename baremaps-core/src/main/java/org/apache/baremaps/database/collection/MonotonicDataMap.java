@@ -27,9 +27,9 @@ import org.apache.baremaps.database.type.PairDataType;
 import org.apache.baremaps.database.type.PairDataType.Pair;
 
 /**
- * A map that can hold a large number of variable-size data elements. The elements must be sorted by
- * their key and inserted in a monotonic way. The elements cannot be removed or updated once
- * inserted.
+ * A {@link DataMap} that can hold a large number of variable-size data elements. The elements must
+ * be sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
+ * once inserted.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -46,7 +46,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
-   * Constructs a map with default lists for storing offsets.
+   * Constructs a {@link MonotonicDataMap} with default lists for storing offsets.
    *
    * @param values the buffer of values
    */
@@ -58,7 +58,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Constructs a map with default lists for storing offsets and keys.
+   * Constructs a {@link MonotonicDataMap} with default lists for storing offsets and keys.
    *
    * @param keys the list of keys
    * @param values the buffer of values
@@ -71,7 +71,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Constructs a map.
+   * Constructs a {@link MonotonicDataMap}.
    *
    * @param offsets the list of offsets
    * @param keys the list of keys
@@ -124,7 +124,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
         hi = index - 1;
       } else {
         // found
-        return values.read(pair.right());
+        return values.getPositioned(pair.right());
       }
     }
     return null;
@@ -139,13 +139,13 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   /** {@inheritDoc} */
   @Override
   public Iterator<E> valueIterator() {
-    return keys.stream().map(Pair::right).map(values::read).iterator();
+    return keys.stream().map(Pair::right).map(values::getPositioned).iterator();
   }
 
   @Override
   public Iterator<Entry<Long, E>> entryIterator() {
     return keys.stream()
-        .map(p -> Map.entry(p.left(), values.read(p.right())))
+        .map(p -> Map.entry(p.left(), values.getPositioned(p.right())))
         .iterator();
   }
 
@@ -166,12 +166,6 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   @Override
   public boolean containsValue(Object value) {
     return values.contains(value);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public E remove(Long key) {
-    throw new UnsupportedOperationException();
   }
 
   /** {@inheritDoc} */

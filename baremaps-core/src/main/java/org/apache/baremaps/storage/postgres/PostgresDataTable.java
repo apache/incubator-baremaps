@@ -112,7 +112,7 @@ public class PostgresDataTable implements DataTable {
    * {@inheritDoc}
    */
   @Override
-  public boolean addAll(Collection<? extends DataRow> rows) {
+  public boolean addAll(Iterable<? extends DataRow> rows) {
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(insert(rowType))) {
       for (var row : rows) {

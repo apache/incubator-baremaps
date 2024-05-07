@@ -18,8 +18,9 @@
 package org.apache.baremaps.database.algorithm;
 
 import java.util.*;
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import org.apache.baremaps.database.collection.DataList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.index.hprtree.HPRtree;
@@ -35,14 +36,14 @@ public class UnionStream {
 
   private static final Logger logger = LoggerFactory.getLogger(UnionStream.class);
 
-  private final List<Geometry> list;
+  private final DataList<Geometry> list;
 
   /**
    * Creates a new union stream.
    *
    * @param list the list of geometries to union.
    */
-  public UnionStream(List<Geometry> list) {
+  public UnionStream(DataList<Geometry> list) {
     this.list = list;
   }
 
@@ -63,7 +64,7 @@ public class UnionStream {
     tree.build();
 
     // Create a stream of geometry unions that are spatially connected
-    var stream = IntStream.range(0, list.size()).mapToObj(i -> {
+    var stream = LongStream.range(0, list.size()).mapToObj(i -> {
       // Skip the geometries that have already been visited
       if (visited.contains(i)) {
         return null;

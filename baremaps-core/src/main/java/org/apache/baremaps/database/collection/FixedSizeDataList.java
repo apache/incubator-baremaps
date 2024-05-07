@@ -26,9 +26,8 @@ import org.apache.baremaps.database.memory.OffHeapMemory;
 import org.apache.baremaps.database.type.FixedSizeDataType;
 
 /**
- * A list that can hold a large number of fixed size data elements.
- *
- * This list is backed by a memory that can be either heap, off-heap, or memory mapped.
+ * A {@link DataList} that can hold a large number of fixed size data elements. This data list is
+ * backed by a memory that can be either heap, off-heap, or memory mapped.
  *
  * @param <E> The type of the elements.
  */
@@ -41,7 +40,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
   private AtomicLong size;
 
   /**
-   * Constructs a list.
+   * Constructs a {@link FixedSizeDataList}.
    *
    * @param dataType the data type
    */
@@ -72,9 +71,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
     dataType.write(segment, segmentOffset, value);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long addIndexed(E value) {
     long index = size.getAndIncrement();
@@ -82,9 +79,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
     return index;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void set(long index, E value) {
     if (index >= size()) {
@@ -93,9 +88,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
     write(index, value);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public E get(long index) {
     long position = index * dataType.size();
@@ -105,17 +98,13 @@ public class FixedSizeDataList<E> implements DataList<E> {
     return dataType.read(segment, segmentOffset);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long size() {
     return size.get();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void clear() {
     size.set(0);

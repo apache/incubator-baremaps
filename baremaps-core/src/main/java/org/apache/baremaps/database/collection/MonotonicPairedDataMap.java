@@ -26,9 +26,9 @@ import org.apache.baremaps.database.type.LongDataType;
 import org.apache.baremaps.database.type.PairDataType.Pair;
 
 /**
- * A map that can hold a large number of variable-size data elements. The elements must be sorted by
- * their key and inserted in a monotonic way. The elements cannot be removed or updated once
- * inserted.
+ * A {@link DataMap} that can hold a large number of variable-size data elements. The elements must
+ * be sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
+ * once inserted.
  */
 public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
 
@@ -37,12 +37,15 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
 
   private long lastChunk = -1;
 
+  /**
+   * Constructs a {@link MonotonicPairedDataMap}.
+   */
   public MonotonicPairedDataMap(MemoryAlignedDataList<Pair<Long, E>> values) {
     this(new MemoryAlignedDataList<>(new LongDataType()), values);
   }
 
   /**
-   * Constructs a map.
+   * Constructs a {@link MonotonicPairedDataMap}.
    *
    * @param offsets the list of offsets
    * @param values the buffer of values
@@ -110,6 +113,7 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
     return values.stream().map(Pair::right).iterator();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Iterator<Entry<Long, E>> entryIterator() {
     return values.stream()
@@ -133,12 +137,6 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
   @Override
   public boolean containsValue(Object value) {
     return values.stream().anyMatch(p -> p.right().equals(value));
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public E remove(Long key) {
-    throw new UnsupportedOperationException();
   }
 
   /** {@inheritDoc} */

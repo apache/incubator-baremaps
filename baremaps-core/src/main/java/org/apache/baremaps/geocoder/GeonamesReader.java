@@ -31,7 +31,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.openstreetmap.OsmReader;
 
 /**
  * A reader for the Geonames database.

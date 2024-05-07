@@ -23,23 +23,23 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * An abstract list of data elements that can hold a large number of elements.
+ * A {@code DataList<E>} is a sequence of elements that can be iterated over and accessed by index.
+ * It is similar to a {@link java.util.List<E> List<E>}, but can hold up to {@link Long#MAX_VALUE}
+ * elements.
  *
- * @param <E> The type of the data.
+ * @param <E> The type of the elements.
  */
 public interface DataList<E> extends DataCollection<E> {
 
   /**
-   * Appends a value to the list and returns its index.
+   * Adds a value to the data list and returns its index.
    *
    * @param value the value
    * @return the index of the value.
    */
   long addIndexed(E value);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   default boolean add(E value) {
     addIndexed(value);
@@ -47,7 +47,7 @@ public interface DataList<E> extends DataCollection<E> {
   }
 
   /**
-   * Sets the value at the specified index.
+   * Sets the value at the specified index
    *
    * @param index the index
    * @param value the value

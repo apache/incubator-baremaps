@@ -19,6 +19,8 @@ package org.apache.baremaps.openstreetmap.xml;
 
 
 
+import static org.apache.baremaps.openstreetmap.stream.ConsumerUtils.consumeThenReturn;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +29,9 @@ import java.util.stream.StreamSupport;
 import org.apache.baremaps.openstreetmap.OsmReader;
 import org.apache.baremaps.openstreetmap.function.CoordinateMapBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
+import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
 import org.apache.baremaps.openstreetmap.function.ReferenceMapBuilder;
 import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.stream.ConsumerUtils;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for parsing an OpenStreetMap XML file. */
@@ -92,10 +94,12 @@ public class XmlEntityReader implements OsmReader<Entity> {
       var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
       var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
       var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
+      var entityProjectionTransformer = new EntityProjectionTransformer(4326, srid);
       var entityHandler = coordinateMapBuilder
           .andThen(referenceMapBuilder)
-          .andThen(entityGeometryBuilder);
-      entities = entities.map(ConsumerUtils.consumeThenReturn(entityHandler));
+          .andThen(entityGeometryBuilder)
+          .andThen(entityProjectionTransformer);
+      entities = entities.map(consumeThenReturn(entityHandler));
     }
     return entities;
   }

@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.openstreetmap;
 
+import static org.apache.baremaps.openstreetmap.TestFiles.resolve;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,8 +43,6 @@ import org.locationtech.jts.io.WKTReader;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.apache.baremaps.openstreetmap.TestFiles.resolve;
 
 
 public class OsmTestData {
@@ -261,43 +261,44 @@ public class OsmTestData {
     }
   }
 
+  /**
+   * A transformer that rounds the coordinates of a geometry to a given precision.
+   */
+  public static class RoundingTransformer extends GeometryTransformer {
+
+    private int precision;
+
     /**
-     * A transformer that rounds the coordinates of a geometry to a given precision.
+     * Constructs a transformer that rounds the coordinates of a geometry to a given precision.
+     *
+     * @param precision the precision
      */
-    public static class RoundingTransformer extends GeometryTransformer {
-
-      private int precision;
-
-      /**
-       * Constructs a transformer that rounds the coordinates of a geometry to a given precision.
-       *
-       * @param precision the precision
-       */
-      public RoundingTransformer(int precision) {
-        this.precision = precision;
-      }
-
-      /**
-       * Rounds the coordinates of a geometry to a given precision.
-       *
-       * @param sequence the coordinate sequence
-       * @param parent the parent geometry
-       * @return the geometry
-       */
-      @Override
-      protected CoordinateSequence transformCoordinates(CoordinateSequence sequence, Geometry parent) {
-        CoordinateSequence rounded = super.transformCoordinates(sequence, parent);
-        for (int i = 0; i < rounded.size(); i++) {
-          double roundedX =
-              Math.round(rounded.getOrdinate(i, CoordinateSequence.X) * Math.pow(10, precision))
-                  / Math.pow(10, precision);
-          double roundedY =
-              Math.round(rounded.getOrdinate(i, CoordinateSequence.Y) * Math.pow(10, precision))
-                  / Math.pow(10, precision);
-          rounded.setOrdinate(i, CoordinateSequence.X, roundedX);
-          rounded.setOrdinate(i, CoordinateSequence.Y, roundedY);
-        }
-        return rounded;
-      }
+    public RoundingTransformer(int precision) {
+      this.precision = precision;
     }
+
+    /**
+     * Rounds the coordinates of a geometry to a given precision.
+     *
+     * @param sequence the coordinate sequence
+     * @param parent the parent geometry
+     * @return the geometry
+     */
+    @Override
+    protected CoordinateSequence transformCoordinates(CoordinateSequence sequence,
+        Geometry parent) {
+      CoordinateSequence rounded = super.transformCoordinates(sequence, parent);
+      for (int i = 0; i < rounded.size(); i++) {
+        double roundedX =
+            Math.round(rounded.getOrdinate(i, CoordinateSequence.X) * Math.pow(10, precision))
+                / Math.pow(10, precision);
+        double roundedY =
+            Math.round(rounded.getOrdinate(i, CoordinateSequence.Y) * Math.pow(10, precision))
+                / Math.pow(10, precision);
+        rounded.setOrdinate(i, CoordinateSequence.X, roundedX);
+        rounded.setOrdinate(i, CoordinateSequence.Y, roundedY);
+      }
+      return rounded;
+    }
+  }
 }

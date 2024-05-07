@@ -26,9 +26,9 @@ import java.util.Map.Entry;
 import org.apache.baremaps.database.type.LongDataType;
 
 /**
- * A map that can hold a large number of fixed-size data elements. The elements must be sorted by
- * their key and inserted in a monotonic way. The elements cannot be removed or updated once
- * inserted.
+ * A {@link DataMap} that can hold a large number of fixed-size data elements. The elements must be
+ * sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
+ * once inserted.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -44,7 +44,7 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
-   * Constructs a map with default lists for storing offsets and keys.
+   * Constructs a {@link MonotonicFixedSizeDataMap} with default lists for storing offsets and keys.
    *
    * @param values the list of values
    */
@@ -54,7 +54,7 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Constructs a map.
+   * Constructs a {@link MonotonicFixedSizeDataMap}.
    *
    * @param offsets the list of offsets
    * @param keys the list of keys
@@ -106,12 +106,6 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
     keys.add(key);
     values.add(value);
     return null;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public E remove(Long key) {
-    throw new UnsupportedOperationException();
   }
 
   /** {@inheritDoc} */

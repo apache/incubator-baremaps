@@ -31,8 +31,8 @@ import org.apache.baremaps.database.type.DataType;
 
 /**
  * A log of records backed by a {@link DataType} and a {@link Memory}. Elements are appended to the
- * buffer and can be accessed by their position in the {@link Memory}. Appending elements to the
- * buffer is thread-safe.
+ * log and can be accessed by their position in the {@link Memory}. Appending elements to the log is
+ * thread-safe.
  *
  * @param <E> The type of the data.
  */
@@ -47,7 +47,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   private Lock lock = new ReentrantLock();
 
   /**
-   * Constructs an append only buffer.
+   * Constructs an {@link AppendOnlyLog}.
    *
    * @param dataType the data type
    */
@@ -56,7 +56,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Constructs an append only buffer.
+   * Constructs an append only log.
    *
    * @param dataType the data type
    * @param memory the memory
@@ -70,7 +70,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Appends the value to the buffer and returns its position in the memory.
+   * Appends the value to the log and returns its position in the memory.
    *
    * @param value the value
    * @return the position of the value in the memory.
@@ -102,40 +102,31 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean add(E e) {
-    addPositioned(e);
-    return true;
-  }
-
-
-  /**
    * Returns a values at the specified position in the memory.
    *
    * @param position the position of the value
    * @return the value
    */
-  public E read(long position) {
+  public E getPositioned(long position) {
     long segmentIndex = position / segmentSize;
     long segmentOffset = position % segmentSize;
     ByteBuffer buffer = memory.segment((int) segmentIndex);
     return dataType.read(buffer, (int) segmentOffset);
   }
 
-  /**
-   * Returns the size of the log.
-   *
-   * @return the size of the log
-   */
+  /** {@inheritDoc} */
+  @Override
+  public boolean add(E e) {
+    addPositioned(e);
+    return true;
+  }
+
+  /** {@inheritDoc} */
   public long size() {
     return size;
   }
 
-  /**
-   * Clears the log.
-   */
+  /** {@inheritDoc} */
   public void clear() {
     try {
       memory.clear();
@@ -145,39 +136,30 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Returns an iterator over the values of the log.
+   * Returns an iterator over the values of the log, starting at the beginning of the log. The
+   * iterator allows to get the current position in the memory.
    * 
    * @return an iterator over the values of the log
    */
   @Override
-  public BufferIterator iterator() {
+  public AppendOnlyLogIterator iterator() {
     final long size = size();
-    return new BufferIterator(size);
+    return new AppendOnlyLogIterator(size);
   }
 
   /**
-   * Returns true if the log contains the specified value.
-   * 
-   * @param value the value
-   * @return true if the log contains the specified value
+   * An iterator over the values of the log that can be used to iterate over the values of the log
+   * and to get the current position in the memory.
    */
-  public boolean contains(Object value) {
-    for (E e : this) {
-      if (e.equals(value)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public class BufferIterator implements Iterator<E> {
+  public class AppendOnlyLogIterator implements Iterator<E> {
 
     private final long size;
+
     private long index;
 
     private long position;
 
-    public BufferIterator(long size) {
+    private AppendOnlyLogIterator(long size) {
       this.size = size;
       index = 0;
       position = Long.BYTES;
@@ -221,5 +203,6 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
     public long getPosition() {
       return position;
     }
+
   }
 }
