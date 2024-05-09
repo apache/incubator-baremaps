@@ -37,7 +37,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import org.apache.baremaps.database.schema.DataRow;
+import org.apache.baremaps.data.schema.DataRow;
 import org.locationtech.jts.geom.*;
 
 public interface Expressions {

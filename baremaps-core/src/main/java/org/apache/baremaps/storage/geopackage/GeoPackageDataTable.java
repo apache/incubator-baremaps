@@ -23,8 +23,8 @@ import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.database.schema.*;
-import org.apache.baremaps.database.schema.DataColumn.Type;
+import org.apache.baremaps.data.schema.*;
+import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.locationtech.jts.geom.*;
 
 /**

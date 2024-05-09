@@ -51,6 +51,7 @@ limitations under the License.
   <modules>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
+    <module>baremaps-data</module>
     <module>baremaps-openstreetmap</module>
     <module>baremaps-server</module>
     <module>baremaps-testing</module>
@@ -223,6 +224,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-core</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-data</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

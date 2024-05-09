@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
-import org.apache.baremaps.database.collection.DataCollectionException;
+import org.apache.baremaps.data.collection.DataCollectionException;
 
 class PostgresIterator<T> implements Iterator<T> {
 

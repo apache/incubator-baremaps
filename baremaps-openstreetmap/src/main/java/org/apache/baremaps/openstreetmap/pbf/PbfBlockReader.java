@@ -45,26 +45,22 @@ public class PbfBlockReader implements PbfReader<Block> {
     return buffer;
   }
 
-
   @Override
   public PbfBlockReader buffer(int buffer) {
     this.buffer = buffer;
     return this;
   }
 
-
   @Override
   public boolean geometries() {
     return geometry;
   }
-
 
   @Override
   public PbfBlockReader geometries(boolean geometries) {
     this.geometry = geometries;
     return this;
   }
-
 
   @Override
   public int projection() {
@@ -118,7 +114,6 @@ public class PbfBlockReader implements PbfReader<Block> {
 
       // Initialize the block mapper
       var blockMapper = ConsumerUtils.consumeThenReturn(new BlockEntitiesHandler(entityHandler));
-
       blocks = blocks.map(blockMapper);
     }
     return blocks;

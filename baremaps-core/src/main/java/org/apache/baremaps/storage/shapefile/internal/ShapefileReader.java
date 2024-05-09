@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.apache.baremaps.database.schema.DataRowType;
+import org.apache.baremaps.data.schema.DataRowType;
 
 /**
  * Provides a ShapeFile Reader.

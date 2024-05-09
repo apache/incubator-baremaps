@@ -21,8 +21,8 @@ import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FA
 
 import java.util.Iterator;
 import java.util.List;
-import org.apache.baremaps.database.schema.*;
-import org.apache.baremaps.database.schema.DataColumn.Type;
+import org.apache.baremaps.data.schema.*;
+import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.locationtech.jts.geom.Coordinate;
 
 public class MockDataTable implements DataTable {
