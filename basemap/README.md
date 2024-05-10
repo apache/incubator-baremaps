@@ -34,19 +34,28 @@ A PostgreSQL database with the PostGIS extension should be accessible with the f
 jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps
 ```
 
-## Getting started
+## Importing the data
 
 Assuming that the necessary requirements have been installed, the database can be populated with the following command.
 
 ```
-baremaps workflow execute --file workflow.js
+baremaps workflow execute --file import.js
 ```
+
+## Updating the data
+
+The data can be updated with the following command. The update workflow will download the latest changes from the OpenStreetMap API and apply them to the database.
+
+```
+baremaps workflow execute --file update.js
+```
+
+## Serving the tiles and the style in dev mode
 
 The development server can be started with the following command.
 
 ```
 baremaps map dev --log-level DEBUG \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.js' \
   --style 'style.js'
 ```
