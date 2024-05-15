@@ -15,13 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.tilestore.pmtiles;
+package org.apache.baremaps.pmtiles;
 
-enum TileType {
-  unknown,
-  mvt,
-  png,
-  jpeg,
-  webp,
-  avif,
+class Directories {
+
+  private final byte[] root;
+  private final byte[] leaves;
+  private final int numLeaves;
+
+  public Directories(byte[] root, byte[] leaves, int numLeaves) {
+    this.root = root;
+    this.leaves = leaves;
+    this.numLeaves = numLeaves;
+  }
+
+  public byte[] getRoot() {
+    return root;
+  }
+
+  public byte[] getLeaves() {
+    return leaves;
+  }
+
+  public int getNumLeaves() {
+    return numLeaves;
+  }
 }

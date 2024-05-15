@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.tilestore.pmtiles;
+package org.apache.baremaps.pmtiles;
 
 import com.google.common.math.LongMath;
 import java.io.ByteArrayOutputStream;

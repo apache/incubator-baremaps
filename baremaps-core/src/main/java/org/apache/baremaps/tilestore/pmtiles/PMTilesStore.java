@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.apache.baremaps.maplibre.tileset.Tileset;
+import org.apache.baremaps.pmtiles.PMTilesWriter;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;

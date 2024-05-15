@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.tilestore.pmtiles;
+package org.apache.baremaps.pmtiles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.Hashing;
