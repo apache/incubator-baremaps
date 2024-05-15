@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import javax.sql.DataSource;
+import org.apache.baremaps.maplibre.tileset.TilesetQuery;
 import org.apache.baremaps.openstreetmap.postgres.PostgresRepositoryTest;
-import org.apache.baremaps.vectortile.tileset.TilesetQuery;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 

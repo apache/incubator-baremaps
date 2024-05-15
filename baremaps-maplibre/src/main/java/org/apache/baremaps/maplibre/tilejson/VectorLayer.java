@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.config;
+package org.apache.baremaps.maplibre.tilejson;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 
-import java.io.IOException;
-import org.apache.baremaps.maplibre.style.Style;
-import org.apache.baremaps.openstreetmap.TestFiles;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
-class ConfigReaderTest {
-
-  @Test
-  void readStyle() throws IOException {
-    var config = new ConfigReader().read(TestFiles.CONFIG_STYLE_JS);
-    var style = new ObjectMapper().readValue(config, Style.class);
-    var source = style.getSources().get("mymap");
-    assertEquals("http://my.server.com/{z}/{y}/{x}.mvt", source.getTiles().get(0));
-    assertEquals(14, source.getMaxzoom());
-  }
+public record VectorLayer(
+    @JsonProperty("id") String id,
+    @JsonProperty("fields") Map<String, String> fields,
+    @JsonProperty("description") String description,
+    @JsonProperty("maxzoom") Integer maxzoom,
+    @JsonProperty("minzoom") Integer minzoom) {
 }

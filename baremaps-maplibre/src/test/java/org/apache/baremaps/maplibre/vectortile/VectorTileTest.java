@@ -15,24 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.config;
+package org.apache.baremaps.maplibre.vectortile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-import org.apache.baremaps.maplibre.style.Style;
-import org.apache.baremaps.openstreetmap.TestFiles;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
-class ConfigReaderTest {
+public class VectorTileTest {
+
+  private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
   @Test
-  void readStyle() throws IOException {
-    var config = new ConfigReader().read(TestFiles.CONFIG_STYLE_JS);
-    var style = new ObjectMapper().readValue(config, Style.class);
-    var source = style.getSources().get("mymap");
-    assertEquals("http://my.server.com/{z}/{y}/{x}.mvt", source.getTiles().get(0));
-    assertEquals(14, source.getMaxzoom());
+  public void endToEnd() {
+    var tile = new Tile(List.of(
+        new Layer("layer", 256, List.of(
+            new Feature(1, Map.of("a", 1.0, "b", "2"),
+                GEOMETRY_FACTORY.createPoint(new Coordinate(1, 2))),
+            new Feature(2, Map.of("c", 3.0, "d", "4"),
+                GEOMETRY_FACTORY.createPoint(new Coordinate(2, 3)))))));
+
+    var encoded = new VectorTileEncoder().encodeTile(tile);
+    var decoded = new VectorTileDecoder().decodeTile(encoded);
+
+    assertEquals(tile, decoded);
   }
 }

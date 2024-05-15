@@ -28,7 +28,7 @@ import org.apache.baremaps.data.collection.IndexedDataList;
 import org.apache.baremaps.data.schema.*;
 import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.apache.baremaps.data.type.RowDataType;
-import org.apache.baremaps.vectortile.VectorTileFunctions;
+import org.apache.baremaps.maplibre.vectortile.VectorTileFunctions;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.model.ModelHandler;
 import org.apache.calcite.runtime.AccumOperation;
