@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 
 /**
  * A {@code DataList<E>} is a sequence of elements that can be iterated over and accessed by index.
- * It is similar to a {@link java.util.List<E> List<E>}, but can hold up to {@link Long#MAX_VALUE}
+ * It is similar to a {@link java.util.List<E> List}, but can hold up to {@link Long#MAX_VALUE}
  * elements.
  *
  * @param <E> The type of the elements.

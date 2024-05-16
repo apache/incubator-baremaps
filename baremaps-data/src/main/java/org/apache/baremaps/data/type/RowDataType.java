@@ -27,6 +27,9 @@ import org.apache.baremaps.data.schema.DataRowImpl;
 import org.apache.baremaps.data.schema.DataRowType;
 import org.apache.baremaps.data.type.geometry.*;
 
+/**
+ * A data type for rows.
+ */
 public class RowDataType implements DataType<DataRow> {
 
   private static final EnumMap<Type, DataType> types = new EnumMap<>(Type.class);

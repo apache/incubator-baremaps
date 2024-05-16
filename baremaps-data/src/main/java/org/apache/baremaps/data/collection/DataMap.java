@@ -24,8 +24,8 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 /**
- * A {@code DataMap<E>} maps keys to values. It is similar to a {@link java.util.Map<K, V> Map<K,
- * V>}, but can hold up to {@link Long#MAX_VALUE} entries.
+ * A {@code DataMap<E>} maps keys to values. It is similar to a {@link java.util.Map<K, V> Map}, but
+ * can hold up to {@link Long#MAX_VALUE} entries.
  *
  * @param <K> The type of the keys.
  * @param <V> The type of the values.

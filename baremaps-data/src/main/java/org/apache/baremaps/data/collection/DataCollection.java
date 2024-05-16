@@ -23,8 +23,7 @@ import java.util.stream.StreamSupport;
 
 /**
  * A {@code DataCollection<E>} is a group of elements that can be iterated over. It is similar to a
- * {@link java.util.Collection<E> Collection<E>}, but can hold up to {@link Long#MAX_VALUE}
- * elements.
+ * {@link java.util.Collection<E> Collection}, but can hold up to {@link Long#MAX_VALUE} elements.
  */
 public interface DataCollection<E> extends Iterable<E> {
 
