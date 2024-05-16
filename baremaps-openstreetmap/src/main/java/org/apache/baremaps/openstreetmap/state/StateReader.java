@@ -32,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.baremaps.openstreetmap.OpenStreetMap.Reader;
 import org.apache.baremaps.openstreetmap.model.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * Utility class for reading OSM state files. This code has been adapted from pyosmium (BSD 2-Clause
  * "Simplified" License).
  */
-public class StateReader {
+public class StateReader implements Reader<State> {
 
   private static final Logger logger = LoggerFactory.getLogger(StateReader.class);
 
@@ -86,7 +87,8 @@ public class StateReader {
    * @param input the OpenStreetMap state file
    * @return the state
    */
-  public State readState(InputStream input) throws IOException {
+  @Override
+  public State read(InputStream input) throws IOException {
     InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
     Map<String, String> map = new HashMap<>();
     for (String line : CharStreams.readLines(reader)) {
@@ -188,7 +190,7 @@ public class StateReader {
   public Optional<State> getState(Optional<Long> sequenceNumber) {
     for (int i = 0; i < retries + 1; i++) {
       try (var inputStream = getStateUrl(sequenceNumber).openStream()) {
-        var state = new StateReader().readState(inputStream);
+        var state = new StateReader().read(inputStream);
         return Optional.of(state);
       } catch (Exception e) {
         logger.error("Error while reading state file", e);

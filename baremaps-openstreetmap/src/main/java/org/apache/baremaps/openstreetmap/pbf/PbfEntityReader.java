@@ -30,7 +30,7 @@ import org.apache.baremaps.openstreetmap.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for flattening the blocks streamed by a {@link PbfBlockReader}. */
-public class PbfEntityReader implements PbfReader<Entity> {
+public class PbfEntityReader implements PbfReader<Stream<Entity>> {
 
   private final PbfBlockReader reader;
 
@@ -42,57 +42,57 @@ public class PbfEntityReader implements PbfReader<Entity> {
   }
 
   @Override
-  public int buffer() {
-    return reader.buffer();
+  public int getBuffer() {
+    return reader.getBuffer();
   }
 
   @Override
-  public PbfEntityReader buffer(int buffer) {
-    reader.buffer(buffer);
+  public PbfEntityReader setBuffer(int buffer) {
+    reader.setBuffer(buffer);
     return this;
   }
 
   @Override
-  public boolean geometries() {
-    return reader.geometries();
+  public boolean getGeometries() {
+    return reader.getGeometries();
   }
 
   @Override
-  public PbfEntityReader geometries(boolean geometries) {
-    reader.geometries(geometries);
+  public PbfEntityReader setGeometries(boolean geometries) {
+    reader.setGeometries(geometries);
     return this;
   }
 
   @Override
-  public int projection() {
-    return reader.projection();
+  public int getSrid() {
+    return reader.getSrid();
   }
 
   @Override
-  public PbfEntityReader projection(int srid) {
-    reader.projection(srid);
+  public PbfEntityReader setSrid(int srid) {
+    reader.setSrid(srid);
     return this;
   }
 
   @Override
-  public Map<Long, Coordinate> coordinateMap() {
-    return reader.coordinateMap();
+  public Map<Long, Coordinate> getCoordinateMap() {
+    return reader.getCoordinateMap();
   }
 
   @Override
-  public PbfEntityReader coordinateMap(Map<Long, Coordinate> coordinateMap) {
-    reader.coordinateMap(coordinateMap);
+  public PbfEntityReader setCoordinateMap(Map<Long, Coordinate> coordinateMap) {
+    reader.setCoordinateMap(coordinateMap);
     return this;
   }
 
   @Override
-  public Map<Long, List<Long>> referenceMap() {
-    return reader.referenceMap();
+  public Map<Long, List<Long>> getReferenceMap() {
+    return reader.getReferenceMap();
   }
 
   @Override
-  public PbfEntityReader referenceMap(Map<Long, List<Long>> referenceMap) {
-    reader.referenceMap(referenceMap);
+  public PbfEntityReader setReferenceMap(Map<Long, List<Long>> referenceMap) {
+    reader.setReferenceMap(referenceMap);
     return this;
   }
 
@@ -102,8 +102,9 @@ public class PbfEntityReader implements PbfReader<Entity> {
    * @param inputStream an osm pbf {@link InputStream}
    * @return a stream of blocks
    */
-  public Stream<Entity> stream(InputStream inputStream) {
-    return reader.stream(inputStream).flatMap(block -> {
+  @Override
+  public Stream<Entity> read(InputStream inputStream) {
+    return reader.read(inputStream).flatMap(block -> {
       try {
         Stream.Builder<Entity> entities = Stream.builder();
         if (block instanceof HeaderBlock headerBlock) {

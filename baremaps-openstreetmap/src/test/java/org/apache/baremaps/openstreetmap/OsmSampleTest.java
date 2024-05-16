@@ -42,7 +42,7 @@ class OsmSampleTest {
   @Test
   void sampleStateTxt() throws IOException {
     try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_STATE_TXT)) {
-      State state = new StateReader().readState(inputStream);
+      State state = new StateReader().read(inputStream);
       Assertions.assertEquals(1, state.getSequenceNumber());
       Assertions.assertEquals(LocalDateTime.parse("2000-01-01T00:00:00"), state.getTimestamp());
     }
@@ -51,7 +51,7 @@ class OsmSampleTest {
   @Test
   void sampleOsmPbf() throws IOException {
     try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_OSM_PBF)) {
-      Stream<Entity> stream = new PbfEntityReader().stream(inputStream);
+      Stream<Entity> stream = new PbfEntityReader().read(inputStream);
       process(stream, 1, 1, 27, 7, 2);
     }
   }
@@ -59,7 +59,7 @@ class OsmSampleTest {
   @Test
   void sampleOsmXml() throws IOException {
     try (InputStream inputStream = Files.newInputStream(OsmSample.SAMPLE_OSM_XML)) {
-      Stream<Entity> stream = new XmlEntityReader().stream(inputStream);
+      Stream<Entity> stream = new XmlEntityReader().read(inputStream);
       process(stream, 1, 1, 27, 7, 2);
     }
   }

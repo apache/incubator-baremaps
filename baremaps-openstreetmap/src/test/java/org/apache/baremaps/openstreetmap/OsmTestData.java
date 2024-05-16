@@ -69,15 +69,15 @@ public class OsmTestData {
         String.format(displayNameFormat, osmTest.getId(), "pbf", osmTest.getDescription());
     return Stream.<DynamicTest>builder()
         .add(DynamicTest.dynamicTest(xmlDisplayName, () -> runTest(osmTest, new XmlEntityReader()
-            .coordinateMap(new HashMap<>())
-            .referenceMap(new HashMap<>())
-            .geometries(true)
-            .stream(Files.newInputStream(osmTest.getOsmXml())))))
+            .setCoordinateMap(new HashMap<>())
+            .setReferenceMap(new HashMap<>())
+            .setGeometries(true)
+            .read(Files.newInputStream(osmTest.getOsmXml())))))
         .add(DynamicTest.dynamicTest(pbfDisplayName, () -> runTest(osmTest, new PbfEntityReader()
-            .coordinateMap(new HashMap<>())
-            .referenceMap(new HashMap<>())
-            .geometries(true)
-            .stream(Files.newInputStream(osmTest.getOsmPbf())))))
+            .setCoordinateMap(new HashMap<>())
+            .setReferenceMap(new HashMap<>())
+            .setGeometries(true)
+            .read(Files.newInputStream(osmTest.getOsmPbf())))))
         .build();
   }
 

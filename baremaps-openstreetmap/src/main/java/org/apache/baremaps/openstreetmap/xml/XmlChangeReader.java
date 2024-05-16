@@ -22,11 +22,11 @@ package org.apache.baremaps.openstreetmap.xml;
 import java.io.InputStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.openstreetmap.OsmReader;
+import org.apache.baremaps.openstreetmap.OpenStreetMap.Reader;
 import org.apache.baremaps.openstreetmap.model.Change;
 
 /** A utility class for parsing an OpenStreetMap change file. */
-public class XmlChangeReader implements OsmReader<Change> {
+public class XmlChangeReader implements Reader<Stream<Change>> {
 
   /**
    * Creates an ordered stream of OSM changes from an XML file.
@@ -34,7 +34,8 @@ public class XmlChangeReader implements OsmReader<Change> {
    * @param input
    * @return
    */
-  public Stream<Change> stream(InputStream input) {
+  @Override
+  public Stream<Change> read(InputStream input) {
     return StreamSupport.stream(new XmlChangeSpliterator(input), false);
   }
 }

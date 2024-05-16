@@ -142,10 +142,10 @@ public class ImportOsmPbf implements Task {
 
     // configure the block reader
     var reader = new PbfBlockReader()
-        .geometries(true)
-        .projection(databaseSrid)
-        .coordinateMap(coordinateMap)
-        .referenceMap(referenceMap);
+        .setGeometries(true)
+        .setSrid(databaseSrid)
+        .setCoordinateMap(coordinateMap)
+        .setReferenceMap(referenceMap);
 
     // configure the block importer
     var importer = new BlockImporter(
@@ -156,7 +156,7 @@ public class ImportOsmPbf implements Task {
 
     // Stream and process the blocks
     try (var input = Files.newInputStream(path)) {
-      StreamUtils.batch(reader.stream(input)).forEach(importer);
+      StreamUtils.batch(reader.read(input)).forEach(importer);
     }
   }
 

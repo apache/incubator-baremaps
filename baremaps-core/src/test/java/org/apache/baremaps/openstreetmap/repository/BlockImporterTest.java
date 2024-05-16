@@ -68,7 +68,7 @@ class BlockImporterTest extends PostgresContainerTest {
 
     try (InputStream inputStream = Files.newInputStream(SAMPLE_OSM_PBF)) {
 
-      new PbfBlockReader().stream(inputStream).forEach(blockImporter);
+      new PbfBlockReader().read(inputStream).forEach(blockImporter);
 
       // Check node importation
       for (long i = 1; i <= 36; i++) {

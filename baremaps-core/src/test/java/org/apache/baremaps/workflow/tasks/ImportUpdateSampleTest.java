@@ -71,7 +71,7 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
 
     // Import the state file
     try (var stateInput = Files.newInputStream(OsmSample.SAMPLE_STATE_TXT)) {
-      var state = new StateReader().readState(stateInput);
+      var state = new StateReader().read(stateInput);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
           "file:///" + OsmSample.SAMPLE_DIR, "", ""));
       assertEquals(1, headerRepository.selectLatest().getReplicationSequenceNumber());

@@ -169,13 +169,13 @@ public class UpdateOsmDatabase implements Task {
 
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      new XmlChangeReader().stream(changeInputStream).forEach(entityProcessor);
+      new XmlChangeReader().read(changeInputStream).forEach(entityProcessor);
     }
 
     // Add the new header to the database
     var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
-      var state = new StateReader().readState(stateInputStream);
+      var state = new StateReader().read(stateInputStream);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
           header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }

@@ -28,7 +28,7 @@ import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for reading an OpenStreetMap pbf file. */
-public class PbfBlockReader implements PbfReader<Block> {
+public class PbfBlockReader implements PbfReader<Stream<Block>> {
 
   private int buffer = Runtime.getRuntime().availableProcessors();
 
@@ -41,62 +41,62 @@ public class PbfBlockReader implements PbfReader<Block> {
   private Map<Long, List<Long>> referenceMap;
 
   @Override
-  public int buffer() {
+  public int getBuffer() {
     return buffer;
   }
 
   @Override
-  public PbfBlockReader buffer(int buffer) {
+  public PbfBlockReader setBuffer(int buffer) {
     this.buffer = buffer;
     return this;
   }
 
   @Override
-  public boolean geometries() {
+  public boolean getGeometries() {
     return geometry;
   }
 
   @Override
-  public PbfBlockReader geometries(boolean geometries) {
+  public PbfBlockReader setGeometries(boolean geometries) {
     this.geometry = geometries;
     return this;
   }
 
   @Override
-  public int projection() {
+  public int getSrid() {
     return srid;
   }
 
   @Override
-  public PbfBlockReader projection(int srid) {
+  public PbfBlockReader setSrid(int srid) {
     this.srid = srid;
     return this;
   }
 
   @Override
-  public Map<Long, Coordinate> coordinateMap() {
+  public Map<Long, Coordinate> getCoordinateMap() {
     return coordinateMap;
   }
 
   @Override
-  public PbfBlockReader coordinateMap(Map<Long, Coordinate> coordinateMap) {
+  public PbfBlockReader setCoordinateMap(Map<Long, Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
     return this;
   }
 
   @Override
-  public Map<Long, List<Long>> referenceMap() {
+  public Map<Long, List<Long>> getReferenceMap() {
     return referenceMap;
   }
 
   @Override
-  public PbfBlockReader referenceMap(Map<Long, List<Long>> referenceMap) {
+  public PbfBlockReader setReferenceMap(Map<Long, List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
     return this;
   }
 
   @Override
-  public Stream<Block> stream(InputStream inputStream) {
+  public Stream<Block> read(InputStream inputStream) {
     var blocks = StreamUtils.bufferInSourceOrder(
         StreamUtils.stream(new BlobIterator(inputStream)),
         new BlobToBlockMapper(),

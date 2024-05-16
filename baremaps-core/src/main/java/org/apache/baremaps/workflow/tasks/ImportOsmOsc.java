@@ -97,7 +97,7 @@ public class ImportOsmOsc implements Task {
 
     try (var changeInputStream =
         new BufferedInputStream(compression.decompress(Files.newInputStream(path)))) {
-      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
+      new XmlChangeReader().read(changeInputStream).map(prepareChange).forEach(importChange);
     }
   }
 

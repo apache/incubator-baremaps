@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.openstreetmap.OsmReader;
+import org.apache.baremaps.openstreetmap.OpenStreetMap.EntityReader;
 import org.apache.baremaps.openstreetmap.function.CoordinateMapBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
@@ -35,7 +35,7 @@ import org.apache.baremaps.openstreetmap.model.Entity;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for parsing an OpenStreetMap XML file. */
-public class XmlEntityReader implements OsmReader<Entity> {
+public class XmlEntityReader implements EntityReader<Stream<Entity>> {
 
   private boolean geometry = false;
 
@@ -45,38 +45,46 @@ public class XmlEntityReader implements OsmReader<Entity> {
 
   private Map<Long, List<Long>> referenceMap;
 
-  public boolean geometries() {
+  @Override
+  public boolean getGeometries() {
     return geometry;
   }
 
-  public XmlEntityReader geometries(boolean geometries) {
+  @Override
+  public XmlEntityReader setGeometries(boolean geometries) {
     this.geometry = geometries;
     return this;
   }
 
-  public int projection() {
+  @Override
+  public int getSrid() {
     return srid;
   }
 
-  public XmlEntityReader projection(int srid) {
+  @Override
+  public XmlEntityReader setSrid(int srid) {
     this.srid = srid;
     return this;
   }
 
-  public Map<Long, Coordinate> coordinateMap() {
+  @Override
+  public Map<Long, Coordinate> getCoordinateMap() {
     return coordinateMap;
   }
 
-  public XmlEntityReader coordinateMap(Map<Long, Coordinate> coordinateMap) {
+  @Override
+  public XmlEntityReader setCoordinateMap(Map<Long, Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
     return this;
   }
 
-  public Map<Long, List<Long>> referenceMap() {
+  @Override
+  public Map<Long, List<Long>> getReferenceMap() {
     return referenceMap;
   }
 
-  public XmlEntityReader referenceMap(Map<Long, List<Long>> referenceMap) {
+  @Override
+  public XmlEntityReader setReferenceMap(Map<Long, List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
     return this;
   }
@@ -87,7 +95,8 @@ public class XmlEntityReader implements OsmReader<Entity> {
    * @param input
    * @return
    */
-  public Stream<Entity> stream(InputStream input) {
+  @Override
+  public Stream<Entity> read(InputStream input) {
     var entities = StreamSupport.stream(new XmlEntitySpliterator(input), false);
     if (geometry) {
       // Initialize and chain the entity handlers

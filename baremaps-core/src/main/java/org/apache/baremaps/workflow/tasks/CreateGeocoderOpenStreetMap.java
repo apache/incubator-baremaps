@@ -92,14 +92,14 @@ public class CreateGeocoderOpenStreetMap implements Task {
 
     // configure the block reader
     var reader = new PbfEntityReader()
-        .geometries(true)
+        .setGeometries(true)
         // Must be to 4326 projection to avoid transformation before using Lucene API
-        .projection(4326)
-        .coordinateMap(coordinateMap)
-        .referenceMap(referenceMap);
+        .setSrid(4326)
+        .setCoordinateMap(coordinateMap)
+        .setReferenceMap(referenceMap);
 
     try (var input = Files.newInputStream(path)) {
-      StreamUtils.batch(reader.stream(input)).forEach(importer);
+      StreamUtils.batch(reader.read(input)).forEach(importer);
     }
   }
 
