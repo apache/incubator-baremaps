@@ -26,19 +26,24 @@ public class OsmSample {
 
   /* The paths of the sample directory and files */
 
-  public static final Path SAMPLE_DIR = resolve("osm-sample/");
+  public static final Path SAMPLE_DIR = resolve("baremaps-testing/data/osm-sample/");
 
-  public static final Path SAMPLE_STATE_TXT = resolve("osm-sample/state.txt");
+  public static final Path SAMPLE_STATE_TXT = resolve("baremaps-testing/data/osm-sample/state.txt");
 
-  public static final Path SAMPLE_OSM_XML = resolve("osm-sample/sample.osm.xml");
+  public static final Path SAMPLE_OSM_XML =
+      resolve("baremaps-testing/data/osm-sample/sample.osm.xml");
 
-  public static final Path SAMPLE_OSM_PBF = resolve("osm-sample/sample.osm.pbf");
+  public static final Path SAMPLE_OSM_PBF =
+      resolve("baremaps-testing/data/osm-sample/sample.osm.pbf");
 
-  public static final Path SAMPLE_OSC_XML_2 = resolve("osm-sample/000/000/002.osc.gz");
+  public static final Path SAMPLE_OSC_XML_2 =
+      resolve("baremaps-testing/data/osm-sample/000/000/002.osc.gz");
 
-  public static final Path SAMPLE_OSC_XML_3 = resolve("osm-sample/000/000/003.osc.gz");
+  public static final Path SAMPLE_OSC_XML_3 =
+      resolve("baremaps-testing/data/osm-sample/000/000/003.osc.gz");
 
-  public static final Path SAMPLE_OSC_XML_4 = resolve("osm-sample/000/000/004.osc.gz");
+  public static final Path SAMPLE_OSC_XML_4 =
+      resolve("baremaps-testing/data/osm-sample/000/000/004.osc.gz");
 
   /* The geometries of the osm-sample/sample.osm.xml file */
 

@@ -30,7 +30,7 @@ class NicObjectTest {
 
   @BeforeEach
   public void before() throws IOException {
-    nicObjects = NicData.sample("ripe/sample.txt");
+    nicObjects = NicData.sample("baremaps-testing/data/ripe/sample.txt");
   }
 
   @Test

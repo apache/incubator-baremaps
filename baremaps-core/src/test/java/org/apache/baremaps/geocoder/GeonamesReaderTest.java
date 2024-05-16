@@ -28,7 +28,7 @@ class GeonamesReaderTest {
 
   @Test
   void read() throws IOException {
-    var data = TestFiles.resolve("geonames/sample.txt");
+    var data = TestFiles.resolve("baremaps-testing/data/geonames/sample.txt");
     try (var inputStream = Files.newInputStream(data)) {
       var reader = new GeonamesReader();
       var stream = reader.stream(inputStream);

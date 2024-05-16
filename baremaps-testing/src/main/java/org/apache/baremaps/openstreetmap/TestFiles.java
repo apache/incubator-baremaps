@@ -23,21 +23,23 @@ import java.nio.file.Path;
 
 public class TestFiles {
 
-  public static final Path CONFIG_STYLE_JS = resolve("config/style.js");
+  public static final Path CONFIG_STYLE_JS = resolve("baremaps-testing/data/config/style.js");
 
-  public static final Path ARCHIVE_FILE_BZ2 = resolve("archives/file.bz2");
+  public static final Path ARCHIVE_FILE_BZ2 = resolve("baremaps-testing/data/archives/file.bz2");
 
-  public static final Path ARCHIVE_FILE_GZ = resolve("archives/file.gz");
+  public static final Path ARCHIVE_FILE_GZ = resolve("baremaps-testing/data/archives/file.gz");
 
-  public static final Path ARCHIVE_FILE_TAR_BZ2 = resolve("archives/file.tar.bz2");
+  public static final Path ARCHIVE_FILE_TAR_BZ2 =
+      resolve("baremaps-testing/data/archives/file.tar.bz2");
 
-  public static final Path ARCHIVE_FILE_TAR_GZ = resolve("archives/file.tar.gz");
+  public static final Path ARCHIVE_FILE_TAR_GZ =
+      resolve("baremaps-testing/data/archives/file.tar.gz");
 
-  public static final Path ARCHIVE_FILE_ZIP = resolve("archives/file.zip");
+  public static final Path ARCHIVE_FILE_ZIP = resolve("baremaps-testing/data/archives/file.zip");
 
   public static Path resolve(String resource) {
     Path cwd = Path.of("").toAbsolutePath();
-    Path pathFromRoot = Path.of("baremaps-testing", "data", resource);
-    return cwd.resolveSibling(pathFromRoot).toAbsolutePath();
+    return cwd.resolveSibling(resource).toAbsolutePath();
   }
+
 }

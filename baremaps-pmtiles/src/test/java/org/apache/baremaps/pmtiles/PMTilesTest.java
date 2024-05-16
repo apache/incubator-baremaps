@@ -128,7 +128,7 @@ class PMTilesTest {
 
   @Test
   void decodeHeader() throws IOException {
-    var file = TestFiles.resolve("pmtiles/test_fixture_1.pmtiles");
+    var file = TestFiles.resolve("baremaps-testing/data/pmtiles/test_fixture_1.pmtiles");
     try (var channel = FileChannel.open(file)) {
       var input = new LittleEndianDataInputStream(Channels.newInputStream(channel));
       var header = PMTiles.deserializeHeader(input);

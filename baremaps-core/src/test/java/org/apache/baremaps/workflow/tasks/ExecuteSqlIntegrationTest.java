@@ -30,7 +30,8 @@ class ExecuteSqlIntegrationTest extends PostgresContainerTest {
   @Tag("integration")
   void execute() throws Exception {
     var task =
-        new ExecuteSql(jdbcUrl(), TestFiles.resolve("queries/queries.sql"), false);
+        new ExecuteSql(jdbcUrl(),
+            TestFiles.resolve("baremaps-core/src/test/resources/queries/queries.sql"), false);
     task.execute(new WorkflowContext());
   }
 }
