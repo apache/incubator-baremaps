@@ -244,6 +244,11 @@ public class DataConversions {
     }
 
     @Override
+    public V put(K key, V value) {
+      return map.put(key, value);
+    }
+
+    @Override
     public Set<Entry<K, V>> entrySet() {
       return new AbstractSet<>() {
         @Override
