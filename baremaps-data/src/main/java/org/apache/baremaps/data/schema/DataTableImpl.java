@@ -56,11 +56,17 @@ public class DataTableImpl implements DataTable {
     return rows.add(e);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
     rows.clear();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long size() {
     return rows.size();

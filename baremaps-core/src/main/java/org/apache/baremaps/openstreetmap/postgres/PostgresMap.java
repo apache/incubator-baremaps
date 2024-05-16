@@ -69,7 +69,7 @@ public abstract class PostgresMap<K, V> implements Map<K, V> {
   /** {@inheritDoc} */
   @Override
   public Set<K> keySet() {
-    return new PostgresMap.KeySet();
+    return new KeySet();
   }
 
   private class KeySet extends AbstractSet<K> {
@@ -80,7 +80,7 @@ public abstract class PostgresMap<K, V> implements Map<K, V> {
 
     @Override
     public int size() {
-      return PostgresMap.this.size();
+      return this.size();
     }
   }
 
@@ -94,7 +94,7 @@ public abstract class PostgresMap<K, V> implements Map<K, V> {
   /** {@inheritDoc} */
   @Override
   public Collection<V> values() {
-    return new PostgresMap.ValueCollection();
+    return new ValueCollection();
   }
 
   private class ValueCollection extends AbstractCollection<V> {
@@ -119,7 +119,7 @@ public abstract class PostgresMap<K, V> implements Map<K, V> {
   /** {@inheritDoc} */
   @Override
   public Set<Entry<K, V>> entrySet() {
-    return new PostgresMap.EntrySet();
+    return new EntrySet();
   }
 
   private class EntrySet extends AbstractSet<Entry<K, V>> {

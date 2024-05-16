@@ -72,6 +72,9 @@ public class GeoPackageDataTable implements DataTable {
     return new GeopackageIterator(featureDao.queryForAll(), rowType);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
     // Do nothing

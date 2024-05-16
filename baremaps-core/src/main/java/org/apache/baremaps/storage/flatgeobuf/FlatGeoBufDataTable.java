@@ -117,6 +117,9 @@ public class FlatGeoBufDataTable implements DataTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
 

@@ -48,6 +48,7 @@ public interface DataCollection<E> extends Iterable<E> {
    *
    * @return an iterator
    */
+  @Override
   Iterator<E> iterator();
 
   /**
@@ -55,6 +56,7 @@ public interface DataCollection<E> extends Iterable<E> {
    *
    * @return a spliterator
    */
+  @Override
   default Spliterator<E> spliterator() {
     return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
   }

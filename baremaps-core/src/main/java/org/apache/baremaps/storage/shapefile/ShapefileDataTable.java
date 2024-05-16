@@ -61,6 +61,9 @@ public class ShapefileDataTable implements DataTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long size() {
     return 0;
@@ -78,6 +81,9 @@ public class ShapefileDataTable implements DataTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
 

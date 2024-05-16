@@ -18,6 +18,7 @@
 package org.apache.baremaps.data.collection;
 
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -53,8 +54,10 @@ public interface DataMap<K, V> {
    * @param keys the keys
    * @return the values
    */
-  default List<V> getAll(List<K> keys) {
-    return keys.stream().map(this::get).toList();
+  default Iterable<V> getAll(Iterable<K> keys) {
+    List<V> values = new ArrayList<>();
+    keys.forEach(key -> values.add(get(key)));
+    return values;
   }
 
   /**

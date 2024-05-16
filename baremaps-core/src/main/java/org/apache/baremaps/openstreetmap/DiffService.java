@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.openstreetmap;
 
+import static org.apache.baremaps.openstreetmap.stream.ConsumerUtils.consumeThenReturn;
+
 import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -32,7 +34,6 @@ import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.openstreetmap.repository.HeaderRepository;
 import org.apache.baremaps.openstreetmap.repository.Repository;
-import org.apache.baremaps.openstreetmap.stream.ConsumerUtils;
 import org.apache.baremaps.openstreetmap.stream.StreamException;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.tilestore.TileCoord;
@@ -54,7 +55,8 @@ public class DiffService implements Callable<List<TileCoord>> {
   private final int srid;
   private final int zoom;
 
-  public DiffService(Map<Long, Coordinate> coordinateMap,
+  public DiffService(
+      Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
@@ -134,8 +136,7 @@ public class DiffService implements Callable<List<TileCoord>> {
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
     return change.getEntities().stream()
-        .map(
-            ConsumerUtils.consumeThenReturn(new EntityGeometryBuilder(coordinateMap, referenceMap)))
+        .map(consumeThenReturn(new EntityGeometryBuilder(coordinateMap, referenceMap)))
         .flatMap(new EntityToGeometryMapper().andThen(Optional::stream));
   }
 

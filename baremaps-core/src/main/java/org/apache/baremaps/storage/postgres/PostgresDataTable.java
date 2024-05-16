@@ -126,6 +126,9 @@ public class PostgresDataTable implements DataTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
 
