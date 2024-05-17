@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import org.apache.baremaps.maplibre.style.Style;
-import org.apache.baremaps.openstreetmap.TestFiles;
+import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 

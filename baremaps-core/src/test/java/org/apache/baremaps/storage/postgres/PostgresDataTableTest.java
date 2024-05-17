@@ -17,13 +17,13 @@
 
 package org.apache.baremaps.storage.postgres;
 
-import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FACTORY;
+import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.apache.baremaps.data.schema.DataRowImpl;
+import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.storage.MockDataTable;
-import org.apache.baremaps.testing.PostgresContainerTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

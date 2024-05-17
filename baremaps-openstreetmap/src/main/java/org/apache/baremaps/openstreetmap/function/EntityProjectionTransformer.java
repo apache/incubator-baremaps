@@ -20,7 +20,9 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Consumer;
-import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.database.model.*;
+import org.apache.baremaps.openstreetmap.model.Element;
+import org.apache.baremaps.openstreetmap.model.Entity;
 
 /** Changes the projection of the geometry of an entity via side-effects. */
 public class EntityProjectionTransformer implements Consumer<Entity> {

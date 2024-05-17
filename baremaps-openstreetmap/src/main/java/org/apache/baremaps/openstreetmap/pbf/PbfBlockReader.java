@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.apache.baremaps.database.function.*;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.stream.ConsumerUtils;

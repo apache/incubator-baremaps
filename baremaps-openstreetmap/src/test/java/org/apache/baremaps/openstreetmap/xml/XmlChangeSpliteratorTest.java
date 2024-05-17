@@ -26,10 +26,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Spliterator;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.openstreetmap.OsmSample;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.stream.AccumulatingConsumer;
 import org.apache.baremaps.openstreetmap.stream.HoldingConsumer;
+import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
 class XmlChangeSpliteratorTest {
@@ -37,7 +37,7 @@ class XmlChangeSpliteratorTest {
   @Test
   void tryAdvance() throws IOException {
     try (
-        InputStream input = new GZIPInputStream(Files.newInputStream(OsmSample.SAMPLE_OSC_XML_2))) {
+        InputStream input = new GZIPInputStream(Files.newInputStream(TestFiles.SAMPLE_OSC_XML_2))) {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
@@ -47,7 +47,7 @@ class XmlChangeSpliteratorTest {
   @Test
   void forEachRemaining() throws IOException {
     try (
-        InputStream input = new GZIPInputStream(Files.newInputStream(OsmSample.SAMPLE_OSC_XML_2))) {
+        InputStream input = new GZIPInputStream(Files.newInputStream(TestFiles.SAMPLE_OSC_XML_2))) {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);

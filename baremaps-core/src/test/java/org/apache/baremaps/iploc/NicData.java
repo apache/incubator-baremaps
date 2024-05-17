@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
-import org.apache.baremaps.openstreetmap.TestFiles;
+import org.apache.baremaps.testing.TestFiles;
 
 public class NicData {
 

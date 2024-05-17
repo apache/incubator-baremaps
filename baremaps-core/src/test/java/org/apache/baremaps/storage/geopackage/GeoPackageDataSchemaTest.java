@@ -19,7 +19,7 @@ package org.apache.baremaps.storage.geopackage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.baremaps.openstreetmap.TestFiles;
+import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
 class GeoPackageDataSchemaTest {

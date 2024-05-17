@@ -21,9 +21,9 @@ package org.apache.baremaps.tilestore.postgres;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.apache.baremaps.database.metadata.DatabaseMetadata;
+import org.apache.baremaps.database.metadata.TableMetadata;
 import org.apache.baremaps.maplibre.tileset.TilesetQuery;
-import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
-import org.apache.baremaps.postgres.metadata.TableMetadata;
 
 /**
  * A generator that uses PostgreSQL metadata to generate input queries for a {@code

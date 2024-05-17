@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.openstreetmap;
 
-import static org.apache.baremaps.openstreetmap.TestFiles.resolve;
+import static org.apache.baremaps.testing.TestFiles.resolve;
 
 import java.io.IOException;
 import java.nio.file.Files;

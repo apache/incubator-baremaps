@@ -25,17 +25,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Spliterator;
-import org.apache.baremaps.openstreetmap.OsmSample;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.stream.AccumulatingConsumer;
 import org.apache.baremaps.openstreetmap.stream.HoldingConsumer;
+import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
 class XmlEntitySpliteratorTestDataType {
 
   @Test
   void tryAdvance() throws IOException {
-    try (InputStream input = Files.newInputStream(OsmSample.SAMPLE_OSM_XML)) {
+    try (InputStream input = Files.newInputStream(TestFiles.SAMPLE_OSM_XML)) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
@@ -44,7 +44,7 @@ class XmlEntitySpliteratorTestDataType {
 
   @Test
   void forEachRemaining() throws IOException {
-    try (InputStream input = Files.newInputStream(OsmSample.SAMPLE_OSM_XML)) {
+    try (InputStream input = Files.newInputStream(TestFiles.SAMPLE_OSM_XML)) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);
