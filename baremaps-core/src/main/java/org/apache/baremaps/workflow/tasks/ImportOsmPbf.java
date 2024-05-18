@@ -23,12 +23,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.baremaps.database.postgres.PostgresHeaderRepository;
-import org.apache.baremaps.database.postgres.PostgresNodeRepository;
-import org.apache.baremaps.database.postgres.PostgresRelationRepository;
-import org.apache.baremaps.database.postgres.PostgresWayRepository;
-import org.apache.baremaps.database.repository.*;
-import org.apache.baremaps.database.repository.BlockImporter;
+import org.apache.baremaps.database.function.BlockImporter;
+import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
@@ -84,10 +80,10 @@ public class ImportOsmPbf implements Task {
 
     // Initialize the repositories
     var datasource = context.getDataSource(database);
-    var headerRepository = new PostgresHeaderRepository(datasource);
-    var nodeRepository = new PostgresNodeRepository(datasource);
-    var wayRepository = new PostgresWayRepository(datasource);
-    var relationRepository = new PostgresRelationRepository(datasource);
+    var headerRepository = new HeaderRepository(datasource);
+    var nodeRepository = new NodeRepository(datasource);
+    var wayRepository = new WayRepository(datasource);
+    var relationRepository = new RelationRepository(datasource);
 
     if (replaceExisting) {
       // Drop the existing tables

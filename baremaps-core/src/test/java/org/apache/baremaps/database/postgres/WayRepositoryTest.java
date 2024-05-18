@@ -27,19 +27,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.baremaps.database.repository.Constants;
-import org.apache.baremaps.database.repository.RepositoryException;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresWayRepositoryTest extends PostgresRepositoryTest {
+class WayRepositoryTest extends PostgresRepositoryTest {
 
-  PostgresWayRepository wayRepository;
+  WayRepository wayRepository;
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    wayRepository = new PostgresWayRepository(dataSource());
+    wayRepository = new WayRepository(dataSource());
   }
 
   @Test

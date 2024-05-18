@@ -20,7 +20,6 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Consumer;
-import org.apache.baremaps.database.model.*;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Entity;
 

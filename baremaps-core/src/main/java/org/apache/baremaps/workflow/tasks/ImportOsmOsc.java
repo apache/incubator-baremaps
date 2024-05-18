@@ -23,8 +23,8 @@ import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.StringJoiner;
+import org.apache.baremaps.database.function.CopyChangeImporter;
 import org.apache.baremaps.database.postgres.*;
-import org.apache.baremaps.database.repository.CopyChangeImporter;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.utils.Compression;
@@ -76,9 +76,9 @@ public class ImportOsmOsc implements Task {
 
     // Initialize the repositories
     var datasource = context.getDataSource(database);
-    var nodeRepository = new PostgresNodeRepository(datasource);
-    var wayRepository = new PostgresWayRepository(datasource);
-    var relationRepository = new PostgresRelationRepository(datasource);
+    var nodeRepository = new NodeRepository(datasource);
+    var wayRepository = new WayRepository(datasource);
+    var relationRepository = new RelationRepository(datasource);
 
     var coordinateMap = context.getCoordinateMap();
     var referenceMap = context.getReferenceMap();

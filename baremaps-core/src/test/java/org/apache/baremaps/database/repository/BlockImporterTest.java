@@ -27,10 +27,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.PostgresContainerTest;
-import org.apache.baremaps.database.postgres.PostgresHeaderRepository;
-import org.apache.baremaps.database.postgres.PostgresNodeRepository;
-import org.apache.baremaps.database.postgres.PostgresRelationRepository;
-import org.apache.baremaps.database.postgres.PostgresWayRepository;
+import org.apache.baremaps.database.function.BlockImporter;
+import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,18 +38,18 @@ import org.junit.jupiter.api.Test;
 class BlockImporterTest extends PostgresContainerTest {
 
   public DataSource dataSource;
-  public PostgresHeaderRepository headerRepository;
-  public PostgresNodeRepository nodeRepository;
-  public PostgresWayRepository wayRepository;
-  public PostgresRelationRepository relationRepository;
+  public HeaderRepository headerRepository;
+  public NodeRepository nodeRepository;
+  public WayRepository wayRepository;
+  public RelationRepository relationRepository;
 
   @BeforeEach
   void init() throws SQLException, IOException {
     dataSource = PostgresUtils.createDataSource(jdbcUrl(), 1);
-    headerRepository = new PostgresHeaderRepository(dataSource);
-    nodeRepository = new PostgresNodeRepository(dataSource);
-    wayRepository = new PostgresWayRepository(dataSource);
-    relationRepository = new PostgresRelationRepository(dataSource);
+    headerRepository = new HeaderRepository(dataSource);
+    nodeRepository = new NodeRepository(dataSource);
+    wayRepository = new WayRepository(dataSource);
+    relationRepository = new RelationRepository(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "queries/osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "queries/osm_drop_tables.sql");

@@ -19,17 +19,19 @@ package org.apache.baremaps.database.postgres;
 
 
 
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import javax.sql.DataSource;
 import org.apache.baremaps.data.collection.DataCollectionException;
-import org.apache.baremaps.data.collection.DataMap;
-import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A read-only {@link DataMap} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL.
+ * A read-only {@code LongDataMap} for references baked by OpenStreetMap ways stored in Postgres.
  */
-public class PostgresCoordinateMap extends PostgresMap<Long, Coordinate> {
+public class ReferenceMap extends PostgresMap<Long, List<Long>> {
 
   private final DataSource dataSource;
 
@@ -50,16 +52,16 @@ public class PostgresCoordinateMap extends PostgresMap<Long, Coordinate> {
   private final String selectEntries;
 
   /**
-   * Constructs a {@link PostgresCoordinateMap}.
+   * Constructs a {@code PostgresReferenceMap}.
    */
-  public PostgresCoordinateMap(DataSource dataSource) {
-    this(dataSource, "public", "osm_nodes");
+  public ReferenceMap(DataSource dataSource) {
+    this(dataSource, "public", "osm_ways");
   }
 
   /**
-   * Constructs a {@link PostgresCoordinateMap}.
+   * Constructs a {@code PostgresReferenceMap}.
    */
-  public PostgresCoordinateMap(DataSource dataSource, String schema, String table) {
+  public ReferenceMap(DataSource dataSource, String schema, String table) {
     this.dataSource = dataSource;
     var fullTableName = String.format("%s.%s", schema, table);
     this.selectContainsKey = String.format("""
@@ -73,12 +75,12 @@ public class PostgresCoordinateMap extends PostgresMap<Long, Coordinate> {
         WHERE nodes = ? LIMIT 1
         """, fullTableName);
     this.selectIn = String.format("""
-        SELECT id, lon, lat
+        SELECT id, nodes
         FROM %1$s
         WHERE id = ANY (?)
         """, fullTableName);
     this.selectById = String.format("""
-        SELECT lon, lat
+        SELECT nodes
         FROM %1$s
         WHERE id = ?
         """, fullTableName);
@@ -91,117 +93,13 @@ public class PostgresCoordinateMap extends PostgresMap<Long, Coordinate> {
         FROM %1$s
         """, fullTableName);
     this.selectValues = String.format("""
-        SELECT lon, lat
+        SELECT nodes
         FROM %1$s
         """, fullTableName);
     this.selectEntries = String.format("""
-        SELECT id, lon, lat
+        SELECT id, nodes
         FROM %1$s
         """, fullTableName);
-
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public Coordinate get(Object key) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(selectById)) {
-      statement.setLong(1, (Long) key);
-      try (ResultSet result = statement.executeQuery()) {
-        if (result.next()) {
-          double lon = result.getDouble(1);
-          double lat = result.getDouble(2);
-          return new Coordinate(lon, lat);
-        } else {
-          return null;
-        }
-      }
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public List<Coordinate> getAll(List<Long> keys) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(selectIn)) {
-      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
-      try (ResultSet result = statement.executeQuery()) {
-        Map<Long, Coordinate> nodes = new HashMap<>();
-        while (result.next()) {
-          long key = result.getLong(1);
-          double lon = result.getDouble(2);
-          double lat = result.getDouble(3);
-          nodes.put(key, new Coordinate(lon, lat));
-        }
-        return keys.stream().map(nodes::get).toList();
-      }
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
-  }
-
-  @Override
-  protected Iterator<Long> keyIterator() {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(selectKeys)) {
-      ResultSet result = statement.executeQuery();
-      return new PostgresIterator<>(result, this::key);
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
-  }
-
-  private Long key(ResultSet resultSet) {
-    try {
-      return resultSet.getLong(1);
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
-  }
-
-  @Override
-  protected Iterator<Coordinate> valueIterator() {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(selectValues)) {
-      ResultSet result = statement.executeQuery();
-      return new PostgresIterator<>(result, this::value);
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
-  }
-
-  private Coordinate value(ResultSet resultSet) {
-    try {
-      double lon = resultSet.getDouble(1);
-      double lat = resultSet.getDouble(2);
-      return new Coordinate(lon, lat);
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
-  }
-
-  @Override
-  protected Iterator<Entry<Long, Coordinate>> entryIterator() {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(selectEntries)) {
-      ResultSet result = statement.executeQuery();
-      return new PostgresIterator<>(result, this::entry);
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
-  }
-
-  private Entry<Long, Coordinate> entry(ResultSet resultSet) {
-    try {
-      long key = resultSet.getLong(1);
-      double lon = resultSet.getDouble(1);
-      double lat = resultSet.getDouble(2);
-      return Map.entry(key, new Coordinate(lon, lat));
-    } catch (SQLException e) {
-      throw new DataCollectionException(e);
-    }
   }
 
   @Override
@@ -246,18 +144,123 @@ public class PostgresCoordinateMap extends PostgresMap<Long, Coordinate> {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Coordinate put(Long key, Coordinate value) {
+  public List<Long> get(Object key) {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(selectById)) {
+      statement.setLong(1, (Long) key);
+      try (ResultSet result = statement.executeQuery()) {
+        if (result.next()) {
+          Array array = result.getArray(1);
+          return array == null ? Collections.emptyList() : Arrays.asList((Long[]) array.getArray());
+        } else {
+          throw new IllegalArgumentException();
+        }
+      }
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<List<Long>> getAll(List<Long> keys) {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(selectIn)) {
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      try (ResultSet result = statement.executeQuery()) {
+        Map<Long, List<Long>> referenceMap = new HashMap<>();
+        while (result.next()) {
+          long key = result.getLong(1);
+          Array array = result.getArray(2);
+          referenceMap.put(key,
+              array == null ? List.of() : Arrays.asList((Long[]) array.getArray()));
+        }
+        return keys.stream().map(referenceMap::get).toList();
+      }
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  protected Iterator<Long> keyIterator() {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(selectKeys)) {
+      ResultSet result = statement.executeQuery();
+      return new ResultSetIterator<>(result, this::key);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  private Long key(ResultSet resultSet) {
+    try {
+      return resultSet.getLong(1);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  protected Iterator<List<Long>> valueIterator() {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(selectValues)) {
+      ResultSet result = statement.executeQuery();
+      return new ResultSetIterator<>(result, this::value);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  private List<Long> value(ResultSet resultSet) {
+    try {
+      Array array = resultSet.getArray(1);
+      return array == null ? List.of() : Arrays.asList((Long[]) array.getArray());
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  protected Iterator<Entry<Long, List<Long>>> entryIterator() {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(selectEntries)) {
+      ResultSet result = statement.executeQuery();
+      return new ResultSetIterator<>(result, this::entry);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  private Entry<Long, List<Long>> entry(ResultSet resultSet) {
+    try {
+      long key = resultSet.getLong(1);
+      Array array = resultSet.getArray(2);
+      List<Long> value = array == null ? List.of() : Arrays.asList((Long[]) array.getArray());
+      return Map.entry(key, value);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  public List<Long> put(Long key, List<Long> value) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Coordinate remove(Object key) {
+  public List<Long> remove(Object key) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public void clear() {
-
+    throw new UnsupportedOperationException();
   }
 }

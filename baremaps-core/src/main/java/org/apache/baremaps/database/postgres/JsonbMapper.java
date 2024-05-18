@@ -25,11 +25,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 
-class PostgresJsonbMapper {
+class JsonbMapper {
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
-  private PostgresJsonbMapper() {}
+  private JsonbMapper() {}
 
   /**
    * Convert a map into a json object

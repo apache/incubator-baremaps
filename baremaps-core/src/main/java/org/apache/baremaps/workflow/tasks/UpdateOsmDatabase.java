@@ -22,13 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.database.postgres.PostgresCoordinateMap;
-import org.apache.baremaps.database.postgres.PostgresHeaderRepository;
-import org.apache.baremaps.database.postgres.PostgresNodeRepository;
-import org.apache.baremaps.database.postgres.PostgresReferenceMap;
-import org.apache.baremaps.database.postgres.PostgresRelationRepository;
-import org.apache.baremaps.database.postgres.PostgresWayRepository;
-import org.apache.baremaps.database.repository.*;
+import org.apache.baremaps.database.function.ChangeElementsImporter;
+import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
@@ -78,12 +73,12 @@ public class UpdateOsmDatabase implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
-    var coordinateMap = new PostgresCoordinateMap(datasource);
-    var referenceMap = new PostgresReferenceMap(datasource);
-    var headerRepository = new PostgresHeaderRepository(datasource);
-    var nodeRepository = new PostgresNodeRepository(datasource);
-    var wayRepository = new PostgresWayRepository(datasource);
-    var relationRepository = new PostgresRelationRepository(datasource);
+    var coordinateMap = new CoordinateMap(datasource);
+    var referenceMap = new ReferenceMap(datasource);
+    var headerRepository = new HeaderRepository(datasource);
+    var nodeRepository = new NodeRepository(datasource);
+    var wayRepository = new WayRepository(datasource);
+    var relationRepository = new RelationRepository(datasource);
     execute(
         coordinateMap,
         referenceMap,

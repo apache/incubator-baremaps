@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.database.repository;
+package org.apache.baremaps.database.postgres;
 
 /** Signals that an exception occurred in a {@code Repository}. */
 public class RepositoryException extends Exception {

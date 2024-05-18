@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.database.repository;
+package org.apache.baremaps.database.function;
 
 
 
 import java.util.function.Consumer;
+import org.apache.baremaps.database.postgres.Repository;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.openstreetmap.stream.StreamException;
 

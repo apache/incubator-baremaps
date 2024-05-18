@@ -17,8 +17,6 @@
 
 package org.apache.baremaps.database.postgres;
 
-
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -26,26 +24,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
-import org.apache.baremaps.database.repository.NodeRepository;
-import org.apache.baremaps.database.repository.RepositoryException;
 import org.apache.baremaps.openstreetmap.model.Info;
-import org.apache.baremaps.openstreetmap.model.Node;
+import org.apache.baremaps.openstreetmap.model.Member;
+import org.apache.baremaps.openstreetmap.model.Member.MemberType;
+import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/** Provides an implementation of the {@code NodeRepository} baked by Postgres. */
-public class PostgresNodeRepository implements NodeRepository {
-
-  private static final Logger logger = LoggerFactory.getLogger(PostgresNodeRepository.class);
+/** Provides an implementation of the {@code RelationRepository} baked by Postgres. */
+public class RelationRepository implements Repository<Long, Relation> {
 
   private final DataSource dataSource;
 
@@ -68,18 +61,18 @@ public class PostgresNodeRepository implements NodeRepository {
   private final String copy;
 
   /**
-   * Constructs a {@code PostgresNodeRepository}.
+   * Constructs a {@code PostgresRelationRepository}.
    *
    * @param dataSource
    */
-  public PostgresNodeRepository(DataSource dataSource) {
-    this(dataSource, "public", "osm_nodes", "id", "version", "uid", "timestamp", "changeset",
-        "tags", "lon",
-        "lat", "geom");
+  public RelationRepository(DataSource dataSource) {
+    this(dataSource, "public", "osm_relations", "id", "version", "uid", "timestamp", "changeset",
+        "tags",
+        "member_refs", "member_types", "member_roles", "geom");
   }
 
   /**
-   * Constructs a {@code PostgresNodeRepository} with custom parameters.
+   * Constructs a {@code PostgresRelationRepository} with custom parameters.
    *
    * @param dataSource
    * @param schema
@@ -90,58 +83,66 @@ public class PostgresNodeRepository implements NodeRepository {
    * @param timestampColumn
    * @param changesetColumn
    * @param tagsColumn
-   * @param longitudeColumn
-   * @param latitudeColumn
+   * @param memberRefs
+   * @param memberTypes
+   * @param memberRoles
    * @param geometryColumn
    */
-  public PostgresNodeRepository(DataSource dataSource, String schema, String table, String idColumn,
+  public RelationRepository(DataSource dataSource, String schema, String table,
+      String idColumn,
       String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
-      String tagsColumn, String longitudeColumn, String latitudeColumn, String geometryColumn) {
+      String tagsColumn, String memberRefs, String memberTypes, String memberRoles,
+      String geometryColumn) {
     var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""
-        CREATE TABLE IF NOT EXISTS %1$s
-        (
-            %2$s int8 PRIMARY KEY,
-            %3$s int,
-            %4$s int,
-            %5$s timestamp without time zone,
-            %6$s int8,
-            %7$s jsonb,
-            %8$s float,
-            %9$s float,
-            %10$s geometry(point)
+        CREATE TABLE IF NOT EXISTS %1$s (
+          %2$s bigint PRIMARY KEY,
+          %3$s int,
+          %4$s int,
+          %5$s timestamp without time zone,
+          %6$s bigint,
+          %7$s jsonb,
+          %8$s bigint[],
+          %9$s int[],
+          %10$s text[],
+          %11$s geometry
         )""", fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
-        tagsColumn, longitudeColumn, latitudeColumn, geometryColumn);
+        tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
     this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", fullTableName);
     this.truncateTable = String.format("TRUNCATE TABLE %1$s", fullTableName);
     this.select = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asewkb(%10$s) FROM %1$s WHERE %2$s = ?",
+        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asewkb(%11$s) FROM %1$s WHERE %2$s = ?",
         fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn,
-        longitudeColumn, latitudeColumn, geometryColumn);
+        memberRefs, memberTypes, memberRoles, geometryColumn);
     this.selectIn = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asewkb(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
+        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asewkb(%11$s) FROM %1$s WHERE %2$s = ANY (?)",
         fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn,
-        longitudeColumn, latitudeColumn, geometryColumn);
-    this.insert = String.format(
-        "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) "
-            + "VALUES (?, ? ,? , ?, ?, cast (? AS jsonb), ?, ?, ?)"
-            + "ON CONFLICT (%2$s) DO UPDATE SET " + "%3$s = excluded.%3$s, "
-            + "%4$s = excluded.%4$s, " + "%5$s = excluded.%5$s, " + "%6$s = excluded.%6$s, "
-            + "%7$s = excluded.%7$s, " + "%8$s = excluded.%8$s, " + "%9$s = excluded.%9$s, "
-            + "%10$s = excluded.%10$s",
-        fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
-        tagsColumn,
-        longitudeColumn, latitudeColumn, geometryColumn);
+        memberRefs, memberTypes, memberRoles, geometryColumn);
+    this.insert = String.format("""
+        INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s)
+        VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?, ?, ?)
+        ON CONFLICT (%2$s) DO UPDATE SET
+        %3$s = excluded.%3$s,
+        %4$s = excluded.%4$s,
+        %5$s = excluded.%5$s,
+        %6$s = excluded.%6$s,
+        %7$s = excluded.%7$s,
+        %8$s = excluded.%8$s,
+        %9$s = excluded.%9$s,
+        %10$s = excluded.%10$s,
+        %11$s = excluded.%11$s""", fullTableName, idColumn, versionColumn, uidColumn,
+        timestampColumn,
+        changesetColumn, tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
     this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", fullTableName, idColumn);
     this.deleteIn = String.format("DELETE FROM %1$s WHERE %2$s = ANY (?)", fullTableName, idColumn);
     this.copy = String.format(
-        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
+        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) FROM STDIN BINARY",
         fullTableName, idColumn, versionColumn, uidColumn, timestampColumn, changesetColumn,
         tagsColumn,
-        longitudeColumn, latitudeColumn, geometryColumn);
+        memberRefs, memberTypes, memberRoles, geometryColumn);
   }
 
   /** {@inheritDoc} */
@@ -149,7 +150,6 @@ public class PostgresNodeRepository implements NodeRepository {
   public void create() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(createTable)) {
-      logger.trace("Creating table: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -161,7 +161,6 @@ public class PostgresNodeRepository implements NodeRepository {
   public void drop() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(dropTable)) {
-      logger.trace("Dropping table: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -173,7 +172,6 @@ public class PostgresNodeRepository implements NodeRepository {
   public void truncate() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(truncateTable)) {
-      logger.trace("Truncating table: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -182,11 +180,10 @@ public class PostgresNodeRepository implements NodeRepository {
 
   /** {@inheritDoc} */
   @Override
-  public Node get(Long key) throws RepositoryException {
+  public Relation get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(select)) {
       statement.setObject(1, key);
-      logger.trace("Selecting node: {}", statement);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           return getValue(result);
@@ -201,18 +198,17 @@ public class PostgresNodeRepository implements NodeRepository {
 
   /** {@inheritDoc} */
   @Override
-  public List<Node> get(List<Long> keys) throws RepositoryException {
+  public List<Relation> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
       return List.of();
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
-      logger.trace("Selecting nodes: {}", statement);
       try (ResultSet result = statement.executeQuery()) {
-        Map<Long, Node> values = new HashMap<>();
+        Map<Long, Relation> values = new HashMap<>();
         while (result.next()) {
-          Node value = getValue(result);
+          Relation value = getValue(result);
           values.put(value.getId(), value);
         }
         return keys.stream().map(values::get).toList();
@@ -224,11 +220,10 @@ public class PostgresNodeRepository implements NodeRepository {
 
   /** {@inheritDoc} */
   @Override
-  public void put(Node value) throws RepositoryException {
+  public void put(Relation value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setValue(statement, value);
-      logger.trace("Inserting node: {}", statement);
       statement.execute();
     } catch (SQLException | JsonProcessingException e) {
       throw new RepositoryException(e);
@@ -237,16 +232,15 @@ public class PostgresNodeRepository implements NodeRepository {
 
   /** {@inheritDoc} */
   @Override
-  public void put(List<Node> values) throws RepositoryException {
+  public void put(List<Relation> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Node value : values) {
+      for (Relation value : values) {
         statement.clearParameters();
         setValue(statement, value);
-        logger.trace("Inserting node: {}", statement);
         statement.addBatch();
       }
       statement.executeBatch();
@@ -261,7 +255,6 @@ public class PostgresNodeRepository implements NodeRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       statement.setObject(1, key);
-      logger.trace("Deleting node: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -277,7 +270,6 @@ public class PostgresNodeRepository implements NodeRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(deleteIn)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
-      logger.trace("Deleting nodes: {}", statement);
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -286,7 +278,7 @@ public class PostgresNodeRepository implements NodeRepository {
 
   /** {@inheritDoc} */
   @Override
-  public void copy(List<Node> values) throws RepositoryException {
+  public void copy(List<Relation> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;
     }
@@ -294,48 +286,62 @@ public class PostgresNodeRepository implements NodeRepository {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Node value : values) {
-          writer.startRow(9);
+        for (Relation value : values) {
+          writer.startRow(10);
           writer.writeLong(value.getId());
           writer.writeInteger(value.getInfo().getVersion());
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
           writer.writeLong(value.getInfo().getChangeset());
-          writer.writeJsonb(PostgresJsonbMapper.toJson(value.getTags()));
-          writer.writeDouble(value.getLon());
-          writer.writeDouble(value.getLat());
+          writer.writeJsonb(JsonbMapper.toJson(value.getTags()));
+          writer.writeLongList(
+              value.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
+          writer.writeIntegerList(value.getMembers().stream().map(Member::getType)
+              .map(MemberType::ordinal).collect(Collectors.toList()));
+          writer
+              .write(value.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
           writer.writeGeometry(value.getGeometry());
         }
       }
-    } catch (IOException | SQLException e) {
-      throw new RepositoryException(e);
+    } catch (IOException | SQLException ex) {
+      throw new RepositoryException(ex);
     }
   }
 
-  private Node getValue(ResultSet resultSet) throws SQLException, JsonProcessingException {
+  private Relation getValue(ResultSet resultSet) throws SQLException, JsonProcessingException {
     long id = resultSet.getLong(1);
     int version = resultSet.getInt(2);
     int uid = resultSet.getInt(3);
     LocalDateTime timestamp = resultSet.getObject(4, LocalDateTime.class);
     long changeset = resultSet.getLong(5);
-    Map<String, Object> tags = PostgresJsonbMapper.toMap(resultSet.getString(6));
-    double lon = resultSet.getDouble(7);
-    double lat = resultSet.getDouble(8);
-    Geometry point = GeometryUtils.deserialize(resultSet.getBytes(9));
+    Map<String, Object> tags = JsonbMapper.toMap(resultSet.getString(6));
+    Long[] refs = (Long[]) resultSet.getArray(7).getArray();
+    Integer[] types = (Integer[]) resultSet.getArray(8).getArray();
+    String[] roles = (String[]) resultSet.getArray(9).getArray();
+    List<Member> members = new ArrayList<>();
+    for (int i = 0; i < refs.length; i++) {
+      members.add(new Member(refs[i], MemberType.forNumber(types[i]), roles[i]));
+    }
+    Geometry geometry = GeometryUtils.deserialize(resultSet.getBytes(10));
     Info info = new Info(version, timestamp, changeset, uid);
-    return new Node(id, info, tags, lon, lat, point);
+    return new Relation(id, info, tags, members, geometry);
   }
 
-  private void setValue(PreparedStatement statement, Node value)
+  private void setValue(PreparedStatement statement, Relation value)
       throws SQLException, JsonProcessingException {
     statement.setObject(1, value.getId());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());
     statement.setObject(5, value.getInfo().getChangeset());
-    statement.setObject(6, PostgresJsonbMapper.toJson(value.getTags()));
-    statement.setObject(7, value.getLon());
-    statement.setObject(8, value.getLat());
-    statement.setBytes(9, GeometryUtils.serialize(value.getGeometry()));
+    statement.setObject(6, JsonbMapper.toJson(value.getTags()));
+    Object[] refs = value.getMembers().stream().map(Member::getRef).toArray();
+    statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
+    Object[] types =
+        value.getMembers().stream().map(Member::getType).map(MemberType::ordinal).toArray();
+    statement.setObject(8, statement.getConnection().createArrayOf("int", types));
+    Object[] roles = value.getMembers().stream().map(Member::getRole).toArray();
+    statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
+    statement.setBytes(10, GeometryUtils.serialize(value.getGeometry()));
   }
 }

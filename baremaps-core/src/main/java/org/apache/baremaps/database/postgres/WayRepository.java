@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
-import org.apache.baremaps.database.repository.RepositoryException;
-import org.apache.baremaps.database.repository.WayRepository;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
@@ -46,9 +44,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Provides an implementation of the {@code WayRepository} baked by Postgres. */
-public class PostgresWayRepository implements WayRepository {
+public class WayRepository implements Repository<Long, Way> {
 
-  private static final Logger logger = LoggerFactory.getLogger(PostgresWayRepository.class);
+  private static final Logger logger = LoggerFactory.getLogger(WayRepository.class);
 
   private final DataSource dataSource;
 
@@ -75,7 +73,7 @@ public class PostgresWayRepository implements WayRepository {
    *
    * @param dataSource the datasource
    */
-  public PostgresWayRepository(DataSource dataSource) {
+  public WayRepository(DataSource dataSource) {
     this(dataSource, "public", "osm_ways", "id", "version", "uid", "timestamp", "changeset", "tags",
         "nodes",
         "geom");
@@ -96,7 +94,7 @@ public class PostgresWayRepository implements WayRepository {
    * @param nodesColumn
    * @param geometryColumn
    */
-  public PostgresWayRepository(DataSource dataSource, String schema, String table, String idColumn,
+  public WayRepository(DataSource dataSource, String schema, String table, String idColumn,
       String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
       String tagsColumn, String nodesColumn, String geometryColumn) {
     var fullTableName = String.format("%1$s.%2$s", schema, table);
@@ -302,7 +300,7 @@ public class PostgresWayRepository implements WayRepository {
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
           writer.writeLong(value.getInfo().getChangeset());
-          writer.writeJsonb(PostgresJsonbMapper.toJson(value.getTags()));
+          writer.writeJsonb(JsonbMapper.toJson(value.getTags()));
           writer.writeLongList(value.getNodes());
           writer.writeGeometry(value.getGeometry());
         }
@@ -318,7 +316,7 @@ public class PostgresWayRepository implements WayRepository {
     int uid = resultSet.getInt(3);
     LocalDateTime timestamp = resultSet.getObject(4, LocalDateTime.class);
     long changeset = resultSet.getLong(5);
-    Map<String, Object> tags = PostgresJsonbMapper.toMap(resultSet.getString(6));
+    Map<String, Object> tags = JsonbMapper.toMap(resultSet.getString(6));
     List<Long> nodes = new ArrayList<>();
     Array array = resultSet.getArray(7);
     if (array != null) {
@@ -336,7 +334,7 @@ public class PostgresWayRepository implements WayRepository {
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());
     statement.setObject(5, value.getInfo().getChangeset());
-    statement.setObject(6, PostgresJsonbMapper.toJson(value.getTags()));
+    statement.setObject(6, JsonbMapper.toJson(value.getTags()));
     statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
     statement.setBytes(8, GeometryUtils.serialize(value.getGeometry()));
   }

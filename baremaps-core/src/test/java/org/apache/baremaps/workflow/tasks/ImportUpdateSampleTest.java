@@ -31,13 +31,13 @@ import org.apache.baremaps.data.collection.IndexedDataMap;
 import org.apache.baremaps.data.memory.OnHeapMemory;
 import org.apache.baremaps.data.type.LongListDataType;
 import org.apache.baremaps.data.type.geometry.CoordinateDataType;
-import org.apache.baremaps.database.postgres.PostgresCoordinateMap;
-import org.apache.baremaps.database.postgres.PostgresHeaderRepository;
-import org.apache.baremaps.database.postgres.PostgresNodeRepository;
-import org.apache.baremaps.database.postgres.PostgresReferenceMap;
-import org.apache.baremaps.database.postgres.PostgresRelationRepository;
+import org.apache.baremaps.database.postgres.CoordinateMap;
+import org.apache.baremaps.database.postgres.HeaderRepository;
+import org.apache.baremaps.database.postgres.NodeRepository;
 import org.apache.baremaps.database.postgres.PostgresRepositoryTest;
-import org.apache.baremaps.database.postgres.PostgresWayRepository;
+import org.apache.baremaps.database.postgres.ReferenceMap;
+import org.apache.baremaps.database.postgres.RelationRepository;
+import org.apache.baremaps.database.postgres.WayRepository;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.testing.TestFiles;
@@ -53,10 +53,10 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     int srid = 4326;
 
     // Initialize the repositories
-    PostgresHeaderRepository headerRepository = new PostgresHeaderRepository(dataSource());
-    PostgresNodeRepository nodeRepository = new PostgresNodeRepository(dataSource());
-    PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
-    PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
+    HeaderRepository headerRepository = new HeaderRepository(dataSource());
+    NodeRepository nodeRepository = new NodeRepository(dataSource());
+    WayRepository wayRepository = new WayRepository(dataSource());
+    RelationRepository relationRepository = new RelationRepository(dataSource());
 
     // Initialize the data maps
     Map<Long, Coordinate> coordinateMap = DataConversions.asMap(
@@ -83,8 +83,8 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     assertGeometryEquals(RELATION_MULTIPOLYGON_36, relationRepository.get(36L).getGeometry(), 100);
 
     // Use the database as the reference instead of the original maps
-    coordinateMap = new PostgresCoordinateMap(dataSource());
-    referenceMap = new PostgresReferenceMap(dataSource());
+    coordinateMap = new CoordinateMap(dataSource());
+    referenceMap = new ReferenceMap(dataSource());
 
     // Add elements to the database
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,

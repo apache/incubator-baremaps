@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.database.repository;
+package org.apache.baremaps.database.postgres;
 
 
 

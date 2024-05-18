@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * An abstract map of data elements backed by a Postgres database.
  */
-public abstract class PostgresMap<K, V> implements Map<K, V> {
+abstract class PostgresMap<K, V> implements Map<K, V> {
 
   /** {@inheritDoc} */
   @Override

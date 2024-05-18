@@ -26,12 +26,12 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import org.apache.baremaps.data.collection.DataCollectionException;
 
-class PostgresIterator<T> implements Iterator<T> {
+class ResultSetIterator<T> implements Iterator<T> {
 
   private final ResultSet resultSet;
   private final Function<ResultSet, T> mapper;
 
-  public PostgresIterator(ResultSet resultSet, Function<ResultSet, T> mapper) {
+  public ResultSetIterator(ResultSet resultSet, Function<ResultSet, T> mapper) {
     this.resultSet = resultSet;
     this.mapper = mapper;
   }

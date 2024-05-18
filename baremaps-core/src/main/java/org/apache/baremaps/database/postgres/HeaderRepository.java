@@ -31,14 +31,12 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
-import org.apache.baremaps.database.repository.HeaderRepository;
-import org.apache.baremaps.database.repository.RepositoryException;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
 /** Provides an implementation of the {@code HeaderRepository} baked by a PostgreSQL table. */
-public class PostgresHeaderRepository implements HeaderRepository {
+public class HeaderRepository implements Repository<Long, Header> {
 
   private final DataSource dataSource;
 
@@ -65,7 +63,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
    *
    * @param dataSource
    */
-  public PostgresHeaderRepository(DataSource dataSource) {
+  public HeaderRepository(DataSource dataSource) {
     this(dataSource, "public", "osm_headers", "replication_sequence_number",
         "replication_timestamp",
         "replication_url", "source", "writing_program");
@@ -83,7 +81,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
    * @param sourceColumn
    * @param writingProgramColumn
    */
-  public PostgresHeaderRepository(DataSource dataSource, String schema, String table,
+  public HeaderRepository(DataSource dataSource, String schema, String table,
       String replicationSequenceNumberColumn, String replicationTimestampColumn,
       String replicationUrlColumn, String sourceColumn, String writingProgramColumn) {
     var fullTableName = String.format("%1$s.%2$s", schema, table);
@@ -160,8 +158,11 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
-  @Override
+  /**
+   * Selects all the headers.
+   *
+   * @throws RepositoryException
+   */
   public List<Header> selectAll() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectLatest)) {
@@ -178,8 +179,11 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
-  @Override
+  /**
+   * Selects the latest header.
+   *
+   * @throws RepositoryException
+   */
   public Header selectLatest() throws RepositoryException {
     return selectAll().get(0);
   }

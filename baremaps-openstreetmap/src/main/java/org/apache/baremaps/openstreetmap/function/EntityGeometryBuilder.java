@@ -22,7 +22,6 @@ package org.apache.baremaps.openstreetmap.function;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import org.apache.baremaps.database.model.*;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;

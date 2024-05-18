@@ -21,7 +21,6 @@ package org.apache.baremaps.openstreetmap.function;
 
 import java.util.Optional;
 import java.util.function.Function;
-import org.apache.baremaps.database.model.*;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.openstreetmap.stream.StreamException;
 import org.locationtech.jts.geom.Geometry;

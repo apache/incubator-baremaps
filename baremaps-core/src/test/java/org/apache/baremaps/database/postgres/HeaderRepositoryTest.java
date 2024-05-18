@@ -29,19 +29,18 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.baremaps.database.repository.RepositoryException;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresHeaderRepositoryTest extends PostgresRepositoryTest {
+class HeaderRepositoryTest extends PostgresRepositoryTest {
 
-  PostgresHeaderRepository headerRepository;
+  HeaderRepository headerRepository;
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    headerRepository = new PostgresHeaderRepository(dataSource());
+    headerRepository = new HeaderRepository(dataSource());
   }
 
   @Test
