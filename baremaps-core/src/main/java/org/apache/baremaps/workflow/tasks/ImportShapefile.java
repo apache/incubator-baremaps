@@ -19,7 +19,7 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.data.schema.DataTableAdapter;
+import org.apache.baremaps.data.schema.DataTableMapper;
 import org.apache.baremaps.data.schema.DataTableGeometryTransformer;
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.storage.postgres.PostgresDataSchema;
@@ -76,7 +76,7 @@ public class ImportShapefile implements Task {
       var postgresDataStore = new PostgresDataSchema(dataSource);
       var rowTransformer = new DataTableGeometryTransformer(shapefileDataTable,
           new ProjectionTransformer(fileSrid, databaseSrid));
-      var transformedDataTable = new DataTableAdapter(shapefileDataTable, rowTransformer);
+      var transformedDataTable = new DataTableMapper(shapefileDataTable, rowTransformer);
       postgresDataStore.add(transformedDataTable);
     } catch (Exception e) {
       throw new WorkflowException(e);

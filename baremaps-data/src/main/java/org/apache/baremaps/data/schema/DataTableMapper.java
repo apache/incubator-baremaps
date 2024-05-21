@@ -24,7 +24,7 @@ import java.util.function.Function;
 /**
  * A decorator for a table that transforms the geometries of the rows.
  */
-public class DataTableAdapter implements DataTable {
+public class DataTableMapper implements DataTable {
 
   private final DataTable table;
 
@@ -34,11 +34,11 @@ public class DataTableAdapter implements DataTable {
    * Constructs a new table decorator.
    *
    * @param table the table to decorate
-   * @param transformer the row transformer
+   * @param mapper the row transformer
    */
-  public DataTableAdapter(DataTable table, Function<DataRow, DataRow> transformer) {
+  public DataTableMapper(DataTable table, Function<DataRow, DataRow> mapper) {
     this.table = table;
-    this.transformer = transformer;
+    this.transformer = mapper;
   }
 
   /**
