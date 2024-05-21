@@ -58,7 +58,7 @@ If you want to contribute to the code you can refer to the following developer g
 
 You can also contribute in the following ways.
 
-- [Create an issue](https://github.com/apache/incubator-baremaps/issues): Report a bug or feature request
+- [Create an issue](https://github.com/apache/incubator-baremaps/issues): Report a bug or featureGroup request
 - [Join the mailing list](https://lists.apache.org/list.html?dev@baremaps.apache.org): Initiate or participate in project discussions on the mailing list
 - Write a post: Write a post to share your use cases and experiences with Apache Baremaps
 

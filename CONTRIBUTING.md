@@ -20,7 +20,7 @@ This document describes the way you can contribute to the Baremaps project.
 
 ## Ways to Help Out
 
-If you plan to work on any code or add a new feature, start by opening an issue 
+If you plan to work on any code or add a new featureGroup, start by opening an issue 
 (or comment an existing issue). This way, duplicate work is prevented and we can discuss the ideas
 and designs first.
 
@@ -93,7 +93,7 @@ mvn install -P integration
 
 ## Providing Patches
 
-You have fixed an annoying bug or have added a new feature? 
+You have fixed an annoying bug or have added a new featureGroup? 
 Let's get it into the project! 
 To do so, follow guidelines described in the [GitHub Flow](https://guides.github.com/introduction/flow/),
 a branch-based workflow that supports teams and projects.
