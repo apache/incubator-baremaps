@@ -19,8 +19,8 @@ package org.apache.baremaps.storage.geopackage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.storage.postgres.PostgresDataSchema;
-import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,8 @@ public class GeoPackageToPostgresTest extends PostgresContainerTest {
   @Tag("integration")
   void schema() {
     // Open the GeoPackage
-    var geoPackageSchema = new GeoPackageDataSchema(TestFiles.resolve("data/countries.gpkg"));
+    var geoPackageSchema =
+        new GeoPackageDataSchema(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
     var geoPackageTable = geoPackageSchema.get("countries");
 
     // Copy the table to Postgres
@@ -42,7 +43,7 @@ public class GeoPackageToPostgresTest extends PostgresContainerTest {
     var postgresTable = postgresStore.get("countries");
     assertEquals("countries", postgresTable.rowType().name());
     assertEquals(4, postgresTable.rowType().columns().size());
-    assertEquals(179l, postgresTable.sizeAsLong());
+    assertEquals(179l, postgresTable.size());
     assertEquals(179l, postgresTable.stream().count());
   }
 }

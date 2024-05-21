@@ -21,19 +21,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.baremaps.database.collection.*;
+import org.apache.baremaps.database.function.BlockImporter;
+import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
-import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
-import org.apache.baremaps.openstreetmap.repository.*;
-import org.apache.baremaps.openstreetmap.repository.BlockImporter;
-import org.apache.baremaps.stream.StreamUtils;
+import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
@@ -84,10 +80,10 @@ public class ImportOsmPbf implements Task {
 
     // Initialize the repositories
     var datasource = context.getDataSource(database);
-    var headerRepository = new PostgresHeaderRepository(datasource);
-    var nodeRepository = new PostgresNodeRepository(datasource);
-    var wayRepository = new PostgresWayRepository(datasource);
-    var relationRepository = new PostgresRelationRepository(datasource);
+    var headerRepository = new HeaderRepository(datasource);
+    var nodeRepository = new NodeRepository(datasource);
+    var wayRepository = new WayRepository(datasource);
+    var relationRepository = new RelationRepository(datasource);
 
     if (replaceExisting) {
       // Drop the existing tables
@@ -132,8 +128,8 @@ public class ImportOsmPbf implements Task {
    */
   public static void execute(
       Path path,
-      DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
+      Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
@@ -142,10 +138,10 @@ public class ImportOsmPbf implements Task {
 
     // configure the block reader
     var reader = new PbfBlockReader()
-        .geometries(true)
-        .projection(databaseSrid)
-        .coordinateMap(coordinateMap)
-        .referenceMap(referenceMap);
+        .setGeometries(true)
+        .setSrid(databaseSrid)
+        .setCoordinateMap(coordinateMap)
+        .setReferenceMap(referenceMap);
 
     // configure the block importer
     var importer = new BlockImporter(
@@ -156,7 +152,7 @@ public class ImportOsmPbf implements Task {
 
     // Stream and process the blocks
     try (var input = Files.newInputStream(path)) {
-      StreamUtils.batch(reader.stream(input)).forEach(importer);
+      StreamUtils.batch(reader.read(input)).forEach(importer);
     }
   }
 

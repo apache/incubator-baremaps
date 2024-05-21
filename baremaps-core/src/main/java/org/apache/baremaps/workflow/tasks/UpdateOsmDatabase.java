@@ -19,21 +19,16 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.io.BufferedInputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.database.collection.DataMap;
+import org.apache.baremaps.database.function.ChangeElementsImporter;
+import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.openstreetmap.postgres.PostgresCoordinateMap;
-import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresReferenceMap;
-import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
-import org.apache.baremaps.openstreetmap.repository.*;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.workflow.Task;
@@ -78,12 +73,12 @@ public class UpdateOsmDatabase implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
-    var coordinateMap = new PostgresCoordinateMap(datasource);
-    var referenceMap = new PostgresReferenceMap(datasource);
-    var headerRepository = new PostgresHeaderRepository(datasource);
-    var nodeRepository = new PostgresNodeRepository(datasource);
-    var wayRepository = new PostgresWayRepository(datasource);
-    var relationRepository = new PostgresRelationRepository(datasource);
+    var coordinateMap = new CoordinateMap(datasource);
+    var referenceMap = new ReferenceMap(datasource);
+    var headerRepository = new HeaderRepository(datasource);
+    var nodeRepository = new NodeRepository(datasource);
+    var wayRepository = new WayRepository(datasource);
+    var relationRepository = new RelationRepository(datasource);
     execute(
         coordinateMap,
         referenceMap,
@@ -107,8 +102,9 @@ public class UpdateOsmDatabase implements Task {
    * @param databaseSrid the SRID
    * @throws Exception if something went wrong
    */
-  public static void execute(DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
+  public static void execute(
+      Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
       Integer databaseSrid,
@@ -168,13 +164,13 @@ public class UpdateOsmDatabase implements Task {
 
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      new XmlChangeReader().stream(changeInputStream).forEach(entityProcessor);
+      new XmlChangeReader().read(changeInputStream).forEach(entityProcessor);
     }
 
     // Add the new header to the database
     var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
-      var state = new StateReader().readState(stateInputStream);
+      var state = new StateReader().read(stateInputStream);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
           header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }

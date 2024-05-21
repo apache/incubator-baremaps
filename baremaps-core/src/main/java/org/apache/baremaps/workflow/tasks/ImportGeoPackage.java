@@ -19,11 +19,11 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.database.schema.DataTableAdapter;
-import org.apache.baremaps.database.schema.DataTableGeometryTransformer;
+import org.apache.baremaps.data.schema.DataTableGeometryTransformer;
+import org.apache.baremaps.data.schema.DataTableMapper;
+import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.storage.geopackage.GeoPackageDataSchema;
 import org.apache.baremaps.storage.postgres.PostgresDataSchema;
-import org.apache.baremaps.utils.ProjectionTransformer;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -79,7 +79,7 @@ public class ImportGeoPackage implements Task {
         var rowTransformer =
             new DataTableGeometryTransformer(geoPackageTable, projectionTransformer);
         var transformedDataTable =
-            new DataTableAdapter(geoPackageDataStore.get(name), rowTransformer);
+            new DataTableMapper(geoPackageDataStore.get(name), rowTransformer);
         postgresDataStore.add(transformedDataTable);
       }
     } catch (Exception e) {

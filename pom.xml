@@ -51,7 +51,12 @@ limitations under the License.
   <modules>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
+    <module>baremaps-data</module>
+    <module>baremaps-maplibre</module>
+    <module>baremaps-openstreetmap</module>
+    <module>baremaps-pmtiles</module>
     <module>baremaps-server</module>
+    <module>baremaps-testing</module>
   </modules>
 
   <scm>
@@ -225,8 +230,34 @@ limitations under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-data</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-maplibre</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-openstreetmap</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-pmtiles</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-server</artifactId>
         <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-testing</artifactId>
+        <version>${project.parent.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.calcite</groupId>

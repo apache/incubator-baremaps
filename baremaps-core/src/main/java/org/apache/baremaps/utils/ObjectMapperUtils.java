@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.baremaps.vectortile.expression.Expressions;
+import org.apache.baremaps.maplibre.expression.Expressions;
 
 public class ObjectMapperUtils {
 

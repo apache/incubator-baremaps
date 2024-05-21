@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 import javax.sql.DataSource;
+import org.apache.baremaps.maplibre.tileset.Tileset;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
-import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

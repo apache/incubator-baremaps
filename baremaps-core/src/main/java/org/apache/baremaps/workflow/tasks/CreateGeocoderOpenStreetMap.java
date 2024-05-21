@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.baremaps.database.collection.DataMap;
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoderosm.GeocoderOsmConsumerEntity;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
-import org.apache.baremaps.stream.StreamUtils;
+import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.index.IndexWriter;
@@ -86,20 +86,20 @@ public class CreateGeocoderOpenStreetMap implements Task {
 
   public static void execute(
       Path path,
-      DataMap<Long, Coordinate> coordinateMap,
-      DataMap<Long, List<Long>> referenceMap,
+      Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap,
       GeocoderOsmConsumerEntity importer) throws IOException {
 
     // configure the block reader
     var reader = new PbfEntityReader()
-        .geometries(true)
+        .setGeometries(true)
         // Must be to 4326 projection to avoid transformation before using Lucene API
-        .projection(4326)
-        .coordinateMap(coordinateMap)
-        .referenceMap(referenceMap);
+        .setSrid(4326)
+        .setCoordinateMap(coordinateMap)
+        .setReferenceMap(referenceMap);
 
     try (var input = Files.newInputStream(path)) {
-      StreamUtils.batch(reader.stream(input)).forEach(importer);
+      StreamUtils.batch(reader.read(input)).forEach(importer);
     }
   }
 

@@ -18,28 +18,29 @@
 package org.apache.baremaps.workflow.tasks;
 
 import static org.apache.baremaps.testing.GeometryAssertions.assertGeometryEquals;
-import static org.apache.baremaps.testing.OsmSample.*;
+import static org.apache.baremaps.testing.TestFiles.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.file.Files;
 import java.util.List;
-import org.apache.baremaps.database.collection.AppendOnlyBuffer;
-import org.apache.baremaps.database.collection.DataMap;
-import org.apache.baremaps.database.collection.IndexedDataMap;
-import org.apache.baremaps.database.memory.OnHeapMemory;
-import org.apache.baremaps.database.type.LongListDataType;
-import org.apache.baremaps.database.type.geometry.CoordinateDataType;
+import java.util.Map;
+import org.apache.baremaps.data.collection.AppendOnlyLog;
+import org.apache.baremaps.data.collection.DataConversions;
+import org.apache.baremaps.data.collection.IndexedDataMap;
+import org.apache.baremaps.data.memory.OnHeapMemory;
+import org.apache.baremaps.data.type.CoordinateDataType;
+import org.apache.baremaps.data.type.LongListDataType;
+import org.apache.baremaps.database.postgres.CoordinateMap;
+import org.apache.baremaps.database.postgres.HeaderRepository;
+import org.apache.baremaps.database.postgres.NodeRepository;
+import org.apache.baremaps.database.postgres.PostgresRepositoryTest;
+import org.apache.baremaps.database.postgres.ReferenceMap;
+import org.apache.baremaps.database.postgres.RelationRepository;
+import org.apache.baremaps.database.postgres.WayRepository;
 import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.openstreetmap.postgres.PostgresCoordinateMap;
-import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresReferenceMap;
-import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresRepositoryTest;
-import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.state.StateReader;
-import org.apache.baremaps.testing.OsmSample;
+import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -52,27 +53,27 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     int srid = 4326;
 
     // Initialize the repositories
-    PostgresHeaderRepository headerRepository = new PostgresHeaderRepository(dataSource());
-    PostgresNodeRepository nodeRepository = new PostgresNodeRepository(dataSource());
-    PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
-    PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
+    HeaderRepository headerRepository = new HeaderRepository(dataSource());
+    NodeRepository nodeRepository = new NodeRepository(dataSource());
+    WayRepository wayRepository = new WayRepository(dataSource());
+    RelationRepository relationRepository = new RelationRepository(dataSource());
 
     // Initialize the data maps
-    DataMap<Long, Coordinate> coordinateMap =
-        new IndexedDataMap<>(new AppendOnlyBuffer<>(new CoordinateDataType(), new OnHeapMemory()));
-    DataMap<Long, List<Long>> referenceMap =
-        new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
+    Map<Long, Coordinate> coordinateMap = DataConversions.asMap(
+        new IndexedDataMap<>(new AppendOnlyLog<>(new CoordinateDataType(), new OnHeapMemory())));
+    Map<Long, List<Long>> referenceMap = DataConversions.asMap(
+        new IndexedDataMap<>(new AppendOnlyLog<>(new LongListDataType(), new OnHeapMemory())));
 
     // Import the sample data
-    ImportOsmPbf.execute(OsmSample.SAMPLE_OSM_PBF, coordinateMap, referenceMap, headerRepository,
+    ImportOsmPbf.execute(TestFiles.SAMPLE_OSM_PBF, coordinateMap, referenceMap, headerRepository,
         nodeRepository, wayRepository, relationRepository, srid);
     assertEquals(0, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     // Import the state file
-    try (var stateInput = Files.newInputStream(OsmSample.SAMPLE_STATE_TXT)) {
-      var state = new StateReader().readState(stateInput);
+    try (var stateInput = Files.newInputStream(TestFiles.SAMPLE_STATE_TXT)) {
+      var state = new StateReader().read(stateInput);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
-          "file:///" + OsmSample.SAMPLE_DIR, "", ""));
+          "file:///" + TestFiles.SAMPLE_DIR, "", ""));
       assertEquals(1, headerRepository.selectLatest().getReplicationSequenceNumber());
     }
     assertGeometryEquals(NODE_POINT_1, nodeRepository.get(1L).getGeometry(), 100);
@@ -82,8 +83,8 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     assertGeometryEquals(RELATION_MULTIPOLYGON_36, relationRepository.get(36L).getGeometry(), 100);
 
     // Use the database as the reference instead of the original maps
-    coordinateMap = new PostgresCoordinateMap(dataSource());
-    referenceMap = new PostgresReferenceMap(dataSource());
+    coordinateMap = new CoordinateMap(dataSource());
+    referenceMap = new ReferenceMap(dataSource());
 
     // Add elements to the database
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,

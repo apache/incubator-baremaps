@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.database.schema.DataSchema;
-import org.apache.baremaps.database.schema.DataTable;
-import org.apache.baremaps.database.schema.DataTableException;
+import org.apache.baremaps.data.schema.DataSchema;
+import org.apache.baremaps.data.schema.DataTable;
+import org.apache.baremaps.data.schema.DataTableException;
 
 /**
  * A schema corresponding to the flatgeobuf files of a directory.

@@ -23,15 +23,14 @@ import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.database.collection.AbstractDataCollection;
-import org.apache.baremaps.database.schema.*;
-import org.apache.baremaps.database.schema.DataColumn.Type;
+import org.apache.baremaps.data.schema.*;
+import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.locationtech.jts.geom.*;
 
 /**
  * A table that stores rows in a GeoPackage table.
  */
-public class GeoPackageDataTable extends AbstractDataCollection<DataRow> implements DataTable {
+public class GeoPackageDataTable implements DataTable {
 
   private final FeatureDao featureDao;
 
@@ -77,7 +76,15 @@ public class GeoPackageDataTable extends AbstractDataCollection<DataRow> impleme
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public void clear() {
+    // Do nothing
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public long size() {
     return featureDao.count();
   }
 

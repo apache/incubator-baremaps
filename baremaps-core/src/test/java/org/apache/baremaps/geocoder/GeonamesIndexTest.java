@@ -48,7 +48,7 @@ public class GeonamesIndexTest {
     directory = Files.createTempDirectory(Paths.get("."), "geocoder_");
 
     // Create the geonames index
-    var data = TestFiles.resolve("geonames/sample.txt");
+    var data = TestFiles.resolve("baremaps-testing/data/geonames/sample.txt");
     var task = new CreateGeonamesIndex(data, directory);
     task.execute(new WorkflowContext());
     var dir = MMapDirectory.open(directory);

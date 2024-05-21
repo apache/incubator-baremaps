@@ -59,13 +59,13 @@ class IpLocObjectTest {
   @BeforeAll
   public static void beforeAll() throws Exception {
     // Load the NIC sample objects
-    nicObjects = NicData.sample("ripe/sample.txt");
+    nicObjects = NicData.sample("baremaps-testing/data/ripe/sample.txt");
 
     // Init the geocoder service
     directory = Files.createTempDirectory(Paths.get("."), "geocoder_");
 
     // Create the geonames index
-    var data = TestFiles.resolve("geonames/sample.txt");
+    var data = TestFiles.resolve("baremaps-testing/data/geonames/sample.txt");
     var task = new CreateGeonamesIndex(data, directory);
     task.execute(new WorkflowContext());
 

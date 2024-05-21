@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.vectortile.tileset.Tileset;
-import org.apache.baremaps.vectortile.tileset.TilesetLayer;
-import org.apache.baremaps.vectortile.tileset.TilesetQuery;
+import org.apache.baremaps.maplibre.tileset.Tileset;
+import org.apache.baremaps.maplibre.tileset.TilesetLayer;
+import org.apache.baremaps.maplibre.tileset.TilesetQuery;
 import org.junit.jupiter.api.Test;
 
 class PostgresTileStoreTest {

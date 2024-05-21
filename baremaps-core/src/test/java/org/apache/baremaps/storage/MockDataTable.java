@@ -17,15 +17,15 @@
 
 package org.apache.baremaps.storage;
 
-import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FACTORY;
+import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY;
 
 import java.util.Iterator;
 import java.util.List;
-import org.apache.baremaps.database.schema.*;
-import org.apache.baremaps.database.schema.DataColumn.Type;
+import org.apache.baremaps.data.schema.*;
+import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.locationtech.jts.geom.Coordinate;
 
-public class MockDataTable extends AbstractDataTable {
+public class MockDataTable implements DataTable {
 
   private final DataRowType rowType;
 
@@ -52,13 +52,18 @@ public class MockDataTable extends AbstractDataTable {
   }
 
   @Override
+  public long size() {
+    return rows.size();
+  }
+
+  @Override
   public Iterator<DataRow> iterator() {
     return rows.iterator();
   }
 
   @Override
-  public long sizeAsLong() {
-    return rows.size();
+  public void clear() {
+    rows.clear();
   }
 
   @Override

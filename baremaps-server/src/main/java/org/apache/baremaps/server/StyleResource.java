@@ -20,7 +20,7 @@ package org.apache.baremaps.server;
 import com.linecorp.armeria.server.annotation.Get;
 import com.linecorp.armeria.server.annotation.ProducesJson;
 import java.util.function.Supplier;
-import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.maplibre.style.Style;
 
 /**
  * A resource that provides access to the style.

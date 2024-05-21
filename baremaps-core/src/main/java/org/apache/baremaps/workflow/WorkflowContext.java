@@ -26,10 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.collection.*;
-import org.apache.baremaps.database.memory.MemoryMappedDirectory;
-import org.apache.baremaps.database.type.*;
-import org.apache.baremaps.database.type.geometry.LonLatDataType;
+import org.apache.baremaps.data.collection.*;
+import org.apache.baremaps.data.memory.MemoryMappedDirectory;
+import org.apache.baremaps.data.type.*;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.locationtech.jts.geom.Coordinate;
@@ -64,12 +63,12 @@ public class WorkflowContext {
     return dataSources.computeIfAbsent(database, PostgresUtils::createDataSourceFromObject);
   }
 
-  public DataMap<Long, Coordinate> getCoordinateMap() throws IOException {
-    return getMemoryAlignedDataMap("coordinates", new LonLatDataType());
+  public Map<Long, Coordinate> getCoordinateMap() throws IOException {
+    return DataConversions.asMap(getMemoryAlignedDataMap("coordinates", new LonLatDataType()));
   }
 
-  public DataMap<Long, List<Long>> getReferenceMap() throws IOException {
-    return getMonotonicDataMap("references", new LongListDataType());
+  public Map<Long, List<Long>> getReferenceMap() throws IOException {
+    return DataConversions.asMap(getMonotonicDataMap("references", new LongListDataType()));
   }
 
   public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
@@ -89,7 +88,7 @@ public class WorkflowContext {
         new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),
             new MemoryMappedDirectory(keysDir)),
-        new AppendOnlyBuffer<>(
+        new AppendOnlyLog<>(
             dataType,
             new MemoryMappedDirectory(valuesDir)));
   }

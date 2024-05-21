@@ -28,7 +28,8 @@ class FlatGeoBufDataTableTest {
 
   @Test
   void rowType() throws IOException {
-    var table = new FlatGeoBufDataTable(TestFiles.resolve("data/countries.fgb"));
+    var table =
+        new FlatGeoBufDataTable(TestFiles.resolve("baremaps-testing/data/samples/countries.fgb"));
     var rowType = table.rowType();
     assertEquals(rowType.name(), null);
     assertEquals(rowType.columns().size(), 2);
@@ -36,8 +37,9 @@ class FlatGeoBufDataTableTest {
 
   @Test
   void read() throws IOException {
-    var table = new FlatGeoBufDataTable(TestFiles.resolve("data/countries.fgb"));
-    assertEquals(179, table.sizeAsLong());
+    var table =
+        new FlatGeoBufDataTable(TestFiles.resolve("baremaps-testing/data/samples/countries.fgb"));
+    assertEquals(179, table.size());
     assertEquals(179, table.stream().count());
   }
 
@@ -45,10 +47,10 @@ class FlatGeoBufDataTableTest {
   void write() throws IOException {
     var file = Files.createTempFile("countries", ".fgb");
     file.toFile().deleteOnExit();
-    var table1 = new FlatGeoBufDataTable(TestFiles.resolve("data/countries.fgb"));
-    var rows = table1.stream().toList();
+    var table1 =
+        new FlatGeoBufDataTable(TestFiles.resolve("baremaps-testing/data/samples/countries.fgb"));
     var table2 = new FlatGeoBufDataTable(file, table1.rowType());
-    table2.write(rows);
+    table2.write(table1);
 
     var featureSet = new FlatGeoBufDataTable(file);
     assertEquals(179, featureSet.stream().count());

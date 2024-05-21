@@ -21,7 +21,7 @@ package org.apache.baremaps.workflow;
 
 import java.nio.file.Paths;
 import java.util.List;
-import org.apache.baremaps.testing.PostgresContainerTest;
+import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.workflow.tasks.*;
 import org.apache.baremaps.workflow.tasks.DecompressFile.Compression;
 import org.junit.jupiter.api.Disabled;

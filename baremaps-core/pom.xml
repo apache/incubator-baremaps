@@ -79,8 +79,24 @@ limitations under the License.
       <artifactId>ipresource</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.calcite</groupId>
-      <artifactId>calcite-core</artifactId>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-data</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-maplibre</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-openstreetmap</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-pmtiles</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -131,33 +147,4 @@ limitations under the License.
       <artifactId>sqlite-jdbc</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.xolstice.maven.plugins</groupId>
-        <artifactId>protobuf-maven-plugin</artifactId>
-        <version>${version.plugin.protobuf-maven-plugin}</version>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>test-compile</goal>
-            </goals>
-            <configuration>
-              <protocArtifact>com.google.protobuf:protoc:${version.lib.protobuf}:exe:${os.detected.classifier}</protocArtifact>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-    <extensions>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>${version.plugin.os-maven-plugin}</version>
-      </extension>
-    </extensions>
-  </build>
 </project>

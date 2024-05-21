@@ -24,13 +24,12 @@ import java.nio.ByteOrder;
 import java.nio.channels.*;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.database.collection.AbstractDataCollection;
-import org.apache.baremaps.database.schema.AbstractDataTable;
-import org.apache.baremaps.database.schema.DataRow;
-import org.apache.baremaps.database.schema.DataRowType;
+import org.apache.baremaps.data.collection.DataCollection;
+import org.apache.baremaps.data.schema.DataRow;
+import org.apache.baremaps.data.schema.DataRowType;
+import org.apache.baremaps.data.schema.DataTable;
 import org.locationtech.jts.geom.*;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -42,7 +41,7 @@ import org.wololo.flatgeobuf.generated.GeometryType;
 /**
  * A table that stores rows in a flatgeobuf file.
  */
-public class FlatGeoBufDataTable extends AbstractDataTable {
+public class FlatGeoBufDataTable implements DataTable {
 
   private final Path file;
 
@@ -122,7 +121,15 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
    * {@inheritDoc}
    */
   @Override
-  public long sizeAsLong() {
+  public void clear() {
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public long size() {
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
       HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
@@ -153,7 +160,7 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
    * @param features the collection of rows to write
    * @throws IOException if an error occurs while writing the rows
    */
-  public void write(Collection<DataRow> features) throws IOException {
+  public void write(DataCollection<DataRow> features) throws IOException {
     try (
         var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         var outputStream = Channels.newOutputStream(channel)) {
@@ -165,8 +172,7 @@ public class FlatGeoBufDataTable extends AbstractDataTable {
       headerMeta.geometryType = GeometryType.Unknown;
       headerMeta.indexNodeSize = 16;
       headerMeta.srid = 3857;
-      headerMeta.featuresCount =
-          features instanceof AbstractDataCollection<DataRow>c ? c.sizeAsLong() : features.size();
+      headerMeta.featuresCount = features.size();
       headerMeta.name = rowType.name();
       headerMeta.columns = FlatGeoBufTypeConversion.asColumns(rowType.columns());
       HeaderMeta.write(headerMeta, outputStream, bufferBuilder);

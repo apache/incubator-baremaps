@@ -22,9 +22,9 @@ import java.nio.file.Path;
 import java.util.Collection;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.database.schema.DataSchema;
-import org.apache.baremaps.database.schema.DataTable;
-import org.apache.baremaps.database.schema.DataTableException;
+import org.apache.baremaps.data.schema.DataSchema;
+import org.apache.baremaps.data.schema.DataTable;
+import org.apache.baremaps.data.schema.DataTableException;
 
 /**
  * A schema corresponding to a GeoPackage database.

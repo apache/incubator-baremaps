@@ -29,7 +29,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-import org.apache.baremaps.vectortile.tileset.Database;
+import org.apache.baremaps.maplibre.tileset.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

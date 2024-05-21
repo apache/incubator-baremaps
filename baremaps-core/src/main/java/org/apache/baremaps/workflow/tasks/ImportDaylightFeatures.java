@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
-import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
+import org.apache.baremaps.database.postgres.NodeRepository;
+import org.apache.baremaps.database.postgres.RelationRepository;
+import org.apache.baremaps.database.postgres.WayRepository;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -77,9 +77,9 @@ public class ImportDaylightFeatures implements Task {
     var datasource = context.getDataSource(database);
 
     // Initialize the repositories
-    var nodeRepository = new PostgresNodeRepository(datasource);
-    var wayRepository = new PostgresWayRepository(datasource);
-    var relationRepository = new PostgresRelationRepository(datasource);
+    var nodeRepository = new NodeRepository(datasource);
+    var wayRepository = new WayRepository(datasource);
+    var relationRepository = new RelationRepository(datasource);
     nodeRepository.create();
     wayRepository.create();
     relationRepository.create();

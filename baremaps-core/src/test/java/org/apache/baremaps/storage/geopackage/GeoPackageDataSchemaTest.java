@@ -26,7 +26,8 @@ class GeoPackageDataSchemaTest {
 
   @Test
   void rowType() {
-    var geoPackageStore = new GeoPackageDataSchema(TestFiles.resolve("data/countries.gpkg"));
+    var geoPackageStore =
+        new GeoPackageDataSchema(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
     var table = geoPackageStore.get("countries");
     var rowType = table.rowType();
     assertEquals(rowType.name(), "countries");
@@ -35,9 +36,10 @@ class GeoPackageDataSchemaTest {
 
   @Test
   void read() {
-    var geoPackageStore = new GeoPackageDataSchema(TestFiles.resolve("data/countries.gpkg"));
+    var geoPackageStore =
+        new GeoPackageDataSchema(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
     var table = geoPackageStore.get("countries");
-    assertEquals(179, table.sizeAsLong());
+    assertEquals(179, table.size());
     assertEquals(179, table.stream().count());
   }
 }

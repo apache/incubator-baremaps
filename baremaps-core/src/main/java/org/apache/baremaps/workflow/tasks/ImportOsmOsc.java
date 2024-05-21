@@ -17,15 +17,15 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
+import static org.apache.baremaps.openstreetmap.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.StringJoiner;
+import org.apache.baremaps.database.function.CopyChangeImporter;
+import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.function.*;
-import org.apache.baremaps.openstreetmap.postgres.*;
-import org.apache.baremaps.openstreetmap.repository.CopyChangeImporter;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.utils.Compression;
 import org.apache.baremaps.workflow.Task;
@@ -76,9 +76,9 @@ public class ImportOsmOsc implements Task {
 
     // Initialize the repositories
     var datasource = context.getDataSource(database);
-    var nodeRepository = new PostgresNodeRepository(datasource);
-    var wayRepository = new PostgresWayRepository(datasource);
-    var relationRepository = new PostgresRelationRepository(datasource);
+    var nodeRepository = new NodeRepository(datasource);
+    var wayRepository = new WayRepository(datasource);
+    var relationRepository = new RelationRepository(datasource);
 
     var coordinateMap = context.getCoordinateMap();
     var referenceMap = context.getReferenceMap();
@@ -97,7 +97,7 @@ public class ImportOsmOsc implements Task {
 
     try (var changeInputStream =
         new BufferedInputStream(compression.decompress(Files.newInputStream(path)))) {
-      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(importChange);
+      new XmlChangeReader().read(changeInputStream).map(prepareChange).forEach(importChange);
     }
   }
 
