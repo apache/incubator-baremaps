@@ -9,19 +9,20 @@
   <artifactId>baremaps-geoparquet</artifactId>
   <dependencies>
     <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-aws</artifactId>
-      <version>${version.lib.hadoop}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-client</artifactId>
-      <version>${version.lib.hadoop}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
-      <version>${version.lib.hadoop}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.parquet</groupId>
@@ -32,6 +33,14 @@
       <groupId>org.apache.parquet</groupId>
       <artifactId>parquet-hadoop</artifactId>
       <version>${version.lib.parquet}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.jts</groupId>
+      <artifactId>jts-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.proj4j</groupId>
+      <artifactId>proj4j</artifactId>
     </dependency>
   </dependencies>
 </project>

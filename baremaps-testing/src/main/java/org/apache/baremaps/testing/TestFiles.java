@@ -63,6 +63,9 @@ public class TestFiles {
   public static final Path ARCHIVE_FILE_ZIP =
       resolve("baremaps-testing/data/archives/file.zip");
 
+  public static final Path GEOPARQUET =
+      resolve("baremaps-testing/data/samples/example.parquet");
+
   /* The geometries of the osm-sample/sample.osm.xml file */
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
