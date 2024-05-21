@@ -15,62 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.shapefile;
+package org.apache.baremaps.storage.geoparquet;
 
 
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URI;
 import java.util.List;
 import org.apache.baremaps.data.schema.DataSchema;
 import org.apache.baremaps.data.schema.DataTable;
 import org.apache.baremaps.data.schema.DataTableException;
 
 /**
- * A schema corresponding to the shapefiles of a directory.
+ * A schema corresponding to a GeoPackage database.
  */
-public class ShapefileDataSchema implements DataSchema {
+public class GeoParquetDataSchema implements DataSchema, AutoCloseable {
 
-  private final Path directory;
+  private final URI uri;
 
-  /**
-   * Constructs a schema from a directory.
-   *
-   * @param directory the directory
-   */
-  public ShapefileDataSchema(Path directory) {
-    this.directory = directory;
+  public GeoParquetDataSchema(URI uri) {
+    this.uri = uri;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public List<String> list() {
-    try (var files = Files.list(directory)) {
-      return files
-          .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
-          .map(file -> file.getFileName().toString())
-          .toList();
-    } catch (IOException e) {
-      throw new DataTableException(e);
+  public void close() throws Exception {
+
+  }
+
+  @Override
+  public List<String> list() throws DataTableException {
+    return List.of(uri.toString());
+  }
+
+  @Override
+  public DataTable get(String name) throws DataTableException {
+    if (!uri.toString().equals(name)) {
+      throw new DataTableException("Table not found");
     }
+    return new GeoParquetDataTable(uri);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public DataTable get(String name) {
-    return new ShapefileDataTable(directory.resolve(name));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void add(DataTable table) {
+  public void add(DataTable table) throws DataTableException {
     throw new UnsupportedOperationException();
   }
 
@@ -79,11 +63,8 @@ public class ShapefileDataSchema implements DataSchema {
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public void remove(String name) {
+  public void remove(String name) throws DataTableException {
     throw new UnsupportedOperationException();
   }
 }

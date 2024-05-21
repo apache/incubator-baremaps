@@ -20,7 +20,7 @@ package org.apache.baremaps.storage.flatgeobuf;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.List;
 import org.apache.baremaps.data.schema.DataSchema;
 import org.apache.baremaps.data.schema.DataTable;
 import org.apache.baremaps.data.schema.DataTableException;
@@ -40,7 +40,7 @@ public class FlatGeoBufDataSchema implements DataSchema {
    * {@inheritDoc}
    */
   @Override
-  public Collection<String> list() throws DataTableException {
+  public List<String> list() throws DataTableException {
     try (var files = Files.list(directory)) {
       return files
           .filter(file -> file.toString().toLowerCase().endsWith(".fgb"))
@@ -67,7 +67,12 @@ public class FlatGeoBufDataSchema implements DataSchema {
   public void add(DataTable table) throws DataTableException {
     var filename = table.rowType().name();
     filename = filename.endsWith(".fgb") ? filename : filename + ".fgb";
-    var path = directory.resolve(filename);
+    add(filename, table);
+  }
+
+  @Override
+  public void add(String name, DataTable table) throws DataTableException {
+    var path = directory.resolve(name);
     try {
       Files.deleteIfExists(path);
       Files.createFile(path);

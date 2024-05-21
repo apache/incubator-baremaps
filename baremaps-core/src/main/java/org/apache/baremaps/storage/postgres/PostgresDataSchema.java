@@ -21,7 +21,6 @@ package org.apache.baremaps.storage.postgres;
 import de.bytefish.pgbulkinsert.pgsql.handlers.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PostgresDataSchema implements DataSchema {
 
+  public static final String REGEX = "[^a-zA-Z0-9]";
   private static final Logger logger = LoggerFactory.getLogger(PostgresDataSchema.class);
 
   private static final String[] TYPES = new String[] {"TABLE", "VIEW"};
@@ -61,7 +61,7 @@ public class PostgresDataSchema implements DataSchema {
    * {@inheritDoc}
    */
   @Override
-  public Collection<String> list() throws DataTableException {
+  public List<String> list() throws DataTableException {
     DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
     return metadata.getTableMetaData(null, "public", null, TYPES).stream()
         .map(table -> table.table().tableName())
@@ -74,7 +74,8 @@ public class PostgresDataSchema implements DataSchema {
   @Override
   public DataTable get(String name) throws DataTableException {
     var databaseMetadata = new DatabaseMetadata(dataSource);
-    var tableMetadata = databaseMetadata.getTableMetaData(null, null, name, TYPES)
+    var postgresName = name.replaceAll(REGEX, "_").toLowerCase();
+    var tableMetadata = databaseMetadata.getTableMetaData(null, null, postgresName, TYPES)
         .stream().findFirst();
     if (tableMetadata.isEmpty()) {
       throw new DataTableException("Table " + name + " does not exist.");
@@ -88,14 +89,21 @@ public class PostgresDataSchema implements DataSchema {
    */
   @Override
   public void add(DataTable table) {
+    var name = table.rowType().name().replaceAll(REGEX, "_").toLowerCase();
+    add(name, table);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void add(String name, DataTable table) {
     try (var connection = dataSource.getConnection()) {
-      var regex = "[^a-zA-Z0-9]";
-      var name = table.rowType().name().replaceAll(regex, "_").toLowerCase();
       var mapping = new HashMap<String, String>();
       var properties = new ArrayList<DataColumn>();
       for (DataColumn column : table.rowType().columns()) {
         if (PostgresTypeConversion.typeToName.containsKey(column.type())) {
-          var columnName = column.name().replaceAll(regex, "_").toLowerCase();
+          var columnName = column.name().replaceAll(REGEX, "_").toLowerCase();
           mapping.put(columnName, column.name());
           properties.add(new DataColumnImpl(columnName, column.type()));
         }

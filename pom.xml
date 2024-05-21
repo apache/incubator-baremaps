@@ -52,6 +52,7 @@ limitations under the License.
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-data</module>
+    <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
     <module>baremaps-pmtiles</module>
@@ -95,6 +96,7 @@ limitations under the License.
     <version.lib.geopackage>6.6.4</version.lib.geopackage>
     <version.lib.graalvm>23.0.3</version.lib.graalvm>
     <version.lib.guava>33.0.0-jre</version.lib.guava>
+    <version.lib.hadoop>3.4.0</version.lib.hadoop>
     <version.lib.hikari>5.1.0</version.lib.hikari>
     <version.lib.ipresource>1.52</version.lib.ipresource>
     <version.lib.jackson>2.16.1</version.lib.jackson>
@@ -102,6 +104,7 @@ limitations under the License.
     <version.lib.junit>5.10.2</version.lib.junit>
     <version.lib.log4j>3.0.0-beta2</version.lib.log4j>
     <version.lib.lucene>9.10.0</version.lib.lucene>
+    <version.lib.parquet>1.13.1</version.lib.parquet>
     <version.lib.pgbulkinsert>8.1.2</version.lib.pgbulkinsert>
     <version.lib.picocli>4.7.5</version.lib.picocli>
     <version.lib.postgresql>42.7.2</version.lib.postgresql>
@@ -132,6 +135,7 @@ limitations under the License.
 
   <dependencyManagement>
     <dependencies>
+
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
@@ -235,6 +239,11 @@ limitations under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-geoparquet</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-maplibre</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -268,6 +277,21 @@ limitations under the License.
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
         <version>${version.lib.commons-compress}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-aws</artifactId>
+        <version>${version.lib.hadoop}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client</artifactId>
+        <version>${version.lib.hadoop}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-common</artifactId>
+        <version>${version.lib.hadoop}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -320,6 +344,11 @@ limitations under the License.
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-spatial-extras</artifactId>
         <version>${version.lib.lucene}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.parquet</groupId>
+        <artifactId>parquet-hadoop</artifactId>
+        <version>${version.lib.parquet}</version>
       </dependency>
       <dependency>
         <groupId>org.awaitility</groupId>
