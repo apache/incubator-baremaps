@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.type.geometry;
+package org.apache.baremaps.data.type;
 
 
 
 import java.nio.ByteBuffer;
-import org.apache.baremaps.data.type.DataType;
-import org.apache.baremaps.data.type.MemoryAlignedDataType;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A {@link DataType} for reading and writing {@link Coordinate}s in {@link ByteBuffer}s. */

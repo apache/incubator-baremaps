@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.type.geometry;
+package org.apache.baremaps.data.type;
 
 
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
 import java.nio.ByteBuffer;
-import org.apache.baremaps.data.type.DataType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;

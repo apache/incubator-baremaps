@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.type.geometry;
+package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
-import org.apache.baremaps.data.type.DataType;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.MultiPoint;
 
 /**
- * A data type for {@link Point} objects.
+ * A data type for {@link MultiPoint} objects.
  */
-public class PointDataType implements DataType<Point> {
+public class MultiPointDataType implements DataType<MultiPoint> {
+
+  private final CoordinateArrayDataType coordinateArrayDataType = new CoordinateArrayDataType();
 
   private final GeometryFactory geometryFactory;
 
   /**
-   * Constructs a {@code PointDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@code MultiPointDataType} with a default {@code GeometryFactory}.
    */
-  public PointDataType() {
+  public MultiPointDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code PointDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@code MultiPointDataType} with a specified {@code GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */
-  public PointDataType(GeometryFactory geometryFactory) {
+  public MultiPointDataType(GeometryFactory geometryFactory) {
     this.geometryFactory = geometryFactory;
   }
 
@@ -50,8 +50,8 @@ public class PointDataType implements DataType<Point> {
    * {@inheritDoc}
    */
   @Override
-  public int size(final Point value) {
-    return Double.BYTES * 2;
+  public int size(final MultiPoint value) {
+    return coordinateArrayDataType.size(value.getCoordinates());
   }
 
   /**
@@ -59,34 +59,23 @@ public class PointDataType implements DataType<Point> {
    */
   @Override
   public int size(final ByteBuffer buffer, final int position) {
-    return Double.BYTES * 2;
+    return coordinateArrayDataType.size(buffer, position);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void write(final ByteBuffer buffer, final int position, final Point value) {
-    if (value.isEmpty()) {
-      buffer.putDouble(position, Double.NaN);
-      buffer.putDouble(position + Double.BYTES, Double.NaN);
-    } else {
-      buffer.putDouble(position, value.getX());
-      buffer.putDouble(position + Double.BYTES, value.getY());
-    }
+  public void write(final ByteBuffer buffer, final int position, final MultiPoint value) {
+    coordinateArrayDataType.write(buffer, position, value.getCoordinates());
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Point read(final ByteBuffer buffer, final int position) {
-    double x = buffer.getDouble(position);
-    double y = buffer.getDouble(position + Double.BYTES);
-    if (Double.isNaN(x) || Double.isNaN(y)) {
-      return geometryFactory.createPoint();
-    } else {
-      return geometryFactory.createPoint(new Coordinate(x, y));
-    }
+  public MultiPoint read(final ByteBuffer buffer, final int position) {
+    var coordinates = coordinateArrayDataType.read(buffer, position);
+    return geometryFactory.createMultiPoint(coordinates);
   }
 }

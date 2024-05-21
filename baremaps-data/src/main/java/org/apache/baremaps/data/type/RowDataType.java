@@ -25,7 +25,6 @@ import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.apache.baremaps.data.schema.DataRow;
 import org.apache.baremaps.data.schema.DataRowImpl;
 import org.apache.baremaps.data.schema.DataRowType;
-import org.apache.baremaps.data.type.geometry.*;
 
 /**
  * A data type for rows.

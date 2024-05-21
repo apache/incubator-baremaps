@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.type.geometry;
+package org.apache.baremaps.data.type;
 
 
 import java.nio.ByteBuffer;
-import org.apache.baremaps.data.type.DataType;
 import org.locationtech.jts.geom.*;
 
 /**

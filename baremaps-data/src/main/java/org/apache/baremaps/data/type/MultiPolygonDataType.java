@@ -15,49 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.type.geometry;
+package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import org.apache.baremaps.data.type.DataType;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.*;
 
 /**
- * A data type for {@link MultiLineString} objects.
+ * A data type for {@link GeometryCollection} objects.
  */
-public class MultiLineStringDataType implements DataType<MultiLineString> {
-
-  private final LineStringDataType lineStringDataType;
+public class MultiPolygonDataType implements DataType<MultiPolygon> {
 
   private final GeometryFactory geometryFactory;
 
+  private final PolygonDataType polygonDataType;
+
   /**
-   * Constructs a {@code MultiLineStringDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@code MultiPolygonDataType} with a default {@code GeometryFactory}.
    */
-  public MultiLineStringDataType() {
+  public MultiPolygonDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code MultiLineStringDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@code MultiPolygonDataType} with a specified {@code GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */
-  public MultiLineStringDataType(GeometryFactory geometryFactory) {
+  public MultiPolygonDataType(GeometryFactory geometryFactory) {
     this.geometryFactory = geometryFactory;
-    this.lineStringDataType = new LineStringDataType(geometryFactory);
+    this.polygonDataType = new PolygonDataType(geometryFactory);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public int size(final MultiLineString value) {
+  public int size(final MultiPolygon value) {
     int size = Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
-      size += lineStringDataType.size((LineString) value.getGeometryN(i));
+      size += polygonDataType.size((Polygon) value.getGeometryN(i));
     }
     return size;
   }
@@ -74,11 +71,11 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
    * {@inheritDoc}
    */
   @Override
-  public void write(final ByteBuffer buffer, final int position, final MultiLineString value) {
+  public void write(final ByteBuffer buffer, final int position, final MultiPolygon value) {
     buffer.putInt(position, size(value));
     var p = position + Integer.BYTES;
     for (int i = 0; i < value.getNumGeometries(); i++) {
-      lineStringDataType.write(buffer, p, (LineString) value.getGeometryN(i));
+      polygonDataType.write(buffer, p, (Polygon) value.getGeometryN(i));
       p += buffer.getInt(p);
     }
   }
@@ -87,16 +84,16 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
    * {@inheritDoc}
    */
   @Override
-  public MultiLineString read(final ByteBuffer buffer, final int position) {
+  public MultiPolygon read(final ByteBuffer buffer, final int position) {
     var size = size(buffer, position);
     var limit = position + size;
     var p = position + Integer.BYTES;
-    var lineStrings = new ArrayList<LineString>();
+    var polygons = new ArrayList<Polygon>();
     while (p < limit) {
-      var lineString = lineStringDataType.read(buffer, p);
-      lineStrings.add(lineString);
-      p += lineStringDataType.size(buffer, p);
+      var polygon = polygonDataType.read(buffer, p);
+      polygons.add(polygon);
+      p += polygonDataType.size(buffer, p);
     }
-    return geometryFactory.createMultiLineString(lineStrings.toArray(LineString[]::new));
+    return geometryFactory.createMultiPolygon(polygons.toArray(Polygon[]::new));
   }
 }

@@ -25,7 +25,6 @@ import org.apache.baremaps.data.schema.*;
 import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.apache.baremaps.data.schema.DataRowType;
 import org.apache.baremaps.data.schema.DataRowTypeImpl;
-import org.apache.baremaps.data.type.geometry.*;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
 
