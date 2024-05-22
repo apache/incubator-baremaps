@@ -20,7 +20,7 @@ package org.apache.baremaps.geoparquet;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import org.apache.baremaps.geoparquet.data.FeatureGroup;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +31,9 @@ class GeoParquetReaderTest {
     URI geoParquet = TestFiles.GEOPARQUET.toUri();
     System.out.println(geoParquet);
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
-    List<FeatureGroup> geoParquetList = geoParquetReader.read().toList();
-    for (FeatureGroup featureGroup : geoParquetList) {
-      System.out.println(featureGroup);
+    List<GeoParquetGroup> geoParquetList = geoParquetReader.read().toList();
+    for (GeoParquetGroup geoParquetGroup : geoParquetList) {
+      System.out.println(geoParquetGroup);
     }
   }
 

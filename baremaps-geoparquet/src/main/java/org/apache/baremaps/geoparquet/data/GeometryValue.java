@@ -22,6 +22,7 @@ import org.apache.parquet.io.api.RecordConsumer;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKBWriter;
 
 
 public class GeometryValue extends Primitive {
@@ -30,6 +31,10 @@ public class GeometryValue extends Primitive {
 
   public GeometryValue(Binary binary) {
     this.binary = binary;
+  }
+
+  public GeometryValue(Geometry geometry) {
+    this.binary = Binary.fromConstantByteArray(new WKBWriter().write(geometry));
   }
 
   @Override

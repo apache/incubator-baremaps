@@ -21,19 +21,19 @@ import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
 
-public class GeoParquetMaterializer extends RecordMaterializer<FeatureGroup> {
+public class GeoParquetMaterializer extends RecordMaterializer<GeoParquetGroup> {
 
-  private final FeatureGroupFactory featureGroupFactory;
+  private final GeoParquetGroupFactory geoParquetGroupFactory;
 
-  private FeatureGroupConverter root;
+  private GeoParquetGroupConverter root;
 
   public GeoParquetMaterializer(GeoParquetFileInfo fileInfo) {
-    MessageType schema = fileInfo.parquetMetadata().getFileMetaData().getSchema();
-    this.featureGroupFactory = new FeatureGroupFactory(fileInfo, schema);
-    this.root = new FeatureGroupConverter(fileInfo, null, 0, schema) {
+    MessageType schema = fileInfo.getParquetMetadata().getFileMetaData().getSchema();
+    this.geoParquetGroupFactory = new GeoParquetGroupFactory(fileInfo, schema);
+    this.root = new GeoParquetGroupConverter(fileInfo, null, 0, schema) {
       @Override
       public void start() {
-        this.current = featureGroupFactory.newFeatureGroup();
+        this.current = geoParquetGroupFactory.newFeatureGroup();
       }
 
       @Override
@@ -42,7 +42,7 @@ public class GeoParquetMaterializer extends RecordMaterializer<FeatureGroup> {
   }
 
   @Override
-  public FeatureGroup getCurrentRecord() {
+  public GeoParquetGroup getCurrentRecord() {
     return root.getCurrentRecord();
   }
 

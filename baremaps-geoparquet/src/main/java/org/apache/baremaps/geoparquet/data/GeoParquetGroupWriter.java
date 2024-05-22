@@ -21,36 +21,36 @@ import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.Type;
 
-public class FeatureGroupWriter {
+public class GeoParquetGroupWriter {
 
   private final RecordConsumer recordConsumer;
   private final GroupType schema;
 
-  public FeatureGroupWriter(RecordConsumer recordConsumer, GroupType schema) {
+  public GeoParquetGroupWriter(RecordConsumer recordConsumer, GroupType schema) {
     this.recordConsumer = recordConsumer;
     this.schema = schema;
   }
 
-  public void write(FeatureGroup featureGroup) {
+  public void write(GeoParquetGroup geoParquetGroup) {
     recordConsumer.startMessage();
-    writeGroup(featureGroup, schema);
+    writeGroup(geoParquetGroup, schema);
     recordConsumer.endMessage();
   }
 
-  private void writeGroup(FeatureGroup featureGroup, GroupType type) {
+  private void writeGroup(GeoParquetGroup geoParquetGroup, GroupType type) {
     int fieldCount = type.getFieldCount();
     for (int field = 0; field < fieldCount; ++field) {
-      int valueCount = featureGroup.getFieldRepetitionCount(field);
+      int valueCount = geoParquetGroup.getFieldRepetitionCount(field);
       if (valueCount > 0) {
         Type fieldType = type.getType(field);
         String fieldName = fieldType.getName();
         recordConsumer.startField(fieldName, field);
         for (int index = 0; index < valueCount; ++index) {
           if (fieldType.isPrimitive()) {
-            featureGroup.writeValue(field, index, recordConsumer);
+            geoParquetGroup.writeValue(field, index, recordConsumer);
           } else {
             recordConsumer.startGroup();
-            writeGroup(featureGroup.getGroup(field, index), fieldType.asGroupType());
+            writeGroup(geoParquetGroup.getGroup(field, index), fieldType.asGroupType());
             recordConsumer.endGroup();
           }
         }

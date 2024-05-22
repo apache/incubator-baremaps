@@ -24,14 +24,14 @@ import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.Type;
 
-public class FeatureGroup {
+public class GeoParquetGroup {
 
   private final GeoParquetFileInfo fileInfo;
   private final GroupType schema;
   private final List<Object>[] data;
 
   @SuppressWarnings("unchecked")
-  public FeatureGroup(GeoParquetFileInfo fileInfo, GroupType schema) {
+  public GeoParquetGroup(GeoParquetFileInfo fileInfo, GroupType schema) {
     this.fileInfo = fileInfo;
     this.schema = schema;
     this.data = new List[schema.getFields().size()];
@@ -45,7 +45,7 @@ public class FeatureGroup {
     return toString("");
   }
 
-  private StringBuilder appendToString(StringBuilder builder, String indent) {
+  private void appendToString(StringBuilder builder, String indent) {
     int i = 0;
     for (Type field : schema.getFields()) {
       String name = field.getName();
@@ -56,16 +56,15 @@ public class FeatureGroup {
           builder.append(indent).append(name);
           if (value == null) {
             builder.append(": NULL\n");
-          } else if (value instanceof FeatureGroup) {
+          } else if (value instanceof GeoParquetGroup) {
             builder.append('\n');
-            ((FeatureGroup) value).appendToString(builder, indent + "  ");
+            ((GeoParquetGroup) value).appendToString(builder, indent + "  ");
           } else {
             builder.append(": ").append(value.toString()).append('\n');
           }
         }
       }
     }
-    return builder;
   }
 
   public String toString(String indent) {
@@ -74,14 +73,14 @@ public class FeatureGroup {
     return builder.toString();
   }
 
-  public FeatureGroup addGroup(int fieldIndex) {
-    FeatureGroup g = new FeatureGroup(fileInfo, schema.getType(fieldIndex).asGroupType());
+  public GeoParquetGroup addGroup(int fieldIndex) {
+    GeoParquetGroup g = new GeoParquetGroup(fileInfo, schema.getType(fieldIndex).asGroupType());
     add(fieldIndex, g);
     return g;
   }
 
-  public FeatureGroup getGroup(int fieldIndex, int index) {
-    return (FeatureGroup) getValue(fieldIndex, index);
+  public GeoParquetGroup getGroup(int fieldIndex, int index) {
+    return (GeoParquetGroup) getValue(fieldIndex, index);
   }
 
   private Object getValue(int fieldIndex, int index) {
@@ -181,7 +180,7 @@ public class FeatureGroup {
       case BINARY:
       case FIXED_LEN_BYTE_ARRAY:
         String fieldName = schema.getFieldName(fieldIndex);
-        if (fileInfo.geometryColumns().contains(fieldName)) {
+        if (fileInfo.getGeometryColumns().contains(fieldName)) {
           add(fieldIndex, new GeometryValue(value));
         } else {
           add(fieldIndex, new BinaryValue(value));
@@ -204,7 +203,7 @@ public class FeatureGroup {
     add(fieldIndex, new DoubleValue(value));
   }
 
-  public void add(int fieldIndex, FeatureGroup value) {
+  public void add(int fieldIndex, GeoParquetGroup value) {
     data[fieldIndex].add(value);
   }
 
@@ -216,50 +215,50 @@ public class FeatureGroup {
     ((Primitive) getValue(field, index)).writeValue(recordConsumer);
   }
 
-  public FeatureGroup addGroup(String field) {
+  public GeoParquetGroup addGroup(String field) {
     return addGroup(getType().getFieldIndex(field));
   }
 
-  public FeatureGroup getGroup(String field, int index) {
+  public GeoParquetGroup getGroup(String field, int index) {
     return getGroup(getType().getFieldIndex(field), index);
   }
 
-  public FeatureGroup append(String fieldName, int value) {
+  public GeoParquetGroup append(String fieldName, int value) {
     add(fieldName, value);
     return this;
   }
 
-  public FeatureGroup append(String fieldName, float value) {
+  public GeoParquetGroup append(String fieldName, float value) {
     add(fieldName, value);
     return this;
   }
 
-  public FeatureGroup append(String fieldName, double value) {
+  public GeoParquetGroup append(String fieldName, double value) {
     add(fieldName, value);
     return this;
   }
 
-  public FeatureGroup append(String fieldName, long value) {
+  public GeoParquetGroup append(String fieldName, long value) {
     add(fieldName, value);
     return this;
   }
 
-  public FeatureGroup append(String fieldName, NanoTime value) {
+  public GeoParquetGroup append(String fieldName, NanoTime value) {
     add(fieldName, value);
     return this;
   }
 
-  public FeatureGroup append(String fieldName, String value) {
+  public GeoParquetGroup append(String fieldName, String value) {
     add(fieldName, Binary.fromString(value));
     return this;
   }
 
-  public FeatureGroup append(String fieldName, boolean value) {
+  public GeoParquetGroup append(String fieldName, boolean value) {
     add(fieldName, value);
     return this;
   }
 
-  public FeatureGroup append(String fieldName, Binary value) {
+  public GeoParquetGroup append(String fieldName, Binary value) {
     add(fieldName, value);
     return this;
   }
@@ -296,7 +295,7 @@ public class FeatureGroup {
     add(getType().getFieldIndex(field), value);
   }
 
-  public void add(String field, FeatureGroup value) {
+  public void add(String field, GeoParquetGroup value) {
     add(getType().getFieldIndex(field), value);
   }
 

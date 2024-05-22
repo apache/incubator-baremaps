@@ -107,7 +107,7 @@ public class GeoParquetReader {
     }
   }
 
-  public Stream<FeatureGroup> read() throws IOException {
+  public Stream<GeoParquetGroup> read() throws IOException {
     return StreamSupport.stream(
         Spliterators.spliteratorUnknownSize(new GroupIterator(), Spliterator.ORDERED),
         false);
@@ -151,7 +151,7 @@ public class GeoParquetReader {
         null);
   }
 
-  private class GroupIterator implements Iterator<FeatureGroup> {
+  private class GroupIterator implements Iterator<GeoParquetGroup> {
 
     private Iterator<Map.Entry<FileStatus, GeoParquetFileInfo>> fileIterator;
 
@@ -160,9 +160,9 @@ public class GeoParquetReader {
 
     private PageReadStore currentPageReadStore;
 
-    private Iterator<FeatureGroup> simpleGroupIterator;
+    private Iterator<GeoParquetGroup> simpleGroupIterator;
 
-    private FeatureGroup currentSimpleFeatureGroup;
+    private GeoParquetGroup currentGeoParquetGroup;
 
     public GroupIterator() throws IOException {
       this.fileIterator = metadata.entrySet().iterator();
@@ -172,7 +172,7 @@ public class GeoParquetReader {
       this.simpleGroupIterator = new FeatureGroupIterator(
           currentFileStatus.getValue(),
           currentPageReadStore);
-      this.currentSimpleFeatureGroup = simpleGroupIterator.next();
+      this.currentGeoParquetGroup = simpleGroupIterator.next();
     }
 
     @Override
@@ -199,9 +199,9 @@ public class GeoParquetReader {
     }
 
     @Override
-    public FeatureGroup next() {
-      currentSimpleFeatureGroup = simpleGroupIterator.next();
-      return currentSimpleFeatureGroup;
+    public GeoParquetGroup next() {
+      currentGeoParquetGroup = simpleGroupIterator.next();
+      return currentGeoParquetGroup;
     }
   }
 
@@ -258,9 +258,9 @@ public class GeoParquetReader {
     }
   }
 
-  private static class FeatureGroupIterator implements Iterator<FeatureGroup> {
+  private static class FeatureGroupIterator implements Iterator<GeoParquetGroup> {
     private final long rowCount;
-    private final RecordReader<FeatureGroup> recordReader;
+    private final RecordReader<GeoParquetGroup> recordReader;
 
     private long i = 0;
 
@@ -268,7 +268,7 @@ public class GeoParquetReader {
         PageReadStore pageReadStore) {
       this.rowCount = pageReadStore.getRowCount();
 
-      MessageType schema = geoParquetFileInfo.parquetMetadata().getFileMetaData().getSchema();
+      MessageType schema = geoParquetFileInfo.getParquetMetadata().getFileMetaData().getSchema();
       this.recordReader = new ColumnIOFactory()
           .getColumnIO(schema)
           .getRecordReader(pageReadStore, new GeoParquetMaterializer(geoParquetFileInfo));
@@ -280,7 +280,7 @@ public class GeoParquetReader {
     }
 
     @Override
-    public FeatureGroup next() {
+    public GeoParquetGroup next() {
       i++;
       return recordReader.read();
     }

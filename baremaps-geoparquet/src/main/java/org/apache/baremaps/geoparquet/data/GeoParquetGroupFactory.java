@@ -19,19 +19,19 @@ package org.apache.baremaps.geoparquet.data;
 
 import org.apache.parquet.schema.MessageType;
 
-public class FeatureGroupFactory {
+public class GeoParquetGroupFactory {
 
   private final GeoParquetFileInfo fileInfo;
 
   private final MessageType schema;
 
-  public FeatureGroupFactory(GeoParquetFileInfo fileInfo, MessageType schema) {
+  public GeoParquetGroupFactory(GeoParquetFileInfo fileInfo, MessageType schema) {
     this.fileInfo = fileInfo;
     this.schema = schema;
   }
 
-  public FeatureGroup newFeatureGroup() {
-    return new FeatureGroup(fileInfo, schema);
+  public GeoParquetGroup newFeatureGroup() {
+    return new GeoParquetGroup(fileInfo, schema);
   }
 
 }

@@ -20,12 +20,12 @@ package org.apache.baremaps.geoparquet.data;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.PrimitiveConverter;
 
-class FeaturePrimitiveConverter extends PrimitiveConverter {
+class GeoParquetPrimitiveConverter extends PrimitiveConverter {
 
-  private final FeatureGroupConverter parent;
+  private final GeoParquetGroupConverter parent;
   private final int index;
 
-  FeaturePrimitiveConverter(FeatureGroupConverter parent, int index) {
+  GeoParquetPrimitiveConverter(GeoParquetGroupConverter parent, int index) {
     this.parent = parent;
     this.index = index;
   }
