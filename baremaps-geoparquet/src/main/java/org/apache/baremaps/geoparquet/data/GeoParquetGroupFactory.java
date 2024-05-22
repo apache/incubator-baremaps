@@ -21,17 +21,14 @@ import org.apache.parquet.schema.MessageType;
 
 public class GeoParquetGroupFactory {
 
-  private final GeoParquetFileInfo fileInfo;
-
   private final MessageType schema;
 
-  public GeoParquetGroupFactory(GeoParquetFileInfo fileInfo, MessageType schema) {
-    this.fileInfo = fileInfo;
+  public GeoParquetGroupFactory(MessageType schema) {
     this.schema = schema;
   }
 
-  public GeoParquetGroup newFeatureGroup() {
-    return new GeoParquetGroup(fileInfo, schema);
+  public GeoParquetGroup newGroup() {
+    return new GeoParquetGroup(schema);
   }
 
 }

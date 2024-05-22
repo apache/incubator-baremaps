@@ -24,27 +24,24 @@ import org.apache.parquet.schema.Type;
 
 class GeoParquetGroupConverter extends GroupConverter {
 
-  private final GeoParquetFileInfo fileInfo;
   private final GeoParquetGroupConverter parent;
   private final int index;
   protected GeoParquetGroup current;
   private Converter[] converters;
 
-  GeoParquetGroupConverter(GeoParquetFileInfo fileInfo, GeoParquetGroupConverter parent, int index,
+  GeoParquetGroupConverter(GeoParquetGroupConverter parent, int index,
       GroupType schema) {
-    this.fileInfo = fileInfo;
     this.parent = parent;
     this.index = index;
 
     converters = new Converter[schema.getFieldCount()];
 
     for (int i = 0; i < converters.length; i++) {
-      final String name = schema.getName();
       final Type type = schema.getType(i);
       if (type.isPrimitive()) {
         converters[i] = new GeoParquetPrimitiveConverter(this, i);
       } else {
-        converters[i] = new GeoParquetGroupConverter(fileInfo, this, i, type.asGroupType());
+        converters[i] = new GeoParquetGroupConverter(this, i, type.asGroupType());
       }
 
     }

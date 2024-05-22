@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet;
+package org.apache.baremaps.geoparquet.hadoop;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import org.apache.baremaps.testing.TestFiles;
-import org.junit.jupiter.api.Test;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
+import org.apache.parquet.hadoop.ParquetInputFormat;
 
-class GeoParquetReaderTest {
+/**
+ * Example input format to read Parquet files
+ *
+ * This Input format uses a rather inefficient data model but works independently of higher level
+ * abstractions.
+ */
+public class GeoParquetInputFormat extends ParquetInputFormat<GeoParquetGroup> {
 
-  @Test
-  void read() throws IOException {
-    // URI geoParquet = new
-    // URI("s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=admins/type=locality_area/*.parquet");
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
-    System.out.println(geoParquet);
-    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
-    geoParquetReader.read().forEach(group -> {
-      System.out.println("--------------------");
-      System.out.println(group);
-    });
+  public GeoParquetInputFormat() {
+    super(GeoParquetReadSupport.class);
   }
+
 }

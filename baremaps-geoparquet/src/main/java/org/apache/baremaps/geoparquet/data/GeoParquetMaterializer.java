@@ -27,17 +27,13 @@ public class GeoParquetMaterializer extends RecordMaterializer<GeoParquetGroup> 
 
   private GeoParquetGroupConverter root;
 
-  public GeoParquetMaterializer(GeoParquetFileInfo fileInfo) {
-    MessageType schema = fileInfo.getParquetMetadata().getFileMetaData().getSchema();
-    this.geoParquetGroupFactory = new GeoParquetGroupFactory(fileInfo, schema);
-    this.root = new GeoParquetGroupConverter(fileInfo, null, 0, schema) {
+  public GeoParquetMaterializer(MessageType schema) {
+    this.geoParquetGroupFactory = new GeoParquetGroupFactory(schema);
+    this.root = new GeoParquetGroupConverter(null, 0, schema) {
       @Override
       public void start() {
-        this.current = geoParquetGroupFactory.newFeatureGroup();
+        this.current = geoParquetGroupFactory.newGroup();
       }
-
-      @Override
-      public void end() {}
     };
   }
 

@@ -18,25 +18,23 @@
 package org.apache.baremaps.geoparquet.data;
 
 import com.google.common.base.Objects;
-import java.util.Set;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 
-public final class GeoParquetFileInfo {
+public final class FileInfo {
 
   private final long rowCount;
-  private final ParquetMetadata parquetMetadata;
-  private final GeoParquetMetadata geoParquetMetadata;
-  private final Set<String> geometryColumns;
 
-  public GeoParquetFileInfo(
+  private final ParquetMetadata parquetMetadata;
+
+  private final GeoParquetMetadata geoParquetMetadata;
+
+  public FileInfo(
       long rowCount,
       ParquetMetadata parquetMetadata,
-      GeoParquetMetadata geoParquetMetadata,
-      Set<String> geometryColumns) {
+      GeoParquetMetadata geoParquetMetadata) {
     this.rowCount = rowCount;
     this.parquetMetadata = parquetMetadata;
     this.geoParquetMetadata = geoParquetMetadata;
-    this.geometryColumns = geometryColumns;
   }
 
   public long getRowCount() {
@@ -51,19 +49,6 @@ public final class GeoParquetFileInfo {
     return geoParquetMetadata;
   }
 
-  public Set<String> getGeometryColumns() {
-    return geometryColumns;
-  }
-
-  public boolean isGeometryColumn(String column) {
-    return geometryColumns.contains(column);
-  }
-
-  public boolean isGeometryColumn(int column) {
-    return isGeometryColumn(
-        parquetMetadata.getFileMetaData().getSchema().getColumns().get(column).getPath()[0]);
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -72,15 +57,14 @@ public final class GeoParquetFileInfo {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    GeoParquetFileInfo that = (GeoParquetFileInfo) o;
+    FileInfo that = (FileInfo) o;
     return rowCount == that.rowCount
         && Objects.equal(parquetMetadata, that.parquetMetadata)
-        && Objects.equal(geoParquetMetadata, that.geoParquetMetadata)
-        && Objects.equal(geometryColumns, that.geometryColumns);
+        && Objects.equal(geoParquetMetadata, that.geoParquetMetadata);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(rowCount, parquetMetadata, geoParquetMetadata, geometryColumns);
+    return Objects.hashCode(rowCount, parquetMetadata, geoParquetMetadata);
   }
 }

@@ -18,6 +18,7 @@
 package org.apache.baremaps.geoparquet.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import java.util.Map;
 
@@ -56,6 +57,23 @@ public class GeoParquetMetadata {
 
   public void setColumns(Map<String, GeoParquetColumnMetadata> columns) {
     this.columns = columns;
+  }
+
+  public int getSrid(String column) {
+    JsonNode crsId = getColumns().get(column).getCrs().get("id");
+    int srid = switch (crsId.get("authority").asText()) {
+      case "OGC" -> switch (crsId.get("code").asText()) {
+          case "CRS84" -> 4326;
+          default -> 0;
+        };
+      case "EPSG" -> crsId.get("code").asInt();
+      default -> 0;
+    };
+    return srid;
+  }
+
+  public boolean isGeometryColumn(String column) {
+    return columns.containsKey(column);
   }
 
   @Override

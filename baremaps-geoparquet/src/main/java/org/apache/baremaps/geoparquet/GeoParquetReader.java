@@ -18,7 +18,6 @@
 package org.apache.baremaps.geoparquet;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
@@ -40,19 +39,18 @@ import org.apache.parquet.hadoop.util.HadoopInputFile;
 import org.apache.parquet.io.ColumnIOFactory;
 import org.apache.parquet.io.RecordReader;
 import org.apache.parquet.schema.MessageType;
-import org.locationtech.jts.io.WKBReader;
 
+
+/**
+ * This reader is based on the parquet example code located at: org.apache.parquet.example.data.*.
+ */
 public class GeoParquetReader {
 
   private final URI uri;
 
   private Configuration configuration;
 
-  private WKBReader wkbReader = new WKBReader();
-
-  private Map<FileStatus, GeoParquetFileInfo> metadata = new LinkedHashMap<>();
-
-  private long rowCount;
+  private Map<FileStatus, FileInfo> metadata = new LinkedHashMap<>();
 
   public GeoParquetReader(URI uri) {
     this.uri = uri;
@@ -60,10 +58,9 @@ public class GeoParquetReader {
   }
 
   public void initialize() {
-    this.rowCount = 0;
-    this.configuration = getConfiguration();
-
     try {
+      this.configuration = getConfiguration();
+
       // List all the files that match the glob pattern
       Path globPath = new Path(uri.getPath());
       URI rootUri = getRootUri(uri);
@@ -90,18 +87,12 @@ public class GeoParquetReader {
               .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
               .readValue(json, GeoParquetMetadata.class);
 
-          // Increment the total number of rows
-          this.rowCount += rowCount;
-
-          // Get the geometry columns of the Parquet file
-          Set<String> geometryColumns = geoParquetMetadata.getColumns().keySet();
-
           // Store the metadata of the Parquet file
-          this.metadata.put(fileStatus, new GeoParquetFileInfo(rowCount, parquetMetadata,
-              geoParquetMetadata, geometryColumns));
+          this.metadata.put(
+              fileStatus,
+              new FileInfo(rowCount, parquetMetadata, geoParquetMetadata));
         }
       }
-
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -122,19 +113,6 @@ public class GeoParquetReader {
     return configuration;
   }
 
-  private static int getSrid(GeoParquetMetadata geoParquetMetadata, String name) {
-    JsonNode crsId = geoParquetMetadata.getColumns().get(name).getCrs().get("id");
-    int srid = switch (crsId.get("authority").asText()) {
-      case "OGC" -> switch (crsId.get("code").asText()) {
-          case "CRS84" -> 4326;
-          default -> 0;
-        };
-      case "EPSG" -> crsId.get("code").asInt();
-      default -> 0;
-    };
-    return srid;
-  }
-
   private static URI getRootUri(URI uri) throws URISyntaxException {
     String path = uri.getPath();
     int index = path.indexOf("*");
@@ -153,9 +131,10 @@ public class GeoParquetReader {
 
   private class GroupIterator implements Iterator<GeoParquetGroup> {
 
-    private Iterator<Map.Entry<FileStatus, GeoParquetFileInfo>> fileIterator;
+    private Iterator<Map.Entry<FileStatus, FileInfo>> fileIterator;
 
-    private Map.Entry<FileStatus, GeoParquetFileInfo> currentFileStatus;
+    private Map.Entry<FileStatus, FileInfo> currentFileStatus;
+
     private Iterator<PageReadStore> pageReadStoreIterator;
 
     private PageReadStore currentPageReadStore;
@@ -169,7 +148,7 @@ public class GeoParquetReader {
       this.currentFileStatus = fileIterator.next();
       this.pageReadStoreIterator = new PageReadStoreIterator(currentFileStatus);
       this.currentPageReadStore = pageReadStoreIterator.next();
-      this.simpleGroupIterator = new FeatureGroupIterator(
+      this.simpleGroupIterator = new GeoParquetGroupIterator(
           currentFileStatus.getValue(),
           currentPageReadStore);
       this.currentGeoParquetGroup = simpleGroupIterator.next();
@@ -181,7 +160,7 @@ public class GeoParquetReader {
         return true;
       } else if (pageReadStoreIterator.hasNext()) {
         currentPageReadStore = pageReadStoreIterator.next();
-        simpleGroupIterator = new FeatureGroupIterator(
+        simpleGroupIterator = new GeoParquetGroupIterator(
             currentFileStatus.getValue(),
             currentPageReadStore);
         return hasNext();
@@ -209,15 +188,12 @@ public class GeoParquetReader {
 
     private final ParquetFileReader parquetFileReader;
 
-    private final MessageType messageType;
-
     private PageReadStore next;
 
-    public PageReadStoreIterator(Map.Entry<FileStatus, GeoParquetFileInfo> fileInfo)
+    public PageReadStoreIterator(Map.Entry<FileStatus, FileInfo> fileInfo)
         throws IOException {
       this.parquetFileReader = ParquetFileReader
           .open(HadoopInputFile.fromPath(fileInfo.getKey().getPath(), configuration));
-      this.messageType = this.parquetFileReader.getFooter().getFileMetaData().getSchema();
       try {
         next = parquetFileReader.readNextRowGroup();
       } catch (IOException e) {
@@ -258,20 +234,20 @@ public class GeoParquetReader {
     }
   }
 
-  private static class FeatureGroupIterator implements Iterator<GeoParquetGroup> {
+  private static class GeoParquetGroupIterator implements Iterator<GeoParquetGroup> {
     private final long rowCount;
     private final RecordReader<GeoParquetGroup> recordReader;
 
     private long i = 0;
 
-    private FeatureGroupIterator(GeoParquetFileInfo geoParquetFileInfo,
+    private GeoParquetGroupIterator(
+        FileInfo fileInfo,
         PageReadStore pageReadStore) {
+      MessageType schema = fileInfo.getParquetMetadata().getFileMetaData().getSchema();
       this.rowCount = pageReadStore.getRowCount();
-
-      MessageType schema = geoParquetFileInfo.getParquetMetadata().getFileMetaData().getSchema();
       this.recordReader = new ColumnIOFactory()
           .getColumnIO(schema)
-          .getRecordReader(pageReadStore, new GeoParquetMaterializer(geoParquetFileInfo));
+          .getRecordReader(pageReadStore, new GeoParquetMaterializer(schema));
     }
 
     @Override
