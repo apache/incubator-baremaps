@@ -17,18 +17,21 @@
 
 package org.apache.baremaps.geoparquet.data;
 
-import org.apache.parquet.schema.MessageType;
+import org.apache.parquet.schema.GroupType;
 
 public class GeoParquetGroupFactory {
 
-  private final MessageType schema;
+  private final GroupType schema;
 
-  public GeoParquetGroupFactory(MessageType schema) {
+  private final GeoParquetMetadata metadata;
+
+  public GeoParquetGroupFactory(GroupType schema, GeoParquetMetadata metadata) {
     this.schema = schema;
+    this.metadata = metadata;
   }
 
-  public GeoParquetGroup newGroup() {
-    return new GeoParquetGroup(schema);
+  public GeoParquetGroupImpl newGroup() {
+    return new GeoParquetGroupImpl(schema, metadata);
   }
 
 }

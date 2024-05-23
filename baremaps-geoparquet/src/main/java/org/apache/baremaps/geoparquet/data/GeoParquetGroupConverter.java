@@ -26,7 +26,7 @@ class GeoParquetGroupConverter extends GroupConverter {
 
   private final GeoParquetGroupConverter parent;
   private final int index;
-  protected GeoParquetGroup current;
+  protected GeoParquetGroupImpl current;
   private Converter[] converters;
 
   GeoParquetGroupConverter(GeoParquetGroupConverter parent, int index,
@@ -60,7 +60,7 @@ class GeoParquetGroupConverter extends GroupConverter {
   @Override
   public void end() {}
 
-  public GeoParquetGroup getCurrentRecord() {
+  public GeoParquetGroupImpl getCurrentRecord() {
     return current;
   }
 }

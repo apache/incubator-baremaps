@@ -19,8 +19,9 @@ package org.apache.baremaps.geoparquet;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.parquet.schema.GroupType;
+import org.apache.parquet.schema.Type;
 import org.junit.jupiter.api.Test;
 
 class GeoParquetReaderTest {
@@ -30,11 +31,17 @@ class GeoParquetReaderTest {
     // URI geoParquet = new
     // URI("s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=admins/type=locality_area/*.parquet");
     URI geoParquet = TestFiles.GEOPARQUET.toUri();
-    System.out.println(geoParquet);
+
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     geoParquetReader.read().forEach(group -> {
-      System.out.println("--------------------");
-      System.out.println(group);
+      GroupType schema = group.getSchema();
+      for (int i = 0; i < schema.getFieldCount(); i++) {
+        Type fieldType = schema.getType(i);
+        if (fieldType.isPrimitive()) {
+          System.out.println(fieldType.asPrimitiveType().getPrimitiveTypeName());
+        }
+
+      }
     });
   }
 }

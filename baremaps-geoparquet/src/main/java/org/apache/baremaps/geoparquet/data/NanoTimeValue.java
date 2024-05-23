@@ -23,25 +23,25 @@ import org.apache.parquet.Preconditions;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.RecordConsumer;
 
-public class NanoTime extends Primitive {
+public class NanoTimeValue extends Primitive {
   private final int julianDay;
   private final long timeOfDayNanos;
 
-  public static NanoTime fromBinary(Binary bytes) {
+  public static NanoTimeValue fromBinary(Binary bytes) {
     Preconditions.checkArgument(bytes.length() == 12, "Must be 12 bytes");
     ByteBuffer buf = bytes.toByteBuffer();
     buf.order(ByteOrder.LITTLE_ENDIAN);
     long timeOfDayNanos = buf.getLong();
     int julianDay = buf.getInt();
-    return new NanoTime(julianDay, timeOfDayNanos);
+    return new NanoTimeValue(julianDay, timeOfDayNanos);
   }
 
-  public static NanoTime fromInt96(Int96Value int96) {
+  public static NanoTimeValue fromInt96(Int96Value int96) {
     ByteBuffer buf = int96.getInt96().toByteBuffer();
-    return new NanoTime(buf.getInt(), buf.getLong());
+    return new NanoTimeValue(buf.getInt(), buf.getLong());
   }
 
-  public NanoTime(int julianDay, long timeOfDayNanos) {
+  public NanoTimeValue(int julianDay, long timeOfDayNanos) {
     this.julianDay = julianDay;
     this.timeOfDayNanos = timeOfDayNanos;
   }

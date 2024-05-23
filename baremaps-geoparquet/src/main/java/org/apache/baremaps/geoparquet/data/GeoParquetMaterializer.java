@@ -21,24 +21,24 @@ import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
 
-public class GeoParquetMaterializer extends RecordMaterializer<GeoParquetGroup> {
+public class GeoParquetMaterializer extends RecordMaterializer<GeoParquetGroupImpl> {
 
-  private final GeoParquetGroupFactory geoParquetGroupFactory;
+  private final GeoParquetGroupFactory groupFactory;
 
   private GeoParquetGroupConverter root;
 
-  public GeoParquetMaterializer(MessageType schema) {
-    this.geoParquetGroupFactory = new GeoParquetGroupFactory(schema);
+  public GeoParquetMaterializer(MessageType schema, GeoParquetMetadata metadata) {
+    this.groupFactory = new GeoParquetGroupFactory(schema, metadata);
     this.root = new GeoParquetGroupConverter(null, 0, schema) {
       @Override
       public void start() {
-        this.current = geoParquetGroupFactory.newGroup();
+        this.current = groupFactory.newGroup();
       }
     };
   }
 
   @Override
-  public GeoParquetGroup getCurrentRecord() {
+  public GeoParquetGroupImpl getCurrentRecord() {
     return root.getCurrentRecord();
   }
 

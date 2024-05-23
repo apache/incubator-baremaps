@@ -88,9 +88,8 @@ public class GeoParquetReader {
               .readValue(json, GeoParquetMetadata.class);
 
           // Store the metadata of the Parquet file
-          this.metadata.put(
-              fileStatus,
-              new FileInfo(rowCount, parquetMetadata, geoParquetMetadata));
+          FileInfo fileInfo = new FileInfo(rowCount, parquetMetadata, geoParquetMetadata);
+          this.metadata.put(fileStatus, fileInfo);
         }
       }
     } catch (Exception e) {
@@ -98,7 +97,7 @@ public class GeoParquetReader {
     }
   }
 
-  public Stream<GeoParquetGroup> read() throws IOException {
+  public Stream<GeoParquetGroupImpl> read() throws IOException {
     return StreamSupport.stream(
         Spliterators.spliteratorUnknownSize(new GroupIterator(), Spliterator.ORDERED),
         false);
@@ -129,38 +128,31 @@ public class GeoParquetReader {
         null);
   }
 
-  private class GroupIterator implements Iterator<GeoParquetGroup> {
+  private class GroupIterator implements Iterator<GeoParquetGroupImpl> {
 
     private Iterator<Map.Entry<FileStatus, FileInfo>> fileIterator;
-
     private Map.Entry<FileStatus, FileInfo> currentFileStatus;
-
     private Iterator<PageReadStore> pageReadStoreIterator;
-
     private PageReadStore currentPageReadStore;
-
-    private Iterator<GeoParquetGroup> simpleGroupIterator;
-
-    private GeoParquetGroup currentGeoParquetGroup;
+    private Iterator<GeoParquetGroupImpl> geoParquetGroupIterator;
 
     public GroupIterator() throws IOException {
       this.fileIterator = metadata.entrySet().iterator();
       this.currentFileStatus = fileIterator.next();
       this.pageReadStoreIterator = new PageReadStoreIterator(currentFileStatus);
       this.currentPageReadStore = pageReadStoreIterator.next();
-      this.simpleGroupIterator = new GeoParquetGroupIterator(
+      this.geoParquetGroupIterator = new GeoParquetGroupIterator(
           currentFileStatus.getValue(),
           currentPageReadStore);
-      this.currentGeoParquetGroup = simpleGroupIterator.next();
     }
 
     @Override
     public boolean hasNext() {
-      if (simpleGroupIterator.hasNext()) {
+      if (geoParquetGroupIterator.hasNext()) {
         return true;
       } else if (pageReadStoreIterator.hasNext()) {
         currentPageReadStore = pageReadStoreIterator.next();
-        simpleGroupIterator = new GeoParquetGroupIterator(
+        geoParquetGroupIterator = new GeoParquetGroupIterator(
             currentFileStatus.getValue(),
             currentPageReadStore);
         return hasNext();
@@ -178,9 +170,11 @@ public class GeoParquetReader {
     }
 
     @Override
-    public GeoParquetGroup next() {
-      currentGeoParquetGroup = simpleGroupIterator.next();
-      return currentGeoParquetGroup;
+    public GeoParquetGroupImpl next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      return geoParquetGroupIterator.next();
     }
   }
 
@@ -234,29 +228,33 @@ public class GeoParquetReader {
     }
   }
 
-  private static class GeoParquetGroupIterator implements Iterator<GeoParquetGroup> {
+  private static class GeoParquetGroupIterator implements Iterator<GeoParquetGroupImpl> {
     private final long rowCount;
-    private final RecordReader<GeoParquetGroup> recordReader;
+    private final RecordReader<GeoParquetGroupImpl> recordReader;
 
     private long i = 0;
 
     private GeoParquetGroupIterator(
         FileInfo fileInfo,
         PageReadStore pageReadStore) {
+      GeoParquetMetadata metadata = fileInfo.getGeoParquetMetadata();
       MessageType schema = fileInfo.getParquetMetadata().getFileMetaData().getSchema();
       this.rowCount = pageReadStore.getRowCount();
       this.recordReader = new ColumnIOFactory()
           .getColumnIO(schema)
-          .getRecordReader(pageReadStore, new GeoParquetMaterializer(schema));
+          .getRecordReader(pageReadStore, new GeoParquetMaterializer(schema, metadata));
     }
 
     @Override
     public boolean hasNext() {
-      return i <= rowCount;
+      return i < rowCount;
     }
 
     @Override
-    public GeoParquetGroup next() {
+    public GeoParquetGroupImpl next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
       i++;
       return recordReader.read();
     }

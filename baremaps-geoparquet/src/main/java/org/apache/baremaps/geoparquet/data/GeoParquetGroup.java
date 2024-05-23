@@ -17,265 +17,245 @@
 
 package org.apache.baremaps.geoparquet.data;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.parquet.io.api.Binary;
-import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.GroupType;
-import org.apache.parquet.schema.Type;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKBReader;
-import org.locationtech.jts.io.WKBWriter;
 
-public class GeoParquetGroup {
+/**
+ * A group of fields in a GeoParquet file.
+ * 
+ */
+public interface GeoParquetGroup {
 
-  private final GroupType groupType;
+  /**
+   * Returns the GeoParquet schema of the group built upon the Parquet schema and the GeoParquet
+   * metadata.
+   *
+   * @return the GeoParquet schema
+   */
+  Schema getSchema();
 
-  private final List<Object>[] data;
+  /**
+   * Returns the Parquet schema of the group.
+   *
+   * @return the Parquet schema
+   */
+  GroupType getParquetSchema();
 
-  @SuppressWarnings("unchecked")
-  public GeoParquetGroup(GroupType groupType) {
-    this.groupType = groupType;
-    this.data = new List[groupType.getFields().size()];
-    for (int i = 0; i < groupType.getFieldCount(); i++) {
-      this.data[i] = new ArrayList<>();
-    }
+  /**
+   * Returns the GeoParquet metadata of the group.
+   *
+   * @return the Parquet metadata
+   */
+  GeoParquetMetadata getGeoParquetMetadata();
+
+  /**
+   * Creates a new empty group in the group at the specified field index.
+   *
+   * @param fieldIndex the field index
+   * @return the new group
+   */
+  GeoParquetGroup createGroup(int fieldIndex);
+
+  Binary getBinaryValue(int fieldIndex);
+
+  List<Binary> getBinaryValues(int fieldIndex);
+
+  Boolean getBooleanValue(int fieldIndex);
+
+  List<Boolean> getBooleanValues(int fieldIndex);
+
+  Double getDoubleValue(int fieldIndex);
+
+  List<Double> getDoubleValues(int fieldIndex);
+
+  Float getFloatValue(int fieldIndex);
+
+  List<Float> getFloatValues(int fieldIndex);
+
+  Integer getIntegerValue(int fieldIndex);
+
+  List<Integer> getIntegerValues(int fieldIndex);
+
+  Long getLongValue(int fieldIndex);
+
+  List<Long> getLongValues(int fieldIndex);
+
+  String getStringValue(int fieldIndex);
+
+  List<String> getStringValues(int fieldIndex);
+
+  Geometry getGeometryValue(int fieldIndex);
+
+  List<Geometry> getGeometryValues(int fieldIndex);
+
+  GeoParquetGroup getGroupValue(int fieldIndex);
+
+  List<GeoParquetGroup> getGroupValues(int fieldIndex);
+
+  Binary getBinaryValue(String columnName);
+
+  List<Binary> getBinaryValues(String columnName);
+
+  Boolean getBooleanValue(String columnName);
+
+  List<Boolean> getBooleanValues(String columnName);
+
+  Double getDoubleValue(String columnName);
+
+  List<Double> getDoubleValues(String columnName);
+
+  Float getFloatValue(String columnName);
+
+  List<Float> getFloatValues(String columnName);
+
+  Integer getIntegerValue(String columnName);
+
+  List<Integer> getIntegerValues(String columnName);
+
+  Long getLongValue(String columnName);
+
+  List<Long> getLongValues(String columnName);
+
+  String getStringValue(String columnName);
+
+  List<String> getStringValues(String columnName);
+
+  Geometry getGeometryValue(String columnName);
+
+  List<Geometry> getGeometryValues(String columnName);
+
+  GeoParquetGroup getGroupValue(String columnName);
+
+  List<GeoParquetGroup> getGroupValues(String columnName);
+
+  void setBinaryValue(int fieldIndex, Binary binaryValue);
+
+  void setBinaryValues(int fieldIndex, List<Binary> binaryValues);
+
+  void setBooleanValue(int fieldIndex, Boolean booleanValue);
+
+  void setBooleanValues(int fieldIndex, List<Boolean> booleanValues);
+
+  void setDoubleValue(int fieldIndex, Double doubleValue);
+
+  void setDoubleValues(int fieldIndex, List<Double> doubleValues);
+
+  void setFloatValue(int fieldIndex, Float floatValue);
+
+  void setFloatValues(int fieldIndex, List<Float> floatValues);
+
+  void setIntegerValue(int fieldIndex, Integer integerValue);
+
+  void setIntegerValues(int fieldIndex, List<Integer> integerValues);
+
+  void setLongValue(int fieldIndex, Long longValue);
+
+  void setLongValues(int fieldIndex, List<Long> longValues);
+
+  void setStringValue(int fieldIndex, String stringValue);
+
+  void setStringValues(int fieldIndex, List<String> stringValues);
+
+  void setGeometryValue(int fieldIndex, Geometry geometryValue);
+
+  void setGeometryValues(int fieldIndex, List<Geometry> geometryValues);
+
+  void setGroupValue(int fieldIndex, GeoParquetGroup groupValue);
+
+  void setGroupValues(int fieldIndex, List<GeoParquetGroup> groupValues);
+
+  void setBinaryValue(String columnName, Binary binaryValue);
+
+  void setBinaryValues(String columnName, List<Binary> binaryValues);
+
+  void setBooleanValue(String columnName, Boolean booleanValue);
+
+  void setBooleanValues(String columnName, List<Boolean> booleanValues);
+
+  void setDoubleValue(String columnName, Double doubleValue);
+
+  void setDoubleValues(String columnName, List<Double> doubleValues);
+
+  void setFloatValue(String columnName, Float floatValue);
+
+  void setFloatValues(String columnName, List<Float> floatValues);
+
+  void setIntegerValue(String columnName, Integer integerValue);
+
+  void setIntegerValues(String columnName, List<Integer> integerValues);
+
+  void setLongValue(String columnName, Long longValue);
+
+  void setLongValues(String columnName, List<Long> longValues);
+
+  void setStringValue(String columnName, String stringValue);
+
+  void setStringValues(String columnName, List<String> stringValues);
+
+  void setGeometryValue(String columnName, Geometry geometryValue);
+
+  void setGeometryValues(String columnName, List<Geometry> geometryValues);
+
+  void setGroupValue(String columnName, GeoParquetGroup groupValue);
+
+  void setGroupValues(String columnName, List<GeoParquetGroup> groupValues);
+
+  /**
+   * A GeoParquet schema that describes the fields of a group and can easily be introspected.
+   *
+   * @param fields the fields of the schema
+   */
+  record Schema(List<Field> fields) {
+
   }
 
-  public GroupType getGroupType() {
-    return groupType;
+  /**
+   * A sealed inteface for the fields of a GeoParquet schema that can be explored with pattern
+   * matching.
+   */
+  sealed
+  interface Field {
+    String name();
+
+    Cardinality cardinality();
   }
 
-  public GeoParquetGroup addGroup(int fieldIndex) {
-    GeoParquetGroup g = new GeoParquetGroup(groupType.getType(fieldIndex).asGroupType());
-    add(fieldIndex, g);
-    return g;
+  record BinaryField(String name, Cardinality cardinality) implements Field {
   }
 
-  public GeoParquetGroup addGroup(String field) {
-    return addGroup(getGroupType().getFieldIndex(field));
+  record BooleanField(String name, Cardinality cardinality) implements Field {
   }
 
-  public GeoParquetGroup getGroup(int fieldIndex, int index) {
-    return (GeoParquetGroup) getValue(fieldIndex, index);
+  record DoubleField(String name, Cardinality cardinality) implements Field {
   }
 
-  public GeoParquetGroup getGroup(String field, int index) {
-    return getGroup(getGroupType().getFieldIndex(field), index);
+  record FloatField(String name, Cardinality cardinality) implements Field {
   }
 
-  private Object getValue(int fieldIndex, int index) {
-    List<Object> list;
-    try {
-      list = data[fieldIndex];
-    } catch (IndexOutOfBoundsException e) {
-      throw new RuntimeException(
-          "not found " + fieldIndex + "(" + groupType.getFieldName(fieldIndex)
-              + ") in group:\n" + this);
-    }
-    try {
-      return list.get(index);
-    } catch (IndexOutOfBoundsException e) {
-      throw new RuntimeException(
-          "not found " + fieldIndex + "(" + groupType.getFieldName(fieldIndex)
-              + ") element number " + index + " in group:\n" + this);
-    }
+  record IntegerField(String name, Cardinality cardinality) implements Field {
   }
 
-  public int getFieldRepetitionCount(int fieldIndex) {
-    List<Object> list = data[fieldIndex];
-    return list == null ? 0 : list.size();
+  record LongField(String name, Cardinality cardinality) implements Field {
   }
 
-  public String getValueToString(int fieldIndex, int index) {
-    return String.valueOf(getValue(fieldIndex, index));
+  record StringField(String name, Cardinality cardinality) implements Field {
   }
 
-  public String getString(int fieldIndex, int index) {
-    return ((BinaryValue) getValue(fieldIndex, index)).getString();
+  record GeometryField(String name, Cardinality cardinality, int srid) implements Field {
   }
 
-  public int getInteger(int fieldIndex, int index) {
-    return ((IntegerValue) getValue(fieldIndex, index)).getInteger();
+  record GroupField(String name, Cardinality cardinality, Schema schema) implements Field {
   }
 
-  public long getLong(int fieldIndex, int index) {
-    return ((LongValue) getValue(fieldIndex, index)).getLong();
-  }
-
-  public double getDouble(int fieldIndex, int index) {
-    return ((DoubleValue) getValue(fieldIndex, index)).getDouble();
-  }
-
-  public float getFloat(int fieldIndex, int index) {
-    return ((FloatValue) getValue(fieldIndex, index)).getFloat();
-  }
-
-  public boolean getBoolean(int fieldIndex, int index) {
-    return ((BooleanValue) getValue(fieldIndex, index)).getBoolean();
-  }
-
-  public Binary getBinary(int fieldIndex, int index) {
-    return ((BinaryValue) getValue(fieldIndex, index)).getBinary();
-  }
-
-  public NanoTime getTimeNanos(int fieldIndex, int index) {
-    return NanoTime.fromInt96((Int96Value) getValue(fieldIndex, index));
-  }
-
-  public Binary getInt96(int fieldIndex, int index) {
-    return ((Int96Value) getValue(fieldIndex, index)).getInt96();
-  }
-
-  public Geometry getGeometry(int fieldIndex, int index) {
-    byte[] bytes = ((BinaryValue) getValue(fieldIndex, index)).getBinary().getBytes();
-    try {
-      return new WKBReader().read(bytes);
-    } catch (ParseException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void add(int fieldIndex, Primitive value) {
-    Type type = groupType.getType(fieldIndex);
-    List<Object> list = data[fieldIndex];
-    if (!type.isRepetition(Type.Repetition.REPEATED)
-        && !list.isEmpty()) {
-      throw new IllegalStateException("field " + fieldIndex + " (" + type.getName()
-          + ") can not have more than one value: " + list);
-    }
-    list.add(value);
-  }
-
-  public void add(int fieldIndex, int value) {
-    add(fieldIndex, new IntegerValue(value));
-  }
-
-  public void add(int fieldIndex, long value) {
-    add(fieldIndex, new LongValue(value));
-  }
-
-  public void add(int fieldIndex, String value) {
-    add(fieldIndex, new BinaryValue(Binary.fromString(value)));
-  }
-
-  public void add(int fieldIndex, NanoTime value) {
-    add(fieldIndex, value.toInt96());
-  }
-
-  public void add(int fieldIndex, boolean value) {
-    add(fieldIndex, new BooleanValue(value));
-  }
-
-  public void add(int fieldIndex, Binary value) {
-    switch (getGroupType().getType(fieldIndex).asPrimitiveType().getPrimitiveTypeName()) {
-      case BINARY:
-      case FIXED_LEN_BYTE_ARRAY:
-        add(fieldIndex, new BinaryValue(value));
-        break;
-      case INT96:
-        add(fieldIndex, new Int96Value(value));
-        break;
-      default:
-        throw new UnsupportedOperationException(
-            getGroupType().asPrimitiveType().getName() + " not supported for Binary");
-    }
-  }
-
-  public void add(int fieldIndex, float value) {
-    add(fieldIndex, new FloatValue(value));
-  }
-
-  public void add(int fieldIndex, double value) {
-    add(fieldIndex, new DoubleValue(value));
-  }
-
-  public void add(int fieldIndex, GeoParquetGroup value) {
-    data[fieldIndex].add(value);
-  }
-
-  public void add(int fieldIndex, Geometry geometry) {
-    byte[] bytes = new WKBWriter().write(geometry);
-    add(fieldIndex, Binary.fromConstantByteArray(bytes));
-  }
-
-  public void add(String field, int value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, long value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, float value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, double value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, String value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, NanoTime value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, boolean value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, Binary value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, GeoParquetGroup value) {
-    add(getGroupType().getFieldIndex(field), value);
-  }
-
-  public void add(String field, Geometry geometry) {
-    byte[] bytes = new WKBWriter().write(geometry);
-    add(getGroupType().getFieldIndex(field), Binary.fromConstantByteArray(bytes));
-  }
-
-  public void writeValue(int field, int index, RecordConsumer recordConsumer) {
-    ((Primitive) getValue(field, index)).writeValue(recordConsumer);
-  }
-
-  @Override
-  public String toString() {
-    return toString("");
-  }
-
-  private void appendToString(StringBuilder builder, String indent) {
-    int i = 0;
-    for (Type field : groupType.getFields()) {
-      String name = field.getName();
-      List<Object> values = data[i];
-      ++i;
-      if (values != null && !values.isEmpty()) {
-        for (Object value : values) {
-          builder.append(indent).append(name);
-          if (value == null) {
-            builder.append(": NULL\n");
-          } else if (value instanceof GeoParquetGroup) {
-            builder.append('\n');
-            ((GeoParquetGroup) value).appendToString(builder, indent + "  ");
-          } else {
-            builder.append(": ").append(value.toString()).append('\n');
-          }
-        }
-      }
-    }
-  }
-
-  public String toString(String indent) {
-    StringBuilder builder = new StringBuilder();
-    appendToString(builder, indent);
-    return builder.toString();
+  /**
+   * The cardinality of a GeoParquet field.
+   */
+  enum Cardinality {
+    REQUIRED,
+    OPTIONAL,
+    REPEATED
   }
 
 }

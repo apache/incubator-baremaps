@@ -31,26 +31,26 @@ public class GeoParquetGroupWriter {
     this.schema = schema;
   }
 
-  public void write(GeoParquetGroup geoParquetGroup) {
+  public void write(GeoParquetGroupImpl group) {
     recordConsumer.startMessage();
-    writeGroup(geoParquetGroup, schema);
+    writeGroup(group, schema);
     recordConsumer.endMessage();
   }
 
-  private void writeGroup(GeoParquetGroup geoParquetGroup, GroupType type) {
+  private void writeGroup(GeoParquetGroupImpl group, GroupType type) {
     int fieldCount = type.getFieldCount();
     for (int field = 0; field < fieldCount; ++field) {
-      int valueCount = geoParquetGroup.getFieldRepetitionCount(field);
+      int valueCount = group.getFieldRepetitionCount(field);
       if (valueCount > 0) {
         Type fieldType = type.getType(field);
         String fieldName = fieldType.getName();
         recordConsumer.startField(fieldName, field);
         for (int index = 0; index < valueCount; ++index) {
           if (fieldType.isPrimitive()) {
-            geoParquetGroup.writeValue(field, index, recordConsumer);
+            group.writeValue(field, index, recordConsumer);
           } else {
             recordConsumer.startGroup();
-            writeGroup(geoParquetGroup.getGroup(field, index), fieldType.asGroupType());
+            writeGroup(group.getGroup(field, index), fieldType.asGroupType());
             recordConsumer.endGroup();
           }
         }
