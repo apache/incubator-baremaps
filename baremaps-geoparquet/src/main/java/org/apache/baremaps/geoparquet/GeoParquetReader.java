@@ -31,7 +31,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.parquet.avro.AvroReadSupport;
 import org.apache.parquet.hadoop.ParquetReader;
 
 
@@ -42,12 +41,18 @@ public class GeoParquetReader {
 
   private final URI uri;
 
+  private final Configuration configuration;
+
   public GeoParquetReader(URI uri) {
+    this(uri, createConfiguration());
+  }
+
+  public GeoParquetReader(URI uri, Configuration configuration) {
     this.uri = uri;
+    this.configuration = configuration;
   }
 
   public Stream<GeoParquetGroupImpl> readParallel() throws IOException, URISyntaxException {
-    Configuration configuration = getConfiguration();
     Path globPath = new Path(uri.getPath());
     URI rootUri = getRootUri(uri);
     FileSystem fileSystem = FileSystem.get(rootUri, configuration);
@@ -148,24 +153,27 @@ public class GeoParquetReader {
     }
   }
 
-  private static ParquetReader<GeoParquetGroupImpl> createParquetReader(FileStatus file)
+  private ParquetReader<GeoParquetGroupImpl> createParquetReader(FileStatus file)
       throws IOException {
     return ParquetReader
         .builder(new GeoParquetGroupReadSupport(), file.getPath())
-        .withConf(getConfiguration())
+        .withConf(configuration)
         .build();
   }
 
-  private static Configuration getConfiguration() {
+  private static Configuration createConfiguration() {
     Configuration configuration = new Configuration();
     configuration.set("fs.s3a.aws.credentials.provider",
         "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider");
     configuration.setBoolean("fs.s3a.path.style.access", true);
-    configuration.setBoolean(AvroReadSupport.READ_INT96_AS_FIXED, true);
     return configuration;
   }
 
   private static URI getRootUri(URI uri) throws URISyntaxException {
+    // TODO:
+    // This is a quick and dirty way to get the root uri of the path.
+    // We take everything before the first wildcard in the path.
+    // This is not a perfect solution, and we should probably look for a better way to do this.
     String path = uri.getPath();
     int index = path.indexOf("*");
     if (index != -1) {
