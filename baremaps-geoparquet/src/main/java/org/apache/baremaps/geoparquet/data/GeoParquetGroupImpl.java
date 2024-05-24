@@ -245,7 +245,7 @@ public class GeoParquetGroupImpl {
     add(getSchema().getFieldIndex(field), Binary.fromConstantByteArray(bytes));
   }
 
-  void writeValue(int field, int index, RecordConsumer recordConsumer) {
+  public void writeValue(int field, int index, RecordConsumer recordConsumer) {
     ((Primitive) getValue(field, index)).writeValue(recordConsumer);
   }
 

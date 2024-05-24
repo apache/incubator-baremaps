@@ -212,41 +212,105 @@ public interface GeoParquetGroup {
   }
 
   /**
-   * A sealed inteface for the fields of a GeoParquet schema that can be explored with pattern
-   * matching.
+   * A sealed inteface for the fields of a GeoParquet schema.
+   * <p>
+   * Sealed interfaces were introduced in Java 17 and can be used with pattern matching since Java
+   * 21.
    */
   sealed
   interface Field {
     String name();
 
+    Type type();
+
     Cardinality cardinality();
   }
 
   record BinaryField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+    public Type type() {
+      return Type.BINARY;
+    }
   }
 
   record BooleanField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.BOOLEAN;
+        }
   }
 
   record DoubleField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.DOUBLE;
+        }
   }
 
   record FloatField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.FLOAT;
+        }
   }
 
   record IntegerField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.INTEGER;
+        }
   }
 
   record LongField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.LONG;
+        }
   }
 
   record StringField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.STRING;
+        }
   }
 
-  record GeometryField(String name, Cardinality cardinality, int srid) implements Field {
+  record GeometryField(String name, Cardinality cardinality) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.GEOMETRY;
+        }
   }
 
   record GroupField(String name, Cardinality cardinality, Schema schema) implements Field {
+
+    @Override
+    public Type type() {
+      return Type.GROUP;
+    }
+  }
+
+  /**
+   * The type of a GeoParquet field.
+   */
+  enum Type {
+    BINARY,
+    BOOLEAN,
+    DOUBLE,
+    FLOAT,
+    INTEGER,
+    LONG,
+    STRING,
+    GEOMETRY,
+    GROUP
   }
 
   /**
