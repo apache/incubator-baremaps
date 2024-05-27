@@ -22,43 +22,43 @@ import java.util.List;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.GroupType;
-import org.apache.parquet.schema.Type;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
-public class GeoParquetGroupImpl {
+public class GeoParquetGroupImpl implements GeoParquetGroup {
 
   private final GroupType schema;
 
   private final GeoParquetMetadata metadata;
 
-  private final List<Object>[] data;
+  private final Schema geoParquetSchema;
+
+  private final List<?>[] data;
 
   @SuppressWarnings("unchecked")
-  public GeoParquetGroupImpl(GroupType schema, GeoParquetMetadata metadata) {
+  public GeoParquetGroupImpl(GroupType schema, GeoParquetMetadata metadata,
+      Schema geoParquetSchema) {
     this.schema = schema;
     this.metadata = metadata;
+    this.geoParquetSchema = geoParquetSchema;
     this.data = new List[schema.getFields().size()];
     for (int i = 0; i < schema.getFieldCount(); i++) {
       this.data[i] = new ArrayList<>();
     }
   }
 
-  public GroupType getSchema() {
-    return schema;
-  }
-
   public GeoParquetGroupImpl addGroup(int fieldIndex) {
     GeoParquetGroupImpl g =
-        new GeoParquetGroupImpl(schema.getType(fieldIndex).asGroupType(), metadata);
+        new GeoParquetGroupImpl(schema.getType(fieldIndex).asGroupType(), metadata,
+            geoParquetSchema);
     add(fieldIndex, g);
     return g;
   }
 
   public GeoParquetGroupImpl addGroup(String field) {
-    return addGroup(getSchema().getFieldIndex(field));
+    return addGroup(getParquetSchema().getFieldIndex(field));
   }
 
   public GeoParquetGroupImpl getGroup(int fieldIndex, int index) {
@@ -66,11 +66,11 @@ public class GeoParquetGroupImpl {
   }
 
   public GeoParquetGroupImpl getGroup(String field, int index) {
-    return getGroup(getSchema().getFieldIndex(field), index);
+    return getGroup(getParquetSchema().getFieldIndex(field), index);
   }
 
   public int getFieldRepetitionCount(int fieldIndex) {
-    List<Object> list = data[fieldIndex];
+    List<?> list = data[fieldIndex];
     return list == null ? 0 : list.size();
   }
 
@@ -106,10 +106,6 @@ public class GeoParquetGroupImpl {
     return ((BinaryValue) getValue(fieldIndex, index)).getBinary();
   }
 
-  public NanoTimeValue getTimeNanos(int fieldIndex, int index) {
-    return NanoTimeValue.fromInt96((Int96Value) getValue(fieldIndex, index));
-  }
-
   public Binary getInt96(int fieldIndex, int index) {
     return ((Int96Value) getValue(fieldIndex, index)).getInt96();
   }
@@ -124,7 +120,7 @@ public class GeoParquetGroupImpl {
   }
 
   private Object getValue(int fieldIndex, int index) {
-    List<Object> list;
+    List<?> list;
     try {
       list = data[fieldIndex];
     } catch (IndexOutOfBoundsException e) {
@@ -142,9 +138,9 @@ public class GeoParquetGroupImpl {
   }
 
   private void add(int fieldIndex, Primitive value) {
-    Type type = schema.getType(fieldIndex);
-    List<Object> list = data[fieldIndex];
-    if (!type.isRepetition(Type.Repetition.REPEATED)
+    org.apache.parquet.schema.Type type = schema.getType(fieldIndex);
+    List list = data[fieldIndex];
+    if (!type.isRepetition(org.apache.parquet.schema.Type.Repetition.REPEATED)
         && !list.isEmpty()) {
       throw new IllegalStateException("field " + fieldIndex + " (" + type.getName()
           + ") can not have more than one value: " + list);
@@ -164,16 +160,12 @@ public class GeoParquetGroupImpl {
     add(fieldIndex, new BinaryValue(Binary.fromString(value)));
   }
 
-  public void add(int fieldIndex, NanoTimeValue value) {
-    add(fieldIndex, value.toInt96());
-  }
-
   public void add(int fieldIndex, boolean value) {
     add(fieldIndex, new BooleanValue(value));
   }
 
   public void add(int fieldIndex, Binary value) {
-    switch (getSchema().getType(fieldIndex).asPrimitiveType().getPrimitiveTypeName()) {
+    switch (getParquetSchema().getType(fieldIndex).asPrimitiveType().getPrimitiveTypeName()) {
       case BINARY:
       case FIXED_LEN_BYTE_ARRAY:
         add(fieldIndex, new BinaryValue(value));
@@ -183,7 +175,7 @@ public class GeoParquetGroupImpl {
         break;
       default:
         throw new UnsupportedOperationException(
-            getSchema().asPrimitiveType().getName() + " not supported for Binary");
+            getParquetSchema().asPrimitiveType().getName() + " not supported for Binary");
     }
   }
 
@@ -196,7 +188,8 @@ public class GeoParquetGroupImpl {
   }
 
   public void add(int fieldIndex, GeoParquetGroupImpl value) {
-    data[fieldIndex].add(value);
+    List list = data[fieldIndex];
+    list.add(value);
   }
 
   public void add(int fieldIndex, Geometry geometry) {
@@ -205,44 +198,40 @@ public class GeoParquetGroupImpl {
   }
 
   public void add(String field, int value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, long value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, float value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, double value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, String value) {
-    add(getSchema().getFieldIndex(field), value);
-  }
-
-  public void add(String field, NanoTimeValue value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, boolean value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, Binary value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, GeoParquetGroupImpl value) {
-    add(getSchema().getFieldIndex(field), value);
+    add(getParquetSchema().getFieldIndex(field), value);
   }
 
   public void add(String field, Geometry geometry) {
     byte[] bytes = new WKBWriter().write(geometry);
-    add(getSchema().getFieldIndex(field), Binary.fromConstantByteArray(bytes));
+    add(getParquetSchema().getFieldIndex(field), Binary.fromConstantByteArray(bytes));
   }
 
   public void writeValue(int field, int index, RecordConsumer recordConsumer) {
@@ -262,9 +251,9 @@ public class GeoParquetGroupImpl {
 
   private void appendToString(StringBuilder builder, String indent) {
     int i = 0;
-    for (Type field : schema.getFields()) {
+    for (org.apache.parquet.schema.Type field : schema.getFields()) {
       String name = field.getName();
-      List<Object> values = data[i];
+      List<?> values = data[i];
       ++i;
       if (values != null && !values.isEmpty()) {
         for (Object value : values) {
@@ -280,5 +269,482 @@ public class GeoParquetGroupImpl {
         }
       }
     }
+  }
+
+  private List<Primitive> getValues(int fieldIndex) {
+    return (List<Primitive>) data[fieldIndex];
+  }
+
+  private List<GeoParquetGroup> getGroups(int fieldIndex) {
+    return (List<GeoParquetGroup>) data[fieldIndex];
+  }
+
+  @Override
+  public Schema getSchema() {
+    return geoParquetSchema;
+  }
+
+  @Override
+  public GroupType getParquetSchema() {
+    return schema;
+  }
+
+  @Override
+  public GeoParquetMetadata getGeoParquetMetadata() {
+    return metadata;
+  }
+
+  @Override
+  public GeoParquetGroup createGroup(int fieldIndex) {
+    return new GeoParquetGroupImpl(schema.getType(fieldIndex).asGroupType(), metadata,
+        geoParquetSchema);
+  }
+
+  @Override
+  public Binary getBinaryValue(int fieldIndex) {
+    return getBinaryValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Binary> getBinaryValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+  }
+
+  @Override
+  public Boolean getBooleanValue(int fieldIndex) {
+    return getBooleanValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Boolean> getBooleanValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBoolean).toList();
+  }
+
+  @Override
+  public Double getDoubleValue(int fieldIndex) {
+    return getDoubleValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Double> getDoubleValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getDouble).toList();
+  }
+
+  @Override
+  public Float getFloatValue(int fieldIndex) {
+    return getFloatValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Float> getFloatValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getFloat).toList();
+  }
+
+  @Override
+  public Integer getIntegerValue(int fieldIndex) {
+    return getIntegerValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Integer> getIntegerValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getInteger).toList();
+  }
+
+  @Override
+  public Binary getInt96Value(int fieldIndex) {
+    return getBinaryValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Binary> getInt96Values(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+  }
+
+  @Override
+  public Binary getNanoTimeValue(int fieldIndex) {
+    return getBinaryValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Binary> getNanoTimeValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+  }
+
+  @Override
+  public Long getLongValue(int fieldIndex) {
+    return getLongValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Long> getLongValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getLong).toList();
+  }
+
+  @Override
+  public String getStringValue(int fieldIndex) {
+    return getStringValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<String> getStringValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getString).toList();
+  }
+
+  @Override
+  public Geometry getGeometryValue(int fieldIndex) {
+    return getGeometryValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<Geometry> getGeometryValues(int fieldIndex) {
+    List<Geometry> geometries = new ArrayList<>();
+    for (Binary binary : getBinaryValues(fieldIndex)) {
+      try {
+        geometries.add(new WKBReader().read(binary.getBytes()));
+      } catch (ParseException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return geometries;
+  }
+
+  @Override
+  public GeoParquetGroup getGroupValue(int fieldIndex) {
+    return getGroupValues(fieldIndex).get(0);
+  }
+
+  @Override
+  public List<GeoParquetGroup> getGroupValues(int fieldIndex) {
+    return getGroups(fieldIndex);
+  }
+
+  @Override
+  public Binary getBinaryValue(String fieldName) {
+    return getBinaryValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Binary> getBinaryValues(String fieldName) {
+    return getBinaryValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Boolean getBooleanValue(String fieldName) {
+    return getBooleanValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Boolean> getBooleanValues(String fieldName) {
+    return getBooleanValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Double getDoubleValue(String fieldName) {
+    return getDoubleValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Double> getDoubleValues(String fieldName) {
+    return getDoubleValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Float getFloatValue(String fieldName) {
+    return getFloatValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Float> getFloatValues(String fieldName) {
+    return getFloatValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Integer getIntegerValue(String fieldName) {
+    return getIntegerValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Integer> getIntegerValues(String fieldName) {
+    return getIntegerValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Binary getInt96Value(String fieldName) {
+    return getBinaryValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Binary> getInt96Values(String fieldName) {
+    return getBinaryValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Binary getNanoTimeValue(String fieldName) {
+    return getBinaryValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Binary> getNanoTimeValues(String fieldName) {
+    return getBinaryValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Long getLongValue(String fieldName) {
+    return getLongValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Long> getLongValues(String fieldName) {
+    return getLongValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public String getStringValue(String fieldName) {
+    return getStringValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<String> getStringValues(String fieldName) {
+    return getStringValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public Geometry getGeometryValue(String fieldName) {
+    return getGeometryValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<Geometry> getGeometryValues(String fieldName) {
+    return getGeometryValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public GeoParquetGroup getGroupValue(String fieldName) {
+    return getGroupValues(fieldName).get(0);
+  }
+
+  @Override
+  public List<GeoParquetGroup> getGroupValues(String fieldName) {
+    return getGroupValues(schema.getFieldIndex(fieldName));
+  }
+
+  @Override
+  public void setBinaryValue(int fieldIndex, Binary binaryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setBinaryValues(int fieldIndex, List<Binary> binaryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setBooleanValue(int fieldIndex, Boolean booleanValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setBooleanValues(int fieldIndex, List<Boolean> booleanValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setDoubleValue(int fieldIndex, Double doubleValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setDoubleValues(int fieldIndex, List<Double> doubleValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setFloatValue(int fieldIndex, Float floatValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setFloatValues(int fieldIndex, List<Float> floatValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setIntegerValue(int fieldIndex, Integer integerValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setIntegerValues(int fieldIndex, List<Integer> integerValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setInt96Value(int fieldIndex, Binary int96Value) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setInt96Values(int fieldIndex, List<Binary> int96Values) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setNanoTimeValue(int fieldIndex, Binary nanoTimeValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setNanoTimeValues(int fieldIndex, List<Binary> nanoTimeValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setLongValue(int fieldIndex, Long longValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setLongValues(int fieldIndex, List<Long> longValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setStringValue(int fieldIndex, String stringValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setStringValues(int fieldIndex, List<String> stringValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGeometryValue(int fieldIndex, Geometry geometryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGeometryValues(int fieldIndex, List<Geometry> geometryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGroupValue(int fieldIndex, GeoParquetGroup groupValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGroupValues(int fieldIndex, List<GeoParquetGroup> groupValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setBinaryValue(String fieldName, Binary binaryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setBinaryValues(String fieldName, List<Binary> binaryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setBooleanValue(String fieldName, Boolean booleanValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setBooleanValues(String fieldName, List<Boolean> booleanValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setDoubleValue(String fieldName, Double doubleValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setDoubleValues(String fieldName, List<Double> doubleValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setFloatValue(String fieldName, Float floatValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setFloatValues(String fieldName, List<Float> floatValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setIntegerValue(String fieldName, Integer integerValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setIntegerValues(String fieldName, List<Integer> integerValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setInt96Value(String fieldName, Binary int96Value) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setInt96Values(String fieldName, List<Binary> int96Values) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setNanoTimeValue(String fieldName, Binary nanoTimeValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setNanoTimeValues(String fieldName, List<Binary> nanoTimeValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setLongValue(String fieldName, Long longValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setLongValues(String fieldName, List<Long> longValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setStringValue(String fieldName, String stringValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setStringValues(String fieldName, List<String> stringValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGeometryValue(String fieldName, Geometry geometryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGeometryValues(String fieldName, List<Geometry> geometryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGroupValue(String fieldName, GeoParquetGroup groupValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setGroupValues(String fieldName, List<GeoParquetGroup> groupValues) {
+    throw new UnsupportedOperationException();
   }
 }

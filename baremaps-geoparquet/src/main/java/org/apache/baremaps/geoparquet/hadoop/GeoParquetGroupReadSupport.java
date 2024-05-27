@@ -20,7 +20,7 @@ package org.apache.baremaps.geoparquet.hadoop;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroupImpl;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroupRecordConverter;
 import org.apache.baremaps.geoparquet.data.GeoParquetMetadata;
 import org.apache.hadoop.conf.Configuration;
@@ -28,7 +28,7 @@ import org.apache.parquet.hadoop.api.ReadSupport;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
 
-public class GeoParquetGroupReadSupport extends ReadSupport<GeoParquetGroupImpl> {
+public class GeoParquetGroupReadSupport extends ReadSupport<GeoParquetGroup> {
 
   @Override
   public ReadContext init(
@@ -40,7 +40,7 @@ public class GeoParquetGroupReadSupport extends ReadSupport<GeoParquetGroupImpl>
   }
 
   @Override
-  public RecordMaterializer<GeoParquetGroupImpl> prepareForRead(Configuration configuration,
+  public RecordMaterializer<GeoParquetGroup> prepareForRead(Configuration configuration,
       Map<String, String> keyValueMetaData, MessageType fileSchema,
       ReadContext readContext) {
 

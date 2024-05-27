@@ -34,7 +34,9 @@ class GeoParquetReaderTest {
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     geoParquetReader.read().forEach(group -> {
       System.out.println("-----");
-      System.out.println(group);
+      System.out.println(group.getSchema());
+      System.out.println(group.getGeometryValue("geometry"));
+
     });
   }
 }

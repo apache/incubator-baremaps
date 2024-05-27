@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.geoparquet.hadoop;
 
-import org.apache.baremaps.geoparquet.data.GeoParquetGroupImpl;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.parquet.hadoop.ParquetInputFormat;
 
 /**
@@ -26,7 +26,7 @@ import org.apache.parquet.hadoop.ParquetInputFormat;
  * This Input format uses a rather inefficient data model but works independently of higher level
  * abstractions.
  */
-public class GeoParquetInputFormat extends ParquetInputFormat<GeoParquetGroupImpl> {
+public class GeoParquetInputFormat extends ParquetInputFormat<GeoParquetGroup> {
 
   public GeoParquetInputFormat() {
     super(GeoParquetGroupReadSupport.class);

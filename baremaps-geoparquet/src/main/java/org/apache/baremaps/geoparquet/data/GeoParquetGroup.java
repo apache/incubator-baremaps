@@ -78,6 +78,14 @@ public interface GeoParquetGroup {
 
   List<Integer> getIntegerValues(int fieldIndex);
 
+  Binary getInt96Value(int fieldIndex);
+
+  List<Binary> getInt96Values(int fieldIndex);
+
+  Binary getNanoTimeValue(int fieldIndex);
+
+  List<Binary> getNanoTimeValues(int fieldIndex);
+
   Long getLongValue(int fieldIndex);
 
   List<Long> getLongValues(int fieldIndex);
@@ -94,41 +102,49 @@ public interface GeoParquetGroup {
 
   List<GeoParquetGroup> getGroupValues(int fieldIndex);
 
-  Binary getBinaryValue(String columnName);
+  Binary getBinaryValue(String fieldName);
 
-  List<Binary> getBinaryValues(String columnName);
+  List<Binary> getBinaryValues(String fieldName);
 
-  Boolean getBooleanValue(String columnName);
+  Boolean getBooleanValue(String fieldName);
 
-  List<Boolean> getBooleanValues(String columnName);
+  List<Boolean> getBooleanValues(String fieldName);
 
-  Double getDoubleValue(String columnName);
+  Double getDoubleValue(String fieldName);
 
-  List<Double> getDoubleValues(String columnName);
+  List<Double> getDoubleValues(String fieldName);
 
-  Float getFloatValue(String columnName);
+  Float getFloatValue(String fieldName);
 
-  List<Float> getFloatValues(String columnName);
+  List<Float> getFloatValues(String fieldName);
 
-  Integer getIntegerValue(String columnName);
+  Integer getIntegerValue(String fieldName);
 
-  List<Integer> getIntegerValues(String columnName);
+  List<Integer> getIntegerValues(String fieldName);
 
-  Long getLongValue(String columnName);
+  Binary getInt96Value(String fieldName);
 
-  List<Long> getLongValues(String columnName);
+  List<Binary> getInt96Values(String fieldName);
 
-  String getStringValue(String columnName);
+  Binary getNanoTimeValue(String fieldName);
 
-  List<String> getStringValues(String columnName);
+  List<Binary> getNanoTimeValues(String fieldName);
 
-  Geometry getGeometryValue(String columnName);
+  Long getLongValue(String fieldName);
 
-  List<Geometry> getGeometryValues(String columnName);
+  List<Long> getLongValues(String fieldName);
 
-  GeoParquetGroup getGroupValue(String columnName);
+  String getStringValue(String fieldName);
 
-  List<GeoParquetGroup> getGroupValues(String columnName);
+  List<String> getStringValues(String fieldName);
+
+  Geometry getGeometryValue(String fieldName);
+
+  List<Geometry> getGeometryValues(String fieldName);
+
+  GeoParquetGroup getGroupValue(String fieldName);
+
+  List<GeoParquetGroup> getGroupValues(String fieldName);
 
   void setBinaryValue(int fieldIndex, Binary binaryValue);
 
@@ -150,6 +166,14 @@ public interface GeoParquetGroup {
 
   void setIntegerValues(int fieldIndex, List<Integer> integerValues);
 
+  void setInt96Value(int fieldIndex, Binary int96Value);
+
+  void setInt96Values(int fieldIndex, List<Binary> int96Values);
+
+  void setNanoTimeValue(int fieldIndex, Binary nanoTimeValue);
+
+  void setNanoTimeValues(int fieldIndex, List<Binary> nanoTimeValues);
+
   void setLongValue(int fieldIndex, Long longValue);
 
   void setLongValues(int fieldIndex, List<Long> longValues);
@@ -166,41 +190,49 @@ public interface GeoParquetGroup {
 
   void setGroupValues(int fieldIndex, List<GeoParquetGroup> groupValues);
 
-  void setBinaryValue(String columnName, Binary binaryValue);
+  void setBinaryValue(String fieldName, Binary binaryValue);
 
-  void setBinaryValues(String columnName, List<Binary> binaryValues);
+  void setBinaryValues(String fieldName, List<Binary> binaryValues);
 
-  void setBooleanValue(String columnName, Boolean booleanValue);
+  void setBooleanValue(String fieldName, Boolean booleanValue);
 
-  void setBooleanValues(String columnName, List<Boolean> booleanValues);
+  void setBooleanValues(String fieldName, List<Boolean> booleanValues);
 
-  void setDoubleValue(String columnName, Double doubleValue);
+  void setDoubleValue(String fieldName, Double doubleValue);
 
-  void setDoubleValues(String columnName, List<Double> doubleValues);
+  void setDoubleValues(String fieldName, List<Double> doubleValues);
 
-  void setFloatValue(String columnName, Float floatValue);
+  void setFloatValue(String fieldName, Float floatValue);
 
-  void setFloatValues(String columnName, List<Float> floatValues);
+  void setFloatValues(String fieldName, List<Float> floatValues);
 
-  void setIntegerValue(String columnName, Integer integerValue);
+  void setIntegerValue(String fieldName, Integer integerValue);
 
-  void setIntegerValues(String columnName, List<Integer> integerValues);
+  void setIntegerValues(String fieldName, List<Integer> integerValues);
 
-  void setLongValue(String columnName, Long longValue);
+  void setInt96Value(String fieldName, Binary int96Value);
 
-  void setLongValues(String columnName, List<Long> longValues);
+  void setInt96Values(String fieldName, List<Binary> int96Values);
 
-  void setStringValue(String columnName, String stringValue);
+  void setNanoTimeValue(String fieldName, Binary nanoTimeValue);
 
-  void setStringValues(String columnName, List<String> stringValues);
+  void setNanoTimeValues(String fieldName, List<Binary> nanoTimeValues);
 
-  void setGeometryValue(String columnName, Geometry geometryValue);
+  void setLongValue(String fieldName, Long longValue);
 
-  void setGeometryValues(String columnName, List<Geometry> geometryValues);
+  void setLongValues(String fieldName, List<Long> longValues);
 
-  void setGroupValue(String columnName, GeoParquetGroup groupValue);
+  void setStringValue(String fieldName, String stringValue);
 
-  void setGroupValues(String columnName, List<GeoParquetGroup> groupValues);
+  void setStringValues(String fieldName, List<String> stringValues);
+
+  void setGeometryValue(String fieldName, Geometry geometryValue);
+
+  void setGeometryValues(String fieldName, List<Geometry> geometryValues);
+
+  void setGroupValue(String fieldName, GeoParquetGroup groupValue);
+
+  void setGroupValues(String fieldName, List<GeoParquetGroup> groupValues);
 
   /**
    * A GeoParquet schema that describes the fields of a group and can easily be introspected.
@@ -237,57 +269,65 @@ public interface GeoParquetGroup {
   record BooleanField(String name, Cardinality cardinality) implements Field {
 
     @Override
-        public Type type() {
-        return Type.BOOLEAN;
-        }
+    public Type type() {
+      return Type.BOOLEAN;
+    }
   }
 
   record DoubleField(String name, Cardinality cardinality) implements Field {
 
     @Override
-        public Type type() {
-        return Type.DOUBLE;
-        }
+    public Type type() {
+      return Type.DOUBLE;
+    }
   }
 
   record FloatField(String name, Cardinality cardinality) implements Field {
 
     @Override
-        public Type type() {
-        return Type.FLOAT;
-        }
+    public Type type() {
+      return Type.FLOAT;
+    }
   }
 
   record IntegerField(String name, Cardinality cardinality) implements Field {
 
     @Override
-        public Type type() {
-        return Type.INTEGER;
-        }
+    public Type type() {
+      return Type.INTEGER;
+    }
+  }
+
+  record Int96Field(String name, Cardinality cardinality) implements Field {
+
+    @Override
+    public Type type() {
+      return Type.INT96;
+    }
   }
 
   record LongField(String name, Cardinality cardinality) implements Field {
 
     @Override
-        public Type type() {
-        return Type.LONG;
-        }
+    public Type type() {
+      return Type.LONG;
+    }
   }
 
   record StringField(String name, Cardinality cardinality) implements Field {
 
     @Override
-        public Type type() {
-        return Type.STRING;
-        }
+    public Type type() {
+      return Type.STRING;
+    }
   }
 
   record GeometryField(String name, Cardinality cardinality) implements Field {
 
     @Override
-        public Type type() {
-        return Type.GEOMETRY;
-        }
+    public Type type() {
+      return Type.GEOMETRY;
+    }
   }
 
   record GroupField(String name, Cardinality cardinality, Schema schema) implements Field {
@@ -307,6 +347,8 @@ public interface GeoParquetGroup {
     DOUBLE,
     FLOAT,
     INTEGER,
+    INT96,
+    NANO_TIME,
     LONG,
     STRING,
     GEOMETRY,

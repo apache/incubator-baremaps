@@ -36,7 +36,7 @@ import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
 
-public class GeoParquetGroupRecordConverter extends RecordMaterializer<GeoParquetGroupImpl> {
+public class GeoParquetGroupRecordConverter extends RecordMaterializer<GeoParquetGroup> {
 
   private final GeoParquetGroupFactory groupFactory;
 

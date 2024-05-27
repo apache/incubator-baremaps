@@ -25,7 +25,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroupImpl;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.hadoop.GeoParquetGroupReadSupport;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -52,7 +52,7 @@ public class GeoParquetReader {
     this.configuration = configuration;
   }
 
-  public Stream<GeoParquetGroupImpl> readParallel() throws IOException, URISyntaxException {
+  public Stream<GeoParquetGroup> readParallel() throws IOException, URISyntaxException {
     Path globPath = new Path(uri.getPath());
     URI rootUri = getRootUri(uri);
     FileSystem fileSystem = FileSystem.get(rootUri, configuration);
@@ -62,24 +62,24 @@ public class GeoParquetReader {
         true);
   }
 
-  public Stream<GeoParquetGroupImpl> read() throws IOException, URISyntaxException {
+  public Stream<GeoParquetGroup> read() throws IOException, URISyntaxException {
     return readParallel().sequential();
   }
 
-  public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroupImpl> {
+  public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> {
 
     private final Queue<FileStatus> files;
 
     private FileStatus file;
 
-    private ParquetReader<GeoParquetGroupImpl> reader;
+    private ParquetReader<GeoParquetGroup> reader;
 
     public GeoParquetGroupSpliterator(List<FileStatus> files) {
       this.files = new ArrayBlockingQueue<>(files.size(), false, files);
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super GeoParquetGroupImpl> action) {
+    public boolean tryAdvance(Consumer<? super GeoParquetGroup> action) {
       try {
         // Poll the next file
         if (file == null) {
@@ -97,7 +97,7 @@ public class GeoParquetReader {
         }
 
         // Read the next group
-        GeoParquetGroupImpl group = reader.read();
+        GeoParquetGroup group = reader.read();
 
         // If the group is null, close the resources and set the variables to null
         if (group == null) {
@@ -127,7 +127,7 @@ public class GeoParquetReader {
     }
 
     @Override
-    public Spliterator<GeoParquetGroupImpl> trySplit() {
+    public Spliterator<GeoParquetGroup> trySplit() {
       // Create a new spliterator by polling the next file
       FileStatus file = files.poll();
 
@@ -153,7 +153,7 @@ public class GeoParquetReader {
     }
   }
 
-  private ParquetReader<GeoParquetGroupImpl> createParquetReader(FileStatus file)
+  private ParquetReader<GeoParquetGroup> createParquetReader(FileStatus file)
       throws IOException {
     return ParquetReader
         .builder(new GeoParquetGroupReadSupport(), file.getPath())

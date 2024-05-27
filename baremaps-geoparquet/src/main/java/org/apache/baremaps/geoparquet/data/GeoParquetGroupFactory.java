@@ -17,7 +17,11 @@
 
 package org.apache.baremaps.geoparquet.data;
 
+import java.util.List;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Field;
 import org.apache.parquet.schema.GroupType;
+import org.apache.parquet.schema.PrimitiveType;
+import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
 
 public class GeoParquetGroupFactory {
 
@@ -25,13 +29,50 @@ public class GeoParquetGroupFactory {
 
   private final GeoParquetMetadata metadata;
 
+  private final GeoParquetGroup.Schema geoParquetSchema;
+
   public GeoParquetGroupFactory(GroupType schema, GeoParquetMetadata metadata) {
     this.schema = schema;
     this.metadata = metadata;
+    this.geoParquetSchema = createGeoParquetSchema(schema, metadata);
+  }
+
+  private static GeoParquetGroup.Schema createGeoParquetSchema(
+      GroupType schema,
+      GeoParquetMetadata metadata) {
+    List<Field> fields = schema.getFields().stream().map(field -> {
+      GeoParquetGroup.Cardinality cardinality = switch (field.getRepetition()) {
+        case REQUIRED -> GeoParquetGroup.Cardinality.REQUIRED;
+        case OPTIONAL -> GeoParquetGroup.Cardinality.OPTIONAL;
+        case REPEATED -> GeoParquetGroup.Cardinality.REPEATED;
+      };
+      if (field.isPrimitive() && metadata.isGeometryColumn(field.getName())) {
+        return new GeoParquetGroup.GeometryField(field.getName(), cardinality);
+      } else if (field.isPrimitive()) {
+        PrimitiveType primitiveType = field.asPrimitiveType();
+        PrimitiveTypeName primitiveTypeName = primitiveType.getPrimitiveTypeName();
+        String name = primitiveType.getName();
+        return switch (primitiveTypeName) {
+          case INT32 -> new GeoParquetGroup.IntegerField(name, cardinality);
+          case INT64 -> new GeoParquetGroup.LongField(name, cardinality);
+          case INT96 -> new GeoParquetGroup.Int96Field(name, cardinality);
+          case FLOAT -> new GeoParquetGroup.FloatField(name, cardinality);
+          case DOUBLE -> new GeoParquetGroup.DoubleField(name, cardinality);
+          case BOOLEAN -> new GeoParquetGroup.BooleanField(name, cardinality);
+          case BINARY -> new GeoParquetGroup.BinaryField(name, cardinality);
+          case FIXED_LEN_BYTE_ARRAY -> new GeoParquetGroup.BinaryField(name, cardinality);
+        };
+      } else {
+        GroupType groupType = field.asGroupType();
+        return (Field) new GeoParquetGroup.GroupField(groupType.getName(),
+            GeoParquetGroup.Cardinality.REQUIRED, createGeoParquetSchema(groupType, metadata));
+      }
+    }).toList();
+    return new GeoParquetGroup.Schema(fields);
   }
 
   public GeoParquetGroupImpl newGroup() {
-    return new GeoParquetGroupImpl(schema, metadata);
+    return new GeoParquetGroupImpl(schema, metadata, geoParquetSchema);
   }
 
 }
