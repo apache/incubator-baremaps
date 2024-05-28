@@ -237,9 +237,10 @@ public interface GeoParquetGroup {
   /**
    * A GeoParquet schema that describes the fields of a group and can easily be introspected.
    *
+   * @param name
    * @param fields the fields of the schema
    */
-  record Schema(List<Field> fields) {
+  record Schema(String name, List<Field> fields) {
 
   }
 
@@ -348,7 +349,6 @@ public interface GeoParquetGroup {
     FLOAT,
     INTEGER,
     INT96,
-    NANO_TIME,
     LONG,
     STRING,
     GEOMETRY,

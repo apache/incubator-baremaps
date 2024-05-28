@@ -37,7 +37,7 @@ public class GeoParquetGroupFactory {
     this.geoParquetSchema = createGeoParquetSchema(schema, metadata);
   }
 
-  private static GeoParquetGroup.Schema createGeoParquetSchema(
+  public static GeoParquetGroup.Schema createGeoParquetSchema(
       GroupType schema,
       GeoParquetMetadata metadata) {
     List<Field> fields = schema.getFields().stream().map(field -> {
@@ -68,7 +68,7 @@ public class GeoParquetGroupFactory {
             GeoParquetGroup.Cardinality.REQUIRED, createGeoParquetSchema(groupType, metadata));
       }
     }).toList();
-    return new GeoParquetGroup.Schema(fields);
+    return new GeoParquetGroup.Schema(schema.getName(), fields);
   }
 
   public GeoParquetGroupImpl newGroup() {

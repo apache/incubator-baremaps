@@ -747,4 +747,5 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
   public void setGroupValues(String fieldName, List<GeoParquetGroup> groupValues) {
     throw new UnsupportedOperationException();
   }
+
 }

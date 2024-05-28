@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.geoparquet;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,12 +28,17 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroupFactory;
+import org.apache.baremaps.geoparquet.data.GeoParquetMetadata;
 import org.apache.baremaps.geoparquet.hadoop.GeoParquetGroupReadSupport;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.ParquetReader;
+import org.apache.parquet.schema.MessageType;
 
 
 /**
@@ -43,6 +50,14 @@ public class GeoParquetReader {
 
   private final Configuration configuration;
 
+  private MessageType schema;
+
+  private Map<String, String> keyValueMetadata;
+
+  private GeoParquetMetadata metadata;
+
+  private GeoParquetGroup.Schema geoParquetSchema;
+
   public GeoParquetReader(URI uri) {
     this(uri, createConfiguration());
   }
@@ -50,6 +65,48 @@ public class GeoParquetReader {
   public GeoParquetReader(URI uri, Configuration configuration) {
     this.uri = uri;
     this.configuration = configuration;
+  }
+
+  public MessageType getParquetSchema() throws IOException, URISyntaxException {
+    if (schema == null) {
+      init();
+    }
+    return schema;
+  }
+
+  public GeoParquetMetadata getGeoParquetMetadata() throws IOException, URISyntaxException {
+    if (schema == null) {
+      init();
+    }
+    return metadata;
+  }
+
+  public Schema getGeoParquetSchema() throws IOException, URISyntaxException {
+    if (schema == null) {
+      init();
+    }
+    return geoParquetSchema;
+  }
+
+  private void init() throws URISyntaxException {
+    try {
+      Path globPath = new Path(uri.getPath());
+      URI rootUri = getRootUri(uri);
+      FileSystem fileSystem = FileSystem.get(rootUri, configuration);
+      List<FileStatus> files = Arrays.asList(fileSystem.globStatus(globPath));
+      FileStatus file = files.get(0);
+      ParquetFileReader reader = ParquetFileReader.open(configuration, file.getPath());
+      schema = reader.getFileMetaData().getSchema();
+      keyValueMetadata = reader.getFileMetaData().getKeyValueMetaData();
+      if (keyValueMetadata.containsKey("geo")) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        metadata = objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
+        geoParquetSchema = GeoParquetGroupFactory.createGeoParquetSchema(schema, metadata);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public Stream<GeoParquetGroup> readParallel() throws IOException, URISyntaxException {

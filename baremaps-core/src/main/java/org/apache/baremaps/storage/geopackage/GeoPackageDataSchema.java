@@ -19,7 +19,7 @@ package org.apache.baremaps.storage.geopackage;
 
 
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.List;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
 import org.apache.baremaps.data.schema.DataSchema;
@@ -54,7 +54,7 @@ public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public Collection<String> list() throws DataTableException {
+  public List<String> list() throws DataTableException {
     return geoPackage.getFeatureTables();
   }
 
@@ -70,7 +70,12 @@ public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public void add(DataTable value) throws DataTableException {
+  public void add(DataTable table) throws DataTableException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void add(String name, DataTable table) throws DataTableException {
     throw new UnsupportedOperationException();
   }
 
