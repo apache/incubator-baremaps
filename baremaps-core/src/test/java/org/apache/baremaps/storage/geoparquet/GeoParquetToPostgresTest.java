@@ -30,15 +30,15 @@ public class GeoParquetToPostgresTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void schema() {
-    // Open the GeoPackage
+    // Open the GeoParquet
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
     var geoParquetSchema = new GeoParquetDataSchema(uri);
     var tables = geoParquetSchema.list();
-    var geoPackageTable = geoParquetSchema.get(tables.get(0));
+    var geoParquetTable = geoParquetSchema.get(tables.get(0));
 
     // Copy the table to Postgres
     var postgresStore = new PostgresDataSchema(dataSource());
-    postgresStore.add("geoparquet", geoPackageTable);
+    postgresStore.add("geoparquet", geoParquetTable);
 
     // Check the table in Postgres
     var postgresTable = postgresStore.get("geoparquet");
