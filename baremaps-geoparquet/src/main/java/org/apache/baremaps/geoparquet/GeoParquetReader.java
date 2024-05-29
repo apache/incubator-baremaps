@@ -209,11 +209,11 @@ public class GeoParquetReader {
     }
 
     private ParquetReader<GeoParquetGroup> createParquetReader(FileStatus file)
-            throws IOException {
+        throws IOException {
       return ParquetReader
-              .builder(new GeoParquetGroupReadSupport(), file.getPath())
-              .withConf(configuration)
-              .build();
+          .builder(new GeoParquetGroupReadSupport(), file.getPath())
+          .withConf(configuration)
+          .build();
     }
 
     @Override

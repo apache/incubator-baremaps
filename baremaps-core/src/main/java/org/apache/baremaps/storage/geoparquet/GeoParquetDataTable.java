@@ -101,7 +101,7 @@ public class GeoParquetDataTable implements DataTable {
         rowType = GeoParquetTypeConversion.asDataRowType(path.toString(), schema);
         return rowType;
       } catch (URISyntaxException e) {
-          throw new GeoParquetException("Fail toe get the schema.", e);
+        throw new GeoParquetException("Fail toe get the schema.", e);
       }
     }
     return rowType;

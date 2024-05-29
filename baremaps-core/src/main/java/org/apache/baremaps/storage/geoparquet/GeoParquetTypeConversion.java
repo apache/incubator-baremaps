@@ -30,8 +30,7 @@ import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
 public class GeoParquetTypeConversion {
 
-  private GeoParquetTypeConversion() {
-  }
+  private GeoParquetTypeConversion() {}
 
   public static DataRowType asDataRowType(String table, Schema schema) {
     List<DataColumn> fields = schema.fields().stream()
