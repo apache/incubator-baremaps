@@ -39,7 +39,8 @@ class GeoParquetDataSchemaTest {
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
     var geoParquetDataSchema = new GeoParquetDataSchema(uri);
     var table = geoParquetDataSchema.get(uri.toString());
-    assertEquals(Long.MAX_VALUE, table.size());
+    assertEquals(5, table.size());
     assertEquals(5, table.stream().count());
   }
+
 }

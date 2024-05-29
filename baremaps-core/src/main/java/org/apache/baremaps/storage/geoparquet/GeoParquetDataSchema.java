@@ -50,7 +50,7 @@ public class GeoParquetDataSchema implements DataSchema, AutoCloseable {
     if (!uri.toString().equals(name)) {
       throw new DataTableException("Table not found");
     }
-    return new GeoParquetTable(uri);
+    return new GeoParquetDataTable(uri);
   }
 
   @Override

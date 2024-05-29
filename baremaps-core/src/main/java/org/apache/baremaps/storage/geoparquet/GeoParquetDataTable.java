@@ -18,6 +18,7 @@
 package org.apache.baremaps.storage.geoparquet;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
@@ -25,19 +26,36 @@ import org.apache.baremaps.data.schema.*;
 import org.apache.baremaps.geoparquet.GeoParquetReader;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
-public class GeoParquetTable implements DataTable {
+public class GeoParquetDataTable implements DataTable {
 
   private final URI path;
 
   private DataRowType rowType;
 
-  public GeoParquetTable(URI path) {
+  private GeoParquetReader reader;
+
+  public GeoParquetDataTable(URI path) {
     this.path = path;
+  }
+
+  private GeoParquetReader reader() {
+    if (reader == null) {
+      try {
+        reader = new GeoParquetReader(path);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return reader;
   }
 
   @Override
   public long size() {
-    return Long.MAX_VALUE;
+    try {
+      return reader().size();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -45,6 +63,7 @@ public class GeoParquetTable implements DataTable {
     return parallelStream().iterator();
   }
 
+  @Override
   public Spliterator<DataRow> spliterator() {
     return parallelStream().spliterator();
   }
@@ -57,7 +76,7 @@ public class GeoParquetTable implements DataTable {
   @Override
   public Stream<DataRow> parallelStream() {
     try {
-      return new GeoParquetReader(path).read().map(group -> new DataRowImpl(
+      return reader().read().map(group -> new DataRowImpl(
           GeoParquetTypeConversion.asDataRowType(path.toString(), group.getSchema()),
           GeoParquetTypeConversion.asDataRow(group)));
     } catch (Exception e) {
@@ -74,8 +93,7 @@ public class GeoParquetTable implements DataTable {
   public DataRowType rowType() {
     if (rowType == null) {
       try {
-        GeoParquetReader reader = new GeoParquetReader(path);
-        Schema schema = reader.getGeoParquetSchema();
+        Schema schema = reader().getGeoParquetSchema();
         rowType = GeoParquetTypeConversion.asDataRowType(path.toString(), schema);
         return rowType;
       } catch (Exception e) {

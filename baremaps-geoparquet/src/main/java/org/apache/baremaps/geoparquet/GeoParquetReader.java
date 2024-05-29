@@ -50,13 +50,12 @@ public class GeoParquetReader {
 
   private final Configuration configuration;
 
-  private MessageType schema;
+  private Map<FileStatus, FileInfo> files;
 
-  private Map<String, String> keyValueMetadata;
-
-  private GeoParquetMetadata metadata;
-
-  private GeoParquetGroup.Schema geoParquetSchema;
+  private record FileInfo(FileStatus file, Long recordCount, Map<String, String> keyValueMetadata,
+      MessageType messageType, GeoParquetMetadata metadata,
+      GeoParquetGroup.Schema geoParquetSchema) {
+  }
 
   public GeoParquetReader(URI uri) {
     this(uri, createConfiguration());
@@ -68,52 +67,76 @@ public class GeoParquetReader {
   }
 
   public MessageType getParquetSchema() throws IOException, URISyntaxException {
-    if (schema == null) {
-      init();
-    }
-    return schema;
+    return files().values().stream()
+        .findFirst()
+        .orElseThrow()
+        .messageType();
   }
 
   public GeoParquetMetadata getGeoParquetMetadata() throws IOException, URISyntaxException {
-    if (schema == null) {
-      init();
-    }
-    return metadata;
+    return files().values().stream()
+        .findFirst()
+        .orElseThrow()
+        .metadata();
   }
 
   public Schema getGeoParquetSchema() throws IOException, URISyntaxException {
-    if (schema == null) {
-      init();
-    }
-    return geoParquetSchema;
+    return files().values().stream()
+        .findFirst()
+        .orElseThrow()
+        .geoParquetSchema();
   }
 
-  private void init() throws URISyntaxException {
+  public Long size() throws URISyntaxException {
+    return files().values().stream().map(fileInfo -> fileInfo.recordCount()).reduce(0L, Long::sum);
+  }
+
+  private Map<FileStatus, FileInfo> files() throws URISyntaxException {
     try {
-      Path globPath = new Path(uri.getPath());
-      URI rootUri = getRootUri(uri);
-      FileSystem fileSystem = FileSystem.get(rootUri, configuration);
-      List<FileStatus> files = Arrays.asList(fileSystem.globStatus(globPath));
-      FileStatus file = files.get(0);
-      ParquetFileReader reader = ParquetFileReader.open(configuration, file.getPath());
-      schema = reader.getFileMetaData().getSchema();
-      keyValueMetadata = reader.getFileMetaData().getKeyValueMetaData();
-      if (keyValueMetadata.containsKey("geo")) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        metadata = objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
-        geoParquetSchema = GeoParquetGroupFactory.createGeoParquetSchema(schema, metadata);
+      if (files == null) {
+        files = new HashMap<>();
+        Path globPath = new Path(uri.getPath());
+        URI rootUri = getRootUri(uri);
+        FileSystem fileSystem = FileSystem.get(rootUri, configuration);
+
+        // Iterate over all the files in the path
+        for (FileStatus file : fileSystem.globStatus(globPath)) {
+          ParquetFileReader reader = ParquetFileReader.open(configuration, file.getPath());
+          Long recordCount = reader.getRecordCount();
+          MessageType messageType = reader.getFileMetaData().getSchema();
+          Map<String, String> keyValueMetadata = reader.getFileMetaData().getKeyValueMetaData();
+          GeoParquetMetadata geoParquetMetadata = null;
+          GeoParquetGroup.Schema geoParquetSchema = null;
+          if (keyValueMetadata.containsKey("geo")) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            geoParquetMetadata =
+                objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
+            geoParquetSchema =
+                GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
+          }
+          files.put(file, new FileInfo(file, recordCount, keyValueMetadata, messageType,
+              geoParquetMetadata, geoParquetSchema));
+        }
+
+        // Verify that the files all have the same schema
+        for (int i = 1; i < files.size(); i++) {
+          if (!files.get(i).messageType.equals(files.get(i - 1).messageType)) {
+            throw new RuntimeException("The files do not have the same schema");
+          }
+        }
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    return files;
   }
 
   public Stream<GeoParquetGroup> readParallel() throws IOException, URISyntaxException {
+    files();
     Path globPath = new Path(uri.getPath());
     URI rootUri = getRootUri(uri);
     FileSystem fileSystem = FileSystem.get(rootUri, configuration);
-    List<FileStatus> files = Arrays.asList(fileSystem.globStatus(globPath));
     return StreamSupport.stream(
         new GeoParquetGroupSpliterator(files),
         true);
@@ -125,14 +148,17 @@ public class GeoParquetReader {
 
   public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> {
 
-    private final Queue<FileStatus> files;
+    private final Queue<FileStatus> queue;
+    private final Map<FileStatus, FileInfo> files;
 
     private FileStatus file;
 
     private ParquetReader<GeoParquetGroup> reader;
 
-    public GeoParquetGroupSpliterator(List<FileStatus> files) {
-      this.files = new ArrayBlockingQueue<>(files.size(), false, files);
+    public GeoParquetGroupSpliterator(Map<FileStatus, FileInfo> files) {
+      this.files = files;
+      this.queue = new ArrayBlockingQueue<>(files.keySet().size(), false, files.keySet());
+
     }
 
     @Override
@@ -140,7 +166,7 @@ public class GeoParquetReader {
       try {
         // Poll the next file
         if (file == null) {
-          file = files.poll();
+          file = queue.poll();
         }
 
         // If there are no more files, return false
@@ -186,7 +212,7 @@ public class GeoParquetReader {
     @Override
     public Spliterator<GeoParquetGroup> trySplit() {
       // Create a new spliterator by polling the next file
-      FileStatus file = files.poll();
+      FileStatus file = queue.poll();
 
       // If there are no more files, tell the caller that there is nothing to split anymore
       if (file == null) {
@@ -194,13 +220,15 @@ public class GeoParquetReader {
       }
 
       // Return a new spliterator with the file
-      return new GeoParquetGroupSpliterator(Collections.singletonList(file));
+      return new GeoParquetGroupSpliterator(Map.of(file, files.get(file)));
     }
 
     @Override
     public long estimateSize() {
       // The size is unknown
-      return Long.MAX_VALUE;
+      return files.values().stream()
+          .map(FileInfo::recordCount)
+          .reduce(0L, Long::sum);
     }
 
     @Override
