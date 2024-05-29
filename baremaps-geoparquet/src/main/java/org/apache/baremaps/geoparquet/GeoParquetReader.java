@@ -66,21 +66,21 @@ public class GeoParquetReader {
     this.configuration = configuration;
   }
 
-  public MessageType getParquetSchema() throws IOException, URISyntaxException {
+  public MessageType getParquetSchema() throws URISyntaxException {
     return files().values().stream()
         .findFirst()
         .orElseThrow()
         .messageType();
   }
 
-  public GeoParquetMetadata getGeoParquetMetadata() throws IOException, URISyntaxException {
+  public GeoParquetMetadata getGeoParquetMetadata() throws URISyntaxException {
     return files().values().stream()
         .findFirst()
         .orElseThrow()
         .metadata();
   }
 
-  public Schema getGeoParquetSchema() throws IOException, URISyntaxException {
+  public Schema getGeoParquetSchema() throws URISyntaxException {
     return files().values().stream()
         .findFirst()
         .orElseThrow()
@@ -88,7 +88,7 @@ public class GeoParquetReader {
   }
 
   public Long size() throws URISyntaxException {
-    return files().values().stream().map(fileInfo -> fileInfo.recordCount()).reduce(0L, Long::sum);
+    return files().values().stream().map(FileInfo::recordCount).reduce(0L, Long::sum);
   }
 
   private Map<FileStatus, FileInfo> files() throws URISyntaxException {
@@ -120,14 +120,17 @@ public class GeoParquetReader {
         }
 
         // Verify that the files all have the same schema
-        for (int i = 1; i < files.size(); i++) {
-          if (!files.get(i).messageType.equals(files.get(i - 1).messageType)) {
-            throw new RuntimeException("The files do not have the same schema");
+        MessageType commonMessageType = null;
+        for (FileInfo entry : files.values()) {
+          if (commonMessageType == null) {
+            commonMessageType = entry.messageType;
+          } else if (!commonMessageType.equals(entry.messageType)) {
+            throw new GeoParquetException("The files do not have the same schema");
           }
         }
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new GeoParquetException("IOException while  attempting to list files.", e);
     }
     return files;
   }
@@ -151,7 +154,7 @@ public class GeoParquetReader {
 
     private ParquetReader<GeoParquetGroup> reader;
 
-    public GeoParquetGroupSpliterator(Map<FileStatus, FileInfo> files) {
+    GeoParquetGroupSpliterator(Map<FileStatus, FileInfo> files) {
       this.files = files;
       this.queue = new ArrayBlockingQueue<>(files.keySet().size(), false, files.keySet());
 
@@ -201,8 +204,16 @@ public class GeoParquetReader {
             // Ignore the exception as the original exception is more important
           }
         }
-        throw new RuntimeException(e);
+        throw new GeoParquetException("IOException caught while trying to read the next file.", e);
       }
+    }
+
+    private ParquetReader<GeoParquetGroup> createParquetReader(FileStatus file)
+            throws IOException {
+      return ParquetReader
+              .builder(new GeoParquetGroupReadSupport(), file.getPath())
+              .withConf(configuration)
+              .build();
     }
 
     @Override
@@ -232,14 +243,6 @@ public class GeoParquetReader {
       // The spliterator is not sized, ordered, or sorted
       return Spliterator.NONNULL | Spliterator.IMMUTABLE;
     }
-  }
-
-  private ParquetReader<GeoParquetGroup> createParquetReader(FileStatus file)
-      throws IOException {
-    return ParquetReader
-        .builder(new GeoParquetGroupReadSupport(), file.getPath())
-        .withConf(configuration)
-        .build();
   }
 
   private static Configuration createConfiguration() {

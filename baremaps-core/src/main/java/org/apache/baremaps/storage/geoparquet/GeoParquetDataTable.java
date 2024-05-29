@@ -17,12 +17,14 @@
 
 package org.apache.baremaps.storage.geoparquet;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import org.apache.baremaps.data.schema.*;
+import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.baremaps.geoparquet.GeoParquetReader;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
@@ -40,11 +42,7 @@ public class GeoParquetDataTable implements DataTable {
 
   private GeoParquetReader reader() {
     if (reader == null) {
-      try {
-        reader = new GeoParquetReader(path);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
+      reader = new GeoParquetReader(path);
     }
     return reader;
   }
@@ -54,7 +52,7 @@ public class GeoParquetDataTable implements DataTable {
     try {
       return reader().size();
     } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
+      throw new GeoParquetException("Fail to access size from reader", e);
     }
   }
 
@@ -79,14 +77,20 @@ public class GeoParquetDataTable implements DataTable {
       return reader().read().map(group -> new DataRowImpl(
           GeoParquetTypeConversion.asDataRowType(path.toString(), group.getSchema()),
           GeoParquetTypeConversion.asDataRow(group)));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    } catch (IOException | URISyntaxException e) {
+      throw new GeoParquetException("Fail to read() the reader", e);
     }
   }
 
   @Override
   public void clear() {
+    if (reader != null) {
+      reader = null;
+    }
 
+    if (rowType != null) {
+      rowType = null;
+    }
   }
 
   @Override
@@ -96,8 +100,8 @@ public class GeoParquetDataTable implements DataTable {
         Schema schema = reader().getGeoParquetSchema();
         rowType = GeoParquetTypeConversion.asDataRowType(path.toString(), schema);
         return rowType;
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      } catch (URISyntaxException e) {
+          throw new GeoParquetException("Fail toe get the schema.", e);
       }
     }
     return rowType;
