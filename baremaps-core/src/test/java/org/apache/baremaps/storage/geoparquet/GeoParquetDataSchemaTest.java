@@ -30,8 +30,8 @@ class GeoParquetDataSchemaTest {
     var geoParquetDataSchema = new GeoParquetDataSchema(uri);
     var table = geoParquetDataSchema.get(uri.toString());
     var rowType = table.rowType();
-    assertEquals(rowType.name(), uri.toString());
-    assertEquals(rowType.columns().size(), 7);
+    assertEquals(uri.toString(), rowType.name());
+    assertEquals(7, rowType.columns().size());
   }
 
   @Test

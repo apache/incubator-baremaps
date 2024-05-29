@@ -30,6 +30,9 @@ import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
 public class GeoParquetTypeConversion {
 
+  private GeoParquetTypeConversion() {
+  }
+
   public static DataRowType asDataRowType(String table, Schema schema) {
     List<DataColumn> fields = schema.fields().stream()
         .map(field -> (DataColumn) new DataColumnImpl(field.name(), asDataRowType(field.type())))
@@ -42,8 +45,7 @@ public class GeoParquetTypeConversion {
       case BINARY -> Type.BYTE_ARRAY;
       case BOOLEAN -> Type.BOOLEAN;
       case INTEGER -> Type.INTEGER;
-      case INT96 -> Type.LONG;
-      case LONG -> Type.LONG;
+      case INT96, LONG -> Type.LONG;
       case FLOAT -> Type.FLOAT;
       case DOUBLE -> Type.DOUBLE;
       case STRING -> Type.STRING;
@@ -63,8 +65,7 @@ public class GeoParquetTypeConversion {
         case BINARY -> values.add(group.getBinaryValue(i).getBytes());
         case BOOLEAN -> values.add(group.getBooleanValue(i));
         case INTEGER -> values.add(group.getIntegerValue(i));
-        case INT96 -> values.add(group.getLongValue(i));
-        case LONG -> values.add(group.getLongValue(i));
+        case INT96, LONG -> values.add(group.getLongValue(i));
         case FLOAT -> values.add(group.getFloatValue(i));
         case DOUBLE -> values.add(group.getDoubleValue(i));
         case STRING -> values.add(group.getStringValue(i));

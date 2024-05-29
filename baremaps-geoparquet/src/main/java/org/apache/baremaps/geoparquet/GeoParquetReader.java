@@ -121,16 +121,16 @@ public class GeoParquetReader {
 
         // Verify that the files all have the same schema
         MessageType commonMessageType = null;
-        for (FileStatus file : files.keySet()) {
+        for (FileInfo entry : files.values()) {
           if (commonMessageType == null) {
-            commonMessageType = files.get(file).messageType;
-          } else if (!commonMessageType.equals(files.get(file).messageType)) {
-            throw new RuntimeException("The files do not have the same schema");
+            commonMessageType = entry.messageType;
+          } else if (!commonMessageType.equals(entry.messageType)) {
+            throw new GeoParquetException("The files do not have the same schema");
           }
         }
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new GeoParquetException("IOException while  attempting to list files.", e);
     }
     return files;
   }
@@ -208,8 +208,16 @@ public class GeoParquetReader {
             // Ignore the exception as the original exception is more important
           }
         }
-        throw new RuntimeException(e);
+        throw new GeoParquetException("IOException caught while trying to read the next file.", e);
       }
+    }
+
+    private ParquetReader<GeoParquetGroup> createParquetReader(FileStatus file)
+            throws IOException {
+      return ParquetReader
+              .builder(new GeoParquetGroupReadSupport(), file.getPath())
+              .withConf(configuration)
+              .build();
     }
 
     @Override
@@ -239,14 +247,6 @@ public class GeoParquetReader {
       // The spliterator is not sized, ordered, or sorted
       return Spliterator.NONNULL | Spliterator.IMMUTABLE;
     }
-  }
-
-  private ParquetReader<GeoParquetGroup> createParquetReader(FileStatus file)
-      throws IOException {
-    return ParquetReader
-        .builder(new GeoParquetGroupReadSupport(), file.getPath())
-        .withConf(configuration)
-        .build();
   }
 
   private static Configuration createConfiguration() {

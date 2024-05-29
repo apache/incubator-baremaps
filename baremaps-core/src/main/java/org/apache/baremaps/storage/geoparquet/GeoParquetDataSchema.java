@@ -27,17 +27,12 @@ import org.apache.baremaps.data.schema.DataTableException;
 /**
  * A schema corresponding to a GeoParquet database.
  */
-public class GeoParquetDataSchema implements DataSchema, AutoCloseable {
+public class GeoParquetDataSchema implements DataSchema {
 
   private final URI uri;
 
   public GeoParquetDataSchema(URI uri) {
     this.uri = uri;
-  }
-
-  @Override
-  public void close() throws Exception {
-
   }
 
   @Override
