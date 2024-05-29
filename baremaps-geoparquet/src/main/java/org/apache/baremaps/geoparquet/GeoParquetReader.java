@@ -120,8 +120,11 @@ public class GeoParquetReader {
         }
 
         // Verify that the files all have the same schema
-        for (int i = 1; i < files.size(); i++) {
-          if (!files.get(i).messageType.equals(files.get(i - 1).messageType)) {
+        MessageType commonMessageType = null;
+        for (FileStatus file : files.keySet()) {
+          if (commonMessageType == null) {
+            commonMessageType = files.get(file).messageType;
+          } else if (!commonMessageType.equals(files.get(file).messageType)) {
             throw new RuntimeException("The files do not have the same schema");
           }
         }
