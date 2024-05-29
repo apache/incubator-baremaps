@@ -66,21 +66,21 @@ public class GeoParquetReader {
     this.configuration = configuration;
   }
 
-  public MessageType getParquetSchema() throws IOException, URISyntaxException {
+  public MessageType getParquetSchema() throws URISyntaxException {
     return files().values().stream()
         .findFirst()
         .orElseThrow()
         .messageType();
   }
 
-  public GeoParquetMetadata getGeoParquetMetadata() throws IOException, URISyntaxException {
+  public GeoParquetMetadata getGeoParquetMetadata() throws URISyntaxException {
     return files().values().stream()
         .findFirst()
         .orElseThrow()
         .metadata();
   }
 
-  public Schema getGeoParquetSchema() throws IOException, URISyntaxException {
+  public Schema getGeoParquetSchema() throws URISyntaxException {
     return files().values().stream()
         .findFirst()
         .orElseThrow()
@@ -88,7 +88,7 @@ public class GeoParquetReader {
   }
 
   public Long size() throws URISyntaxException {
-    return files().values().stream().map(fileInfo -> fileInfo.recordCount()).reduce(0L, Long::sum);
+    return files().values().stream().map(FileInfo::recordCount).reduce(0L, Long::sum);
   }
 
   private Map<FileStatus, FileInfo> files() throws URISyntaxException {
@@ -158,7 +158,7 @@ public class GeoParquetReader {
 
     private ParquetReader<GeoParquetGroup> reader;
 
-    public GeoParquetGroupSpliterator(Map<FileStatus, FileInfo> files) {
+    GeoParquetGroupSpliterator(Map<FileStatus, FileInfo> files) {
       this.files = files;
       this.queue = new ArrayBlockingQueue<>(files.keySet().size(), false, files.keySet());
 
