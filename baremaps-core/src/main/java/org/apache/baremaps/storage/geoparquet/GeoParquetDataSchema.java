@@ -25,7 +25,7 @@ import org.apache.baremaps.data.schema.DataTable;
 import org.apache.baremaps.data.schema.DataTableException;
 
 /**
- * A schema corresponding to a GeoPackage database.
+ * A schema corresponding to a GeoParquet database.
  */
 public class GeoParquetDataSchema implements DataSchema, AutoCloseable {
 
