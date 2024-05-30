@@ -59,6 +59,5 @@ public abstract class Primitive {
     throw new UnsupportedOperationException();
   }
 
-  abstract public void writeValue(RecordConsumer recordConsumer);
-
+  public abstract void writeValue(RecordConsumer recordConsumer);
 }
