@@ -17,32 +17,37 @@
 
 package org.apache.baremaps.data.schema;
 
-import java.util.List;
+/** Signals that an exception occurred in a {@link DataStore}. */
+public class DataStoreException extends RuntimeException {
 
-/**
- * A row type defines the structure of a table.
- */
-public interface DataRowType {
-
-  /**
-   * Returns the name of the row type.
-   * 
-   * @return the name of the row type
-   */
-  String name();
+  /** Constructs a {@link DataStoreException} with {@code null} as its error detail message. */
+  public DataStoreException() {}
 
   /**
-   * Returns the columns of the row type.
-   * 
-   * @return the columns of the row type
+   * Constructs an {@link DataStoreException} with the specified detail message.
+   *
+   * @param message the message
    */
-  List<DataColumn> columns();
+  public DataStoreException(String message) {
+    super(message);
+  }
 
   /**
-   * Creates a new row of the row type.
-   * 
-   * @return a new row of the row type
+   * Constructs a {@link DataStoreException} with the specified cause.
+   *
+   * @param cause the cause
    */
-  DataRow createRow();
+  public DataStoreException(Throwable cause) {
+    super(cause);
+  }
 
+  /**
+   * Constructs a {@link DataStoreException} with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
+  public DataStoreException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

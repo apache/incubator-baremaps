@@ -23,21 +23,21 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
+import org.apache.baremaps.data.schema.DataFrame;
 import org.apache.baremaps.data.schema.DataRow;
 import org.apache.baremaps.data.schema.DataRowImpl;
-import org.apache.baremaps.data.schema.DataRowType;
-import org.apache.baremaps.data.schema.DataTable;
+import org.apache.baremaps.data.schema.DataSchema;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 
 /**
  * A table that stores rows in a Postgres table.
  */
-public class PostgresDataTable implements DataTable {
+public class PostgresDataFrame implements DataFrame {
 
   private final DataSource dataSource;
 
-  private final DataRowType rowType;
+  private final DataSchema rowType;
 
   /**
    * Constructs a table with a given name and a given row type.
@@ -45,7 +45,7 @@ public class PostgresDataTable implements DataTable {
    * @param dataSource the data source
    * @param rowType the rowType of the table
    */
-  public PostgresDataTable(DataSource dataSource, DataRowType rowType) {
+  public PostgresDataFrame(DataSource dataSource, DataSchema rowType) {
     this.dataSource = dataSource;
     this.rowType = rowType;
   }
@@ -89,7 +89,7 @@ public class PostgresDataTable implements DataTable {
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
+  public DataSchema schema() {
     return rowType;
   }
 
@@ -158,7 +158,7 @@ public class PostgresDataTable implements DataTable {
    * @param rowType the row type of the table
    * @return the query
    */
-  protected static String select(DataRowType rowType) {
+  protected static String select(DataSchema rowType) {
     var columns = rowType.columns().stream()
         .map(column -> {
           if (column.type().binding().isAssignableFrom(Geometry.class)) {
@@ -177,7 +177,7 @@ public class PostgresDataTable implements DataTable {
    * @param rowType the row type of the table
    * @return the query
    */
-  protected static String insert(DataRowType rowType) {
+  protected static String insert(DataSchema rowType) {
     var columns = rowType.columns().stream()
         .map(column -> String.format("\"%s\"", column.name()))
         .toList();
@@ -195,7 +195,7 @@ public class PostgresDataTable implements DataTable {
    * @param rowType the row type of the table
    * @return the query
    */
-  protected String count(DataRowType rowType) {
+  protected String count(DataSchema rowType) {
     return String.format("SELECT COUNT(*) FROM \"%s\"", rowType.name());
   }
 

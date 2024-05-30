@@ -20,46 +20,29 @@ package org.apache.baremaps.data.schema;
 import java.util.List;
 
 /**
- * A schema is a collection of tables.
+ * A {@link DataSchema} is a description of the structure of a row in a {@link DataFrame}.
  */
 public interface DataSchema {
 
   /**
-   * Lists the names of the tables.
+   * Returns the name of the schema.
    * 
-   * @return the names of the tables
+   * @return the name of the schema
    */
-  List<String> list() throws DataTableException;
+  String name();
 
   /**
-   * Gets a table by its name.
+   * Returns the columns of the schema.
    * 
-   * @param name the name of the table
-   * @return the table
+   * @return the columns of the schema
    */
-  DataTable get(String name) throws DataTableException;
+  List<DataColumn> columns();
 
   /**
-   * Adds a table to the schema.
+   * Creates a new row of the schema.
    * 
-   * @param table the table
+   * @return a new row of the schema
    */
-  void add(DataTable table) throws DataTableException;
-
-  /**
-   * Adds a table to the schema.
-   *
-   * @param name the name of the table
-   * @param table the table
-   * @throws DataTableException if the table already exists
-   */
-  void add(String name, DataTable table) throws DataTableException;
-
-  /**
-   * Removes a table from the schema.
-   * 
-   * @param name the name of the table
-   */
-  void remove(String name) throws DataTableException;
+  DataRow createRow();
 
 }

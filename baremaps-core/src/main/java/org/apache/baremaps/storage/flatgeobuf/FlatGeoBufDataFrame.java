@@ -27,9 +27,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.data.collection.DataCollection;
+import org.apache.baremaps.data.schema.DataFrame;
 import org.apache.baremaps.data.schema.DataRow;
-import org.apache.baremaps.data.schema.DataRowType;
-import org.apache.baremaps.data.schema.DataTable;
+import org.apache.baremaps.data.schema.DataSchema;
 import org.locationtech.jts.geom.*;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -41,18 +41,18 @@ import org.wololo.flatgeobuf.generated.GeometryType;
 /**
  * A table that stores rows in a flatgeobuf file.
  */
-public class FlatGeoBufDataTable implements DataTable {
+public class FlatGeoBufDataFrame implements DataFrame {
 
   private final Path file;
 
-  private DataRowType rowType;
+  private DataSchema rowType;
 
   /**
    * Constructs a table from a flatgeobuf file (used for reading).
    *
    * @param file the path to the flatgeobuf file
    */
-  public FlatGeoBufDataTable(Path file) {
+  public FlatGeoBufDataFrame(Path file) {
     this.file = file;
     this.rowType = readRowType(file);
   }
@@ -63,7 +63,7 @@ public class FlatGeoBufDataTable implements DataTable {
    * @param file the path to the flatgeobuf file
    * @param rowType the row type of the table
    */
-  public FlatGeoBufDataTable(Path file, DataRowType rowType) {
+  public FlatGeoBufDataFrame(Path file, DataSchema rowType) {
     this.file = file;
     this.rowType = rowType;
   }
@@ -72,14 +72,14 @@ public class FlatGeoBufDataTable implements DataTable {
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
+  public DataSchema schema() {
     return rowType;
   }
 
   /**
    * {@inheritDoc}
    */
-  public static DataRowType readRowType(Path file) {
+  public static DataSchema readRowType(Path file) {
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
       // try to read the row type from the file
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
@@ -235,7 +235,7 @@ public class FlatGeoBufDataTable implements DataTable {
 
     private final HeaderMeta headerMeta;
 
-    private final DataRowType rowType;
+    private final DataSchema rowType;
 
     private final SeekableByteChannel channel;
 
@@ -252,7 +252,7 @@ public class FlatGeoBufDataTable implements DataTable {
      * @param buffer the buffer to use
      */
     public RowIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
-        DataRowType rowType, ByteBuffer buffer) {
+        DataSchema rowType, ByteBuffer buffer) {
       this.channel = channel;
       this.headerMeta = headerMeta;
       this.rowType = rowType;

@@ -51,7 +51,7 @@ public class ShapefileByteReader extends CommonByteReader {
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
   /** Schema of the rows contained in this shapefile. */
-  private DataRowType rowType;
+  private DataSchema rowType;
 
   /** Shapefile index. */
   private File shapeFileIndex;
@@ -112,7 +112,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @return the row type
    */
-  public DataRowType getRowType() {
+  public DataSchema getRowType() {
     return this.rowType;
   }
 
@@ -122,7 +122,7 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param name Name of the field.
    * @return The row type.
    */
-  private DataRowType getSchema(final String name) {
+  private DataSchema getSchema(final String name) {
     Objects.requireNonNull(name, "The row name cannot be null.");
 
     var columns = new ArrayList<DataColumn>();
@@ -154,7 +154,7 @@ public class ShapefileByteReader extends CommonByteReader {
     // Add geometry column.
     columns.add(new DataColumnImpl(GEOMETRY_NAME, Type.GEOMETRY));
 
-    return new DataRowTypeImpl(name, columns);
+    return new DataSchemaImpl(name, columns);
   }
 
   /** Load shapefile descriptor. */

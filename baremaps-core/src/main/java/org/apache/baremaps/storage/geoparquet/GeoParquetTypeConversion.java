@@ -22,8 +22,8 @@ import java.util.List;
 import org.apache.baremaps.data.schema.DataColumn;
 import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.apache.baremaps.data.schema.DataColumnImpl;
-import org.apache.baremaps.data.schema.DataRowType;
-import org.apache.baremaps.data.schema.DataRowTypeImpl;
+import org.apache.baremaps.data.schema.DataSchema;
+import org.apache.baremaps.data.schema.DataSchemaImpl;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Field;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
@@ -32,11 +32,11 @@ public class GeoParquetTypeConversion {
 
   private GeoParquetTypeConversion() {}
 
-  public static DataRowType asDataRowType(String table, Schema schema) {
+  public static DataSchema asDataRowType(String table, Schema schema) {
     List<DataColumn> fields = schema.fields().stream()
         .map(field -> (DataColumn) new DataColumnImpl(field.name(), asDataRowType(field.type())))
         .toList();
-    return new DataRowTypeImpl(table, fields);
+    return new DataSchemaImpl(table, fields);
   }
 
   public static Type asDataRowType(GeoParquetGroup.Type type) {

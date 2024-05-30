@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.baremaps.data.schema.*;
 import org.apache.baremaps.data.schema.DataColumn.Type;
-import org.apache.baremaps.data.schema.DataRowType;
-import org.apache.baremaps.data.schema.DataRowTypeImpl;
+import org.apache.baremaps.data.schema.DataSchema;
+import org.apache.baremaps.data.schema.DataSchemaImpl;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
 
@@ -32,7 +32,7 @@ public class DataTypeProvider {
 
   private static final GeometryFactory geometryFactory = new GeometryFactory();
 
-  private static final DataRowType DATA_SCHEMA = new DataRowTypeImpl("row", List.of(
+  private static final DataSchema DATA_SCHEMA = new DataSchemaImpl("row", List.of(
       new DataColumnImpl("byte", Type.BYTE),
       new DataColumnImpl("boolean", Type.BOOLEAN),
       new DataColumnImpl("short", Type.SHORT),

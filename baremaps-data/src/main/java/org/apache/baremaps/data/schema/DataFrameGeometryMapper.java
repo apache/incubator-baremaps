@@ -22,24 +22,23 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
- * A transformer that applies a {@code GeometryTransformer} to the geometries of a
- * {@code DataTable}.
+ * A decorator for a {@link DataFrame} that applies a geometry transformation to each row.
  */
-public class DataTableGeometryTransformer implements Function<DataRow, DataRow> {
+public class DataFrameGeometryMapper implements Function<DataRow, DataRow> {
 
-  private final DataTable table;
+  private final DataFrame frame;
 
-  private final GeometryTransformer geometryTransformer;
+  private final GeometryTransformer mapper;
 
   /**
-   * Constructs a new table transformer.
+   * Constructs a new data frame transformer with the specified data frame and geometry transformer.
    *
-   * @param table the table to transform
-   * @param geometryTransformer the geometry transformer
+   * @param frame the data frame to transform
+   * @param mapper the geometry mapper
    */
-  public DataTableGeometryTransformer(DataTable table, GeometryTransformer geometryTransformer) {
-    this.table = table;
-    this.geometryTransformer = geometryTransformer;
+  public DataFrameGeometryMapper(DataFrame frame, GeometryTransformer mapper) {
+    this.frame = frame;
+    this.mapper = mapper;
   }
 
   /**
@@ -47,7 +46,7 @@ public class DataTableGeometryTransformer implements Function<DataRow, DataRow> 
    */
   @Override
   public DataRow apply(DataRow row) {
-    var columns = table.rowType()
+    var columns = frame.schema()
         .columns().stream()
         .filter(column -> column.type().binding().isAssignableFrom(Geometry.class))
         .toList();
@@ -55,7 +54,7 @@ public class DataTableGeometryTransformer implements Function<DataRow, DataRow> 
       var name = column.name();
       var geometry = (Geometry) row.get(name);
       if (geometry != null) {
-        row.set(name, geometryTransformer.transform(geometry));
+        row.set(name, mapper.transform(geometry));
       }
     }
     return row;

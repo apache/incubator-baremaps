@@ -20,46 +20,46 @@ package org.apache.baremaps.storage.geoparquet;
 
 import java.net.URI;
 import java.util.List;
-import org.apache.baremaps.data.schema.DataSchema;
-import org.apache.baremaps.data.schema.DataTable;
-import org.apache.baremaps.data.schema.DataTableException;
+import org.apache.baremaps.data.schema.DataFrame;
+import org.apache.baremaps.data.schema.DataStore;
+import org.apache.baremaps.data.schema.DataStoreException;
 
 /**
  * A schema corresponding to a GeoParquet database.
  */
-public class GeoParquetDataSchema implements DataSchema {
+public class GeoParquetDataStore implements DataStore {
 
   private final URI uri;
 
-  public GeoParquetDataSchema(URI uri) {
+  public GeoParquetDataStore(URI uri) {
     this.uri = uri;
   }
 
   @Override
-  public List<String> list() throws DataTableException {
+  public List<String> list() throws DataStoreException {
     return List.of(uri.toString());
   }
 
   @Override
-  public DataTable get(String name) throws DataTableException {
+  public DataFrame get(String name) throws DataStoreException {
     if (!uri.toString().equals(name)) {
-      throw new DataTableException("Table not found");
+      throw new DataStoreException("Table not found");
     }
-    return new GeoParquetDataTable(uri);
+    return new GeoParquetDataFrame(uri);
   }
 
   @Override
-  public void add(DataTable table) throws DataTableException {
+  public void add(DataFrame frame) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void add(String name, DataTable table) throws DataTableException {
+  public void add(String name, DataFrame frame) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void remove(String name) throws DataTableException {
+  public void remove(String name) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 }

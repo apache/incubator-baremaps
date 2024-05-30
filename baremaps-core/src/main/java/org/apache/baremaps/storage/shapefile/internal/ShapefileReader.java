@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.apache.baremaps.data.schema.DataRowType;
+import org.apache.baremaps.data.schema.DataSchema;
 
 /**
  * Provides a ShapeFile Reader.
@@ -49,7 +49,7 @@ public class ShapefileReader {
   private File shapeFileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private DataRowType rowType;
+  private DataSchema rowType;
 
   /** Shapefile descriptor. */
   private ShapefileDescriptor shapefileDescriptor;
@@ -122,7 +122,7 @@ public class ShapefileReader {
    *
    * @return the row type.
    */
-  public DataRowType rowType() {
+  public DataSchema rowType() {
     return this.rowType;
   }
 

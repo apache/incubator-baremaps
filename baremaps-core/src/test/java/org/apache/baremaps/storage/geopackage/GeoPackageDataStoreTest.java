@@ -15,32 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.geoparquet;
+package org.apache.baremaps.storage.geopackage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-class GeoParquetDataSchemaTest {
+class GeoPackageDataStoreTest {
 
   @Test
   void rowType() {
-    var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
-    var geoParquetDataSchema = new GeoParquetDataSchema(uri);
-    var table = geoParquetDataSchema.get(uri.toString());
-    var rowType = table.rowType();
-    assertEquals(uri.toString(), rowType.name());
-    assertEquals(7, rowType.columns().size());
+    var geoPackageStore =
+        new GeoPackageDataStore(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
+    var table = geoPackageStore.get("countries");
+    var rowType = table.schema();
+    assertEquals(rowType.name(), "countries");
+    assertEquals(rowType.columns().size(), 4);
   }
 
   @Test
   void read() {
-    var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
-    var geoParquetDataSchema = new GeoParquetDataSchema(uri);
-    var table = geoParquetDataSchema.get(uri.toString());
-    assertEquals(5, table.size());
-    assertEquals(5, table.stream().count());
+    var geoPackageStore =
+        new GeoPackageDataStore(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
+    var table = geoPackageStore.get("countries");
+    assertEquals(179, table.size());
+    assertEquals(179, table.stream().count());
   }
-
 }

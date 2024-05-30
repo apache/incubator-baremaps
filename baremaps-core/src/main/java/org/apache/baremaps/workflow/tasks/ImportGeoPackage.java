@@ -19,11 +19,11 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.data.schema.DataTableGeometryTransformer;
-import org.apache.baremaps.data.schema.DataTableMapper;
+import org.apache.baremaps.data.schema.DataFrameGeometryMapper;
+import org.apache.baremaps.data.schema.DataFrameMapper;
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
-import org.apache.baremaps.storage.geopackage.GeoPackageDataSchema;
-import org.apache.baremaps.storage.postgres.PostgresDataSchema;
+import org.apache.baremaps.storage.geopackage.GeoPackageDataStore;
+import org.apache.baremaps.storage.postgres.PostgresDataStore;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -70,16 +70,16 @@ public class ImportGeoPackage implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
-    try (var geoPackageDataStore = new GeoPackageDataSchema(path)) {
+    try (var geoPackageDataStore = new GeoPackageDataStore(path)) {
       var dataSource = context.getDataSource(database);
-      var postgresDataStore = new PostgresDataSchema(dataSource);
+      var postgresDataStore = new PostgresDataStore(dataSource);
       for (var name : geoPackageDataStore.list()) {
         var geoPackageTable = geoPackageDataStore.get(name);
         var projectionTransformer = new ProjectionTransformer(fileSrid, databaseSrid);
         var rowTransformer =
-            new DataTableGeometryTransformer(geoPackageTable, projectionTransformer);
+            new DataFrameGeometryMapper(geoPackageTable, projectionTransformer);
         var transformedDataTable =
-            new DataTableMapper(geoPackageDataStore.get(name), rowTransformer);
+            new DataFrameMapper(geoPackageDataStore.get(name), rowTransformer);
         postgresDataStore.add(transformedDataTable);
       }
     } catch (Exception e) {

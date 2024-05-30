@@ -24,7 +24,7 @@ import org.apache.baremaps.data.schema.DataColumn;
 import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.apache.baremaps.data.schema.DataRow;
 import org.apache.baremaps.data.schema.DataRowImpl;
-import org.apache.baremaps.data.schema.DataRowType;
+import org.apache.baremaps.data.schema.DataSchema;
 
 /**
  * A data type for rows.
@@ -53,9 +53,9 @@ public class RowDataType implements DataType<DataRow> {
     types.put(Type.COORDINATE, new CoordinateDataType());
   }
 
-  private final DataRowType rowType;
+  private final DataSchema rowType;
 
-  public RowDataType(DataRowType rowType) {
+  public RowDataType(DataSchema rowType) {
     this.rowType = rowType;
   }
 

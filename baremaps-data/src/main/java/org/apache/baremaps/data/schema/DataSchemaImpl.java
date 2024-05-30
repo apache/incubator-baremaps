@@ -17,67 +17,54 @@
 
 package org.apache.baremaps.data.schema;
 
-import java.util.Iterator;
-import org.apache.baremaps.data.collection.DataCollection;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A table is a collection of rows respecting a row type.
+ * A {@link DataSchema} defines the structure of a table.
  */
-public class DataTableImpl implements DataTable {
+public class DataSchemaImpl implements DataSchema {
 
-  private final DataRowType rowType;
+  private final String name;
 
-  private final DataCollection<DataRow> rows;
+  private final List<DataColumn> columns;
 
   /**
-   * Constructs a table with the specified row type.
+   * Constructs a schema with the specified name and columns.
    *
-   * @param rowType the row type of the table
-   * @param rows the collection of rows
+   * @param name the name of the schema
+   * @param columns the columns of the schema
    */
-  public DataTableImpl(DataRowType rowType, DataCollection<DataRow> rows) {
-    this.rowType = rowType;
-    this.rows = rows;
+  public DataSchemaImpl(String name, List<DataColumn> columns) {
+    this.name = name;
+    this.columns = columns;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
-    return rowType;
+  public String name() {
+    return name;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean add(DataRow e) {
-    return rows.add(e);
+  public List<DataColumn> columns() {
+    return columns;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void clear() {
-    rows.clear();
+  public DataRow createRow() {
+    var values = new ArrayList<>(columns.size());
+    for (int i = 0; i < columns.size(); i++) {
+      values.add(null);
+    }
+    return new DataRowImpl(this, values);
   }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public long size() {
-    return rows.size();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Iterator<DataRow> iterator() {
-    return rows.iterator();
-  }
-
 }

@@ -28,15 +28,15 @@ import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.baremaps.geoparquet.GeoParquetReader;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
-public class GeoParquetDataTable implements DataTable {
+public class GeoParquetDataFrame implements DataFrame {
 
   private final URI path;
 
-  private DataRowType rowType;
+  private DataSchema rowType;
 
   private GeoParquetReader reader;
 
-  public GeoParquetDataTable(URI path) {
+  public GeoParquetDataFrame(URI path) {
     this.path = path;
   }
 
@@ -94,7 +94,7 @@ public class GeoParquetDataTable implements DataTable {
   }
 
   @Override
-  public DataRowType rowType() {
+  public DataSchema schema() {
     if (rowType == null) {
       try {
         Schema schema = reader().getGeoParquetSchema();

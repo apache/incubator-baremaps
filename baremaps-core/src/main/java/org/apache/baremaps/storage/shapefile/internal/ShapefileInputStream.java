@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.apache.baremaps.data.schema.DataRow;
-import org.apache.baremaps.data.schema.DataRowType;
+import org.apache.baremaps.data.schema.DataSchema;
 
 /**
  * Input Stream of features.
@@ -52,7 +52,7 @@ public class ShapefileInputStream extends InputStream {
   private boolean hasShapefileIndex;
 
   /** Row type of the features contained in this shapefile. */
-  private DataRowType rowType;
+  private DataSchema rowType;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -134,7 +134,7 @@ public class ShapefileInputStream extends InputStream {
    *
    * @return the row type.
    */
-  public DataRowType rowType() {
+  public DataSchema rowType() {
     return rowType;
   }
 

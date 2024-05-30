@@ -20,16 +20,16 @@ package org.apache.baremaps.data.schema;
 import java.util.List;
 
 /**
- * A row in a table.
+ * A row in a {@link DataFrame}.
  */
 public interface DataRow {
 
   /**
-   * Returns the type of the row.
+   * Returns the schema of the row.
    * 
-   * @return the type of the row
+   * @return the schema of the row
    */
-  DataRowType rowType();
+  DataSchema schema();
 
   /**
    * Returns the values of the columns in the row.

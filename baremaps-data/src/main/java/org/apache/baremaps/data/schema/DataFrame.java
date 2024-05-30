@@ -17,37 +17,18 @@
 
 package org.apache.baremaps.data.schema;
 
-/** Signals that an exception occurred in a table. */
-public class DataTableException extends RuntimeException {
+import org.apache.baremaps.data.collection.DataCollection;
 
-  /** Constructs a {@link DataTableException} with {@code null} as its error detail message. */
-  public DataTableException() {}
-
-  /**
-   * Constructs an {@code TableException} with the specified detail message.
-   *
-   * @param message the message
-   */
-  public DataTableException(String message) {
-    super(message);
-  }
+/**
+ * A {@link DataFrame} is a collection of rows respecting a {@link DataSchema} .
+ */
+public interface DataFrame extends DataCollection<DataRow> {
 
   /**
-   * Constructs a {@code TableException} with the specified cause.
+   * Returns the schema of the row.
    *
-   * @param cause the cause
+   * @return the schema of the row
    */
-  public DataTableException(Throwable cause) {
-    super(cause);
-  }
+  DataSchema schema();
 
-  /**
-   * Constructs a {@code TableException} with the specified detail message and cause.
-   *
-   * @param message the message
-   * @param cause the cause
-   */
-  public DataTableException(String message, Throwable cause) {
-    super(message, cause);
-  }
 }

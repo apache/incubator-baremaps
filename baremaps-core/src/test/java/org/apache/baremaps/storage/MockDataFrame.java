@@ -25,14 +25,14 @@ import org.apache.baremaps.data.schema.*;
 import org.apache.baremaps.data.schema.DataColumn.Type;
 import org.locationtech.jts.geom.Coordinate;
 
-public class MockDataTable implements DataTable {
+public class MockDataFrame implements DataFrame {
 
-  private final DataRowType rowType;
+  private final DataSchema rowType;
 
   private final List<DataRow> rows;
 
-  public MockDataTable() {
-    this.rowType = new DataRowTypeImpl("mock", List.of(
+  public MockDataFrame() {
+    this.rowType = new DataSchemaImpl("mock", List.of(
         new DataColumnImpl("string", Type.STRING),
         new DataColumnImpl("integer", Type.INTEGER),
         new DataColumnImpl("double", Type.DOUBLE),
@@ -67,7 +67,7 @@ public class MockDataTable implements DataTable {
   }
 
   @Override
-  public DataRowType rowType() {
+  public DataSchema schema() {
     return rowType;
   }
 }

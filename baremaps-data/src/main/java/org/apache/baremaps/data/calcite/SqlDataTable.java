@@ -20,7 +20,7 @@ package org.apache.baremaps.data.calcite;
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.collection.DataCollectionMapper;
 import org.apache.baremaps.data.schema.DataColumn;
-import org.apache.baremaps.data.schema.DataTable;
+import org.apache.baremaps.data.schema.DataFrame;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Linq4j;
@@ -34,11 +34,11 @@ import org.apache.calcite.schema.impl.AbstractTable;
  */
 public class SqlDataTable extends AbstractTable implements ScannableTable {
 
-  private final DataTable table;
+  private final DataFrame table;
 
   private RelDataType rowType;
 
-  public SqlDataTable(DataTable table) {
+  public SqlDataTable(DataFrame table) {
     this.table = table;
   }
 
@@ -59,7 +59,7 @@ public class SqlDataTable extends AbstractTable implements ScannableTable {
 
   private RelDataType createRowType(RelDataTypeFactory typeFactory) {
     var rowType = new RelDataTypeFactory.Builder(typeFactory);
-    for (DataColumn column : table.rowType().columns()) {
+    for (DataColumn column : table.schema().columns()) {
       rowType.add(column.name(), SqlTypeConversion.types.get(column.type()));
     }
     return rowType.build();

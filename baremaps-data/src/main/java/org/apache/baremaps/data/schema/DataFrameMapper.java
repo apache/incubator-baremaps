@@ -17,54 +17,54 @@
 
 package org.apache.baremaps.data.schema;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Iterator;
+import java.util.function.Function;
 
 /**
- * A row type defines the structure of a table.
+ * A decorator for a {@link DataFrame} that applies a transformation to each row.
  */
-public class DataRowTypeImpl implements DataRowType {
+public class DataFrameMapper implements DataFrame {
 
-  private final String name;
+  private final DataFrame table;
 
-  private final List<DataColumn> columns;
+  private final Function<DataRow, DataRow> transformer;
 
   /**
-   * Constructs a row type.
+   * Constructs a new {@code DataFrameMapper} with the specified table and row transformer.
    *
-   * @param name the name of the row type
-   * @param columns the columns of the row type
+   * @param frame the frame
+   * @param mapper the mapper
    */
-  public DataRowTypeImpl(String name, List<DataColumn> columns) {
-    this.name = name;
-    this.columns = columns;
+  public DataFrameMapper(DataFrame frame, Function<DataRow, DataRow> mapper) {
+    this.table = frame;
+    this.transformer = mapper;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public String name() {
-    return name;
+  public DataSchema schema() {
+    return table.schema();
+  }
+
+  @Override
+  public long size() {
+    return table.size();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<DataColumn> columns() {
-    return columns;
+  public Iterator iterator() {
+    return table.stream().map(this.transformer).iterator();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public DataRow createRow() {
-    var values = new ArrayList<>(columns.size());
-    for (int i = 0; i < columns.size(); i++) {
-      values.add(null);
-    }
-    return new DataRowImpl(this, values);
+  public void clear() {
+    table.clear();
   }
+
 }

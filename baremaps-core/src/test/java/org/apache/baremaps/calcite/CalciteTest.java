@@ -73,32 +73,32 @@ public class CalciteTest {
           VectorTileFunctions.class.getName(), "asVectorTile", true);
 
       // Create the city table
-      DataRowType cityRowType = new DataRowTypeImpl("city", List.of(
+      DataSchema cityRowType = new DataSchemaImpl("city", List.of(
           new DataColumnImpl("id", Type.INTEGER),
           new DataColumnImpl("name", Type.STRING),
           new DataColumnImpl("geometry", Type.GEOMETRY)));
-      DataTable cityDataTable = new DataTableImpl(
+      DataFrame cityDataFrame = new DataFrameImpl(
           cityRowType,
           new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(cityRowType))));
-      cityDataTable.add(new DataRowImpl(cityDataTable.rowType(),
+      cityDataFrame.add(new DataRowImpl(cityDataFrame.schema(),
           List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
-      cityDataTable.add(new DataRowImpl(cityDataTable.rowType(),
+      cityDataFrame.add(new DataRowImpl(cityDataFrame.schema(),
           List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
-      SqlDataTable citySqlDataTable = new SqlDataTable(cityDataTable);
+      SqlDataTable citySqlDataTable = new SqlDataTable(cityDataFrame);
       rootSchema.add("city", citySqlDataTable);
 
       // Create the population table
-      DataRowType populationRowType = new DataRowTypeImpl("population", List.of(
+      DataSchema populationRowType = new DataSchemaImpl("population", List.of(
           new DataColumnImpl("city_id", Type.INTEGER),
           new DataColumnImpl("population", Type.INTEGER)));
-      DataTable populationDataTable = new DataTableImpl(
+      DataFrame populationDataFrame = new DataFrameImpl(
           populationRowType,
           new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(populationRowType))));
-      populationDataTable
-          .add(new DataRowImpl(populationDataTable.rowType(), List.of(1, 2_161_000)));
-      populationDataTable
-          .add(new DataRowImpl(populationDataTable.rowType(), List.of(2, 8_336_000)));
-      SqlDataTable populationSqlDataTable = new SqlDataTable(populationDataTable);
+      populationDataFrame
+          .add(new DataRowImpl(populationDataFrame.schema(), List.of(1, 2_161_000)));
+      populationDataFrame
+          .add(new DataRowImpl(populationDataFrame.schema(), List.of(2, 8_336_000)));
+      SqlDataTable populationSqlDataTable = new SqlDataTable(populationDataFrame);
       rootSchema.add("population", populationSqlDataTable);
 
       // Query the database

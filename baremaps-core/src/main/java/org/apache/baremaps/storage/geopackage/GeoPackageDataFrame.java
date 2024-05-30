@@ -30,11 +30,11 @@ import org.locationtech.jts.geom.*;
 /**
  * A table that stores rows in a GeoPackage table.
  */
-public class GeoPackageDataTable implements DataTable {
+public class GeoPackageDataFrame implements DataFrame {
 
   private final FeatureDao featureDao;
 
-  private final DataRowType rowType;
+  private final DataSchema rowType;
 
   private final GeometryFactory geometryFactory;
 
@@ -43,7 +43,7 @@ public class GeoPackageDataTable implements DataTable {
    *
    * @param featureDao the feature DAO
    */
-  public GeoPackageDataTable(FeatureDao featureDao) {
+  public GeoPackageDataFrame(FeatureDao featureDao) {
     this.featureDao = featureDao;
     var name = featureDao.getTableName();
     var columns = new ArrayList<DataColumn>();
@@ -52,7 +52,7 @@ public class GeoPackageDataTable implements DataTable {
       var propertyType = classType(column);
       columns.add(new DataColumnImpl(propertyName, propertyType));
     }
-    rowType = new DataRowTypeImpl(name, columns);
+    rowType = new DataSchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
@@ -92,7 +92,7 @@ public class GeoPackageDataTable implements DataTable {
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
+  public DataSchema schema() {
     return rowType;
   }
 
@@ -230,7 +230,7 @@ public class GeoPackageDataTable implements DataTable {
 
     private final FeatureResultSet featureResultSet;
 
-    private final DataRowType rowType;
+    private final DataSchema rowType;
 
     private boolean hasNext;
 
@@ -240,7 +240,7 @@ public class GeoPackageDataTable implements DataTable {
      * @param featureResultSet the feature result set
      * @param rowType the row type of the table
      */
-    public GeopackageIterator(FeatureResultSet featureResultSet, DataRowType rowType) {
+    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema rowType) {
       this.featureResultSet = featureResultSet;
       this.rowType = rowType;
       this.hasNext = featureResultSet.moveToFirst();

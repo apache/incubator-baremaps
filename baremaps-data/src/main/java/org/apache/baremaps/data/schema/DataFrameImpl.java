@@ -17,54 +17,67 @@
 
 package org.apache.baremaps.data.schema;
 
-
 import java.util.Iterator;
-import java.util.function.Function;
+import org.apache.baremaps.data.collection.DataCollection;
 
 /**
- * A decorator for a table that transforms the geometries of the rows.
+ * A {@link DataFrame} is a collection of rows respecting a {@link DataSchema}.
  */
-public class DataTableMapper implements DataTable {
+public class DataFrameImpl implements DataFrame {
 
-  private final DataTable table;
+  private final DataSchema schema;
 
-  private final Function<DataRow, DataRow> transformer;
+  private final DataCollection<DataRow> rows;
 
   /**
-   * Constructs a new table decorator.
+   * Constructs a {@link DataFrame} with the specified row {@link DataSchema}.
    *
-   * @param table the table to decorate
-   * @param mapper the row transformer
+   * @param schema the schema of the rows
+   * @param rows the rows
    */
-  public DataTableMapper(DataTable table, Function<DataRow, DataRow> mapper) {
-    this.table = table;
-    this.transformer = mapper;
+  public DataFrameImpl(DataSchema schema, DataCollection<DataRow> rows) {
+    this.schema = schema;
+    this.rows = rows;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
-    return table.rowType();
-  }
-
-  @Override
-  public long size() {
-    return table.size();
+  public DataSchema schema() {
+    return schema;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Iterator iterator() {
-    return table.stream().map(this.transformer).iterator();
+  public boolean add(DataRow row) {
+    return rows.add(row);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
-    table.clear();
+    rows.clear();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public long size() {
+    return rows.size();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Iterator<DataRow> iterator() {
+    return rows.iterator();
   }
 
 }
