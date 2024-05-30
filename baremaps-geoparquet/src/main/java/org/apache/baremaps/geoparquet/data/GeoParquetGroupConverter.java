@@ -27,7 +27,7 @@ class GeoParquetGroupConverter extends GroupConverter {
   private final GeoParquetGroupConverter parent;
   private final int index;
   protected GeoParquetGroupImpl current;
-  private Converter[] converters;
+  private final Converter[] converters;
 
   GeoParquetGroupConverter(GeoParquetGroupConverter parent, int index,
       GroupType schema) {
@@ -58,7 +58,9 @@ class GeoParquetGroupConverter extends GroupConverter {
   }
 
   @Override
-  public void end() {}
+  public void end() {
+    current = null;
+  }
 
   public GeoParquetGroupImpl getCurrentRecord() {
     return current;
