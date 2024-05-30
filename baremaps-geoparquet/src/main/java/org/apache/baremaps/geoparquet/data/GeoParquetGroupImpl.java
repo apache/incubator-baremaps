@@ -19,6 +19,7 @@ package org.apache.baremaps.geoparquet.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.GroupType;
@@ -37,7 +38,6 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
 
   private final List<?>[] data;
 
-  @SuppressWarnings("unchecked")
   public GeoParquetGroupImpl(GroupType schema, GeoParquetMetadata metadata,
       Schema geoParquetSchema) {
     this.schema = schema;
@@ -115,31 +115,38 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
     try {
       return new WKBReader().read(bytes);
     } catch (ParseException e) {
-      throw new RuntimeException(e);
+      throw new GeoParquetException("WKBReader failed to parse", e);
     }
   }
 
   private Object getValue(int fieldIndex, int index) {
-    List<?> list;
-    try {
-      list = data[fieldIndex];
-    } catch (IndexOutOfBoundsException e) {
-      throw new RuntimeException(
-          "not found " + fieldIndex + "(" + schema.getFieldName(fieldIndex)
-              + ") in group:\n" + this);
-    }
+    List<?> list = getObjects(fieldIndex);
     try {
       return list.get(index);
     } catch (IndexOutOfBoundsException e) {
-      throw new RuntimeException(
-          "not found " + fieldIndex + "(" + schema.getFieldName(fieldIndex)
-              + ") element number " + index + " in group:\n" + this);
+      String elementText = String.format(" element number %d ", index);
+      throw createGeoParquetException(fieldIndex, elementText);
     }
+  }
+
+  private List<?> getObjects(int fieldIndex) {
+    List<?> list;
+    if (fieldIndex < 0 || fieldIndex >= data.length) {
+      throw createGeoParquetException(fieldIndex, "");
+    }
+    list = data[fieldIndex];
+    return list;
+  }
+
+  private GeoParquetException createGeoParquetException(int fieldIndex, String elementText) {
+    String msg = String.format("Not found %d (%s)%s in group%n%s", fieldIndex,
+        schema.getFieldName(fieldIndex), elementText, this);
+    return new GeoParquetException(msg);
   }
 
   private void add(int fieldIndex, Primitive value) {
     org.apache.parquet.schema.Type type = schema.getType(fieldIndex);
-    List list = data[fieldIndex];
+    List list = getObjects(fieldIndex);
     if (!type.isRepetition(org.apache.parquet.schema.Type.Repetition.REPEATED)
         && !list.isEmpty()) {
       throw new IllegalStateException("field " + fieldIndex + " (" + type.getName()
@@ -166,8 +173,7 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
 
   public void add(int fieldIndex, Binary value) {
     switch (getParquetSchema().getType(fieldIndex).asPrimitiveType().getPrimitiveTypeName()) {
-      case BINARY:
-      case FIXED_LEN_BYTE_ARRAY:
+      case BINARY, FIXED_LEN_BYTE_ARRAY:
         add(fieldIndex, new BinaryValue(value));
         break;
       case INT96:
@@ -260,11 +266,11 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
           builder.append(indent).append(name);
           if (value == null) {
             builder.append(": NULL\n");
-          } else if (value instanceof GeoParquetGroupImpl) {
+          } else if (value instanceof GeoParquetGroupImpl geoParquetGroupImpl) {
             builder.append('\n');
-            ((GeoParquetGroupImpl) value).appendToString(builder, indent + "  ");
+            geoParquetGroupImpl.appendToString(builder, indent + "  ");
           } else {
-            builder.append(": ").append(value.toString()).append('\n');
+            builder.append(": ").append(value).append('\n');
           }
         }
       }
@@ -402,7 +408,7 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
       try {
         geometries.add(new WKBReader().read(binary.getBytes()));
       } catch (ParseException e) {
-        throw new RuntimeException(e);
+        throw new GeoParquetException("WKBReader failed to parse.", e);
       }
     }
     return geometries;
