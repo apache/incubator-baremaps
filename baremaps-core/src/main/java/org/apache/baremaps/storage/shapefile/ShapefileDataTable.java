@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.data.schema.DataFrame;
-import org.apache.baremaps.data.schema.DataRow;
-import org.apache.baremaps.data.schema.DataSchema;
-import org.apache.baremaps.data.schema.DataStoreException;
+import org.apache.baremaps.data.storage.DataRow;
+import org.apache.baremaps.data.storage.DataSchema;
+import org.apache.baremaps.data.storage.DataStoreException;
+import org.apache.baremaps.data.storage.DataTable;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
 /**
  * A table that stores rows in a shapefile.
  */
-public class ShapefileDataFrame implements DataFrame {
+public class ShapefileDataTable implements DataTable {
 
-  private static final Logger logger = LoggerFactory.getLogger(ShapefileDataFrame.class);
+  private static final Logger logger = LoggerFactory.getLogger(ShapefileDataTable.class);
 
   private final ShapefileReader shapeFile;
 
@@ -45,7 +45,7 @@ public class ShapefileDataFrame implements DataFrame {
    *
    * @param file the path to the shapefile
    */
-  public ShapefileDataFrame(Path file) {
+  public ShapefileDataTable(Path file) {
     this.shapeFile = new ShapefileReader(file.toString());
   }
 
@@ -55,7 +55,7 @@ public class ShapefileDataFrame implements DataFrame {
   @Override
   public DataSchema schema() throws DataStoreException {
     try (var input = shapeFile.read()) {
-      return input.rowType();
+      return input.schema();
     } catch (IOException e) {
       throw new DataStoreException(e);
     }

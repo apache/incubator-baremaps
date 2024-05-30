@@ -23,20 +23,20 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
-import org.apache.baremaps.data.schema.*;
+import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.baremaps.geoparquet.GeoParquetReader;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
-public class GeoParquetDataFrame implements DataFrame {
+public class GeoParquetDataTable implements DataTable {
 
   private final URI path;
 
-  private DataSchema rowType;
+  private DataSchema schema;
 
   private GeoParquetReader reader;
 
-  public GeoParquetDataFrame(URI path) {
+  public GeoParquetDataTable(URI path) {
     this.path = path;
   }
 
@@ -75,8 +75,8 @@ public class GeoParquetDataFrame implements DataFrame {
   public Stream<DataRow> parallelStream() {
     try {
       return reader().read().map(group -> new DataRowImpl(
-          GeoParquetTypeConversion.asDataRowType(path.toString(), group.getSchema()),
-          GeoParquetTypeConversion.asDataRow(group)));
+          GeoParquetTypeConversion.asSchema(path.toString(), group.getSchema()),
+          GeoParquetTypeConversion.asRowValues(group)));
     } catch (IOException | URISyntaxException e) {
       throw new GeoParquetException("Fail to read() the reader", e);
     }
@@ -88,22 +88,22 @@ public class GeoParquetDataFrame implements DataFrame {
       reader = null;
     }
 
-    if (rowType != null) {
-      rowType = null;
+    if (schema != null) {
+      schema = null;
     }
   }
 
   @Override
   public DataSchema schema() {
-    if (rowType == null) {
+    if (schema == null) {
       try {
         Schema schema = reader().getGeoParquetSchema();
-        rowType = GeoParquetTypeConversion.asDataRowType(path.toString(), schema);
-        return rowType;
+        this.schema = GeoParquetTypeConversion.asSchema(path.toString(), schema);
+        return this.schema;
       } catch (URISyntaxException e) {
         throw new GeoParquetException("Fail toe get the schema.", e);
       }
     }
-    return rowType;
+    return schema;
   }
 }

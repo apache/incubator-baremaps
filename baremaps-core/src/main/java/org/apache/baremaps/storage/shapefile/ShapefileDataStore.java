@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.baremaps.data.schema.DataFrame;
-import org.apache.baremaps.data.schema.DataStore;
-import org.apache.baremaps.data.schema.DataStoreException;
+import org.apache.baremaps.data.storage.DataStore;
+import org.apache.baremaps.data.storage.DataStoreException;
+import org.apache.baremaps.data.storage.DataTable;
 
 /**
  * A schema corresponding to the shapefiles of a directory.
@@ -62,20 +62,20 @@ public class ShapefileDataStore implements DataStore {
    * {@inheritDoc}
    */
   @Override
-  public DataFrame get(String name) {
-    return new ShapefileDataFrame(directory.resolve(name));
+  public DataTable get(String name) {
+    return new ShapefileDataTable(directory.resolve(name));
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void add(DataFrame frame) {
+  public void add(DataTable table) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void add(String name, DataFrame frame) throws DataStoreException {
+  public void add(String name, DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 

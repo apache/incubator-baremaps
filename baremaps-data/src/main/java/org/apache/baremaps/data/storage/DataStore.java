@@ -15,50 +15,50 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
 import java.util.List;
 
 /**
- * A {@link DataSchema} is a collection of {@link DataFrame}s.
+ * A {@link DataSchema} is a collection of {@link DataTable}s.
  */
 public interface DataStore {
 
   /**
-   * Lists the names of the data frames.
+   * Lists the names of the data tables.
    * 
-   * @return the names of the data frames
+   * @return the names of the data tables
    */
   List<String> list() throws DataStoreException;
 
   /**
-   * Gets a data frame by name.
+   * Gets a data table by name.
    * 
-   * @param name the name of the data frame
-   * @return the data frame
+   * @param name the name of the data table
+   * @return the data table
    */
-  DataFrame get(String name) throws DataStoreException;
+  DataTable get(String name) throws DataStoreException;
 
   /**
-   * Adds a data frame to the data store.
+   * Adds a data table to the data store.
    * 
-   * @param frame the data frame
+   * @param table the data table
    */
-  void add(DataFrame frame) throws DataStoreException;
+  void add(DataTable table) throws DataStoreException;
 
   /**
-   * Adds a data frame to the data store.
+   * Adds a data table to the data store.
    *
-   * @param name the name of the data frame
-   * @param frame the data frame
-   * @throws DataStoreException if the data frame cannot be added
+   * @param name the name of the data table
+   * @param table the data table
+   * @throws DataStoreException if the data table cannot be added
    */
-  void add(String name, DataFrame frame) throws DataStoreException;
+  void add(String name, DataTable table) throws DataStoreException;
 
   /**
-   * Removes a data frame from the data store.
+   * Removes a data table from the data store.
    * 
-   * @param name the name of the data frame
+   * @param name the name of the data table
    */
   void remove(String name) throws DataStoreException;
 

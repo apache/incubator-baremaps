@@ -24,8 +24,8 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
-import org.apache.baremaps.data.schema.*;
-import org.apache.baremaps.data.schema.DataColumn.Type;
+import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -51,7 +51,7 @@ public class ShapefileByteReader extends CommonByteReader {
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
   /** Schema of the rows contained in this shapefile. */
-  private DataSchema rowType;
+  private DataSchema schema;
 
   /** Shapefile index. */
   private File shapeFileIndex;
@@ -86,7 +86,7 @@ public class ShapefileByteReader extends CommonByteReader {
       loadShapefileIndexes();
     }
 
-    this.rowType = getSchema(shapefile.getName());
+    this.schema = getSchema(shapefile.getName());
   }
 
   /**
@@ -108,19 +108,19 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Returns the row type of the data contained in this shapefile.
+   * Returns the schema of the data contained in this shapefile.
    *
-   * @return the row type
+   * @return the schema
    */
-  public DataSchema getRowType() {
-    return this.rowType;
+  public DataSchema getSchema() {
+    return this.schema;
   }
 
   /**
    * Create a row descriptor.
    *
    * @param name Name of the field.
-   * @return The row type.
+   * @return The schema.
    */
   private DataSchema getSchema(final String name) {
     Objects.requireNonNull(name, "The row name cannot be null.");
@@ -273,7 +273,7 @@ public class ShapefileByteReader extends CommonByteReader {
 
     if (shapefileGeometryType == null) {
       throw new ShapefileException(
-          "The shapefile row type doesn''t match to any known row type.");
+          "The shapefile schema doesn''t match to any known schema.");
     }
 
     switch (shapefileGeometryType) {

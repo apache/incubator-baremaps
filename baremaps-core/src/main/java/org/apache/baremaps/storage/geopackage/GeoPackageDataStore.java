@@ -22,21 +22,21 @@ import java.nio.file.Path;
 import java.util.List;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.data.schema.DataFrame;
-import org.apache.baremaps.data.schema.DataStore;
-import org.apache.baremaps.data.schema.DataStoreException;
+import org.apache.baremaps.data.storage.DataStore;
+import org.apache.baremaps.data.storage.DataStoreException;
+import org.apache.baremaps.data.storage.DataTable;
 
 /**
- * A schema corresponding to a GeoPackage database.
+ * A {@link DataStore} corresponding to a GeoPackage file.
  */
 public class GeoPackageDataStore implements DataStore, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
   /**
-   * Constructs a schema from a GeoPackage database.
+   * Constructs a {@link GeoPackageDataStore} from a GeoPackage file.
    *
-   * @param file the path to the GeoPackage database
+   * @param file the path to the GeoPackage file
    */
   public GeoPackageDataStore(Path file) {
     this.geoPackage = GeoPackageManager.open(file.toFile());
@@ -62,20 +62,20 @@ public class GeoPackageDataStore implements DataStore, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public DataFrame get(String name) throws DataStoreException {
-    return new GeoPackageDataFrame(geoPackage.getFeatureDao(name));
+  public DataTable get(String name) throws DataStoreException {
+    return new GeoPackageDataTable(geoPackage.getFeatureDao(name));
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void add(DataFrame frame) throws DataStoreException {
+  public void add(DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void add(String name, DataFrame frame) throws DataStoreException {
+  public void add(String name, DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 

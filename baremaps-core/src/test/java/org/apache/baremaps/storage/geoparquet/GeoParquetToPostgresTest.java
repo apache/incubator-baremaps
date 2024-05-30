@@ -29,7 +29,7 @@ class GeoParquetToPostgresTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void schema() {
+  void copyGeoParquetToPostgres() {
     // Open the GeoParquet
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
     var geoParquetSchema = new GeoParquetDataStore(uri);

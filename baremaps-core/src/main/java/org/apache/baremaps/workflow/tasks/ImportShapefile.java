@@ -19,11 +19,11 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.data.schema.DataFrameGeometryMapper;
-import org.apache.baremaps.data.schema.DataFrameMapper;
+import org.apache.baremaps.data.storage.DataTableGeometryMapper;
+import org.apache.baremaps.data.storage.DataTableMapper;
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.storage.postgres.PostgresDataStore;
-import org.apache.baremaps.storage.shapefile.ShapefileDataFrame;
+import org.apache.baremaps.storage.shapefile.ShapefileDataTable;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -71,12 +71,12 @@ public class ImportShapefile implements Task {
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
     try {
-      var shapefileDataTable = new ShapefileDataFrame(path);
+      var shapefileDataTable = new ShapefileDataTable(path);
       var dataSource = context.getDataSource(database);
       var postgresDataStore = new PostgresDataStore(dataSource);
-      var rowTransformer = new DataFrameGeometryMapper(shapefileDataTable,
+      var rowTransformer = new DataTableGeometryMapper(shapefileDataTable,
           new ProjectionTransformer(fileSrid, databaseSrid));
-      var transformedDataTable = new DataFrameMapper(shapefileDataTable, rowTransformer);
+      var transformedDataTable = new DataTableMapper(shapefileDataTable, rowTransformer);
       postgresDataStore.add(transformedDataTable);
     } catch (Exception e) {
       throw new WorkflowException(e);

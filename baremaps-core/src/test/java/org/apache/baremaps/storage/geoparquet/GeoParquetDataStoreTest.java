@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 class GeoParquetDataStoreTest {
 
   @Test
-  void rowType() {
+  void schema() {
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
     var geoParquetDataSchema = new GeoParquetDataStore(uri);
     var table = geoParquetDataSchema.get(uri.toString());

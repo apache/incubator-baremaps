@@ -23,31 +23,31 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-import org.apache.baremaps.data.schema.DataFrame;
-import org.apache.baremaps.data.schema.DataRow;
-import org.apache.baremaps.data.schema.DataRowImpl;
-import org.apache.baremaps.data.schema.DataSchema;
+import org.apache.baremaps.data.storage.DataRow;
+import org.apache.baremaps.data.storage.DataRowImpl;
+import org.apache.baremaps.data.storage.DataSchema;
+import org.apache.baremaps.data.storage.DataTable;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 
 /**
- * A table that stores rows in a Postgres table.
+ * A {@link DataTable} that stores rows in a Postgres table.
  */
-public class PostgresDataFrame implements DataFrame {
+public class PostgresDataTable implements DataTable {
 
   private final DataSource dataSource;
 
-  private final DataSchema rowType;
+  private final DataSchema schema;
 
   /**
-   * Constructs a table with a given name and a given row type.
+   * Constructs a table with a given name and a given schema.
    * 
    * @param dataSource the data source
-   * @param rowType the rowType of the table
+   * @param schema the schema of the table
    */
-  public PostgresDataFrame(DataSource dataSource, DataSchema rowType) {
+  public PostgresDataTable(DataSource dataSource, DataSchema schema) {
     this.dataSource = dataSource;
-    this.rowType = rowType;
+    this.schema = schema;
   }
 
   /**
@@ -74,7 +74,7 @@ public class PostgresDataFrame implements DataFrame {
    */
   @Override
   public long size() {
-    var countQuery = count(rowType);
+    var countQuery = count(schema);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(countQuery);
         var resultSet = statement.executeQuery()) {
@@ -90,7 +90,7 @@ public class PostgresDataFrame implements DataFrame {
    */
   @Override
   public DataSchema schema() {
-    return rowType;
+    return schema;
   }
 
   /**
@@ -98,7 +98,7 @@ public class PostgresDataFrame implements DataFrame {
    */
   @Override
   public boolean add(DataRow row) {
-    var query = insert(rowType);
+    var query = insert(schema);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(query)) {
       setParameters(statement, row);
@@ -114,7 +114,7 @@ public class PostgresDataFrame implements DataFrame {
   @Override
   public boolean addAll(Iterable<? extends DataRow> rows) {
     try (var connection = dataSource.getConnection();
-        var statement = connection.prepareStatement(insert(rowType))) {
+        var statement = connection.prepareStatement(insert(schema))) {
       for (var row : rows) {
         setParameters(statement, row);
         statement.addBatch();
@@ -142,8 +142,8 @@ public class PostgresDataFrame implements DataFrame {
    * @throws SQLException if an SQL error occurs
    */
   private void setParameters(PreparedStatement statement, DataRow row) throws SQLException {
-    for (int i = 1; i <= rowType.columns().size(); i++) {
-      var value = row.get(rowType.columns().get(i - 1).name());
+    for (int i = 1; i <= schema.columns().size(); i++) {
+      var value = row.get(schema.columns().get(i - 1).name());
       if (value instanceof Geometry geometry) {
         statement.setBytes(i, GeometryUtils.serialize(geometry));
       } else {
@@ -155,11 +155,11 @@ public class PostgresDataFrame implements DataFrame {
   /**
    * Generates a query that selects all the rows of a table.
    *
-   * @param rowType the row type of the table
+   * @param schema the schema of the table
    * @return the query
    */
-  protected static String select(DataSchema rowType) {
-    var columns = rowType.columns().stream()
+  protected static String select(DataSchema schema) {
+    var columns = schema.columns().stream()
         .map(column -> {
           if (column.type().binding().isAssignableFrom(Geometry.class)) {
             return String.format("st_asewkb(\"%s\") AS \"%s\"", column.name(), column.name());
@@ -168,35 +168,35 @@ public class PostgresDataFrame implements DataFrame {
           }
         })
         .toList();
-    return "SELECT " + String.join(", ", columns) + " FROM \"" + rowType.name() + "\"";
+    return "SELECT " + String.join(", ", columns) + " FROM \"" + schema.name() + "\"";
   }
 
   /**
    * Generates a query that counts the number of rows of a table.
    *
-   * @param rowType the row type of the table
+   * @param schema the schema of the table
    * @return the query
    */
-  protected static String insert(DataSchema rowType) {
-    var columns = rowType.columns().stream()
+  protected static String insert(DataSchema schema) {
+    var columns = schema.columns().stream()
         .map(column -> String.format("\"%s\"", column.name()))
         .toList();
-    var values = rowType.columns().stream()
+    var values = schema.columns().stream()
         .map(column -> "?")
         .toList();
     return "INSERT INTO \""
-        + rowType.name() + "\" (" + String.join(", ", columns) + ") "
+        + schema.name() + "\" (" + String.join(", ", columns) + ") "
         + "VALUES (" + String.join(", ", values) + ")";
   }
 
   /**
    * Generates a query that counts the number of rows of a table.
    *
-   * @param rowType the row type of the table
+   * @param schema the schema of the table
    * @return the query
    */
-  protected String count(DataSchema rowType) {
-    return String.format("SELECT COUNT(*) FROM \"%s\"", rowType.name());
+  protected String count(DataSchema schema) {
+    return String.format("SELECT COUNT(*) FROM \"%s\"", schema.name());
   }
 
   /**
@@ -216,7 +216,7 @@ public class PostgresDataFrame implements DataFrame {
       try {
         connection = dataSource.getConnection();
         statement = connection.createStatement();
-        resultSet = statement.executeQuery(select(rowType));
+        resultSet = statement.executeQuery(select(schema));
         hasNext = resultSet.next();
       } catch (SQLException e) {
         close();
@@ -245,8 +245,8 @@ public class PostgresDataFrame implements DataFrame {
       }
       try {
         List<Object> values = new ArrayList<>();
-        for (int i = 0; i < rowType.columns().size(); i++) {
-          var column = rowType.columns().get(i);
+        for (int i = 0; i < schema.columns().size(); i++) {
+          var column = schema.columns().get(i);
           if (column.type().binding().isAssignableFrom(Geometry.class)) {
             values.add(GeometryUtils.deserialize(resultSet.getBytes(i + 1)));
           } else {
@@ -254,7 +254,7 @@ public class PostgresDataFrame implements DataFrame {
           }
         }
         hasNext = resultSet.next();
-        return new DataRowImpl(rowType, values);
+        return new DataRowImpl(schema, values);
       } catch (SQLException e) {
         close();
         throw new RuntimeException("Error while fetching the next result", e);

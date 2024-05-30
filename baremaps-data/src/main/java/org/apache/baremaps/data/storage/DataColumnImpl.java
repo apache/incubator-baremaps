@@ -15,20 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
-
-import org.apache.baremaps.data.collection.DataCollection;
+package org.apache.baremaps.data.storage;
 
 /**
- * A {@link DataFrame} is a collection of rows respecting a {@link DataSchema} .
+ * A column in a table.
  */
-public interface DataFrame extends DataCollection<DataRow> {
-
-  /**
-   * Returns the schema of the row.
-   *
-   * @return the schema of the row
-   */
-  DataSchema schema();
+public record DataColumnImpl(String name, Type type) implements DataColumn {
 
 }

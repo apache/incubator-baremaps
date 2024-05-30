@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
 import java.util.function.Function;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
- * A decorator for a {@link DataFrame} that applies a geometry transformation to each row.
+ * A decorator for a {@link DataTable} that applies a geometry transformation to each row.
  */
-public class DataFrameGeometryMapper implements Function<DataRow, DataRow> {
+public class DataTableGeometryMapper implements Function<DataRow, DataRow> {
 
-  private final DataFrame frame;
+  private final DataTable table;
 
   private final GeometryTransformer mapper;
 
   /**
-   * Constructs a new data frame transformer with the specified data frame and geometry transformer.
+   * Constructs a new data table transformer with the specified data table and geometry transformer.
    *
-   * @param frame the data frame to transform
+   * @param table the data table to transform
    * @param mapper the geometry mapper
    */
-  public DataFrameGeometryMapper(DataFrame frame, GeometryTransformer mapper) {
-    this.frame = frame;
+  public DataTableGeometryMapper(DataTable table, GeometryTransformer mapper) {
+    this.table = table;
     this.mapper = mapper;
   }
 
@@ -46,7 +46,7 @@ public class DataFrameGeometryMapper implements Function<DataRow, DataRow> {
    */
   @Override
   public DataRow apply(DataRow row) {
-    var columns = frame.schema()
+    var columns = table.schema()
         .columns().stream()
         .filter(column -> column.type().binding().isAssignableFrom(Geometry.class))
         .toList();

@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
-
+package org.apache.baremaps.data.storage;
 
 import java.util.Iterator;
-import java.util.function.Function;
+import org.apache.baremaps.data.collection.DataCollection;
 
 /**
- * A decorator for a {@link DataFrame} that applies a transformation to each row.
+ * A {@link DataTable} is a collection of rows respecting a {@link DataSchema}.
  */
-public class DataFrameMapper implements DataFrame {
+public class DataTableImpl implements DataTable {
 
-  private final DataFrame table;
+  private final DataSchema schema;
 
-  private final Function<DataRow, DataRow> transformer;
+  private final DataCollection<DataRow> rows;
 
   /**
-   * Constructs a new {@code DataFrameMapper} with the specified table and row transformer.
+   * Constructs a {@link DataTable} with the specified row {@link DataSchema}.
    *
-   * @param frame the frame
-   * @param mapper the mapper
+   * @param schema the schema of the rows
+   * @param rows the rows
    */
-  public DataFrameMapper(DataFrame frame, Function<DataRow, DataRow> mapper) {
-    this.table = frame;
-    this.transformer = mapper;
+  public DataTableImpl(DataSchema schema, DataCollection<DataRow> rows) {
+    this.schema = schema;
+    this.rows = rows;
   }
 
   /**
@@ -46,25 +45,39 @@ public class DataFrameMapper implements DataFrame {
    */
   @Override
   public DataSchema schema() {
-    return table.schema();
-  }
-
-  @Override
-  public long size() {
-    return table.size();
+    return schema;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Iterator iterator() {
-    return table.stream().map(this.transformer).iterator();
+  public boolean add(DataRow row) {
+    return rows.add(row);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
-    table.clear();
+    rows.clear();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public long size() {
+    return rows.size();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Iterator<DataRow> iterator() {
+    return rows.iterator();
   }
 
 }

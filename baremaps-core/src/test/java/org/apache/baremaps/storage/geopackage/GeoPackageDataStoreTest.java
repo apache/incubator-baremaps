@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 class GeoPackageDataStoreTest {
 
   @Test
-  void rowType() {
-    var geoPackageStore =
-        new GeoPackageDataStore(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
+  void schema() {
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg");
+    var geoPackageStore = new GeoPackageDataStore(file);
     var table = geoPackageStore.get("countries");
     var rowType = table.schema();
     assertEquals(rowType.name(), "countries");
@@ -36,8 +36,8 @@ class GeoPackageDataStoreTest {
 
   @Test
   void read() {
-    var geoPackageStore =
-        new GeoPackageDataStore(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg");
+    var geoPackageStore = new GeoPackageDataStore(file);
     var table = geoPackageStore.get("countries");
     assertEquals(179, table.size());
     assertEquals(179, table.stream().count());

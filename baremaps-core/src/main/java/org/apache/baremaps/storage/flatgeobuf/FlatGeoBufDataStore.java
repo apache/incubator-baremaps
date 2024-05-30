@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.baremaps.data.schema.DataFrame;
-import org.apache.baremaps.data.schema.DataStore;
-import org.apache.baremaps.data.schema.DataStoreException;
+import org.apache.baremaps.data.storage.DataStore;
+import org.apache.baremaps.data.storage.DataStoreException;
+import org.apache.baremaps.data.storage.DataTable;
 
 /**
- * A schema corresponding to the flatgeobuf files of a directory.
+ * A {@link DataStore} corresponding to the flatgeobuf files of a directory.
  */
 public class FlatGeoBufDataStore implements DataStore {
 
@@ -55,29 +55,29 @@ public class FlatGeoBufDataStore implements DataStore {
    * {@inheritDoc}
    */
   @Override
-  public DataFrame get(String name) throws DataStoreException {
+  public DataTable get(String name) throws DataStoreException {
     var path = directory.resolve(name);
-    return new FlatGeoBufDataFrame(path);
+    return new FlatGeoBufDataTable(path);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void add(DataFrame frame) throws DataStoreException {
-    var filename = frame.schema().name();
-    filename = filename.endsWith(".fgb") ? filename : filename + ".fgb";
-    add(filename, frame);
+  public void add(DataTable table) throws DataStoreException {
+    var fileName = table.schema().name();
+    fileName = fileName.endsWith(".fgb") ? fileName : fileName + ".fgb";
+    add(fileName, table);
   }
 
   @Override
-  public void add(String name, DataFrame frame) throws DataStoreException {
+  public void add(String name, DataTable table) throws DataStoreException {
     var path = directory.resolve(name);
     try {
       Files.deleteIfExists(path);
       Files.createFile(path);
-      var flatGeoBufTable = new FlatGeoBufDataFrame(path, frame.schema());
-      flatGeoBufTable.write(frame);
+      var flatGeoBufTable = new FlatGeoBufDataTable(path, table.schema());
+      flatGeoBufTable.write(table);
     } catch (IOException e) {
       throw new DataStoreException(e);
     }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
 import java.util.List;
 
 /**
- * A row in a {@link DataFrame}.
+ * A row in a {@link DataTable}.
  */
 public interface DataRow {
 

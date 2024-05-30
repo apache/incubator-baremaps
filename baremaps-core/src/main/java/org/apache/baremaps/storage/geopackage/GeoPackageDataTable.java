@@ -23,27 +23,27 @@ import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.data.schema.*;
-import org.apache.baremaps.data.schema.DataColumn.Type;
+import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.locationtech.jts.geom.*;
 
 /**
- * A table that stores rows in a GeoPackage table.
+ * A {@link DataTable} that stores rows in a GeoPackage file.
  */
-public class GeoPackageDataFrame implements DataFrame {
+public class GeoPackageDataTable implements DataTable {
 
   private final FeatureDao featureDao;
 
-  private final DataSchema rowType;
+  private final DataSchema schema;
 
   private final GeometryFactory geometryFactory;
 
   /**
-   * Constructs a table from a feature DAO.
+   * Constructs a {@link DataTable} from a feature DAO.
    *
    * @param featureDao the feature DAO
    */
-  public GeoPackageDataFrame(FeatureDao featureDao) {
+  public GeoPackageDataTable(FeatureDao featureDao) {
     this.featureDao = featureDao;
     var name = featureDao.getTableName();
     var columns = new ArrayList<DataColumn>();
@@ -52,11 +52,11 @@ public class GeoPackageDataFrame implements DataFrame {
       var propertyType = classType(column);
       columns.add(new DataColumnImpl(propertyName, propertyType));
     }
-    rowType = new DataSchemaImpl(name, columns);
+    schema = new DataSchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
-  protected Type classType(FeatureColumn column) {
+  private Type classType(FeatureColumn column) {
     if (column.isGeometry()) {
       return Type.fromBinding(Geometry.class);
     } else {
@@ -69,7 +69,7 @@ public class GeoPackageDataFrame implements DataFrame {
    */
   @Override
   public Iterator<DataRow> iterator() {
-    return new GeopackageIterator(featureDao.queryForAll(), rowType);
+    return new GeopackageIterator(featureDao.queryForAll(), schema);
   }
 
   /**
@@ -93,7 +93,7 @@ public class GeoPackageDataFrame implements DataFrame {
    */
   @Override
   public DataSchema schema() {
-    return rowType;
+    return schema;
   }
 
   /**
@@ -224,13 +224,13 @@ public class GeoPackageDataFrame implements DataFrame {
   }
 
   /**
-   * An iterator over the rows of a GeoPackage table.
+   * An iterator over the rows of a GeoPackage data table.
    */
   public class GeopackageIterator implements Iterator<DataRow> {
 
     private final FeatureResultSet featureResultSet;
 
-    private final DataSchema rowType;
+    private final DataSchema schema;
 
     private boolean hasNext;
 
@@ -238,11 +238,11 @@ public class GeoPackageDataFrame implements DataFrame {
      * Constructs an iterator from a feature result set.
      *
      * @param featureResultSet the feature result set
-     * @param rowType the row type of the table
+     * @param schema the schema of the data table
      */
-    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema rowType) {
+    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema schema) {
       this.featureResultSet = featureResultSet;
-      this.rowType = rowType;
+      this.schema = schema;
       this.hasNext = featureResultSet.moveToFirst();
     }
 
@@ -262,7 +262,7 @@ public class GeoPackageDataFrame implements DataFrame {
       if (!hasNext) {
         throw new NoSuchElementException();
       }
-      DataRow row = rowType.createRow();
+      DataRow row = schema.createRow();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {

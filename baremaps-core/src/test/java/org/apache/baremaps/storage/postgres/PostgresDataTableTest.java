@@ -21,22 +21,22 @@ import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import org.apache.baremaps.data.schema.DataRowImpl;
+import org.apache.baremaps.data.storage.DataRowImpl;
 import org.apache.baremaps.database.PostgresContainerTest;
-import org.apache.baremaps.storage.MockDataFrame;
+import org.apache.baremaps.storage.MockDataTable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class PostgresDataFrameTest extends PostgresContainerTest {
+class PostgresDataTableTest extends PostgresContainerTest {
 
   private PostgresDataStore schema;
 
   @BeforeEach
   void init() {
     schema = new PostgresDataStore(dataSource());
-    schema.add(new MockDataFrame());
+    schema.add(new MockDataTable());
   }
 
   @Test

@@ -20,12 +20,12 @@ package org.apache.baremaps.storage.geoparquet;
 
 import java.net.URI;
 import java.util.List;
-import org.apache.baremaps.data.schema.DataFrame;
-import org.apache.baremaps.data.schema.DataStore;
-import org.apache.baremaps.data.schema.DataStoreException;
+import org.apache.baremaps.data.storage.DataStore;
+import org.apache.baremaps.data.storage.DataStoreException;
+import org.apache.baremaps.data.storage.DataTable;
 
 /**
- * A schema corresponding to a GeoParquet database.
+ * A {@link DataStore} corresponding to a GeoParquet file.
  */
 public class GeoParquetDataStore implements DataStore {
 
@@ -41,20 +41,20 @@ public class GeoParquetDataStore implements DataStore {
   }
 
   @Override
-  public DataFrame get(String name) throws DataStoreException {
+  public DataTable get(String name) throws DataStoreException {
     if (!uri.toString().equals(name)) {
       throw new DataStoreException("Table not found");
     }
-    return new GeoParquetDataFrame(uri);
+    return new GeoParquetDataTable(uri);
   }
 
   @Override
-  public void add(DataFrame frame) throws DataStoreException {
+  public void add(DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void add(String name, DataFrame frame) throws DataStoreException {
+  public void add(String name, DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 

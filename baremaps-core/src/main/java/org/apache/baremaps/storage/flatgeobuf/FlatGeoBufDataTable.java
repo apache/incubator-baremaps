@@ -27,9 +27,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.data.collection.DataCollection;
-import org.apache.baremaps.data.schema.DataFrame;
-import org.apache.baremaps.data.schema.DataRow;
-import org.apache.baremaps.data.schema.DataSchema;
+import org.apache.baremaps.data.storage.DataRow;
+import org.apache.baremaps.data.storage.DataSchema;
+import org.apache.baremaps.data.storage.DataTable;
 import org.locationtech.jts.geom.*;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -39,33 +39,45 @@ import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.GeometryType;
 
 /**
- * A table that stores rows in a flatgeobuf file.
+ * A {@link DataTable} that stores rows in a flatgeobuf file.
  */
-public class FlatGeoBufDataFrame implements DataFrame {
+public class FlatGeoBufDataTable implements DataTable {
 
   private final Path file;
 
-  private DataSchema rowType;
+  private DataSchema schema;
 
   /**
    * Constructs a table from a flatgeobuf file (used for reading).
    *
    * @param file the path to the flatgeobuf file
    */
-  public FlatGeoBufDataFrame(Path file) {
+  public FlatGeoBufDataTable(Path file) {
     this.file = file;
-    this.rowType = readRowType(file);
+    this.schema = readSchema(file);
+  }
+
+
+  private static DataSchema readSchema(Path file) {
+    try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
+      // try to read the schema from the file
+      var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
+      HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
+      return FlatGeoBufTypeConversion.asSchema(headerMeta);
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   /**
-   * Constructs a table from a flatgeobuf file and a row type (used for writing).
+   * Constructs a table from a flatgeobuf file and a schema (used for writing).
    *
    * @param file the path to the flatgeobuf file
-   * @param rowType the row type of the table
+   * @param schema the schema of the table
    */
-  public FlatGeoBufDataFrame(Path file, DataSchema rowType) {
+  public FlatGeoBufDataTable(Path file, DataSchema schema) {
     this.file = file;
-    this.rowType = rowType;
+    this.schema = schema;
   }
 
   /**
@@ -73,21 +85,7 @@ public class FlatGeoBufDataFrame implements DataFrame {
    */
   @Override
   public DataSchema schema() {
-    return rowType;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public static DataSchema readRowType(Path file) {
-    try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
-      // try to read the row type from the file
-      var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-      HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
-      return FlatGeoBufTypeConversion.asRowType(headerMeta);
-    } catch (IOException e) {
-      return null;
-    }
+    return schema;
   }
 
   /**
@@ -111,7 +109,7 @@ public class FlatGeoBufDataFrame implements DataFrame {
       buffer.clear();
 
       // create the feature stream
-      return new RowIterator(channel, headerMeta, rowType, buffer);
+      return new RowIterator(channel, headerMeta, schema, buffer);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -173,8 +171,8 @@ public class FlatGeoBufDataFrame implements DataFrame {
       headerMeta.indexNodeSize = 16;
       headerMeta.srid = 3857;
       headerMeta.featuresCount = features.size();
-      headerMeta.name = rowType.name();
-      headerMeta.columns = FlatGeoBufTypeConversion.asColumns(rowType.columns());
+      headerMeta.name = schema.name();
+      headerMeta.columns = FlatGeoBufTypeConversion.asColumns(schema.columns());
       HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
 
       var indexSize =
@@ -235,7 +233,7 @@ public class FlatGeoBufDataFrame implements DataFrame {
 
     private final HeaderMeta headerMeta;
 
-    private final DataSchema rowType;
+    private final DataSchema schema;
 
     private final SeekableByteChannel channel;
 
@@ -248,14 +246,14 @@ public class FlatGeoBufDataFrame implements DataFrame {
      *
      * @param channel the channel to read from
      * @param headerMeta the header meta
-     * @param rowType the row type of the table
+     * @param schema the schema of the table
      * @param buffer the buffer to use
      */
     public RowIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
-        DataSchema rowType, ByteBuffer buffer) {
+        DataSchema schema, ByteBuffer buffer) {
       this.channel = channel;
       this.headerMeta = headerMeta;
-      this.rowType = rowType;
+      this.schema = schema;
       this.buffer = buffer;
     }
 
@@ -278,7 +276,7 @@ public class FlatGeoBufDataFrame implements DataFrame {
 
         var featureSize = buffer.getInt();
         var row =
-            FlatGeoBufTypeConversion.asRow(headerMeta, rowType, Feature.getRootAsFeature(buffer));
+            FlatGeoBufTypeConversion.asRow(headerMeta, schema, Feature.getRootAsFeature(buffer));
 
         buffer.position(Integer.BYTES + featureSize);
         buffer.compact();

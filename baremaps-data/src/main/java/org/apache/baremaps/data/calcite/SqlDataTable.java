@@ -19,8 +19,8 @@ package org.apache.baremaps.data.calcite;
 
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.collection.DataCollectionMapper;
-import org.apache.baremaps.data.schema.DataColumn;
-import org.apache.baremaps.data.schema.DataFrame;
+import org.apache.baremaps.data.storage.DataColumn;
+import org.apache.baremaps.data.storage.DataTable;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Linq4j;
@@ -34,11 +34,11 @@ import org.apache.calcite.schema.impl.AbstractTable;
  */
 public class SqlDataTable extends AbstractTable implements ScannableTable {
 
-  private final DataFrame table;
+  private final DataTable table;
 
   private RelDataType rowType;
 
-  public SqlDataTable(DataFrame table) {
+  public SqlDataTable(DataTable table) {
     this.table = table;
   }
 

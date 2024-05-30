@@ -15,29 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
+
 
 import java.util.Iterator;
-import org.apache.baremaps.data.collection.DataCollection;
+import java.util.function.Function;
 
 /**
- * A {@link DataFrame} is a collection of rows respecting a {@link DataSchema}.
+ * A decorator for a {@link DataTable} that applies a transformation to each row.
  */
-public class DataFrameImpl implements DataFrame {
+public class DataTableMapper implements DataTable {
 
-  private final DataSchema schema;
+  private final DataTable table;
 
-  private final DataCollection<DataRow> rows;
+  private final Function<DataRow, DataRow> transformer;
 
   /**
-   * Constructs a {@link DataFrame} with the specified row {@link DataSchema}.
+   * Constructs a new {@link DataTableMapper} with the specified table and row transformer.
    *
-   * @param schema the schema of the rows
-   * @param rows the rows
+   * @param table the table
+   * @param mapper the mapper
    */
-  public DataFrameImpl(DataSchema schema, DataCollection<DataRow> rows) {
-    this.schema = schema;
-    this.rows = rows;
+  public DataTableMapper(DataTable table, Function<DataRow, DataRow> mapper) {
+    this.table = table;
+    this.transformer = mapper;
   }
 
   /**
@@ -45,39 +46,25 @@ public class DataFrameImpl implements DataFrame {
    */
   @Override
   public DataSchema schema() {
-    return schema;
+    return table.schema();
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean add(DataRow row) {
-    return rows.add(row);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void clear() {
-    rows.clear();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public long size() {
-    return rows.size();
+    return table.size();
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Iterator<DataRow> iterator() {
-    return rows.iterator();
+  public Iterator iterator() {
+    return table.stream().map(this.transformer).iterator();
+  }
+
+  @Override
+  public void clear() {
+    table.clear();
   }
 
 }
