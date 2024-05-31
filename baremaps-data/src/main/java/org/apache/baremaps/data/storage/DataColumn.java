@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 import org.locationtech.jts.geom.*;
 
 /**
@@ -37,6 +38,15 @@ public interface DataColumn {
    */
   String name();
 
+
+  Cardinality cardinality();
+
+  enum Cardinality {
+    REQUIRED,
+    OPTIONAL,
+    REPEATED
+  }
+
   /**
    * Returns the type of the column.
    *
@@ -49,19 +59,12 @@ public interface DataColumn {
    */
   enum Type {
     BYTE(Byte.class),
-    BYTE_ARRAY(byte[].class),
     BOOLEAN(Boolean.class),
-    BOOLEAN_ARRAY(boolean[].class),
     SHORT(Short.class),
-    SHORT_ARRAY(short[].class),
     INTEGER(Integer.class),
-    INTEGER_ARRAY(int[].class),
     LONG(Long.class),
-    LONG_ARRAY(long[].class),
     FLOAT(Float.class),
-    FLOAT_ARRAY(float[].class),
     DOUBLE(Double.class),
-    DOUBLE_ARRAY(double[].class),
     STRING(String.class),
     COORDINATE(Coordinate.class),
     GEOMETRY(Geometry.class),
@@ -77,7 +80,8 @@ public interface DataColumn {
     INET6_ADDRESS(Inet6Address.class),
     LOCAL_DATE(LocalDate.class),
     LOCAL_TIME(LocalTime.class),
-    LOCAL_DATE_TIME(LocalDateTime.class),;
+    LOCAL_DATE_TIME(LocalDateTime.class),
+    NESTED(Map.class);
 
     private final Class<?> binding;
 

@@ -22,6 +22,7 @@ import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY
 import java.util.Iterator;
 import java.util.List;
 import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.locationtech.jts.geom.Coordinate;
 
@@ -33,11 +34,11 @@ public class MockDataTable implements DataTable {
 
   public MockDataTable() {
     this.rowType = new DataSchemaImpl("mock", List.of(
-        new DataColumnImpl("string", Type.STRING),
-        new DataColumnImpl("integer", Type.INTEGER),
-        new DataColumnImpl("double", Type.DOUBLE),
-        new DataColumnImpl("float", Type.FLOAT),
-        new DataColumnImpl("geometry", Type.GEOMETRY)));
+        new DataColumnFixed("string", Cardinality.OPTIONAL, Type.STRING),
+        new DataColumnFixed("integer", Cardinality.OPTIONAL, Type.INTEGER),
+        new DataColumnFixed("double", Cardinality.OPTIONAL, Type.DOUBLE),
+        new DataColumnFixed("float", Cardinality.OPTIONAL, Type.FLOAT),
+        new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
     this.rows = List.of(
         new DataRowImpl(rowType,
             List.of("string", 1, 1.0, 1.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)))),

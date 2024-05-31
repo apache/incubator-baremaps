@@ -46,6 +46,7 @@ public class PostgresTypeConversion {
     typeToName.put(Type.LOCAL_DATE, "date");
     typeToName.put(Type.LOCAL_TIME, "time");
     typeToName.put(Type.LOCAL_DATE_TIME, "timestamp");
+    typeToName.put(Type.NESTED, "jsonb");
   }
 
   protected static final Map<String, Type> nameToType = Map.ofEntries(
@@ -59,6 +60,7 @@ public class PostgresTypeConversion {
       Map.entry("inet", Type.INET6_ADDRESS),
       Map.entry("date", Type.LOCAL_DATE),
       Map.entry("time", Type.LOCAL_TIME),
-      Map.entry("timestamp", Type.LOCAL_DATE_TIME));
+      Map.entry("timestamp", Type.LOCAL_DATE_TIME),
+      Map.entry("jsonb", Type.NESTED));
 
 }
