@@ -29,6 +29,7 @@ import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.database.copy.GeometryValueHandler;
+import org.apache.baremaps.database.copy.JsonbValueHandler;
 import org.apache.baremaps.database.metadata.DatabaseMetadata;
 import org.apache.baremaps.database.metadata.TableMetadata;
 import org.postgresql.PGConnection;
@@ -106,7 +107,7 @@ public class PostgresDataStore implements DataStore {
         if (PostgresTypeConversion.typeToName.containsKey(column.type())) {
           var columnName = column.name().replaceAll(REGEX, "_").toLowerCase();
           mapping.put(columnName, column.name());
-          properties.add(new DataColumnImpl(columnName, column.type()));
+          properties.add(new DataColumnFixed(columnName, column.cardinality(), column.type()));
         }
       }
 
@@ -177,7 +178,10 @@ public class PostgresDataStore implements DataStore {
   protected static DataSchema createSchema(TableMetadata tableMetadata) {
     var name = tableMetadata.table().tableName();
     var columns = tableMetadata.columns().stream()
-        .map(column -> new DataColumnImpl(column.columnName(),
+        .map(column -> new DataColumnFixed(
+            column.columnName(),
+            column.isNullable().equals("NO") ? DataColumn.Cardinality.REQUIRED
+                : DataColumn.Cardinality.OPTIONAL,
             PostgresTypeConversion.nameToType.get(column.typeName())))
         .map(DataColumn.class::cast)
         .toList();
@@ -276,6 +280,7 @@ public class PostgresDataStore implements DataStore {
       case LOCAL_TIME -> new LocalTimeValueHandler();
       case LOCAL_DATE_TIME -> new LocalDateTimeValueHandler();
       case GEOMETRY, POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, MULTIPOLYGON, GEOMETRYCOLLECTION -> new GeometryValueHandler();
+      case NESTED -> new JsonbValueHandler();
       default -> throw new IllegalArgumentException("Unsupported type: " + type);
     };
   }

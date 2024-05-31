@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -53,7 +54,10 @@ public class FlatGeoBufTypeConversion {
   public static DataSchema asSchema(HeaderMeta headerMeta) {
     var name = headerMeta.name;
     var columns = headerMeta.columns.stream()
-        .map(column -> new DataColumnImpl(column.name, Type.fromBinding(column.getBinding())))
+        .map(column -> new DataColumnFixed(
+            column.name,
+            column.nullable ? Cardinality.OPTIONAL : Cardinality.REQUIRED,
+            Type.fromBinding(column.getBinding())))
         .map(DataColumn.class::cast)
         .toList();
     return new DataSchemaImpl(name, columns);

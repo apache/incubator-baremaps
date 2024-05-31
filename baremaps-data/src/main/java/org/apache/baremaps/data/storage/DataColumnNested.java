@@ -17,9 +17,13 @@
 
 package org.apache.baremaps.data.storage;
 
-/**
- * A column in a table.
- */
-public record DataColumnImpl(String name, Type type) implements DataColumn {
+import java.util.List;
 
+public record DataColumnNested(String name, Cardinality cardinality,
+    List<DataColumn> columns) implements DataColumn {
+
+  @Override
+  public Type type() {
+    return Type.NESTED;
+  }
 }

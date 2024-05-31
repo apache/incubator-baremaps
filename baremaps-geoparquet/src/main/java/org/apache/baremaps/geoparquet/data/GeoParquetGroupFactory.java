@@ -64,8 +64,9 @@ public class GeoParquetGroupFactory {
         };
       } else {
         GroupType groupType = field.asGroupType();
+        GeoParquetGroup.Schema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
         return (Field) new GeoParquetGroup.GroupField(groupType.getName(),
-            GeoParquetGroup.Cardinality.REQUIRED, createGeoParquetSchema(groupType, metadata));
+            GeoParquetGroup.Cardinality.REQUIRED, geoParquetSchema);
       }
     }).toList();
     return new GeoParquetGroup.Schema(schema.getName(), fields);

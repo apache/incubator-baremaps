@@ -18,14 +18,15 @@
 package org.apache.baremaps.storage.geoparquet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.apache.baremaps.data.storage.DataColumn;
+import java.util.Map;
+import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
-import org.apache.baremaps.data.storage.DataColumnImpl;
-import org.apache.baremaps.data.storage.DataSchema;
-import org.apache.baremaps.data.storage.DataSchemaImpl;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Field;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup.GroupField;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
 public class GeoParquetTypeConversion {
@@ -33,23 +34,33 @@ public class GeoParquetTypeConversion {
   private GeoParquetTypeConversion() {}
 
   public static DataSchema asSchema(String table, Schema schema) {
-    List<DataColumn> columns = schema.fields().stream()
-        .map(field -> (DataColumn) new DataColumnImpl(field.name(), asSchema(field.type())))
-        .toList();
+    List<DataColumn> columns = asDataColumns(schema);
     return new DataSchemaImpl(table, columns);
   }
 
-  public static Type asSchema(GeoParquetGroup.Type type) {
-    return switch (type) {
-      case BINARY -> Type.BYTE_ARRAY;
-      case BOOLEAN -> Type.BOOLEAN;
-      case INTEGER -> Type.INTEGER;
-      case INT96, LONG -> Type.LONG;
-      case FLOAT -> Type.FLOAT;
-      case DOUBLE -> Type.DOUBLE;
-      case STRING -> Type.STRING;
-      case GEOMETRY -> Type.GEOMETRY;
-      case GROUP -> null;
+  private static List<DataColumn> asDataColumns(Schema field) {
+    return field.fields().stream()
+        .map(GeoParquetTypeConversion::asDataColumn)
+        .toList();
+  }
+
+  private static DataColumn asDataColumn(Field field) {
+    Cardinality cardinality = switch (field.cardinality()) {
+      case REQUIRED -> Cardinality.REQUIRED;
+      case OPTIONAL -> Cardinality.OPTIONAL;
+      case REPEATED -> Cardinality.REPEATED;
+    };
+    return switch (field.type()) {
+      case BINARY -> new DataColumnFixed(field.name(), cardinality, Type.BYTE);
+      case BOOLEAN -> new DataColumnFixed(field.name(), cardinality, Type.BOOLEAN);
+      case INTEGER -> new DataColumnFixed(field.name(), cardinality, Type.INTEGER);
+      case INT96, LONG -> new DataColumnFixed(field.name(), cardinality, Type.LONG);
+      case FLOAT -> new DataColumnFixed(field.name(), cardinality, Type.FLOAT);
+      case DOUBLE -> new DataColumnFixed(field.name(), cardinality, Type.DOUBLE);
+      case STRING -> new DataColumnFixed(field.name(), cardinality, Type.STRING);
+      case GEOMETRY -> new DataColumnFixed(field.name(), cardinality, Type.GEOMETRY);
+      case GROUP -> new DataColumnNested(field.name(), cardinality,
+          asDataColumns(((GroupField) field).schema()));
     };
   }
 
@@ -59,7 +70,6 @@ public class GeoParquetTypeConversion {
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
       Field field = fields.get(i);
-      field.type();
       switch (field.type()) {
         case BINARY -> values.add(group.getBinaryValue(i).getBytes());
         case BOOLEAN -> values.add(group.getBooleanValue(i));
@@ -69,9 +79,31 @@ public class GeoParquetTypeConversion {
         case DOUBLE -> values.add(group.getDoubleValue(i));
         case STRING -> values.add(group.getStringValue(i));
         case GEOMETRY -> values.add(group.getGeometryValue(i));
-        case GROUP -> values.add(null); // TODO: values.add(asDataRow(group.getGroupValue(i)));
+        case GROUP -> values.add(asNested(group.getGroupValue(i)));
       }
     }
     return values;
   }
+
+  public static Map<String, Object> asNested(GeoParquetGroup group) {
+    Map<String, Object> nested = new HashMap<>();
+    Schema schema = group.getSchema();
+    List<Field> fields = schema.fields();
+    for (int i = 0; i < fields.size(); i++) {
+      Field field = fields.get(i);
+      nested.put(field.name(), switch (field.type()) {
+        case BINARY -> group.getBinaryValue(i).getBytes();
+        case BOOLEAN -> group.getBooleanValue(i);
+        case INTEGER -> group.getIntegerValue(i);
+        case INT96, LONG -> group.getLongValue(i);
+        case FLOAT -> group.getFloatValue(i);
+        case DOUBLE -> group.getDoubleValue(i);
+        case STRING -> group.getStringValue(i);
+        case GEOMETRY -> group.getGeometryValue(i);
+        case GROUP -> asNested(group.getGroupValue(i));
+      });
+    }
+    return nested;
+  }
+
 }

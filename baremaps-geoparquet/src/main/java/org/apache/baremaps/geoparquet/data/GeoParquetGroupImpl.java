@@ -38,7 +38,9 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
 
   private final List<?>[] data;
 
-  public GeoParquetGroupImpl(GroupType schema, GeoParquetMetadata metadata,
+  public GeoParquetGroupImpl(
+      GroupType schema,
+      GeoParquetMetadata metadata,
       Schema geoParquetSchema) {
     this.schema = schema;
     this.metadata = metadata;
@@ -50,11 +52,9 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
   }
 
   public GeoParquetGroupImpl addGroup(int fieldIndex) {
-    GeoParquetGroupImpl g =
-        new GeoParquetGroupImpl(schema.getType(fieldIndex).asGroupType(), metadata,
-            geoParquetSchema);
-    add(fieldIndex, g);
-    return g;
+    GeoParquetGroupImpl group = createGroup(fieldIndex);
+    add(fieldIndex, group);
+    return group;
   }
 
   public GeoParquetGroupImpl addGroup(String field) {
@@ -301,9 +301,11 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
   }
 
   @Override
-  public GeoParquetGroup createGroup(int fieldIndex) {
-    return new GeoParquetGroupImpl(schema.getType(fieldIndex).asGroupType(), metadata,
-        geoParquetSchema);
+  public GeoParquetGroupImpl createGroup(int fieldIndex) {
+    GroupField field = ((GroupField) geoParquetSchema.fields().get(fieldIndex));
+    GeoParquetGroupImpl group =
+        new GeoParquetGroupImpl(schema.getType(fieldIndex).asGroupType(), metadata, field.schema());
+    return group;
   }
 
   @Override
