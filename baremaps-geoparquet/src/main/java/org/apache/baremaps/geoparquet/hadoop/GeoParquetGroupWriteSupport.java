@@ -43,14 +43,14 @@ public class GeoParquetGroupWriteSupport extends WriteSupport<GeoParquetGroupImp
 
   private MessageType schema;
   private GeoParquetGroupWriter groupWriter;
-  private Map<String, String> extraMetaData;
+  private final Map<String, String> extraMetaData;
 
   public GeoParquetGroupWriteSupport() {
-    this(null, new HashMap<String, String>());
+    this(null, new HashMap<>());
   }
 
   GeoParquetGroupWriteSupport(MessageType schema) {
-    this(schema, new HashMap<String, String>());
+    this(schema, new HashMap<>());
   }
 
   GeoParquetGroupWriteSupport(MessageType schema, Map<String, String> extraMetaData) {
@@ -78,8 +78,8 @@ public class GeoParquetGroupWriteSupport extends WriteSupport<GeoParquetGroupImp
   }
 
   @Override
-  public void write(GeoParquetGroupImpl record) {
-    groupWriter.write(record);
+  public void write(GeoParquetGroupImpl group) {
+    groupWriter.write(group);
   }
 
 }

@@ -42,8 +42,6 @@ public class GeoParquetColumnMetadata {
   @JsonProperty("bbox")
   private Double[] bbox;
 
-  public GeoParquetColumnMetadata() {}
-
   public String getEncoding() {
     return encoding;
   }
