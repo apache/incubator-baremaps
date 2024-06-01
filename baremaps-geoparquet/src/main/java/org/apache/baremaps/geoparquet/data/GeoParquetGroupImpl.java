@@ -795,12 +795,12 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
 
   @Override
   public void setEnvelopeValue(String fieldName, Envelope envelopeValue) {
-
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void setEnvelopeValues(String fieldName, List<Envelope> envelopeValues) {
-
+    throw new UnsupportedOperationException();
   }
 
   @Override

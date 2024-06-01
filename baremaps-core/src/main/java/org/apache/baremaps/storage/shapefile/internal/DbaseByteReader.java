@@ -291,7 +291,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   }
 
   /**
-   * Returns the columns descriptors in their binary format.
+   * Returns the fields descriptors in their binary format.
    *
    * @return Fields descriptors.
    */
