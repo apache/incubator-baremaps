@@ -20,6 +20,7 @@ package org.apache.baremaps.geoparquet.data;
 import java.util.List;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.GroupType;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -98,6 +99,10 @@ public interface GeoParquetGroup {
 
   List<Geometry> getGeometryValues(int fieldIndex);
 
+  Envelope getEnvelopeValue(int fieldIndex);
+
+  List<Envelope> getEnvelopeValues(int fieldIndex);
+
   GeoParquetGroup getGroupValue(int fieldIndex);
 
   List<GeoParquetGroup> getGroupValues(int fieldIndex);
@@ -141,6 +146,10 @@ public interface GeoParquetGroup {
   Geometry getGeometryValue(String fieldName);
 
   List<Geometry> getGeometryValues(String fieldName);
+
+  Envelope getEnvelopeValue(String fieldName);
+
+  List<Envelope> getEnvelopeValues(String fieldName);
 
   GeoParquetGroup getGroupValue(String fieldName);
 
@@ -186,6 +195,10 @@ public interface GeoParquetGroup {
 
   void setGeometryValues(int fieldIndex, List<Geometry> geometryValues);
 
+  void setEnvelopeValue(int fieldIndex, Envelope envelopeValue);
+
+  void setEnvelopeValues(int fieldIndex, List<Envelope> envelopeValues);
+
   void setGroupValue(int fieldIndex, GeoParquetGroup groupValue);
 
   void setGroupValues(int fieldIndex, List<GeoParquetGroup> groupValues);
@@ -229,6 +242,10 @@ public interface GeoParquetGroup {
   void setGeometryValue(String fieldName, Geometry geometryValue);
 
   void setGeometryValues(String fieldName, List<Geometry> geometryValues);
+
+  void setEnvelopeValue(String fieldName, Envelope envelopeValue);
+
+  void setEnvelopeValues(String fieldName, List<Envelope> envelopeValues);
 
   void setGroupValue(String fieldName, GeoParquetGroup groupValue);
 
@@ -331,6 +348,14 @@ public interface GeoParquetGroup {
     }
   }
 
+  record EnvelopeField(String name, Cardinality cardinality, Schema schema) implements Field {
+
+    @Override
+        public Type type() {
+        return Type.ENVELOPE;
+        }
+  }
+
   record GroupField(String name, Cardinality cardinality, Schema schema) implements Field {
 
     @Override
@@ -352,6 +377,7 @@ public interface GeoParquetGroup {
     LONG,
     STRING,
     GEOMETRY,
+    ENVELOPE,
     GROUP
   }
 

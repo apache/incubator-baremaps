@@ -25,6 +25,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
 import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
@@ -90,7 +91,7 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Returns the DBase 3 fields descriptors.
+   * Returns the DBase 3 columns descriptors.
    *
    * @return Fields descriptors.
    */
@@ -148,11 +149,11 @@ public class ShapefileByteReader extends CommonByteReader {
         case TimeStamp -> Type.STRING;
         case DateTime -> Type.STRING;
       };
-      columns.add(new DataColumnImpl(columnName, columnType));
+      columns.add(new DataColumnFixed(columnName, Cardinality.OPTIONAL, columnType));
     }
 
     // Add geometry column.
-    columns.add(new DataColumnImpl(GEOMETRY_NAME, Type.GEOMETRY));
+    columns.add(new DataColumnFixed(GEOMETRY_NAME, Cardinality.OPTIONAL, Type.GEOMETRY));
 
     return new DataSchemaImpl(name, columns);
   }

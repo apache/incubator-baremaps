@@ -26,6 +26,7 @@ import org.apache.baremaps.data.calcite.SqlDataTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
 import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.data.type.RowDataType;
 import org.apache.baremaps.maplibre.vectortile.VectorTileFunctions;
@@ -74,9 +75,9 @@ public class CalciteTest {
 
       // Create the city table
       DataSchema cityRowType = new DataSchemaImpl("city", List.of(
-          new DataColumnImpl("id", Type.INTEGER),
-          new DataColumnImpl("name", Type.STRING),
-          new DataColumnImpl("geometry", Type.GEOMETRY)));
+          new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
+          new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
+          new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
       DataTable cityDataTable = new DataTableImpl(
           cityRowType,
           new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(cityRowType))));
@@ -89,8 +90,8 @@ public class CalciteTest {
 
       // Create the population table
       DataSchema populationRowType = new DataSchemaImpl("population", List.of(
-          new DataColumnImpl("city_id", Type.INTEGER),
-          new DataColumnImpl("population", Type.INTEGER)));
+          new DataColumnFixed("city_id", Cardinality.OPTIONAL, Type.INTEGER),
+          new DataColumnFixed("population", Cardinality.OPTIONAL, Type.INTEGER)));
       DataTable populationDataTable = new DataTableImpl(
           populationRowType,
           new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(populationRowType))));

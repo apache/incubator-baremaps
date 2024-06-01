@@ -31,32 +31,18 @@ public class SqlTypeConversion {
   static {
     types.put(Type.BYTE, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.TINYINT));
-    types.put(Type.BYTE_ARRAY, new JavaTypeFactoryImpl()
-        .createArrayType(new JavaTypeFactoryImpl().createSqlType(SqlTypeName.TINYINT), -1));
     types.put(Type.BOOLEAN, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.BOOLEAN));
-    types.put(Type.BOOLEAN_ARRAY, new JavaTypeFactoryImpl()
-        .createArrayType(new JavaTypeFactoryImpl().createSqlType(SqlTypeName.BOOLEAN), -1));
     types.put(Type.SHORT, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.SMALLINT));
-    types.put(Type.SHORT_ARRAY, new JavaTypeFactoryImpl()
-        .createArrayType(new JavaTypeFactoryImpl().createSqlType(SqlTypeName.SMALLINT), -1));
     types.put(Type.INTEGER, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.INTEGER));
-    types.put(Type.INTEGER_ARRAY, new JavaTypeFactoryImpl()
-        .createArrayType(new JavaTypeFactoryImpl().createSqlType(SqlTypeName.INTEGER), -1));
     types.put(Type.LONG, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.BIGINT));
-    types.put(Type.LONG_ARRAY, new JavaTypeFactoryImpl()
-        .createArrayType(new JavaTypeFactoryImpl().createSqlType(SqlTypeName.BIGINT), -1));
     types.put(Type.FLOAT, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.FLOAT));
-    types.put(Type.FLOAT_ARRAY, new JavaTypeFactoryImpl()
-        .createArrayType(new JavaTypeFactoryImpl().createSqlType(SqlTypeName.FLOAT), -1));
     types.put(Type.DOUBLE, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.DOUBLE));
-    types.put(Type.DOUBLE_ARRAY, new JavaTypeFactoryImpl()
-        .createArrayType(new JavaTypeFactoryImpl().createSqlType(SqlTypeName.DOUBLE), -1));
     types.put(Type.STRING, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.VARCHAR));
     types.put(Type.GEOMETRY, new JavaTypeFactoryImpl()

@@ -40,12 +40,14 @@ public class PostgresTypeConversion {
     typeToName.put(Type.POLYGON, "geometry");
     typeToName.put(Type.MULTIPOLYGON, "geometry");
     typeToName.put(Type.GEOMETRYCOLLECTION, "geometry");
+    typeToName.put(Type.ENVELOPE, "geometry");
     typeToName.put(Type.INET_ADDRESS, "inet");
     typeToName.put(Type.INET4_ADDRESS, "inet");
     typeToName.put(Type.INET6_ADDRESS, "inet");
     typeToName.put(Type.LOCAL_DATE, "date");
     typeToName.put(Type.LOCAL_TIME, "time");
     typeToName.put(Type.LOCAL_DATE_TIME, "timestamp");
+    typeToName.put(Type.NESTED, "jsonb");
   }
 
   protected static final Map<String, Type> nameToType = Map.ofEntries(
@@ -59,6 +61,7 @@ public class PostgresTypeConversion {
       Map.entry("inet", Type.INET6_ADDRESS),
       Map.entry("date", Type.LOCAL_DATE),
       Map.entry("time", Type.LOCAL_TIME),
-      Map.entry("timestamp", Type.LOCAL_DATE_TIME));
+      Map.entry("timestamp", Type.LOCAL_DATE_TIME),
+      Map.entry("jsonb", Type.NESTED));
 
 }

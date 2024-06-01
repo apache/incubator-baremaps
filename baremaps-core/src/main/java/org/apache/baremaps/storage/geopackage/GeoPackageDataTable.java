@@ -24,6 +24,7 @@ import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
 import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.locationtech.jts.geom.*;
 
@@ -50,7 +51,9 @@ public class GeoPackageDataTable implements DataTable {
     for (FeatureColumn column : featureDao.getColumns()) {
       var propertyName = column.getName();
       var propertyType = classType(column);
-      columns.add(new DataColumnImpl(propertyName, propertyType));
+      var propertyCardinality = column.isNotNull() ? Cardinality.REQUIRED : Cardinality.OPTIONAL;
+      columns.add(new DataColumnFixed(
+          propertyName, propertyCardinality, propertyType));
     }
     schema = new DataSchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());

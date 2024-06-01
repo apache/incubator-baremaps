@@ -148,9 +148,9 @@ public class ShapefileInputStream extends InputStream {
   }
 
   /**
-   * Returns the database fields descriptors.
+   * Returns the database columns descriptors.
    *
-   * @return List of fields descriptors.
+   * @return List of columns descriptors.
    */
   public List<DBaseFieldDescriptor> getDatabaseFieldsDescriptors() {
     return this.shapefileReader.getFieldsDescriptors();

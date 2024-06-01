@@ -57,7 +57,12 @@ public class FlatGeoBufDataTable implements DataTable {
     this.schema = readSchema(file);
   }
 
-
+  /**
+   * Reads the schema from a flatgeobuf file.
+   *
+   * @param file the path to the flatgeobuf file
+   * @return the schema of the table
+   */
   private static DataSchema readSchema(Path file) {
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
       // try to read the schema from the file

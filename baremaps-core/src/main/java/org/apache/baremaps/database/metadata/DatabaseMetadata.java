@@ -82,18 +82,30 @@ public class DatabaseMetadata {
         var resultSet = connection.getMetaData().getColumns(catalog, schemaPattern,
             tableNamePattern, columnNamePattern)) {
       while (resultSet.next()) {
-        tableColumns.add(new ColumnResult(resultSet.getString("TABLE_CAT"),
-            resultSet.getString("TABLE_SCHEM"), resultSet.getString("TABLE_NAME"),
-            resultSet.getString("COLUMN_NAME"), resultSet.getInt("DATA_TYPE"),
-            resultSet.getString("TYPE_NAME"), resultSet.getInt("COLUMN_SIZE"),
-            resultSet.getInt("DECIMAL_DIGITS"), resultSet.getInt("NUM_PREC_RADIX"),
-            resultSet.getInt("NULLABLE"), resultSet.getString("REMARKS"),
-            resultSet.getString("COLUMN_DEF"), resultSet.getInt("SQL_DATA_TYPE"),
-            resultSet.getInt("SQL_DATETIME_SUB"), resultSet.getInt("CHAR_OCTET_LENGTH"),
-            resultSet.getInt("ORDINAL_POSITION"), resultSet.getString("IS_NULLABLE"),
-            resultSet.getString("SCOPE_CATALOG"), resultSet.getString("SCOPE_SCHEMA"),
-            resultSet.getString("SCOPE_TABLE"), resultSet.getShort("SOURCE_DATA_TYPE"),
-            resultSet.getString("IS_AUTOINCREMENT"), resultSet.getString("IS_GENERATEDCOLUMN")));
+        tableColumns.add(new ColumnResult(
+            resultSet.getString("TABLE_CAT"),
+            resultSet.getString("TABLE_SCHEM"),
+            resultSet.getString("TABLE_NAME"),
+            resultSet.getString("COLUMN_NAME"),
+            resultSet.getInt("DATA_TYPE"),
+            resultSet.getString("TYPE_NAME"),
+            resultSet.getInt("COLUMN_SIZE"),
+            resultSet.getInt("DECIMAL_DIGITS"),
+            resultSet.getInt("NUM_PREC_RADIX"),
+            resultSet.getInt("NULLABLE"),
+            resultSet.getString("REMARKS"),
+            resultSet.getString("COLUMN_DEF"),
+            resultSet.getInt("SQL_DATA_TYPE"),
+            resultSet.getInt("SQL_DATETIME_SUB"),
+            resultSet.getInt("CHAR_OCTET_LENGTH"),
+            resultSet.getInt("ORDINAL_POSITION"),
+            resultSet.getString("IS_NULLABLE"),
+            resultSet.getString("SCOPE_CATALOG"),
+            resultSet.getString("SCOPE_SCHEMA"),
+            resultSet.getString("SCOPE_TABLE"),
+            resultSet.getShort("SOURCE_DATA_TYPE"),
+            resultSet.getString("IS_AUTOINCREMENT"),
+            resultSet.getString("IS_GENERATEDCOLUMN")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
