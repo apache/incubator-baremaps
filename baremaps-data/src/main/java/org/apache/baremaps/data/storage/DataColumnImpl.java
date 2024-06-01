@@ -15,20 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
-
-import org.apache.baremaps.data.collection.DataCollection;
+package org.apache.baremaps.data.storage;
 
 /**
- * A table is a collection of rows respecting a row type.
+ * A column in a table.
  */
-public interface DataTable extends DataCollection<DataRow> {
-
-  /**
-   * Returns the type of the row.
-   *
-   * @return the type of the row
-   */
-  DataRowType rowType();
+public record DataColumnImpl(String name, Type type) implements DataColumn {
 
 }

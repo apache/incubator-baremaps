@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
-import java.util.List;
+import org.apache.baremaps.data.collection.DataCollection;
 
 /**
- * A row type defines the structure of a table.
+ * A {@link DataTable} is a collection of rows respecting a {@link DataSchema} .
  */
-public interface DataRowType {
+public interface DataTable extends DataCollection<DataRow> {
 
   /**
-   * Returns the name of the row type.
-   * 
-   * @return the name of the row type
+   * Returns the schema of the row.
+   *
+   * @return the schema of the row
    */
-  String name();
-
-  /**
-   * Returns the columns of the row type.
-   * 
-   * @return the columns of the row type
-   */
-  List<DataColumn> columns();
-
-  /**
-   * Creates a new row of the row type.
-   * 
-   * @return a new row of the row type
-   */
-  DataRow createRow();
+  DataSchema schema();
 
 }

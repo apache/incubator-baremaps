@@ -19,11 +19,11 @@ package org.apache.baremaps.storage.geoparquet;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.baremaps.data.schema.DataColumn;
-import org.apache.baremaps.data.schema.DataColumn.Type;
-import org.apache.baremaps.data.schema.DataColumnImpl;
-import org.apache.baremaps.data.schema.DataRowType;
-import org.apache.baremaps.data.schema.DataRowTypeImpl;
+import org.apache.baremaps.data.storage.DataColumn;
+import org.apache.baremaps.data.storage.DataColumn.Type;
+import org.apache.baremaps.data.storage.DataColumnImpl;
+import org.apache.baremaps.data.storage.DataSchema;
+import org.apache.baremaps.data.storage.DataSchemaImpl;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Field;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
@@ -32,14 +32,14 @@ public class GeoParquetTypeConversion {
 
   private GeoParquetTypeConversion() {}
 
-  public static DataRowType asDataRowType(String table, Schema schema) {
-    List<DataColumn> fields = schema.fields().stream()
-        .map(field -> (DataColumn) new DataColumnImpl(field.name(), asDataRowType(field.type())))
+  public static DataSchema asSchema(String table, Schema schema) {
+    List<DataColumn> columns = schema.fields().stream()
+        .map(field -> (DataColumn) new DataColumnImpl(field.name(), asSchema(field.type())))
         .toList();
-    return new DataRowTypeImpl(table, fields);
+    return new DataSchemaImpl(table, columns);
   }
 
-  public static Type asDataRowType(GeoParquetGroup.Type type) {
+  public static Type asSchema(GeoParquetGroup.Type type) {
     return switch (type) {
       case BINARY -> Type.BYTE_ARRAY;
       case BOOLEAN -> Type.BOOLEAN;
@@ -53,7 +53,7 @@ public class GeoParquetTypeConversion {
     };
   }
 
-  public static List<Object> asDataRow(GeoParquetGroup group) {
+  public static List<Object> asRowValues(GeoParquetGroup group) {
     List<Object> values = new ArrayList<>();
     Schema schema = group.getSchema();
     List<Field> fields = schema.fields();

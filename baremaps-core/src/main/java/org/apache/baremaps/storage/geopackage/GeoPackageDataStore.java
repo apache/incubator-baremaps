@@ -22,23 +22,23 @@ import java.nio.file.Path;
 import java.util.List;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.data.schema.DataSchema;
-import org.apache.baremaps.data.schema.DataTable;
-import org.apache.baremaps.data.schema.DataTableException;
+import org.apache.baremaps.data.storage.DataStore;
+import org.apache.baremaps.data.storage.DataStoreException;
+import org.apache.baremaps.data.storage.DataTable;
 
 /**
- * A schema corresponding to a GeoPackage database.
+ * A {@link DataStore} corresponding to a GeoPackage file.
  */
-public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
+public class GeoPackageDataStore implements DataStore, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
   /**
-   * Constructs a schema from a GeoPackage database.
+   * Constructs a {@link GeoPackageDataStore} from a GeoPackage file.
    *
-   * @param file the path to the GeoPackage database
+   * @param file the path to the GeoPackage file
    */
-  public GeoPackageDataSchema(Path file) {
+  public GeoPackageDataStore(Path file) {
     this.geoPackage = GeoPackageManager.open(file.toFile());
   }
 
@@ -54,7 +54,7 @@ public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public List<String> list() throws DataTableException {
+  public List<String> list() throws DataStoreException {
     return geoPackage.getFeatureTables();
   }
 
@@ -62,7 +62,7 @@ public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public DataTable get(String name) throws DataTableException {
+  public DataTable get(String name) throws DataStoreException {
     return new GeoPackageDataTable(geoPackage.getFeatureDao(name));
   }
 
@@ -70,12 +70,12 @@ public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public void add(DataTable table) throws DataTableException {
+  public void add(DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void add(String name, DataTable table) throws DataTableException {
+  public void add(String name, DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 
@@ -83,7 +83,7 @@ public class GeoPackageDataSchema implements DataSchema, AutoCloseable {
    * {@inheritDoc}
    */
   @Override
-  public void remove(String name) throws DataTableException {
+  public void remove(String name) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 }

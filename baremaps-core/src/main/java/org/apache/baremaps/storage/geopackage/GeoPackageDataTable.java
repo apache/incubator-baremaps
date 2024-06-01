@@ -23,23 +23,23 @@ import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.data.schema.*;
-import org.apache.baremaps.data.schema.DataColumn.Type;
+import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.locationtech.jts.geom.*;
 
 /**
- * A table that stores rows in a GeoPackage table.
+ * A {@link DataTable} that stores rows in a GeoPackage file.
  */
 public class GeoPackageDataTable implements DataTable {
 
   private final FeatureDao featureDao;
 
-  private final DataRowType rowType;
+  private final DataSchema schema;
 
   private final GeometryFactory geometryFactory;
 
   /**
-   * Constructs a table from a feature DAO.
+   * Constructs a {@link DataTable} from a feature DAO.
    *
    * @param featureDao the feature DAO
    */
@@ -52,11 +52,11 @@ public class GeoPackageDataTable implements DataTable {
       var propertyType = classType(column);
       columns.add(new DataColumnImpl(propertyName, propertyType));
     }
-    rowType = new DataRowTypeImpl(name, columns);
+    schema = new DataSchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
-  protected Type classType(FeatureColumn column) {
+  private Type classType(FeatureColumn column) {
     if (column.isGeometry()) {
       return Type.fromBinding(Geometry.class);
     } else {
@@ -69,7 +69,7 @@ public class GeoPackageDataTable implements DataTable {
    */
   @Override
   public Iterator<DataRow> iterator() {
-    return new GeopackageIterator(featureDao.queryForAll(), rowType);
+    return new GeopackageIterator(featureDao.queryForAll(), schema);
   }
 
   /**
@@ -92,8 +92,8 @@ public class GeoPackageDataTable implements DataTable {
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
-    return rowType;
+  public DataSchema schema() {
+    return schema;
   }
 
   /**
@@ -224,13 +224,13 @@ public class GeoPackageDataTable implements DataTable {
   }
 
   /**
-   * An iterator over the rows of a GeoPackage table.
+   * An iterator over the rows of a GeoPackage data table.
    */
   public class GeopackageIterator implements Iterator<DataRow> {
 
     private final FeatureResultSet featureResultSet;
 
-    private final DataRowType rowType;
+    private final DataSchema schema;
 
     private boolean hasNext;
 
@@ -238,11 +238,11 @@ public class GeoPackageDataTable implements DataTable {
      * Constructs an iterator from a feature result set.
      *
      * @param featureResultSet the feature result set
-     * @param rowType the row type of the table
+     * @param schema the schema of the data table
      */
-    public GeopackageIterator(FeatureResultSet featureResultSet, DataRowType rowType) {
+    public GeopackageIterator(FeatureResultSet featureResultSet, DataSchema schema) {
       this.featureResultSet = featureResultSet;
-      this.rowType = rowType;
+      this.schema = schema;
       this.hasNext = featureResultSet.moveToFirst();
     }
 
@@ -262,7 +262,7 @@ public class GeoPackageDataTable implements DataTable {
       if (!hasNext) {
         throw new NoSuchElementException();
       }
-      DataRow row = rowType.createRow();
+      DataRow row = schema.createRow();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {

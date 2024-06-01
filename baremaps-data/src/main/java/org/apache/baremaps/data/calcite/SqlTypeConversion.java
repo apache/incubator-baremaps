@@ -18,7 +18,7 @@
 package org.apache.baremaps.data.calcite;
 
 import java.util.EnumMap;
-import org.apache.baremaps.data.schema.DataColumn.Type;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.type.SqlTypeName;

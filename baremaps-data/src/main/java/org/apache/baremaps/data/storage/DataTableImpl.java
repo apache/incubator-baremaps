@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
 import java.util.Iterator;
 import org.apache.baremaps.data.collection.DataCollection;
 
 /**
- * A table is a collection of rows respecting a row type.
+ * A {@link DataTable} is a collection of rows respecting a {@link DataSchema}.
  */
 public class DataTableImpl implements DataTable {
 
-  private final DataRowType rowType;
+  private final DataSchema schema;
 
   private final DataCollection<DataRow> rows;
 
   /**
-   * Constructs a table with the specified row type.
+   * Constructs a {@link DataTable} with the specified row {@link DataSchema}.
    *
-   * @param rowType the row type of the table
-   * @param rows the collection of rows
+   * @param schema the schema of the rows
+   * @param rows the rows
    */
-  public DataTableImpl(DataRowType rowType, DataCollection<DataRow> rows) {
-    this.rowType = rowType;
+  public DataTableImpl(DataSchema schema, DataCollection<DataRow> rows) {
+    this.schema = schema;
     this.rows = rows;
   }
 
@@ -44,16 +44,16 @@ public class DataTableImpl implements DataTable {
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
-    return rowType;
+  public DataSchema schema() {
+    return schema;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean add(DataRow e) {
-    return rows.add(e);
+  public boolean add(DataRow row) {
+    return rows.add(row);
   }
 
   /**

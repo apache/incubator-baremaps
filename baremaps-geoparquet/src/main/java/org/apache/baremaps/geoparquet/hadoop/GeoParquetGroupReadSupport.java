@@ -17,9 +17,11 @@
 
 package org.apache.baremaps.geoparquet.hadoop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroupRecordConverter;
 import org.apache.baremaps.geoparquet.data.GeoParquetMetadata;
@@ -51,8 +53,8 @@ public class GeoParquetGroupReadSupport extends ReadSupport<GeoParquetGroup> {
           .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
           .readValue(json, GeoParquetMetadata.class);
       return new GeoParquetGroupRecordConverter(readContext.getRequestedSchema(), metadata);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to read the GeoParquet metadata of the Parquet file", e);
+    } catch (JsonProcessingException e) {
+      throw new GeoParquetException("Failed to read GeoParquet's metadata of the Parquet file", e);
     }
   }
 

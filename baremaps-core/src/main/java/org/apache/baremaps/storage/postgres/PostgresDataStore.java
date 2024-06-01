@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.apache.baremaps.data.schema.*;
-import org.apache.baremaps.data.schema.DataColumn.Type;
+import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.database.copy.GeometryValueHandler;
 import org.apache.baremaps.database.metadata.DatabaseMetadata;
@@ -37,23 +37,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A schema that stores tables in a Postgres database.
+ * A {@link DataStore} that stores {@link DataTable}s in the tables of a Postgres database.
  */
-public class PostgresDataSchema implements DataSchema {
+public class PostgresDataStore implements DataStore {
 
   public static final String REGEX = "[^a-zA-Z0-9]";
-  private static final Logger logger = LoggerFactory.getLogger(PostgresDataSchema.class);
+
+  private static final Logger logger = LoggerFactory.getLogger(PostgresDataStore.class);
 
   private static final String[] TYPES = new String[] {"TABLE", "VIEW"};
 
   private final DataSource dataSource;
 
   /**
-   * Creates a postgres schema.
+   * Creates a postgres data store with the given data source.
    *
    * @param dataSource the data source
    */
-  public PostgresDataSchema(DataSource dataSource) {
+  public PostgresDataStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -61,7 +62,7 @@ public class PostgresDataSchema implements DataSchema {
    * {@inheritDoc}
    */
   @Override
-  public List<String> list() throws DataTableException {
+  public List<String> list() throws DataStoreException {
     DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
     return metadata.getTableMetaData(null, "public", null, TYPES).stream()
         .map(table -> table.table().tableName())
@@ -72,16 +73,16 @@ public class PostgresDataSchema implements DataSchema {
    * {@inheritDoc}
    */
   @Override
-  public DataTable get(String name) throws DataTableException {
+  public DataTable get(String name) throws DataStoreException {
     var databaseMetadata = new DatabaseMetadata(dataSource);
     var postgresName = name.replaceAll(REGEX, "_").toLowerCase();
     var tableMetadata = databaseMetadata.getTableMetaData(null, null, postgresName, TYPES)
         .stream().findFirst();
     if (tableMetadata.isEmpty()) {
-      throw new DataTableException("Table " + name + " does not exist.");
+      throw new DataStoreException("Table " + name + " does not exist.");
     }
-    var rowType = createRowType(tableMetadata.get());
-    return new PostgresDataTable(dataSource, rowType);
+    var schema = createSchema(tableMetadata.get());
+    return new PostgresDataTable(dataSource, schema);
   }
 
   /**
@@ -89,7 +90,7 @@ public class PostgresDataSchema implements DataSchema {
    */
   @Override
   public void add(DataTable table) {
-    var name = table.rowType().name().replaceAll(REGEX, "_").toLowerCase();
+    var name = table.schema().name().replaceAll(REGEX, "_").toLowerCase();
     add(name, table);
   }
 
@@ -101,7 +102,7 @@ public class PostgresDataSchema implements DataSchema {
     try (var connection = dataSource.getConnection()) {
       var mapping = new HashMap<String, String>();
       var properties = new ArrayList<DataColumn>();
-      for (DataColumn column : table.rowType().columns()) {
+      for (DataColumn column : table.schema().columns()) {
         if (PostgresTypeConversion.typeToName.containsKey(column.type())) {
           var columnName = column.name().replaceAll(REGEX, "_").toLowerCase();
           mapping.put(columnName, column.name());
@@ -109,17 +110,17 @@ public class PostgresDataSchema implements DataSchema {
         }
       }
 
-      var rowType = new DataRowTypeImpl(name, properties);
+      var schema = new DataSchemaImpl(name, properties);
 
       // Drop the table if it exists
-      var dropQuery = dropTable(rowType);
+      var dropQuery = dropTable(schema);
       logger.debug(dropQuery);
       try (var dropStatement = connection.prepareStatement(dropQuery)) {
         dropStatement.execute();
       }
 
       // Create the table
-      var createQuery = createTable(rowType);
+      var createQuery = createTable(schema);
       logger.debug(createQuery);
       try (var createStatement = connection.prepareStatement(createQuery)) {
         createStatement.execute();
@@ -127,12 +128,12 @@ public class PostgresDataSchema implements DataSchema {
 
       // Copy the data
       var pgConnection = connection.unwrap(PGConnection.class);
-      var copyQuery = copy(rowType);
+      var copyQuery = copy(schema);
       logger.debug(copyQuery);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
-        var columns = getColumns(rowType);
-        var handlers = getHandlers(rowType);
+        var columns = getColumns(schema);
+        var handlers = getHandlers(schema);
         for (DataRow row : table) {
           writer.startRow(columns.size());
           for (int i = 0; i < columns.size(); i++) {
@@ -158,9 +159,9 @@ public class PostgresDataSchema implements DataSchema {
    */
   @Override
   public void remove(String name) {
-    var rowType = get(name).rowType();
+    var schema = get(name).schema();
     try (var connection = dataSource.getConnection();
-        var statement = connection.prepareStatement(dropTable(rowType))) {
+        var statement = connection.prepareStatement(dropTable(schema))) {
       statement.execute();
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -168,43 +169,43 @@ public class PostgresDataSchema implements DataSchema {
   }
 
   /**
-   * Creates a row type from the metadata of a postgres table.
+   * Creates a schema from the metadata of a postgres table.
    *
    * @param tableMetadata the table metadata
-   * @return the rowType
+   * @return the schema
    */
-  protected static DataRowType createRowType(TableMetadata tableMetadata) {
+  protected static DataSchema createSchema(TableMetadata tableMetadata) {
     var name = tableMetadata.table().tableName();
     var columns = tableMetadata.columns().stream()
         .map(column -> new DataColumnImpl(column.columnName(),
             PostgresTypeConversion.nameToType.get(column.typeName())))
         .map(DataColumn.class::cast)
         .toList();
-    return new DataRowTypeImpl(name, columns);
+    return new DataSchemaImpl(name, columns);
   }
 
   /**
    * Generate a drop table query.
    *
-   * @param rowType the table name
+   * @param schema the schema
    * @return the query
    */
-  protected String dropTable(DataRowType rowType) {
-    return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", rowType.name());
+  protected String dropTable(DataSchema schema) {
+    return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", schema.name());
   }
 
   /**
    * Generate a create table query.
    *
-   * @param rowType the row type
+   * @param schema the schema
    * @return the query
    */
-  protected String createTable(DataRowType rowType) {
+  protected String createTable(DataSchema schema) {
     StringBuilder builder = new StringBuilder();
     builder.append("CREATE TABLE \"");
-    builder.append(rowType.name());
+    builder.append(schema.name());
     builder.append("\" (");
-    builder.append(rowType.columns().stream()
+    builder.append(schema.columns().stream()
         .map(column -> "\"" + column.name()
             + "\" " + PostgresTypeConversion.typeToName.get(column.type()))
         .collect(Collectors.joining(", ")));
@@ -215,15 +216,15 @@ public class PostgresDataSchema implements DataSchema {
   /**
    * Generate a copy query.
    *
-   * @param rowType the row type
+   * @param schema the schema
    * @return the query
    */
-  protected String copy(DataRowType rowType) {
+  protected String copy(DataSchema schema) {
     var builder = new StringBuilder();
     builder.append("COPY \"");
-    builder.append(rowType.name());
+    builder.append(schema.name());
     builder.append("\" (");
-    builder.append(rowType.columns().stream()
+    builder.append(schema.columns().stream()
         .map(column -> "\"" + column.name() + "\"")
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
@@ -231,25 +232,25 @@ public class PostgresDataSchema implements DataSchema {
   }
 
   /**
-   * Get the columns of the row type.
+   * Get the columns of the schema.
    *
-   * @param rowType the row type
+   * @param schema the schema
    * @return the columns
    */
-  protected List<DataColumn> getColumns(DataRowType rowType) {
-    return rowType.columns().stream()
+  protected List<DataColumn> getColumns(DataSchema schema) {
+    return schema.columns().stream()
         .filter(this::isSupported)
         .collect(Collectors.toList());
   }
 
   /**
-   * Get the handlers for the columns of the row type.
+   * Get the handlers for the columns of the schema.
    *
-   * @param rowType the row type
+   * @param schema the schema
    * @return the handlers
    */
-  protected List<BaseValueHandler> getHandlers(DataRowType rowType) {
-    return getColumns(rowType).stream()
+  protected List<BaseValueHandler> getHandlers(DataSchema schema) {
+    return getColumns(schema).stream()
         .map(column -> getHandler(column.type()))
         .collect(Collectors.toList());
   }

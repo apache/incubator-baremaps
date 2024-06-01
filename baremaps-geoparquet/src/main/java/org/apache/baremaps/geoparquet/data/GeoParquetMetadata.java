@@ -34,8 +34,6 @@ public class GeoParquetMetadata {
   @JsonProperty("columns")
   private Map<String, GeoParquetColumnMetadata> columns;
 
-  public GeoParquetMetadata() {}
-
   public String getVersion() {
     return version;
   }
@@ -61,21 +59,17 @@ public class GeoParquetMetadata {
   }
 
   public int getSrid(String column) {
-    Optional<JsonNode> crs = Optional.ofNullable(getColumns().get(column).getCrs());
-    if(crs.isPresent()){
-      JsonNode crsId = crs.get().get("id");
-      int srid = switch (crsId.get("authority").asText()) {
-        case "OGC" -> switch (crsId.get("code").asText()) {
+    return Optional.ofNullable(getColumns().get(column).getCrs()).map(crs -> {
+      JsonNode id = crs.get("id");
+      return switch (id.get("authority").asText()) {
+        case "OGC" -> switch (id.get("code").asText()) {
           case "CRS84" -> 4326;
           default -> 0;
         };
-        case "EPSG" -> crsId.get("code").asInt();
+        case "EPSG" -> id.get("code").asInt();
         default -> 0;
       };
-      return srid;
-    } else {
-      return 4326;
-    }
+    }).orElse(4326);
   }
 
   public boolean isGeometryColumn(String column) {

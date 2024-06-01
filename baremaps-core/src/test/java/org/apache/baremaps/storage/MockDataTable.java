@@ -21,18 +21,18 @@ import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY
 
 import java.util.Iterator;
 import java.util.List;
-import org.apache.baremaps.data.schema.*;
-import org.apache.baremaps.data.schema.DataColumn.Type;
+import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.locationtech.jts.geom.Coordinate;
 
 public class MockDataTable implements DataTable {
 
-  private final DataRowType rowType;
+  private final DataSchema rowType;
 
   private final List<DataRow> rows;
 
   public MockDataTable() {
-    this.rowType = new DataRowTypeImpl("mock", List.of(
+    this.rowType = new DataSchemaImpl("mock", List.of(
         new DataColumnImpl("string", Type.STRING),
         new DataColumnImpl("integer", Type.INTEGER),
         new DataColumnImpl("double", Type.DOUBLE),
@@ -67,7 +67,7 @@ public class MockDataTable implements DataTable {
   }
 
   @Override
-  public DataRowType rowType() {
+  public DataSchema schema() {
     return rowType;
   }
 }
