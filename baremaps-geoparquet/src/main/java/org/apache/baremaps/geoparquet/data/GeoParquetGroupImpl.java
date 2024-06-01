@@ -435,10 +435,10 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
   @Override
   public List<Envelope> getEnvelopeValues(int fieldIndex) {
     return getGroupValues(fieldIndex).stream().map(group -> {
-      var xMin = group.getDoubleValue(0);
-      var yMin = group.getDoubleValue(1);
-      var xMax = group.getDoubleValue(2);
-      var yMax = group.getDoubleValue(3);
+      var xMin = group.getFloatValue(0);
+      var yMin = group.getFloatValue(1);
+      var xMax = group.getFloatValue(2);
+      var yMax = group.getFloatValue(3);
       return new Envelope(xMin, xMax, yMin, yMax);
     }).toList();
   }
