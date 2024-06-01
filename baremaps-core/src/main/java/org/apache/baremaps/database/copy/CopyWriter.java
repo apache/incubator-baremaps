@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.copy.PGCopyOutputStream;
 import org.postgresql.core.Oid;
@@ -106,7 +107,7 @@ public class CopyWriter implements AutoCloseable {
   public static final GeometryValueHandler GEOMETRY_HANDLER =
       new GeometryValueHandler();
 
-  public static final EnvelopeValueHandler BOX2D_HANDLER =
+  public static final EnvelopeValueHandler ENVELOPE_HANDLER =
       new EnvelopeValueHandler();
 
   private final DataOutputStream data;
@@ -398,6 +399,16 @@ public class CopyWriter implements AutoCloseable {
    */
   public void writeGeometry(Geometry value) throws IOException {
     GEOMETRY_HANDLER.handle(data, value);
+  }
+
+  /**
+   * Writes an envelope value.
+   *
+   * @param value
+   * @throws IOException
+   */
+  public void writeEnvelope(Envelope value) throws IOException {
+    ENVELOPE_HANDLER.handle(data, value);
   }
 
   /** Close the writer. */
