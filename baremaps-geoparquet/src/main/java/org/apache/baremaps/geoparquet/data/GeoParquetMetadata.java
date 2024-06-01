@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
 import java.util.Map;
+import java.util.Optional;
 
 public class GeoParquetMetadata {
 
@@ -60,16 +61,21 @@ public class GeoParquetMetadata {
   }
 
   public int getSrid(String column) {
-    JsonNode crsId = getColumns().get(column).getCrs().get("id");
-    int srid = switch (crsId.get("authority").asText()) {
-      case "OGC" -> switch (crsId.get("code").asText()) {
+    Optional<JsonNode> crs = Optional.ofNullable(getColumns().get(column).getCrs());
+    if(crs.isPresent()){
+      JsonNode crsId = crs.get().get("id");
+      int srid = switch (crsId.get("authority").asText()) {
+        case "OGC" -> switch (crsId.get("code").asText()) {
           case "CRS84" -> 4326;
           default -> 0;
         };
-      case "EPSG" -> crsId.get("code").asInt();
-      default -> 0;
-    };
-    return srid;
+        case "EPSG" -> crsId.get("code").asInt();
+        default -> 0;
+      };
+      return srid;
+    } else {
+      return 4326;
+    }
   }
 
   public boolean isGeometryColumn(String column) {
