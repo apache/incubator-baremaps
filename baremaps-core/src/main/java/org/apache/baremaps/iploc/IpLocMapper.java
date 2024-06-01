@@ -99,14 +99,14 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         }
       }
 
-      // If there is a country, we use that with a cherry-picked list of columns to query the
+      // If there is a country, we use that with a cherry-picked list of fields to query the
       // geocoder with confidence to find a relevant precise location,
       // in the worst case the error is within a country
       List<String> searchedFields = List.of("descr", "netname");
       // at least one of a searchedField is present and the country is present.
       if (attributes.keySet().stream().anyMatch(searchedFields::contains)
           && attributes.containsKey("country")) {
-        // build a query text string out of the cherry-picked columns
+        // build a query text string out of the cherry-picked fields
         var queryTextBuilder = new StringBuilder();
         for (String field : searchedFields) {
           if (!Strings.isNullOrEmpty(attributes.get(field))) {

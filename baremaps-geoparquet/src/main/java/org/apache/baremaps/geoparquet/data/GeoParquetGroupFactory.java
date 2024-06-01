@@ -41,7 +41,10 @@ public class GeoParquetGroupFactory {
       GroupType schema,
       GeoParquetMetadata metadata) {
 
+    // Map the fields
     List<Field> fields = schema.getFields().stream().map(field -> {
+
+      // Map the column cardinality
       GeoParquetGroup.Cardinality cardinality = switch (field.getRepetition()) {
         case REQUIRED -> GeoParquetGroup.Cardinality.REQUIRED;
         case OPTIONAL -> GeoParquetGroup.Cardinality.OPTIONAL;
@@ -74,16 +77,16 @@ public class GeoParquetGroupFactory {
       else {
         PrimitiveType primitiveType = field.asPrimitiveType();
         PrimitiveTypeName primitiveTypeName = primitiveType.getPrimitiveTypeName();
-        String name = primitiveType.getName();
+        String columnName = primitiveType.getName();
         return switch (primitiveTypeName) {
-          case INT32 -> new GeoParquetGroup.IntegerField(name, cardinality);
-          case INT64 -> new GeoParquetGroup.LongField(name, cardinality);
-          case INT96 -> new GeoParquetGroup.Int96Field(name, cardinality);
-          case FLOAT -> new GeoParquetGroup.FloatField(name, cardinality);
-          case DOUBLE -> new GeoParquetGroup.DoubleField(name, cardinality);
-          case BOOLEAN -> new GeoParquetGroup.BooleanField(name, cardinality);
-          case BINARY -> new GeoParquetGroup.BinaryField(name, cardinality);
-          case FIXED_LEN_BYTE_ARRAY -> new GeoParquetGroup.BinaryField(name, cardinality);
+          case INT32 -> new GeoParquetGroup.IntegerField(columnName, cardinality);
+          case INT64 -> new GeoParquetGroup.LongField(columnName, cardinality);
+          case INT96 -> new GeoParquetGroup.Int96Field(columnName, cardinality);
+          case FLOAT -> new GeoParquetGroup.FloatField(columnName, cardinality);
+          case DOUBLE -> new GeoParquetGroup.DoubleField(columnName, cardinality);
+          case BOOLEAN -> new GeoParquetGroup.BooleanField(columnName, cardinality);
+          case BINARY -> new GeoParquetGroup.BinaryField(columnName, cardinality);
+          case FIXED_LEN_BYTE_ARRAY -> new GeoParquetGroup.BinaryField(columnName, cardinality);
         };
       }
     }).toList();

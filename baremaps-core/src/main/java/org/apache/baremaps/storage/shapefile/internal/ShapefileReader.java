@@ -136,9 +136,9 @@ public class ShapefileReader {
   }
 
   /**
-   * Returns the database columns descriptors.
+   * Returns the database fields descriptors.
    *
-   * @return List of columns descriptors.
+   * @return List of fields descriptors.
    */
   public List<DBaseFieldDescriptor> getDatabaseFieldsDescriptors() {
     return this.databaseFieldsDescriptors;

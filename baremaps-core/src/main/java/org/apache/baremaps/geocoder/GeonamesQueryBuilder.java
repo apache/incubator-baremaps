@@ -98,7 +98,7 @@ public class GeonamesQueryBuilder {
     if (queryText != null) {
       var queryTextEsc = QueryParser.escape(queryText);
       if (!queryTextEsc.isBlank()) {
-        // Changing the columns here might affect queries using queryText.
+        // Changing the fields here might affect queries using queryText.
         var fieldWeights = Map.of("name", 1f, "asciiname", 1f, "country", 1f, "countryCode", 1f);
         var parser = new SimpleQueryParser(analyzer, fieldWeights);
         if (andOperator) {
