@@ -210,11 +210,18 @@ public class PostgresDataStore implements DataStore {
     builder.append(schema.name());
     builder.append("\" (");
     builder.append(schema.columns().stream()
-        .map(column -> "\"" + column.name()
-            + "\" " + PostgresTypeConversion.typeToName.get(column.type()))
+        .map(PostgresDataStore::getColumnType)
         .collect(Collectors.joining(", ")));
     builder.append(")");
     return builder.toString();
+  }
+
+  private static String getColumnType(DataColumn column) {
+    String columnName = column.name();
+    String columnType = PostgresTypeConversion.typeToName.get(column.type());
+    String columnArray = column.cardinality() == DataColumn.Cardinality.REPEATED ? "[]" : "";
+    String columnNull = column.cardinality() == DataColumn.Cardinality.REQUIRED ? "NOT NULL" : "";
+    return String.format("\"%s\" %s%s %s", columnName, columnType, columnArray, columnNull).strip();
   }
 
   /**

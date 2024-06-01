@@ -17,11 +17,33 @@
 
 package org.apache.baremaps.database.copy;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import de.bytefish.pgbulkinsert.pgsql.handlers.BaseValueHandler;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class JsonbValueHandler extends BaseValueHandler<Object> {
+
+  private static final ObjectMapper objectMapper;
+
+  static {
+    objectMapper = new ObjectMapper();
+    SimpleModule module = new SimpleModule();
+    module.addSerializer(String.class, new NoQuotesStringSerializer());
+    objectMapper.registerModule(module);
+  }
+
+  static class NoQuotesStringSerializer extends JsonSerializer<String> {
+    @Override
+    public void serialize(String value, JsonGenerator gen, SerializerProvider serializers)
+        throws IOException {
+      gen.writeRawValue(value);
+    }
+  }
 
   private final int jsonbProtocolVersion;
 
@@ -35,7 +57,6 @@ public class JsonbValueHandler extends BaseValueHandler<Object> {
 
   private static byte[] asJson(Object object) {
     try {
-      ObjectMapper objectMapper = new ObjectMapper();
       String value = objectMapper.writeValueAsString(object);
       return value.getBytes("UTF-8");
     } catch (Exception e) {
@@ -50,7 +71,6 @@ public class JsonbValueHandler extends BaseValueHandler<Object> {
     buffer.writeByte(jsonbProtocolVersion);
     buffer.write(utf8Bytes);
   }
-
 
   @Override
   public int getLength(Object value) {
