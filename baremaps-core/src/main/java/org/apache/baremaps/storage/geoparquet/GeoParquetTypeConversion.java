@@ -51,7 +51,7 @@ public class GeoParquetTypeConversion {
       case REPEATED -> Cardinality.REPEATED;
     };
     return switch (field.type()) {
-      case BINARY -> new DataColumnFixed(field.name(), cardinality, Type.BYTE);
+      case BINARY -> new DataColumnFixed(field.name(), cardinality, Type.BINARY);
       case BOOLEAN -> new DataColumnFixed(field.name(), cardinality, Type.BOOLEAN);
       case INTEGER -> new DataColumnFixed(field.name(), cardinality, Type.INTEGER);
       case INT96, LONG -> new DataColumnFixed(field.name(), cardinality, Type.LONG);

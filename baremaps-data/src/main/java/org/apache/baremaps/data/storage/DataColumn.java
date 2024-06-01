@@ -58,6 +58,7 @@ public interface DataColumn {
    * An enumeration of the supported data column types.
    */
   enum Type {
+    BINARY(byte[].class),
     BYTE(Byte.class),
     BOOLEAN(Boolean.class),
     SHORT(Short.class),
