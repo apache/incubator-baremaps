@@ -20,7 +20,7 @@ package org.apache.baremaps.data.storage;
 import java.util.List;
 
 /**
- * A {@link DataSchema} is a collection of {@link DataTable}s.
+ * A {@link DataStore} is a collection of {@link DataTable}s.
  */
 public interface DataStore {
 
