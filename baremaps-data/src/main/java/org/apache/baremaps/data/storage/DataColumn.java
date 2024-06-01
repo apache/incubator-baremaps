@@ -76,6 +76,7 @@ public interface DataColumn {
     MULTILINESTRING(MultiLineString.class),
     MULTIPOLYGON(MultiPolygon.class),
     GEOMETRYCOLLECTION(GeometryCollection.class),
+    ENVELOPE(Envelope.class),
     INET_ADDRESS(InetAddress.class),
     INET4_ADDRESS(Inet4Address.class),
     INET6_ADDRESS(Inet6Address.class),

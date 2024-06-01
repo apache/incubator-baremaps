@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.database.copy.CopyWriter;
+import org.apache.baremaps.database.copy.EnvelopeValueHandler;
 import org.apache.baremaps.database.copy.GeometryValueHandler;
 import org.apache.baremaps.database.copy.JsonbValueHandler;
 import org.apache.baremaps.database.metadata.DatabaseMetadata;
@@ -287,6 +288,7 @@ public class PostgresDataStore implements DataStore {
       case LOCAL_TIME -> new LocalTimeValueHandler();
       case LOCAL_DATE_TIME -> new LocalDateTimeValueHandler();
       case GEOMETRY, POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, MULTIPOLYGON, GEOMETRYCOLLECTION -> new GeometryValueHandler();
+      case ENVELOPE -> new EnvelopeValueHandler();
       case NESTED -> new JsonbValueHandler();
       default -> throw new IllegalArgumentException("Unsupported type: " + type);
     };

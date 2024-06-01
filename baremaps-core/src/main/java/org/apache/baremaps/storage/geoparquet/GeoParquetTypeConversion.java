@@ -59,6 +59,7 @@ public class GeoParquetTypeConversion {
       case DOUBLE -> new DataColumnFixed(field.name(), cardinality, Type.DOUBLE);
       case STRING -> new DataColumnFixed(field.name(), cardinality, Type.STRING);
       case GEOMETRY -> new DataColumnFixed(field.name(), cardinality, Type.GEOMETRY);
+      case ENVELOPE -> new DataColumnFixed(field.name(), cardinality, Type.ENVELOPE);
       case GROUP -> new DataColumnNested(field.name(), cardinality,
           asDataColumns(((GroupField) field).schema()));
     };
@@ -79,6 +80,7 @@ public class GeoParquetTypeConversion {
         case DOUBLE -> values.add(group.getDoubleValue(i));
         case STRING -> values.add(group.getStringValue(i));
         case GEOMETRY -> values.add(group.getGeometryValue(i));
+        case ENVELOPE -> values.add(group.getEnvelopeValue(i));
         case GROUP -> values.add(asNested(group.getGroupValue(i)));
       }
     }
@@ -100,6 +102,7 @@ public class GeoParquetTypeConversion {
         case DOUBLE -> group.getDoubleValue(i);
         case STRING -> group.getStringValue(i);
         case GEOMETRY -> group.getGeometryValue(i);
+        case ENVELOPE -> group.getEnvelopeValue(i);
         case GROUP -> asNested(group.getGroupValue(i));
       });
     }

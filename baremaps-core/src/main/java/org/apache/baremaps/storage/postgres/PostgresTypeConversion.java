@@ -40,6 +40,7 @@ public class PostgresTypeConversion {
     typeToName.put(Type.POLYGON, "geometry");
     typeToName.put(Type.MULTIPOLYGON, "geometry");
     typeToName.put(Type.GEOMETRYCOLLECTION, "geometry");
+    typeToName.put(Type.ENVELOPE, "geometry");
     typeToName.put(Type.INET_ADDRESS, "inet");
     typeToName.put(Type.INET4_ADDRESS, "inet");
     typeToName.put(Type.INET6_ADDRESS, "inet");

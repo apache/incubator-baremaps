@@ -40,15 +40,38 @@ public class GeoParquetGroupFactory {
   public static GeoParquetGroup.Schema createGeoParquetSchema(
       GroupType schema,
       GeoParquetMetadata metadata) {
+
     List<Field> fields = schema.getFields().stream().map(field -> {
       GeoParquetGroup.Cardinality cardinality = switch (field.getRepetition()) {
         case REQUIRED -> GeoParquetGroup.Cardinality.REQUIRED;
         case OPTIONAL -> GeoParquetGroup.Cardinality.OPTIONAL;
         case REPEATED -> GeoParquetGroup.Cardinality.REPEATED;
       };
+
+      // Handle geometry columns
       if (field.isPrimitive() && metadata.isGeometryColumn(field.getName())) {
         return new GeoParquetGroup.GeometryField(field.getName(), cardinality);
-      } else if (field.isPrimitive()) {
+      }
+
+      // Handle envelope columns
+      else if (!field.isPrimitive() && field.getName().equals("bbox")) {
+        GroupType groupType = field.asGroupType();
+        GeoParquetGroup.Schema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
+        return new GeoParquetGroup.EnvelopeField(field.getName(), cardinality, geoParquetSchema);
+      }
+
+      // Handle group columns
+      else if (!field.isPrimitive()) {
+        GroupType groupType = field.asGroupType();
+        GeoParquetGroup.Schema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
+        return (Field) new GeoParquetGroup.GroupField(
+            groupType.getName(),
+            GeoParquetGroup.Cardinality.REQUIRED,
+            geoParquetSchema);
+      }
+
+      // Handle primitive columns
+      else {
         PrimitiveType primitiveType = field.asPrimitiveType();
         PrimitiveTypeName primitiveTypeName = primitiveType.getPrimitiveTypeName();
         String name = primitiveType.getName();
@@ -62,13 +85,9 @@ public class GeoParquetGroupFactory {
           case BINARY -> new GeoParquetGroup.BinaryField(name, cardinality);
           case FIXED_LEN_BYTE_ARRAY -> new GeoParquetGroup.BinaryField(name, cardinality);
         };
-      } else {
-        GroupType groupType = field.asGroupType();
-        GeoParquetGroup.Schema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
-        return (Field) new GeoParquetGroup.GroupField(groupType.getName(),
-            GeoParquetGroup.Cardinality.REQUIRED, geoParquetSchema);
       }
     }).toList();
+
     return new GeoParquetGroup.Schema(schema.getName(), fields);
   }
 

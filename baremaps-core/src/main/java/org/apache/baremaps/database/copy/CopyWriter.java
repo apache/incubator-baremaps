@@ -106,6 +106,9 @@ public class CopyWriter implements AutoCloseable {
   public static final GeometryValueHandler GEOMETRY_HANDLER =
       new GeometryValueHandler();
 
+  public static final EnvelopeValueHandler BOX2D_HANDLER =
+      new EnvelopeValueHandler();
+
   private final DataOutputStream data;
 
   /**

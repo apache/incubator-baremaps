@@ -21,25 +21,29 @@ import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
 import de.bytefish.pgbulkinsert.pgsql.handlers.BaseValueHandler;
 import java.io.DataOutputStream;
-import java.io.IOException;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKBWriter;
 
-public class GeometryValueHandler extends BaseValueHandler<Geometry> {
+public class EnvelopeValueHandler extends BaseValueHandler<Envelope> {
 
-  private static byte[] asWKB(Geometry geometry) {
+  private static final GeometryFactory geometryFactory = new GeometryFactory();
+
+  private static byte[] asWKB(Envelope value) {
+    Geometry geometry = geometryFactory.toGeometry(value);
     return new WKBWriter(2, wkbNDR, true).write(geometry);
   }
 
   @Override
-  protected void internalHandle(DataOutputStream buffer, Geometry value) throws IOException {
+  protected void internalHandle(DataOutputStream buffer, Envelope value) throws Exception {
     byte[] wkb = asWKB(value);
     buffer.writeInt(wkb.length);
     buffer.write(wkb, 0, wkb.length);
   }
 
   @Override
-  public int getLength(Geometry geometry) {
-    return asWKB(geometry).length + 4;
+  public int getLength(Envelope value) {
+    return asWKB(value).length + 4;
   }
 }
