@@ -22,22 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-class GeoPackageDataSchemaTest {
+class GeoPackageDataStoreTest {
 
   @Test
-  void rowType() {
-    var geoPackageStore =
-        new GeoPackageDataSchema(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
+  void schema() {
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg");
+    var geoPackageStore = new GeoPackageDataStore(file);
     var table = geoPackageStore.get("countries");
-    var rowType = table.rowType();
+    var rowType = table.schema();
     assertEquals(rowType.name(), "countries");
     assertEquals(rowType.columns().size(), 4);
   }
 
   @Test
   void read() {
-    var geoPackageStore =
-        new GeoPackageDataSchema(TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg"));
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg");
+    var geoPackageStore = new GeoPackageDataStore(file);
     var table = geoPackageStore.get("countries");
     assertEquals(179, table.size());
     assertEquals(179, table.stream().count());

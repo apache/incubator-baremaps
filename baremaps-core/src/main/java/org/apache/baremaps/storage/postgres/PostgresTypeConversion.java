@@ -19,7 +19,7 @@ package org.apache.baremaps.storage.postgres;
 
 import java.util.EnumMap;
 import java.util.Map;
-import org.apache.baremaps.data.schema.DataColumn.Type;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 
 public class PostgresTypeConversion {
 

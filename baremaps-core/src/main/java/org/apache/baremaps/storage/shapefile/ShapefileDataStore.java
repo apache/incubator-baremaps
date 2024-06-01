@@ -23,14 +23,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.baremaps.data.schema.DataSchema;
-import org.apache.baremaps.data.schema.DataTable;
-import org.apache.baremaps.data.schema.DataTableException;
+import org.apache.baremaps.data.storage.DataStore;
+import org.apache.baremaps.data.storage.DataStoreException;
+import org.apache.baremaps.data.storage.DataTable;
 
 /**
  * A schema corresponding to the shapefiles of a directory.
  */
-public class ShapefileDataSchema implements DataSchema {
+public class ShapefileDataStore implements DataStore {
 
   private final Path directory;
 
@@ -39,7 +39,7 @@ public class ShapefileDataSchema implements DataSchema {
    *
    * @param directory the directory
    */
-  public ShapefileDataSchema(Path directory) {
+  public ShapefileDataStore(Path directory) {
     this.directory = directory;
   }
 
@@ -54,7 +54,7 @@ public class ShapefileDataSchema implements DataSchema {
           .map(file -> file.getFileName().toString())
           .toList();
     } catch (IOException e) {
-      throw new DataTableException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -75,7 +75,7 @@ public class ShapefileDataSchema implements DataSchema {
   }
 
   @Override
-  public void add(String name, DataTable table) throws DataTableException {
+  public void add(String name, DataTable table) throws DataStoreException {
     throw new UnsupportedOperationException();
   }
 

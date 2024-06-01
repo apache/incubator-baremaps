@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
 import java.util.function.Function;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
- * A transformer that applies a {@code GeometryTransformer} to the geometries of a
- * {@code DataTable}.
+ * A decorator for a {@link DataTable} that applies a geometry transformation to each row.
  */
-public class DataTableGeometryTransformer implements Function<DataRow, DataRow> {
+public class DataTableGeometryMapper implements Function<DataRow, DataRow> {
 
   private final DataTable table;
 
-  private final GeometryTransformer geometryTransformer;
+  private final GeometryTransformer mapper;
 
   /**
-   * Constructs a new table transformer.
+   * Constructs a new data table transformer with the specified data table and geometry transformer.
    *
-   * @param table the table to transform
-   * @param geometryTransformer the geometry transformer
+   * @param table the data table to transform
+   * @param mapper the geometry mapper
    */
-  public DataTableGeometryTransformer(DataTable table, GeometryTransformer geometryTransformer) {
+  public DataTableGeometryMapper(DataTable table, GeometryTransformer mapper) {
     this.table = table;
-    this.geometryTransformer = geometryTransformer;
+    this.mapper = mapper;
   }
 
   /**
@@ -47,7 +46,7 @@ public class DataTableGeometryTransformer implements Function<DataRow, DataRow> 
    */
   @Override
   public DataRow apply(DataRow row) {
-    var columns = table.rowType()
+    var columns = table.schema()
         .columns().stream()
         .filter(column -> column.type().binding().isAssignableFrom(Geometry.class))
         .toList();
@@ -55,7 +54,7 @@ public class DataTableGeometryTransformer implements Function<DataRow, DataRow> 
       var name = column.name();
       var geometry = (Geometry) row.get(name);
       if (geometry != null) {
-        row.set(name, geometryTransformer.transform(geometry));
+        row.set(name, mapper.transform(geometry));
       }
     }
     return row;

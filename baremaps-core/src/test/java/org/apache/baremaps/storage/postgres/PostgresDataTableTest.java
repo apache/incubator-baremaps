@@ -21,7 +21,7 @@ import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import org.apache.baremaps.data.schema.DataRowImpl;
+import org.apache.baremaps.data.storage.DataRowImpl;
 import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.storage.MockDataTable;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,11 +31,11 @@ import org.locationtech.jts.geom.Coordinate;
 
 class PostgresDataTableTest extends PostgresContainerTest {
 
-  private PostgresDataSchema schema;
+  private PostgresDataStore schema;
 
   @BeforeEach
   void init() {
-    schema = new PostgresDataSchema(dataSource());
+    schema = new PostgresDataStore(dataSource());
     schema.add(new MockDataTable());
   }
 
@@ -58,7 +58,7 @@ class PostgresDataTableTest extends PostgresContainerTest {
   @Tag("integration")
   void schema() {
     var table = schema.get("mock");
-    var rowType = table.rowType();
+    var rowType = table.schema();
     assertNotNull(rowType);
     assertEquals("mock", rowType.name());
     assertEquals(5, rowType.columns().size());
@@ -68,7 +68,7 @@ class PostgresDataTableTest extends PostgresContainerTest {
   @Tag("integration")
   void add() {
     var table = schema.get("mock");
-    var rowType = table.rowType();
+    var rowType = table.schema();
     var added = table.add(new DataRowImpl(rowType,
         List.of("string", 6, 6.0, 6.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(6, 6)))));
     assertTrue(added);
@@ -79,7 +79,7 @@ class PostgresDataTableTest extends PostgresContainerTest {
   @Tag("integration")
   void addAll() {
     var table = schema.get("mock");
-    var rowType = table.rowType();
+    var rowType = table.schema();
     var added = table.addAll(List.of(
         new DataRowImpl(rowType,
             List.of("string", 6, 6.0, 6.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(6, 6)))),

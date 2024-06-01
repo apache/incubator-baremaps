@@ -22,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-class GeoParquetDataSchemaTest {
+class GeoParquetDataStoreTest {
 
   @Test
-  void rowType() {
+  void schema() {
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
-    var geoParquetDataSchema = new GeoParquetDataSchema(uri);
+    var geoParquetDataSchema = new GeoParquetDataStore(uri);
     var table = geoParquetDataSchema.get(uri.toString());
-    var rowType = table.rowType();
+    var rowType = table.schema();
     assertEquals(uri.toString(), rowType.name());
     assertEquals(7, rowType.columns().size());
   }
@@ -37,7 +37,7 @@ class GeoParquetDataSchemaTest {
   @Test
   void read() {
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
-    var geoParquetDataSchema = new GeoParquetDataSchema(uri);
+    var geoParquetDataSchema = new GeoParquetDataStore(uri);
     var table = geoParquetDataSchema.get(uri.toString());
     assertEquals(5, table.size());
     assertEquals(5, table.stream().count());

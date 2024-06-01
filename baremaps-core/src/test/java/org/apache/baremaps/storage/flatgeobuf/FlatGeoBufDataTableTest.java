@@ -27,32 +27,31 @@ import org.junit.jupiter.api.Test;
 class FlatGeoBufDataTableTest {
 
   @Test
-  void rowType() throws IOException {
-    var table =
-        new FlatGeoBufDataTable(TestFiles.resolve("baremaps-testing/data/samples/countries.fgb"));
-    var rowType = table.rowType();
+  void schema() {
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    var table = new FlatGeoBufDataTable(file);
+    var rowType = table.schema();
     assertEquals(rowType.name(), null);
     assertEquals(rowType.columns().size(), 2);
   }
 
   @Test
-  void read() throws IOException {
-    var table =
-        new FlatGeoBufDataTable(TestFiles.resolve("baremaps-testing/data/samples/countries.fgb"));
+  void read() {
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    var table = new FlatGeoBufDataTable(file);
     assertEquals(179, table.size());
     assertEquals(179, table.stream().count());
   }
 
   @Test
-  void write() throws IOException {
-    var file = Files.createTempFile("countries", ".fgb");
-    file.toFile().deleteOnExit();
-    var table1 =
-        new FlatGeoBufDataTable(TestFiles.resolve("baremaps-testing/data/samples/countries.fgb"));
-    var table2 = new FlatGeoBufDataTable(file, table1.rowType());
-    table2.write(table1);
-
-    var featureSet = new FlatGeoBufDataTable(file);
+  void readAndWrite() throws IOException {
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    var tempFile = Files.createTempFile("countries", ".fgb");
+    tempFile.toFile().deleteOnExit();
+    var table = new FlatGeoBufDataTable(file);
+    var tempTable = new FlatGeoBufDataTable(tempFile, table.schema());
+    tempTable.write(table);
+    var featureSet = new FlatGeoBufDataTable(tempFile);
     assertEquals(179, featureSet.stream().count());
   }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

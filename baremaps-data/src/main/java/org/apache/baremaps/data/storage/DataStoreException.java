@@ -15,39 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
-/** Signals that an exception occurred in a table. */
-public class DataTableException extends RuntimeException {
+/** Signals that an exception occurred in a {@link DataStore}. */
+public class DataStoreException extends RuntimeException {
 
-  /** Constructs a {@link DataTableException} with {@code null} as its error detail message. */
-  public DataTableException() {}
+  /** Constructs a {@link DataStoreException} with {@code null} as its error detail message. */
+  public DataStoreException() {}
 
   /**
-   * Constructs an {@code TableException} with the specified detail message.
+   * Constructs an {@link DataStoreException} with the specified detail message.
    *
    * @param message the message
    */
-  public DataTableException(String message) {
+  public DataStoreException(String message) {
     super(message);
   }
 
   /**
-   * Constructs a {@code TableException} with the specified cause.
+   * Constructs a {@link DataStoreException} with the specified cause.
    *
    * @param cause the cause
    */
-  public DataTableException(Throwable cause) {
+  public DataStoreException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * Constructs a {@code TableException} with the specified detail message and cause.
+   * Constructs a {@link DataStoreException} with the specified detail message and cause.
    *
    * @param message the message
    * @param cause the cause
    */
-  public DataTableException(String message, Throwable cause) {
+  public DataStoreException(String message, Throwable cause) {
     super(message, cause);
   }
 }

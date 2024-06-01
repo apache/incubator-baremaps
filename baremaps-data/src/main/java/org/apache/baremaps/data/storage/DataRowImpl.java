@@ -15,56 +15,57 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A row type defines the structure of a table.
+ * A row in a table.
  */
-public class DataRowTypeImpl implements DataRowType {
-
-  private final String name;
-
-  private final List<DataColumn> columns;
-
-  /**
-   * Constructs a row type.
-   *
-   * @param name the name of the row type
-   * @param columns the columns of the row type
-   */
-  public DataRowTypeImpl(String name, List<DataColumn> columns) {
-    this.name = name;
-    this.columns = columns;
-  }
+public record DataRowImpl(DataSchema schema, List values) implements DataRow {
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public String name() {
-    return name;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<DataColumn> columns() {
-    return columns;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public DataRow createRow() {
-    var values = new ArrayList<>(columns.size());
+  public Object get(String column) {
+    var columns = schema.columns();
     for (int i = 0; i < columns.size(); i++) {
-      values.add(null);
+      if (columns.get(i).name().equals(column)) {
+        return values.get(i);
+      }
     }
-    return new DataRowImpl(this, values);
+    throw new IllegalArgumentException("Column " + column + " not found.");
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Object get(int index) {
+    return values.get(index);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void set(String column, Object value) {
+    for (int i = 0; i < schema.columns().size(); i++) {
+      if (schema.columns().get(i).name().equals(column)) {
+        values.set(i, value);
+        return;
+      }
+    }
+    throw new IllegalArgumentException("Column " + column + " not found.");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void set(int index, Object value) {
+    values.set(index, value);
+  }
+
 }

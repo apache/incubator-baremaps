@@ -15,56 +15,56 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.schema;
+package org.apache.baremaps.data.storage;
 
-
-import java.util.Iterator;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A decorator for a table that transforms the geometries of the rows.
+ * A {@link DataSchema} defines the structure of a table.
  */
-public class DataTableMapper implements DataTable {
+public class DataSchemaImpl implements DataSchema {
 
-  private final DataTable table;
+  private final String name;
 
-  private final Function<DataRow, DataRow> transformer;
+  private final List<DataColumn> columns;
 
   /**
-   * Constructs a new table decorator.
+   * Constructs a schema with the specified name and columns.
    *
-   * @param table the table to decorate
-   * @param mapper the row transformer
+   * @param name the name of the schema
+   * @param columns the columns of the schema
    */
-  public DataTableMapper(DataTable table, Function<DataRow, DataRow> mapper) {
-    this.table = table;
-    this.transformer = mapper;
+  public DataSchemaImpl(String name, List<DataColumn> columns) {
+    this.name = name;
+    this.columns = columns;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public DataRowType rowType() {
-    return table.rowType();
-  }
-
-  @Override
-  public long size() {
-    return table.size();
+  public String name() {
+    return name;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Iterator iterator() {
-    return table.stream().map(this.transformer).iterator();
+  public List<DataColumn> columns() {
+    return columns;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public void clear() {
-    table.clear();
+  public DataRow createRow() {
+    var values = new ArrayList<>(columns.size());
+    for (int i = 0; i < columns.size(); i++) {
+      values.add(null);
+    }
+    return new DataRowImpl(this, values);
   }
-
 }
