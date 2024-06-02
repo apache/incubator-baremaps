@@ -63,9 +63,9 @@ public class GeoParquetMetadata {
       JsonNode id = crs.get("id");
       return switch (id.get("authority").asText()) {
         case "OGC" -> switch (id.get("code").asText()) {
-          case "CRS84" -> 4326;
-          default -> 0;
-        };
+            case "CRS84" -> 4326;
+            default -> 0;
+          };
         case "EPSG" -> id.get("code").asInt();
         default -> 0;
       };
