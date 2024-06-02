@@ -47,6 +47,7 @@ import org.apache.baremaps.workflow.tasks.*;
     @Type(value = ImportDaylightFeatures.class, name = "ImportDaylightFeatures"),
     @Type(value = ImportDaylightTranslations.class, name = "ImportDaylightTranslations"),
     @Type(value = ImportGeoPackage.class, name = "ImportGeoPackage"),
+    @Type(value = ImportGeoParquet.class, name = "ImportGeoParquet"),
     @Type(value = ImportOsmOsc.class, name = "ImportOsmOsc"),
     @Type(value = ImportOsmPbf.class, name = "ImportOsmPbf"),
     @Type(value = ImportShapefile.class, name = "ImportShapefile"),

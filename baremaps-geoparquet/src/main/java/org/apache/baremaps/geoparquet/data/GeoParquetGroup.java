@@ -59,6 +59,8 @@ public interface GeoParquetGroup {
    */
   GeoParquetGroup createGroup(int fieldIndex);
 
+  List<Primitive> getValues(int fieldIndex);
+
   Binary getBinaryValue(int fieldIndex);
 
   List<Binary> getBinaryValues(int fieldIndex);

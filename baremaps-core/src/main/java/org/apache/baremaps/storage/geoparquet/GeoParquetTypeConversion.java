@@ -46,9 +46,9 @@ public class GeoParquetTypeConversion {
 
   private static DataColumn asDataColumn(Field field) {
     Cardinality cardinality = switch (field.cardinality()) {
-      case REQUIRED -> Cardinality.REQUIRED;
+      case REQUIRED -> Cardinality.OPTIONAL;
       case OPTIONAL -> Cardinality.OPTIONAL;
-      case REPEATED -> Cardinality.REPEATED;
+      case REPEATED -> Cardinality.OPTIONAL;
     };
     return switch (field.type()) {
       case BINARY -> new DataColumnFixed(field.name(), cardinality, Type.BINARY);
@@ -71,6 +71,10 @@ public class GeoParquetTypeConversion {
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
       Field field = fields.get(i);
+      if (group.getValues(i).isEmpty()) {
+        values.add(null);
+        continue;
+      }
       switch (field.type()) {
         case BINARY -> values.add(group.getBinaryValue(i).getBytes());
         case BOOLEAN -> values.add(group.getBooleanValue(i));
@@ -93,6 +97,10 @@ public class GeoParquetTypeConversion {
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
       Field field = fields.get(i);
+      if (group.getValues(i).isEmpty()) {
+        nested.put(field.name(), null);
+        continue;
+      }
       nested.put(field.name(), switch (field.type()) {
         case BINARY -> group.getBinaryValue(i).getBytes();
         case BOOLEAN -> group.getBooleanValue(i);

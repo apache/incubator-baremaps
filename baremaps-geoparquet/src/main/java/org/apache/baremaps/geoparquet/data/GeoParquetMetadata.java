@@ -58,6 +58,7 @@ public class GeoParquetMetadata {
     this.columns = columns;
   }
 
+
   public int getSrid(String column) {
     return Optional.ofNullable(getColumns().get(column).getCrs()).map(crs -> {
       JsonNode id = crs.get("id");
@@ -71,6 +72,7 @@ public class GeoParquetMetadata {
       };
     }).orElse(4326);
   }
+
 
   public boolean isGeometryColumn(String column) {
     return columns.containsKey(column);

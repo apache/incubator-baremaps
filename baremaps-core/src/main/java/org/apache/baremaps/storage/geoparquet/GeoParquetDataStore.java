@@ -30,22 +30,24 @@ import org.apache.baremaps.data.storage.DataTable;
 public class GeoParquetDataStore implements DataStore {
 
   private final URI uri;
+  private final String tableName;
 
-  public GeoParquetDataStore(URI uri) {
+  public GeoParquetDataStore(URI uri, String tableName) {
     this.uri = uri;
+    this.tableName = tableName;
   }
 
   @Override
   public List<String> list() throws DataStoreException {
-    return List.of(uri.toString());
+    return List.of(tableName);
   }
 
   @Override
   public DataTable get(String name) throws DataStoreException {
-    if (!uri.toString().equals(name)) {
+    if (!tableName.equals(name)) {
       throw new DataStoreException("Table not found");
     }
-    return new GeoParquetDataTable(uri);
+    return new GeoParquetDataTable(uri, tableName);
   }
 
   @Override

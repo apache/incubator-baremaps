@@ -1,0 +1,24 @@
+{
+  "tilejson": "2.2.0",
+  "minzoom": 0,
+  "maxzoom": 14,
+  "center": [0, 0],
+  "bounds": [-180, -85, 180, 85],
+  "zoom": 2,
+  "tiles": [
+    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+  ],
+  "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+  "vector_layers": [
+    {
+      "id": "administrative_boundary",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 14,
+          "sql": "SELECT id, tags, geom FROM overture_admins_administrative_boundary_materialized_view"
+        }
+      ]
+    }
+  ]
+}
