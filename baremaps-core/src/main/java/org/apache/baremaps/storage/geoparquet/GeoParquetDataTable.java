@@ -32,15 +32,12 @@ public class GeoParquetDataTable implements DataTable {
 
   private final URI path;
 
-  private final String name;
-
   private DataSchema schema;
 
   private GeoParquetReader reader;
 
-  public GeoParquetDataTable(URI path, String name) {
+  public GeoParquetDataTable(URI path) {
     this.path = path;
-    this.name = name;
   }
 
   private GeoParquetReader reader() {
@@ -78,7 +75,7 @@ public class GeoParquetDataTable implements DataTable {
   public Stream<DataRow> parallelStream() {
     try {
       return reader().read().map(group -> new DataRowImpl(
-          GeoParquetTypeConversion.asSchema(name, group.getSchema()),
+          GeoParquetTypeConversion.asSchema(path.toString(), group.getSchema()),
           GeoParquetTypeConversion.asRowValues(group)));
     } catch (IOException | URISyntaxException e) {
       throw new GeoParquetException("Fail to read() the reader", e);
@@ -101,7 +98,7 @@ public class GeoParquetDataTable implements DataTable {
     if (schema == null) {
       try {
         Schema schema = reader().getGeoParquetSchema();
-        this.schema = GeoParquetTypeConversion.asSchema(name, schema);
+        this.schema = GeoParquetTypeConversion.asSchema(path.toString(), schema);
         return this.schema;
       } catch (URISyntaxException e) {
         throw new GeoParquetException("Failed to get the schema.", e);

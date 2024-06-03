@@ -68,7 +68,7 @@ public class ImportGeoParquet implements Task {
    */
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var geoParquetDataStore = new GeoParquetDataStore(uri, tableName);
+    var geoParquetDataStore = new GeoParquetDataStore(uri);
     var dataSource = context.getDataSource(database);
     var postgresDataStore = new PostgresDataStore(dataSource);
     for (var name : geoParquetDataStore.list()) {
@@ -80,7 +80,7 @@ public class ImportGeoParquet implements Task {
           new DataTableGeometryMapper(geoParquetTable, projectionTransformer);
       var transformedDataTable =
           new DataTableMapper(geoParquetDataStore.get(name), rowTransformer);
-      postgresDataStore.add(transformedDataTable);
+      postgresDataStore.add(tableName, transformedDataTable);
     }
   }
 
