@@ -111,7 +111,7 @@ public class GeoParquetDataTable implements DataTable {
     try {
       return reader().getGeoParquetMetadata().getSrid(column);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new GeoParquetException("Fail to read the SRID from the GeoParquet metadata", e);
     }
   }
 }
