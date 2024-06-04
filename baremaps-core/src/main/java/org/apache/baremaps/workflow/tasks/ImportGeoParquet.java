@@ -73,7 +73,6 @@ public class ImportGeoParquet implements Task {
     var postgresDataStore = new PostgresDataStore(dataSource);
     for (var name : geoParquetDataStore.list()) {
       var geoParquetTable = (GeoParquetDataTable) geoParquetDataStore.get(name);
-      // TODO : How can we apply a different SRID for each column based on the geometry
       var projectionTransformer =
           new ProjectionTransformer(geoParquetTable.srid("geometry"), databaseSrid);
       var rowTransformer =

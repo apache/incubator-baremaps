@@ -100,24 +100,8 @@ public class GeoParquetReader {
         FileSystem fs = FileSystem.get(uri, configuration);
         FileStatus[] fileStatuses = fs.globStatus(new Path(uri));
 
-        for (FileStatus fileStatus : fileStatuses) {
-          Path filePath = fileStatus.getPath();
-          ParquetFileReader reader = ParquetFileReader.open(configuration, filePath);
-          Long recordCount = reader.getRecordCount();
-          MessageType messageType = reader.getFileMetaData().getSchema();
-          Map<String, String> keyValueMetadata = reader.getFileMetaData().getKeyValueMetaData();
-          GeoParquetMetadata geoParquetMetadata = null;
-          GeoParquetGroup.Schema geoParquetSchema = null;
-          if (keyValueMetadata.containsKey("geo")) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            geoParquetMetadata =
-                objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
-            geoParquetSchema =
-                GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
-          }
-          files.put(fileStatus, new FileInfo(fileStatus, recordCount, keyValueMetadata, messageType,
-              geoParquetMetadata, geoParquetSchema));
+        for (FileStatus file : fileStatuses) {
+          files.put(file, buildFileInfo(file));
         }
 
         // Verify that the files all have the same schema
@@ -126,12 +110,12 @@ public class GeoParquetReader {
           if (commonMessageType == null) {
             commonMessageType = entry.messageType;
           } else if (!commonMessageType.equals(entry.messageType)) {
-            throw new RuntimeException("The files do not have the same schema");
+            throw new GeoParquetException("The files do not have the same schema");
           }
         }
       }
     } catch (IOException e) {
-      throw new RuntimeException("IOException while attempting to list files.", e);
+      throw new GeoParquetException("IOException while attempting to list files.", e);
     }
     return files;
   }
