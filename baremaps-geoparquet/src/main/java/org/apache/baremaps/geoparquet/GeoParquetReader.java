@@ -36,6 +36,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider;
+import org.apache.hadoop.fs.s3a.S3AFileSystem;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.schema.MessageType;
@@ -91,16 +93,14 @@ public class GeoParquetReader {
     return files().values().stream().map(FileInfo::recordCount).reduce(0L, Long::sum);
   }
 
-  private synchronized Map<FileStatus, FileInfo> files() throws URISyntaxException {
+  private synchronized Map<FileStatus, FileInfo> files() {
     try {
       if (files == null) {
         files = new HashMap<>();
-        Path globPath = new Path(uri.getPath());
-        URI rootUri = getRootUri(uri);
-        FileSystem fileSystem = FileSystem.get(rootUri, configuration);
+        FileSystem fs = FileSystem.get(uri, configuration);
+        FileStatus[] fileStatuses = fs.globStatus(new Path(uri));
 
-        // Iterate over all the files in the path
-        for (FileStatus file : fileSystem.globStatus(globPath)) {
+        for (FileStatus file : fileStatuses) {
           files.put(file, buildFileInfo(file));
         }
 
@@ -115,7 +115,7 @@ public class GeoParquetReader {
         }
       }
     } catch (IOException e) {
-      throw new GeoParquetException("IOException while  attempting to list files.", e);
+      throw new GeoParquetException("IOException while attempting to list files.", e);
     }
     return files;
   }
@@ -254,31 +254,11 @@ public class GeoParquetReader {
   }
 
   private static Configuration createConfiguration() {
-    Configuration configuration = new Configuration();
-    configuration.set("fs.s3a.aws.credentials.provider",
-        "org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider");
-    configuration.setBoolean("fs.s3a.path.style.access", true);
-    return configuration;
+    Configuration conf = new Configuration();
+    conf.set("fs.s3a.endpoint", "s3.us-west-2.amazonaws.com");
+    conf.set("fs.s3a.aws.credentials.provider", AnonymousAWSCredentialsProvider.class.getName());
+    conf.set("fs.s3a.impl", S3AFileSystem.class.getName());
+    conf.set("fs.s3a.path.style.access", "true");
+    return conf;
   }
-
-  private static URI getRootUri(URI uri) throws URISyntaxException {
-    // TODO:
-    // This is a quick and dirty way to get the root uri of the path.
-    // We take everything before the first wildcard in the path.
-    // This is not a perfect solution, and we should probably look for a better way to do this.
-    String path = uri.getPath();
-    int index = path.indexOf("*");
-    if (index != -1) {
-      path = path.substring(0, path.lastIndexOf("/", index) + 1);
-    }
-    return new URI(
-        uri.getScheme(),
-        uri.getUserInfo(),
-        uri.getHost(),
-        uri.getPort(),
-        path,
-        null,
-        null);
-  }
-
 }

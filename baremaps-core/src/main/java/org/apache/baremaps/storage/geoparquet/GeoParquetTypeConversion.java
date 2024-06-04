@@ -70,6 +70,10 @@ public class GeoParquetTypeConversion {
     Schema schema = group.getSchema();
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
+      if (group.getValues(i).isEmpty()) {
+        values.add(null);
+        continue;
+      }
       Field field = fields.get(i);
       switch (field.type()) {
         case BINARY -> values.add(group.getBinaryValue(i).getBytes());
@@ -92,6 +96,9 @@ public class GeoParquetTypeConversion {
     Schema schema = group.getSchema();
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
+      if (group.getValues(i).isEmpty()) {
+        continue;
+      }
       Field field = fields.get(i);
       nested.put(field.name(), switch (field.type()) {
         case BINARY -> group.getBinaryValue(i).getBytes();

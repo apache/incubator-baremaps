@@ -1,0 +1,27 @@
+{
+  "steps": [
+    {
+      "id": "overture",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "ImportGeoParquet",
+          "uri": "s3a://overturemaps-us-west-2/release/2024-05-16-beta.0/theme=admins/type=administrative_boundary/*",
+          "tableName": "overture_admins_administrative_boundary",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "databaseSrid": 3857
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "views.sql",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "indexes.sql",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
+        }
+      ]
+    }
+  ]
+}

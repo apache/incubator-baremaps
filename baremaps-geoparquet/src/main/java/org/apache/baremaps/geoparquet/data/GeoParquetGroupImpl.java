@@ -278,7 +278,8 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
     }
   }
 
-  private List<Primitive> getValues(int fieldIndex) {
+  @Override
+  public List<Primitive> getValues(int fieldIndex) {
     return (List<Primitive>) data[fieldIndex];
   }
 

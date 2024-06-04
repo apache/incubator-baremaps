@@ -69,7 +69,7 @@ public class GeoParquetGroupFactory {
         GeoParquetGroup.Schema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
         return (Field) new GeoParquetGroup.GroupField(
             groupType.getName(),
-            GeoParquetGroup.Cardinality.REQUIRED,
+            cardinality,
             geoParquetSchema);
       }
 

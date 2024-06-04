@@ -101,9 +101,17 @@ public class GeoParquetDataTable implements DataTable {
         this.schema = GeoParquetTypeConversion.asSchema(path.toString(), schema);
         return this.schema;
       } catch (URISyntaxException e) {
-        throw new GeoParquetException("Fail toe get the schema.", e);
+        throw new GeoParquetException("Failed to get the schema.", e);
       }
     }
     return schema;
+  }
+
+  public int srid(String column) {
+    try {
+      return reader().getGeoParquetMetadata().getSrid(column);
+    } catch (Exception e) {
+      throw new GeoParquetException("Fail to read the SRID from the GeoParquet metadata", e);
+    }
   }
 }
