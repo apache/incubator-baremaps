@@ -93,7 +93,7 @@ public class GeoParquetReader {
     return files().values().stream().map(FileInfo::recordCount).reduce(0L, Long::sum);
   }
 
-  private synchronized Map<FileStatus, FileInfo> files() throws URISyntaxException {
+  private synchronized Map<FileStatus, FileInfo> files() {
     try {
       if (files == null) {
         files = new HashMap<>();
