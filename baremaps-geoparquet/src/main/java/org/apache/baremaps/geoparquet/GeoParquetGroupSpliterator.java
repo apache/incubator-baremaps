@@ -18,8 +18,8 @@
 package org.apache.baremaps.geoparquet;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.Consumer;
@@ -32,15 +32,15 @@ public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> 
 
   private final GeoParquetReader geoParquetReader;
   private final Queue<FileStatus> queue;
-  private final Map<FileStatus, GeoParquetReader.FileInfo> files;
+  private final Set<FileStatus> files;
   private FileStatus fileStatus = null;
   private ParquetReader<GeoParquetGroup> reader;
 
   GeoParquetGroupSpliterator(GeoParquetReader geoParquetReader,
-      Map<FileStatus, GeoParquetReader.FileInfo> files) {
+      Set<FileStatus> files) {
     this.geoParquetReader = geoParquetReader;
     this.files = files;
-    this.queue = new ArrayBlockingQueue<>(files.keySet().size(), false, files.keySet());
+    this.queue = new ArrayBlockingQueue<>(files.size(), false, files);
   }
 
   @Override
@@ -117,14 +117,12 @@ public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> 
 
     // Return a new spliterator with the polledFileStatus
     return new GeoParquetGroupSpliterator(geoParquetReader,
-        Map.of(polledFileStatus, files.get(polledFileStatus)));
+        Set.of(polledFileStatus));
   }
 
   @Override
   public long estimateSize() {
-    return files.values().stream()
-        .map(GeoParquetReader.FileInfo::recordCount)
-        .reduce(0L, Long::sum);
+    return geoParquetReader.size();
   }
 
   @Override

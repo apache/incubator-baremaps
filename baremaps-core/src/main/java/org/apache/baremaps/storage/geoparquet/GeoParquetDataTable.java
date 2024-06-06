@@ -17,9 +17,7 @@
 
 package org.apache.baremaps.storage.geoparquet;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
@@ -49,11 +47,7 @@ public class GeoParquetDataTable implements DataTable {
 
   @Override
   public long size() {
-    try {
-      return reader().size();
-    } catch (URISyntaxException e) {
-      throw new GeoParquetException("Fail to access size from reader", e);
-    }
+    return reader().size();
   }
 
   @Override
@@ -73,13 +67,9 @@ public class GeoParquetDataTable implements DataTable {
 
   @Override
   public Stream<DataRow> parallelStream() {
-    try {
-      return reader().read().map(group -> new DataRowImpl(
-          GeoParquetTypeConversion.asSchema(path.toString(), group.getSchema()),
-          GeoParquetTypeConversion.asRowValues(group)));
-    } catch (IOException | URISyntaxException e) {
-      throw new GeoParquetException("Fail to read() the reader", e);
-    }
+    return reader().readParallel().map(group -> new DataRowImpl(
+        GeoParquetTypeConversion.asSchema(path.toString(), group.getSchema()),
+        GeoParquetTypeConversion.asRowValues(group)));
   }
 
   @Override
@@ -96,13 +86,9 @@ public class GeoParquetDataTable implements DataTable {
   @Override
   public DataSchema schema() {
     if (schema == null) {
-      try {
-        Schema schema = reader().getGeoParquetSchema();
-        this.schema = GeoParquetTypeConversion.asSchema(path.toString(), schema);
-        return this.schema;
-      } catch (URISyntaxException e) {
-        throw new GeoParquetException("Failed to get the schema.", e);
-      }
+      Schema schema = reader().getGeoParquetSchema();
+      this.schema = GeoParquetTypeConversion.asSchema(path.toString(), schema);
+      return this.schema;
     }
     return schema;
   }

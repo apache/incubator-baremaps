@@ -19,7 +19,6 @@ package org.apache.baremaps.geoparquet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +29,7 @@ import org.junit.jupiter.api.Test;
 class GeoParquetReaderTest {
 
   @Test
-  void read() throws IOException, URISyntaxException {
+  void read() {
     URI geoParquet = TestFiles.GEOPARQUET.toUri();
     final boolean isPrintingContent = true;
     final int expectedGroupCount = 5;
@@ -38,9 +37,9 @@ class GeoParquetReaderTest {
     readGroups(geoParquet, isPrintingContent, expectedGroupCount);
   }
 
-  @Disabled("Takes too long. Around 10 minutes.")
+   @Disabled("Takes too long. Around 7 minutes.")
   @Test
-  void readExternal() throws IOException, URISyntaxException {
+  void readExternal() throws URISyntaxException {
     URI geoParquet = new URI(
         "s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=admins/type=locality_area/*.parquet");
     final boolean isPrintingContent = false;
@@ -49,8 +48,8 @@ class GeoParquetReaderTest {
     readGroups(geoParquet, isPrintingContent, expectedGroupCount);
   }
 
-  private static void readGroups(URI geoParquet, boolean isPrintingContent, int expectedGroupCount)
-      throws IOException, URISyntaxException {
+  private static void readGroups(URI geoParquet, boolean isPrintingContent,
+      int expectedGroupCount) {
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     final AtomicInteger groupCount = new AtomicInteger();
     geoParquetReader.read().forEach(group -> {
@@ -63,5 +62,30 @@ class GeoParquetReaderTest {
     });
 
     assertEquals(expectedGroupCount, groupCount.get());
+  }
+
+  @Test
+  void validateSchemas() throws URISyntaxException {
+    URI geoParquet = new URI(
+        "s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=buildings/type=building/*.parquet");
+
+    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
+    assertTrue(geoParquetReader.validateSchemasAreIdentical(), "Schemas are identical");
+  }
+
+  @Test
+  void sizeForLocalities() throws URISyntaxException {
+    URI geoParquet = new URI(
+        "s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=admins/type=locality_area/*.parquet");
+    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
+    assertEquals(974708L, geoParquetReader.size());
+  }
+
+  @Test
+  void sizeForBuildings() throws URISyntaxException {
+    URI geoParquet = new URI(
+        "s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=buildings/type=building/*.parquet");
+    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
+    assertEquals(2352441548L, geoParquetReader.size());
   }
 }
