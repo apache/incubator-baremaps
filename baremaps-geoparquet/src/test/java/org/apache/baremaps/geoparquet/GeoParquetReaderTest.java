@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -31,35 +33,34 @@ class GeoParquetReaderTest {
   @Test
   void read() {
     URI geoParquet = TestFiles.GEOPARQUET.toUri();
-    final boolean isPrintingContent = true;
+    final boolean isParallel = false;
     final int expectedGroupCount = 5;
 
-    readGroups(geoParquet, isPrintingContent, expectedGroupCount);
+    readGroups(geoParquet, isParallel, expectedGroupCount);
   }
 
-   @Disabled("Takes too long. Around 7 minutes.")
+  @Disabled("Takes too long. Around 4 minutes.")
   @Test
   void readExternal() throws URISyntaxException {
     URI geoParquet = new URI(
         "s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=admins/type=locality_area/*.parquet");
-    final boolean isPrintingContent = false;
+    final boolean isParallel = true;
     final int expectedGroupCount = 974708;
 
-    readGroups(geoParquet, isPrintingContent, expectedGroupCount);
+    readGroups(geoParquet, isParallel, expectedGroupCount);
   }
 
-  private static void readGroups(URI geoParquet, boolean isPrintingContent,
+  private static void readGroups(URI geoParquet, boolean parallel,
       int expectedGroupCount) {
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     final AtomicInteger groupCount = new AtomicInteger();
-    geoParquetReader.read().forEach(group -> {
-      groupCount.getAndIncrement();
-      if (isPrintingContent) {
-        System.out.println("-----");
-        System.out.println(group.getSchema());
-        System.out.println(group.getGeometryValue("geometry"));
-      }
-    });
+    Stream<GeoParquetGroup> geoParquetGroupStream;
+    if (parallel) {
+      geoParquetGroupStream = geoParquetReader.readParallel();
+    } else {
+      geoParquetGroupStream = geoParquetReader.read();
+    }
+    geoParquetGroupStream.forEach(group -> groupCount.getAndIncrement());
 
     assertEquals(expectedGroupCount, groupCount.get());
   }

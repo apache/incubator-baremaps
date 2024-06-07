@@ -18,60 +18,50 @@
 package org.apache.baremaps.geoparquet;
 
 import java.io.IOException;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.*;
 import java.util.function.Consumer;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.hadoop.GeoParquetGroupReadSupport;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.parquet.hadoop.ParquetReader;
 
-public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> {
+class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> {
 
   private final GeoParquetReader geoParquetReader;
-  private final Queue<FileStatus> queue;
-  private final Set<FileStatus> files;
-  private FileStatus fileStatus = null;
+  private final List<FileStatus> fileStatuses;
   private ParquetReader<GeoParquetGroup> reader;
 
-  GeoParquetGroupSpliterator(GeoParquetReader geoParquetReader,
-      Set<FileStatus> files) {
+  GeoParquetGroupSpliterator(GeoParquetReader geoParquetReader, List<FileStatus> files) {
     this.geoParquetReader = geoParquetReader;
-    this.files = files;
-    this.queue = new ArrayBlockingQueue<>(files.size(), false, files);
+    this.fileStatuses = Collections.synchronizedList(files);
+    setupReaderForNextFile();
+  }
+
+  private void setupReaderForNextFile() {
+    FileStatus fileStatus = fileStatuses.remove(0);
+    try {
+      reader = createParquetReader(fileStatus);
+    } catch (IOException e) {
+      throw new GeoParquetException("Failed to create reader for " + fileStatus, e);
+    }
   }
 
   @Override
   public boolean tryAdvance(Consumer<? super GeoParquetGroup> action) {
     try {
-      // Poll the next file
-      if (fileStatus == null) {
-        fileStatus = queue.poll();
-      }
-
-      // If there are no more files, return false
-      if (fileStatus == null) {
-        return false;
-      }
-
-      // Create a new reader if it does not exist
-      if (reader == null) {
-        reader = createParquetReader(fileStatus);
-      }
-
       // Read the next group
       GeoParquetGroup group = reader.read();
 
-      // If the group is null, close the resources and set the variables to null
-      if (group == null) {
-        reader.close();
-        reader = null;
-        fileStatus = null;
-
-        // Try to advance again
-        return tryAdvance(action);
+      // If the group is null, try to get the one from the next file.
+      while (group == null) {
+        synchronized (fileStatuses) {
+          if (fileStatuses.isEmpty()) {
+            reader.close();
+            return false;
+          }
+          setupReaderForNextFile();
+        }
+        group = reader.read();
       }
 
       // Accept the group and tell the caller that there are more groups to read
@@ -80,13 +70,10 @@ public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> 
 
     } catch (IOException e) {
       // If an exception occurs, try to close the resources and throw a runtime exception
-      if (reader != null) {
-        try {
-          reader.close();
-        } catch (IOException e2) {
-          // Ignore the exception as the original exception is more important
-        }
-        reader = null;
+      try {
+        reader.close();
+      } catch (IOException e2) {
+        // Ignore the exception as the original exception is more important
       }
       throw new GeoParquetException("IOException caught while trying to read the next file.", e);
     }
@@ -102,22 +89,20 @@ public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> 
 
   @Override
   public Spliterator<GeoParquetGroup> trySplit() {
-    if (queue.size() < 2) {
-      // There is nothing left to split
-      return null;
+    List<FileStatus> sublist;
+    synchronized (fileStatuses) {
+      if (fileStatuses.size() < 2) {
+        // There is nothing left to split
+        return null;
+      }
+
+      sublist = fileStatuses.subList(0, fileStatuses.size() / 2);
     }
+    List<FileStatus> secondList = new ArrayList<>(sublist);
+    sublist.clear();
 
-    // Create a new spliterator by polling the next polledFileStatus
-    FileStatus polledFileStatus = queue.poll();
-
-    // If there are no more files, tell the caller that there is nothing to split anymore
-    if (polledFileStatus == null) {
-      return null;
-    }
-
-    // Return a new spliterator with the polledFileStatus
-    return new GeoParquetGroupSpliterator(geoParquetReader,
-        Set.of(polledFileStatus));
+    // Return a new spliterator with the sublist
+    return new GeoParquetGroupSpliterator(geoParquetReader, secondList);
   }
 
   @Override
@@ -128,6 +113,6 @@ public class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> 
   @Override
   public int characteristics() {
     // The spliterator is not ordered, or sorted
-    return NONNULL | IMMUTABLE | SIZED | DISTINCT;
+    return NONNULL | CONCURRENT | DISTINCT;
   }
 }
