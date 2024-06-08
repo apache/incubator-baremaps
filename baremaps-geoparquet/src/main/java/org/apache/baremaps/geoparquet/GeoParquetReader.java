@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
@@ -45,10 +45,9 @@ import org.apache.parquet.schema.MessageType;
 public class GeoParquetReader {
 
   private final URI uri;
-
   final Configuration configuration;
-
-  private Map<FileStatus, FileInfo> files;
+  private List<FileStatus> files;
+  private Long groupCount;
 
   record FileInfo(FileStatus file, Long recordCount, Map<String, String> keyValueMetadata,
       MessageType messageType, GeoParquetMetadata metadata,
@@ -64,51 +63,60 @@ public class GeoParquetReader {
     this.configuration = configuration;
   }
 
-  public MessageType getParquetSchema() throws URISyntaxException {
-    return files().values().stream()
+  public MessageType getParquetSchema() {
+    return files().stream()
         .findFirst()
+        .map(this::getFileInfo)
         .orElseThrow()
         .messageType();
   }
 
-  public GeoParquetMetadata getGeoParquetMetadata() throws URISyntaxException {
-    return files().values().stream()
+  private FileInfo getFileInfo(FileStatus fileStatus) {
+    try {
+      return buildFileInfo(fileStatus);
+    } catch (IOException e) {
+      throw new GeoParquetException("Failed to build Info", e);
+    }
+  }
+
+  public GeoParquetMetadata getGeoParquetMetadata() {
+    return files().stream()
         .findFirst()
+        .map(this::getFileInfo)
         .orElseThrow()
         .metadata();
   }
 
-  public Schema getGeoParquetSchema() throws URISyntaxException {
-    return files().values().stream()
+  public Schema getGeoParquetSchema() {
+    return files().stream()
         .findFirst()
+        .map(this::getFileInfo)
         .orElseThrow()
         .geoParquetSchema();
   }
 
-  public Long size() throws URISyntaxException {
-    return files().values().stream().map(FileInfo::recordCount).reduce(0L, Long::sum);
+  public boolean validateSchemasAreIdentical() {
+    // Verify that the files all have the same schema
+    final int messageTypeCount = files().stream().parallel().map(this::getFileInfo)
+        .map(FileInfo::messageType).collect(Collectors.toSet()).size();
+    return messageTypeCount == 1;
   }
 
-  private synchronized Map<FileStatus, FileInfo> files() {
+  public long size() {
+    if (groupCount == null) {
+      groupCount = files().stream().parallel().map(this::getFileInfo).map(FileInfo::recordCount)
+          .reduce(0L, Long::sum);
+    }
+    return groupCount;
+  }
+
+  private synchronized List<FileStatus> files() {
     try {
       if (files == null) {
-        files = new HashMap<>();
-        FileSystem fs = FileSystem.get(uri, configuration);
-        FileStatus[] fileStatuses = fs.globStatus(new Path(uri));
+        Path globPath = new Path(uri.getPath());
+        FileSystem fileSystem = FileSystem.get(uri, configuration);
 
-        for (FileStatus file : fileStatuses) {
-          files.put(file, buildFileInfo(file));
-        }
-
-        // Verify that the files all have the same schema
-        MessageType commonMessageType = null;
-        for (FileInfo entry : files.values()) {
-          if (commonMessageType == null) {
-            commonMessageType = entry.messageType;
-          } else if (!commonMessageType.equals(entry.messageType)) {
-            throw new GeoParquetException("The files do not have the same schema");
-          }
-        }
+        files = new ArrayList<>(Arrays.asList(fileSystem.globStatus(globPath)));
       }
     } catch (IOException e) {
       throw new GeoParquetException("IOException while attempting to list files.", e);
@@ -139,12 +147,16 @@ public class GeoParquetReader {
         geoParquetMetadata, geoParquetSchema);
   }
 
-  public Stream<GeoParquetGroup> readParallel() throws URISyntaxException {
-    return StreamSupport.stream(new GeoParquetGroupSpliterator(this, files()), true);
+  public Stream<GeoParquetGroup> readParallel() {
+    return retrieveGeoParquetGroups(true);
   }
 
-  public Stream<GeoParquetGroup> read() throws IOException, URISyntaxException {
-    return readParallel().sequential();
+  private Stream<GeoParquetGroup> retrieveGeoParquetGroups(boolean inParallel) {
+    return StreamSupport.stream(new GeoParquetGroupSpliterator(this, files()), inParallel);
+  }
+
+  public Stream<GeoParquetGroup> read() {
+    return retrieveGeoParquetGroups(false);
   }
 
   private static Configuration createConfiguration() {
