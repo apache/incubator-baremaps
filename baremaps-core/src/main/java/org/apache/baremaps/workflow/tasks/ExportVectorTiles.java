@@ -54,9 +54,9 @@ public class ExportVectorTiles implements Task {
   private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
 
   public enum Format {
-    file,
-    mbtiles,
-    pmtiles
+    FILE,
+    MBTILES,
+    PMTILES
   }
 
   private Path tileset;
@@ -101,9 +101,9 @@ public class ExportVectorTiles implements Task {
 
     // Write the static files
     var directory = switch (format) {
-      case file -> repository;
-      case mbtiles -> repository.getParent();
-      case pmtiles -> repository.getParent();
+      case FILE -> repository;
+      case MBTILES -> repository.getParent();
+      case PMTILES -> repository.getParent();
     };
     Files.createDirectories(directory);
     try (var html = this.getClass().getResourceAsStream("/static/server.html")) {
@@ -171,16 +171,16 @@ public class ExportVectorTiles implements Task {
 
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
     switch (format) {
-      case file:
+      case FILE:
         return new FileTileStore(repository.resolve("tiles"));
-      case mbtiles:
+      case MBTILES:
         Files.deleteIfExists(repository);
         var dataSource = SqliteUtils.createDataSource(repository, false);
         var tilesStore = new MBTilesStore(dataSource);
         tilesStore.initializeDatabase();
         tilesStore.writeMetadata(metadata(source));
         return tilesStore;
-      case pmtiles:
+      case PMTILES:
         Files.deleteIfExists(repository);
         return new PMTilesStore(repository, source);
       default:

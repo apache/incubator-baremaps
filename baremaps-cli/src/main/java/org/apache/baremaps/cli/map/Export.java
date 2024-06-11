@@ -55,7 +55,7 @@ public class Export implements Callable<Integer> {
 
   @Option(names = {"--format"}, paramLabel = "FORMAT",
       description = "The format of the repository.")
-  private ExportVectorTiles.Format format = ExportVectorTiles.Format.file;
+  private ExportVectorTiles.Format format = ExportVectorTiles.Format.FILE;
 
   @Override
   public Integer call() throws Exception {
