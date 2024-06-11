@@ -33,9 +33,7 @@ public class ConfigReader {
   static {
     System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
   }
-
-  public ConfigReader() {}
-
+  
   public String read(Path path) throws IOException {
     var extension = com.google.common.io.Files.getFileExtension(path.toString());
     var config = switch (extension) {
