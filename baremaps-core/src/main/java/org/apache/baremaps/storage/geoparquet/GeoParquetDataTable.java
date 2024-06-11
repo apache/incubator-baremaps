@@ -86,8 +86,9 @@ public class GeoParquetDataTable implements DataTable {
   @Override
   public DataSchema schema() {
     if (schema == null) {
-      Schema schema = reader().getGeoParquetSchema();
-      this.schema = GeoParquetTypeConversion.asSchema(path.toString(), schema);
+      this.schema = GeoParquetTypeConversion.asSchema(
+              path.toString(),
+              reader().getGeoParquetSchema());
       return this.schema;
     }
     return schema;
