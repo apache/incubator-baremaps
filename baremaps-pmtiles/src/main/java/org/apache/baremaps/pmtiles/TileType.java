@@ -18,10 +18,10 @@
 package org.apache.baremaps.pmtiles;
 
 enum TileType {
-  unknown,
-  mvt,
-  png,
-  jpeg,
-  webp,
-  avif,
+  UNKNOWN,
+  MVT,
+  PNG,
+  JPEG,
+  WEBP,
+  AVIF,
 }

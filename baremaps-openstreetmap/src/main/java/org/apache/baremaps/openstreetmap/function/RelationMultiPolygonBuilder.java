@@ -81,6 +81,7 @@ public class RelationMultiPolygonBuilder implements Consumer<Entity> {
     }
   }
 
+  @SuppressWarnings("squid:S3776")
   private void buildMultiPolygon(Relation relation) {
     // Categorize the members of the relation by their role
     var outerMembers = new ArrayList<Member>();

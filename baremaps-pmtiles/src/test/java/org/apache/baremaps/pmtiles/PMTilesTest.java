@@ -144,9 +144,9 @@ class PMTilesTest {
       assertEquals(header.getNumTileEntries(), 1);
       assertEquals(header.getNumTileContents(), 1);
       assertFalse(header.isClustered());
-      assertEquals(header.getInternalCompression(), Compression.Gzip);
-      assertEquals(header.getTileCompression(), Compression.Gzip);
-      assertEquals(header.getTileType(), TileType.mvt);
+      assertEquals(header.getInternalCompression(), Compression.GZIP);
+      assertEquals(header.getTileCompression(), Compression.GZIP);
+      assertEquals(header.getTileType(), TileType.MVT);
       assertEquals(header.getMinZoom(), 0);
       assertEquals(header.getMaxZoom(), 0);
       assertEquals(header.getMinLon(), 0);
@@ -173,9 +173,9 @@ class PMTilesTest {
         1,
         10,
         false,
-        Compression.Gzip,
-        Compression.Gzip,
-        TileType.mvt,
+        Compression.GZIP,
+        Compression.GZIP,
+        TileType.MVT,
         0,
         0,
         0,
@@ -254,7 +254,7 @@ class PMTilesTest {
   @Test
   void buildRootLeaves() throws IOException {
     var entries = List.of(new Entry(100, 1, 1, 0));
-    var directories = PMTiles.buildRootLeaves(entries, 1, Compression.None);
+    var directories = PMTiles.buildRootLeaves(entries, 1, Compression.NONE);
     assertEquals(directories.getNumLeaves(), 1);
 
   }
@@ -264,7 +264,7 @@ class PMTilesTest {
     var random = new Random(3857);
     var entries = new ArrayList<Entry>();
     entries.add(new Entry(0, 0, 100, 1));
-    var directories = PMTiles.optimizeDirectories(entries, 100, Compression.None);
+    var directories = PMTiles.optimizeDirectories(entries, 100, Compression.NONE);
     assertFalse(directories.getLeaves().length > 0);
     assertEquals(0, directories.getNumLeaves());
 
@@ -275,7 +275,7 @@ class PMTilesTest {
       entries.add(new Entry(i, offset, randTileSize, 1));
       offset += randTileSize;
     }
-    directories = PMTiles.optimizeDirectories(entries, 1024, Compression.None);
+    directories = PMTiles.optimizeDirectories(entries, 1024, Compression.NONE);
     assertFalse(directories.getRoot().length > 1024);
     assertFalse(directories.getNumLeaves() == 0);
     assertFalse(directories.getLeaves().length == 0);
