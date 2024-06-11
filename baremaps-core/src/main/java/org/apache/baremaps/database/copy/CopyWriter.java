@@ -388,7 +388,11 @@ public class CopyWriter implements AutoCloseable {
     ENVELOPE_HANDLER.handle(data, value);
   }
 
-  /** @inheritDoc */
+  /**
+   * Writes the end of the row.
+   *
+   * @throws IOException
+   */
   @Override
   public void close() throws IOException {
     data.writeShort(-1);
