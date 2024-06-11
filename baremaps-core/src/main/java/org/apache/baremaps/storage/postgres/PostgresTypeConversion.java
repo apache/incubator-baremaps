@@ -21,6 +21,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 
+@SuppressWarnings("squid:S1192")
 public class PostgresTypeConversion {
 
   public static final EnumMap<Type, String> typeToName = new EnumMap<>(Type.class);
