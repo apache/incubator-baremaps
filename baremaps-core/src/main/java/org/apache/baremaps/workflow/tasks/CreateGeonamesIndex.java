@@ -29,7 +29,7 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class CreateGeonamesIndex implements Task {
    */
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var directory = MMapDirectory.open(indexDirectory);
+    var directory = FSDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
     try (var indexWriter = new IndexWriter(directory, config);
         var inputStream = Files.newInputStream(dataFile)) {

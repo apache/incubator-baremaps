@@ -33,7 +33,7 @@ import java.util.concurrent.Callable;
 import org.apache.baremaps.server.GeocoderResource;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -59,7 +59,7 @@ public class Serve implements Callable<Integer> {
   public Integer call() throws Exception {
 
     try (
-        var directory = MMapDirectory.open(indexDirectory);
+        var directory = FSDirectory.open(indexDirectory);
         var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
 
       var serverBuilder = Server.builder();
