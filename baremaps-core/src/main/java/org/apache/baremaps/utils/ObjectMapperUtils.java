@@ -28,7 +28,7 @@ public class ObjectMapperUtils {
 
   public static ObjectMapper objectMapper() {
     return new ObjectMapper()
-        .registerModule(Expressions.jacksonModule())
+        .registerModule(Expressions.createModule())
         .configure(Feature.IGNORE_UNKNOWN, true)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true)
