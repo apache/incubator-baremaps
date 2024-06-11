@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
