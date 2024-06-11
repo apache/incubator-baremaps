@@ -29,7 +29,9 @@ public class CleanContextData implements Task {
   /**
    * Constructs an {@code CleanContextData}.
    */
-  public CleanContextData() {}
+  public CleanContextData() {
+    // Default constructor
+  }
 
   @Override
   public void execute(WorkflowContext context) throws Exception {

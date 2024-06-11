@@ -45,11 +45,11 @@ public class DecompressFile implements Task {
    * The compression format.
    */
   public enum Compression {
-    zip,
-    targz,
-    tarbz2,
-    gzip,
-    bzip2;
+    ZIP,
+    TARGZ,
+    TARBZ2,
+    GZIP,
+    BZIP2;
   }
 
   private Path source;
@@ -84,11 +84,11 @@ public class DecompressFile implements Task {
     var sourcePath = source.toAbsolutePath();
     var targetPath = target.toAbsolutePath();
     switch (compression) {
-      case zip -> decompressZip(sourcePath, targetPath);
-      case targz -> decompressTarGz(sourcePath, targetPath);
-      case tarbz2 -> decompressTarBz2(sourcePath, targetPath);
-      case gzip -> decompressGzip(sourcePath, targetPath);
-      case bzip2 -> decompressBzip2(sourcePath, targetPath);
+      case ZIP -> decompressZip(sourcePath, targetPath);
+      case TARGZ -> decompressTarGz(sourcePath, targetPath);
+      case TARBZ2 -> decompressTarBz2(sourcePath, targetPath);
+      case GZIP -> decompressGzip(sourcePath, targetPath);
+      case BZIP2 -> decompressBzip2(sourcePath, targetPath);
     }
   }
 
