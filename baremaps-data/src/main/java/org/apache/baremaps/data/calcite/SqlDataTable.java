@@ -58,10 +58,10 @@ public class SqlDataTable extends AbstractTable implements ScannableTable {
   }
 
   private RelDataType createRowType(RelDataTypeFactory typeFactory) {
-    var rowType = new RelDataTypeFactory.Builder(typeFactory);
+    var rowTypeBuilder = new RelDataTypeFactory.Builder(typeFactory);
     for (DataColumn column : table.schema().columns()) {
-      rowType.add(column.name(), SqlTypeConversion.types.get(column.type()));
+      rowTypeBuilder.add(column.name(), SqlTypeConversion.types.get(column.type()));
     }
-    return rowType.build();
+    return rowTypeBuilder.build();
   }
 }
