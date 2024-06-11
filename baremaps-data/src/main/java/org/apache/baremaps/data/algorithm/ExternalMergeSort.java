@@ -67,13 +67,12 @@ public class ExternalMergeSort {
    * @param comparator The comparator that tells how to sort the lines
    * @param distinct The flag indicating if duplicates should be discarded
    * @return the number of data sorted
-   * @throws IOException
    */
   private static <T> long mergeSortedBatches(
       List<DataList<T>> batches,
       DataList<T> output,
       Comparator<T> comparator,
-      boolean distinct) throws IOException {
+      boolean distinct) {
 
     PriorityQueue<DataStack<T>> queue =
         new PriorityQueue<>(batches.size(), (i, j) -> comparator.compare(i.peek(), j.peek()));
