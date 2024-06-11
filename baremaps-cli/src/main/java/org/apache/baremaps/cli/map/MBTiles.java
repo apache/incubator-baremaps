@@ -79,50 +79,52 @@ public class MBTiles implements Callable<Integer> {
     var caffeineSpec = CaffeineSpec.parse(cache);
 
     var datasource = SqliteUtils.createDataSource(mbtilesPath, true);
-    var tileStore = new MBTilesStore(datasource);
-    var tileCache = new TileCache(tileStore, caffeineSpec);
-    var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
+    try (var tileStore = new MBTilesStore(datasource);
+        var tileCache = new TileCache(tileStore, caffeineSpec)) {
+      var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
 
-    var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
-    var styleSupplier = (Supplier<Style>) () -> style;
+      var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
+      var styleSupplier = (Supplier<Style>) () -> style;
 
-    var tileJSON = objectMapper.readValue(configReader.read(tileJSONPath), TileJSON.class);
-    var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
+      var tileJSON = objectMapper.readValue(configReader.read(tileJSONPath), TileJSON.class);
+      var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
 
-    var serverBuilder = Server.builder();
-    serverBuilder.http(port);
+      var serverBuilder = Server.builder();
+      serverBuilder.http(port);
 
-    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
-    serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
-    serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
-    serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
+      var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
+      serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
+      serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
+      serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
 
-    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/static/server.html");
-    serverBuilder.service("/", index.asService());
-    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/static"));
+      var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/static/server.html");
+      serverBuilder.service("/", index.asService());
+      serverBuilder.serviceUnder("/",
+          FileService.of(ClassLoader.getSystemClassLoader(), "/static"));
 
-    serverBuilder.decorator(CorsService.builderForAnyOrigin()
-        .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
-            HttpMethod.OPTIONS, HttpMethod.HEAD)
-        .allowRequestHeaders(HttpHeaderNames.ORIGIN, HttpHeaderNames.CONTENT_TYPE,
-            HttpHeaderNames.ACCEPT, HttpHeaderNames.AUTHORIZATION)
-        .allowCredentials()
-        .exposeHeaders(HttpHeaderNames.LOCATION)
-        .newDecorator());
+      serverBuilder.decorator(CorsService.builderForAnyOrigin()
+          .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
+              HttpMethod.OPTIONS, HttpMethod.HEAD)
+          .allowRequestHeaders(HttpHeaderNames.ORIGIN, HttpHeaderNames.CONTENT_TYPE,
+              HttpHeaderNames.ACCEPT, HttpHeaderNames.AUTHORIZATION)
+          .allowCredentials()
+          .exposeHeaders(HttpHeaderNames.LOCATION)
+          .newDecorator());
 
-    serverBuilder.serviceUnder("/docs", new DocService());
+      serverBuilder.serviceUnder("/docs", new DocService());
 
-    serverBuilder.disableServerHeader();
-    serverBuilder.disableDateHeader();
+      serverBuilder.disableServerHeader();
+      serverBuilder.disableDateHeader();
 
-    var server = serverBuilder.build();
+      var server = serverBuilder.build();
 
-    var startFuture = server.start();
-    startFuture.join();
+      var startFuture = server.start();
+      startFuture.join();
 
-    var shutdownFuture = server.closeOnJvmShutdown();
-    shutdownFuture.join();
+      var shutdownFuture = server.closeOnJvmShutdown();
+      shutdownFuture.join();
 
+    }
     return 0;
   }
 }
