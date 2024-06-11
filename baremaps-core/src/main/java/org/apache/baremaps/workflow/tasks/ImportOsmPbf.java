@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ImportOsmPbf implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImportOsmPbf.class);
-
   private Path file;
   private Object database;
   private Integer databaseSrid;
@@ -52,7 +50,7 @@ public class ImportOsmPbf implements Task {
    * Constructs a {@code ImportOsmPbf}.
    */
   public ImportOsmPbf() {
-
+    // Default constructor
   }
 
   /**

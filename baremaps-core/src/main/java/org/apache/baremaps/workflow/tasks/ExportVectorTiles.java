@@ -42,6 +42,7 @@ import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.baremaps.workflow.WorkflowException;
 import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,8 +97,8 @@ public class ExportVectorTiles implements Task {
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
 
-    var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
-    var style = objectMapper.readValue(configReader.read(this.style), Style.class);
+    var tilesetObject = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+    var styleObject = objectMapper.readValue(configReader.read(this.style), Style.class);
 
     // Write the static files
     var directory = switch (format) {
@@ -115,31 +116,31 @@ public class ExportVectorTiles implements Task {
     }
     Files.write(
         directory.resolve("tiles.json"),
-        objectMapper.writeValueAsBytes(tileset),
+        objectMapper.writeValueAsBytes(tilesetObject),
         StandardOpenOption.CREATE,
         StandardOpenOption.TRUNCATE_EXISTING);
     Files.write(
         directory.resolve("style.json"),
-        objectMapper.writeValueAsBytes(style),
+        objectMapper.writeValueAsBytes(styleObject),
         StandardOpenOption.CREATE,
         StandardOpenOption.TRUNCATE_EXISTING);
 
-    var datasource = context.getDataSource(tileset.getDatabase());
+    var datasource = context.getDataSource(tilesetObject.getDatabase());
 
-    try (var sourceTileStore = sourceTileStore(tileset, datasource);
-        var targetTileStore = targetTileStore(tileset)) {
+    try (var sourceTileStore = sourceTileStore(tilesetObject, datasource);
+        var targetTileStore = targetTileStore(tilesetObject)) {
 
-      var envelope = tileset.getBounds().size() == 4
+      var envelope = tilesetObject.getBounds().size() == 4
           ? new Envelope(
-              tileset.getBounds().get(0), tileset.getBounds().get(2),
-              tileset.getBounds().get(1), tileset.getBounds().get(3))
+              tilesetObject.getBounds().get(0), tilesetObject.getBounds().get(2),
+              tilesetObject.getBounds().get(1), tilesetObject.getBounds().get(3))
           : new Envelope(-180, 180, -85.0511, 85.0511);
 
-      var count = TileCoord.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
+      var count = TileCoord.count(envelope, tilesetObject.getMinzoom(), tilesetObject.getMaxzoom());
       var start = System.currentTimeMillis();
 
       var tileCoordIterator =
-          TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
+          TileCoord.iterator(envelope, tilesetObject.getMinzoom(), tilesetObject.getMaxzoom());
       var tileCoordStream =
           StreamUtils.stream(tileCoordIterator).peek(new ProgressLogger<>(count, 5000));
 
@@ -147,7 +148,7 @@ public class ExportVectorTiles implements Task {
         try {
           return new TileEntry(tile, sourceTileStore.read(tile));
         } catch (TileStoreException e) {
-          throw new RuntimeException(e);
+          throw new WorkflowException(e);
         }
       }, 1000);
 
@@ -156,7 +157,7 @@ public class ExportVectorTiles implements Task {
         try {
           targetTileStore.write(batch);
         } catch (TileStoreException e) {
-          throw new RuntimeException(e);
+          throw new WorkflowException(e);
         }
       });
 
