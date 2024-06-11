@@ -28,7 +28,7 @@ import java.util.*;
 
 public class PMTilesWriter {
 
-  private Compression compression = Compression.Gzip;
+  private Compression compression = Compression.GZIP;
 
   private Path path;
 
@@ -183,7 +183,7 @@ public class PMTilesWriter {
 
     header.setInternalCompression(compression);
     header.setTileCompression(compression);
-    header.setTileType(TileType.mvt);
+    header.setTileType(TileType.MVT);
     header.setRootOffset(rootOffset);
     header.setRootLength(rootLength);
     header.setMetadataOffset(metadataOffset);

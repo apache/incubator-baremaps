@@ -22,18 +22,18 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 enum Compression {
-  Unknown,
-  None,
-  Gzip,
-  Brotli,
-  Zstd;
+  UNKNOWN,
+  NONE,
+  GZIP,
+  BROTLI,
+  ZSTD;
 
   InputStream decompress(InputStream inputStream) throws IOException {
     return switch (this) {
-      case None -> inputStream;
-      case Gzip -> decompressGzip(inputStream);
-      case Brotli -> decompressBrotli(inputStream);
-      case Zstd -> decompressZstd(inputStream);
+      case NONE -> inputStream;
+      case GZIP -> decompressGzip(inputStream);
+      case BROTLI -> decompressBrotli(inputStream);
+      case ZSTD -> decompressZstd(inputStream);
       default -> throw new RuntimeException("Unknown compression");
     };
   }
@@ -52,10 +52,10 @@ enum Compression {
 
   OutputStream compress(OutputStream outputStream) throws IOException {
     return switch (this) {
-      case None -> outputStream;
-      case Gzip -> compressGzip(outputStream);
-      case Brotli -> compressBrotli(outputStream);
-      case Zstd -> compressZstd(outputStream);
+      case NONE -> outputStream;
+      case GZIP -> compressGzip(outputStream);
+      case BROTLI -> compressBrotli(outputStream);
+      case ZSTD -> compressZstd(outputStream);
       default -> throw new RuntimeException("Unknown compression");
     };
   }

@@ -27,6 +27,7 @@ import org.apache.baremaps.workflow.tasks.DecompressFile.Compression;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("squid:S2699")
 class WorkflowTest extends PostgresContainerTest {
 
   @Test
@@ -36,7 +37,7 @@ class WorkflowTest extends PostgresContainerTest {
         new DownloadUrl("https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
             Paths.get("natural_earth_vector.gpkg.zip"), false),
         new DecompressFile(Paths.get("natural_earth_vector.gpkg.zip"),
-            Paths.get("natural_earth_vector"), Compression.zip),
+            Paths.get("natural_earth_vector"), Compression.ZIP),
         new ImportGeoPackage(Paths.get("natural_earth_vector/packages/natural_earth_vector.gpkg"),
             4326, jdbcUrl(),
             3857)))));
@@ -51,7 +52,7 @@ class WorkflowTest extends PostgresContainerTest {
             new DownloadUrl("https://osmdata.openstreetmap.de/download/coastlines-split-4326.zip",
                 Paths.get("coastlines-split-4326.zip"), false),
             new DecompressFile(Paths.get("coastlines-split-4326.zip"),
-                Paths.get("coastlines-split-4326"), Compression.zip),
+                Paths.get("coastlines-split-4326"), Compression.ZIP),
             new ImportShapefile(Paths.get("coastlines-split-4326/coastlines-split-4326/lines.shp"),
                 4326, jdbcUrl(),
                 3857)))));
@@ -109,7 +110,7 @@ class WorkflowTest extends PostgresContainerTest {
         new Step("unzip-shapefile", List.of("fetch-shapefile"),
             List.of(
                 new DecompressFile(Paths.get("downloads/simplified-water-polygons-split-3857.zip"),
-                    Paths.get("archives"), Compression.zip))),
+                    Paths.get("archives"), Compression.ZIP))),
         new Step("fetch-projection", List.of("unzip-shapefile"),
             List.of(new DownloadUrl("https://spatialreference.org/ref/sr-org/epsg3857/prj/",
                 Paths.get(

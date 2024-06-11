@@ -47,7 +47,7 @@ public class VectorTileEncoder {
    * Constructs a vector tile encoder.
    */
   public VectorTileEncoder() {
-
+    // Default constructor
   }
 
   /**

@@ -219,7 +219,7 @@ public class DataConversions {
     @Override
     public long addIndexed(E value) {
       list.add(value);
-      return list.size() - 1;
+      return list.size() - 1L;
     }
 
     @Override

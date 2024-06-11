@@ -27,32 +27,32 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
 public enum Compression {
-  none,
-  gzip,
-  bzip2;
+  NONE,
+  GZIP,
+  BZIP2;
 
   public static Compression detect(Path file) {
     if (file.toString().endsWith(".gz")) {
-      return gzip;
+      return GZIP;
     } else if (file.toString().endsWith(".bz2")) {
-      return bzip2;
+      return BZIP2;
     } else {
-      return none;
+      return NONE;
     }
   }
 
   public InputStream decompress(InputStream inputStream) throws IOException {
     return switch (this) {
-      case gzip -> new GZIPInputStream(inputStream);
-      case bzip2 -> new BZip2CompressorInputStream(inputStream);
+      case GZIP -> new GZIPInputStream(inputStream);
+      case BZIP2 -> new BZip2CompressorInputStream(inputStream);
       default -> inputStream;
     };
   }
 
   public OutputStream compress(OutputStream outputStream) throws IOException {
     return switch (this) {
-      case gzip -> new GZIPOutputStream(outputStream);
-      case bzip2 -> new BZip2CompressorOutputStream(outputStream);
+      case GZIP -> new GZIPOutputStream(outputStream);
+      case BZIP2 -> new BZip2CompressorOutputStream(outputStream);
       default -> outputStream;
     };
   }

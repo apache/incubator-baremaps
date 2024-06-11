@@ -119,7 +119,11 @@ public class ShapefileDataTable implements DataTable {
         return next != null;
       } catch (IOException e) {
         logger.error("Malformed shapefile", e);
-        shapefileInputStream.close();
+        try {
+          shapefileInputStream.close();
+        } catch (IOException ex) {
+          // ignore
+        }
         return false;
       }
     }
@@ -137,7 +141,11 @@ public class ShapefileDataTable implements DataTable {
         next = null;
         return current;
       } catch (Exception e) {
-        shapefileInputStream.close();
+        try {
+          shapefileInputStream.close();
+        } catch (IOException ex) {
+          // ignore
+        }
         throw new NoSuchElementException();
       }
     }

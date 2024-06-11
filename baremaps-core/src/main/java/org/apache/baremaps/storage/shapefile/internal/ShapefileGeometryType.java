@@ -35,22 +35,20 @@ import java.util.Map;
  *      Specification</a>
  */
 public enum ShapefileGeometryType {
-  NullShape(0),
-  Point(1),
-  PolyLine(3),
-  Polygon(5),
-  MultiPoint(8),
-  PointZ(11),
-  PolyLineZ(
-      13),
-  PolygonZ(15),
-  MultiPointZ(
-      18),
-  PointM(21),
-  PolyLineM(23),
-  PolygonM(25),
-  MultiPointM(28),
-  MultiPatch(31);
+  NULL_SHAPE(0),
+  POINT(1),
+  POLY_LINE(3),
+  POLYGON(5),
+  MULTI_POINT(8),
+  POINT_Z(11),
+  POLY_LINE_Z(13),
+  POLYGON_Z(15),
+  MULTI_POINT_Z(18),
+  POINT_M(21),
+  POLY_LINE_M(23),
+  POLYGON_M(25),
+  MULTI_POINT_M(28),
+  MULTI_PATCH(31);
 
   // used for initializing the enumeration
   private int value;

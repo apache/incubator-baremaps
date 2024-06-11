@@ -51,7 +51,9 @@ public class GeoParquetGroupRecordConverter extends RecordMaterializer<GeoParque
       }
 
       @Override
-      public void end() {}
+      public void end() {
+        // Do nothing
+      }
     };
   }
 

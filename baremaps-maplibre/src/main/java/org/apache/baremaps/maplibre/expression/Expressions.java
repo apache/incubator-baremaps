@@ -503,24 +503,14 @@ public interface Expressions {
             "Unknown expression: " + arrayList.get(0).asText());
       };
     }
-
   }
 
-
   static Expression read(String json) throws IOException {
-    var mapper = new ObjectMapper();
-    var simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
-    simpleModule.addDeserializer(Expression.class, new ExpressionDeserializer());
-    mapper.registerModule(simpleModule);
-    return mapper.readValue(new StringReader(json), Expression.class);
+    return createObjectMapper().readValue(new StringReader(json), Expression.class);
   }
 
   static String write(Expression expression) throws IOException {
-    var mapper = new ObjectMapper();
-    var simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
-    simpleModule.addSerializer(Expression.class, new ExpressionSerializer());
-    mapper.registerModule(simpleModule);
-    return mapper.writeValueAsString(expression);
+    return createObjectMapper().writeValueAsString(expression);
   }
 
   static Predicate<Feature> asPredicate(Expression expression) {
@@ -534,8 +524,15 @@ public interface Expressions {
     };
   }
 
-  public static Module jacksonModule() {
+  static ObjectMapper createObjectMapper() {
+    var mapper = new ObjectMapper();
+    mapper.registerModule(createModule());
+    return mapper;
+  }
+
+  static Module createModule() {
     var simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
+    simpleModule.addSerializer(Expression.class, new ExpressionSerializer());
     simpleModule.addDeserializer(Expression.class, new ExpressionDeserializer());
     return simpleModule;
   }

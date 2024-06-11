@@ -24,6 +24,7 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("squid:S2699")
 class ExecuteSqlIntegrationTest extends PostgresContainerTest {
 
   @Test

@@ -51,6 +51,7 @@ public class WayGeometryBuilder implements Consumer<Entity> {
 
   /** {@inheritDoc} */
   @Override
+  @SuppressWarnings("squid:S3776")
   public void accept(Entity entity) {
     if (entity instanceof Way way) {
       try {

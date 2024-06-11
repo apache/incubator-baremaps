@@ -109,7 +109,14 @@ public class ShapefileInputStream extends InputStream {
 
   /** @see java.io.InputStream#close() */
   @Override
-  public void close() {}
+  public void close() throws IOException {
+    if (this.dbaseReader != null) {
+      this.dbaseReader.close();
+    }
+    if (this.shapefileReader != null) {
+      this.shapefileReader.close();
+    }
+  }
 
   /**
    * Read next feature responding to the SQL query.

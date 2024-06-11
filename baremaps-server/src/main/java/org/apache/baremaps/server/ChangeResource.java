@@ -87,6 +87,7 @@ public final class ChangeResource {
      * Detects changes in the tileset and style and broadcasts them.
      */
     @Override
+    @SuppressWarnings("squid:S3776")
     public void run() {
       try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
         if (tileset != null && Files.exists(tileset)) {

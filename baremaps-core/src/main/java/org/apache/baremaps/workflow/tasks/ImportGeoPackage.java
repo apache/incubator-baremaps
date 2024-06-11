@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Import a GeoPackage into a database.
  */
+@SuppressWarnings("squid:S2699")
 public class ImportGeoPackage implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);

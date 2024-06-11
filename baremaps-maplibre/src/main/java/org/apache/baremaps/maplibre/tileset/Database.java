@@ -61,7 +61,9 @@ public class Database {
   @JsonProperty("readOnly")
   private Boolean readOnly;
 
-  public Database() {}
+  public Database() {
+    // Default constructor
+  }
 
   public String getDataSourceClassName() {
     return dataSourceClassName;

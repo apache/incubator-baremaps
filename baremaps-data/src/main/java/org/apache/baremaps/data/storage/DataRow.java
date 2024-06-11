@@ -36,7 +36,7 @@ public interface DataRow {
    * 
    * @return the values of the columns in the row
    */
-  List<?> values();
+  List<Object> values();
 
   /**
    * Returns the value of the specified column.
