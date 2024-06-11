@@ -18,7 +18,7 @@
 package org.apache.baremaps.geocoderosm;
 
 import org.apache.baremaps.geocoder.GeocoderConstants;
-import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -34,7 +34,7 @@ public class GeocoderOsmQuery {
 
   public Query build() {
     var builder = new BooleanQuery.Builder();
-    var queryTextEsc = QueryParser.escape(query);
+    var queryTextEsc = QueryParserBase.escape(query);
 
     var parser = new SimpleQueryParser(GeocoderConstants.ANALYZER, OsmTags.NAME.key());
     var termsQuery = parser.parse(queryTextEsc);
