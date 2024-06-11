@@ -36,7 +36,7 @@ public abstract class PostgresContainerTest {
   private DataSource dataSource;
 
   @BeforeEach
-  public void startContainer() throws SQLException, IOException {
+  public void startContainer() {
     // start the container
     var postgis =
         DockerImageName.parse("ghcr.io/baosystems/postgis:14-3.3")
