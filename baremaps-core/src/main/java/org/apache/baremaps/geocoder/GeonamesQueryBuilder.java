@@ -29,6 +29,7 @@ import org.apache.lucene.expressions.js.JavascriptCompiler;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.function.FunctionScoreQuery;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
 import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -96,7 +97,7 @@ public class GeonamesQueryBuilder {
     var builder = new BooleanQuery.Builder();
 
     if (queryText != null) {
-      var queryTextEsc = QueryParser.escape(queryText);
+      var queryTextEsc = QueryParserBase.escape(queryText);
       if (!queryTextEsc.isBlank()) {
         // Changing the fields here might affect queries using queryText.
         var fieldWeights = Map.of("name", 1f, "asciiname", 1f, "country", 1f, "countryCode", 1f);
@@ -112,7 +113,7 @@ public class GeonamesQueryBuilder {
     }
 
     if (countryCode != null) {
-      var countryCodeEsc = QueryParser.escape(countryCode);
+      var countryCodeEsc = QueryParserBase.escape(countryCode);
       if (!countryCodeEsc.isBlank()) {
         var countryCodeQuery = new TermQuery(new Term("countryCode", countryCodeEsc));
         builder.add(countryCodeQuery, BooleanClause.Occur.MUST);
