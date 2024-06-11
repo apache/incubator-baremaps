@@ -77,7 +77,7 @@ public class ShapefileDataTable implements DataTable {
     try {
       return new ShapefileIterator(shapeFile.read());
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 
