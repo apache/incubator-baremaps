@@ -135,7 +135,7 @@ public class DecompressFile implements Task {
         var gzipInputStream = new GZIPInputStream(bufferedInputStream);
         var tarInputStream = new TarArchiveInputStream(gzipInputStream)) {
       TarArchiveEntry entry;
-      while ((entry = (TarArchiveEntry) tarInputStream.getNextEntry()) != null) {
+      while ((entry = tarInputStream.getNextEntry()) != null) {
         var path = target.resolve(entry.getName());
         if (entry.isDirectory()) {
           Files.createDirectories(path);
