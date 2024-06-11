@@ -176,7 +176,6 @@ public class ShapefileByteReader extends CommonByteReader {
 
     try (FileInputStream fis = new FileInputStream(this.shapeFileIndex);
         FileChannel fc = fis.getChannel()) {
-      try {
         int fsize = (int) fc.size();
         MappedByteBuffer indexesByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
 
@@ -193,13 +192,6 @@ public class ShapefileByteReader extends CommonByteReader {
           this.recordsLengths.add(indexesByteBuffer.getInt()); // Length of this shapefile record.
         }
         return true;
-      } catch (IOException e) {
-        this.shapeFileIndex = null;
-        return false;
-      }
-    } catch (FileNotFoundException e) {
-      this.shapeFileIndex = null;
-      return false;
     } catch (IOException e) {
       this.shapeFileIndex = null;
       return false;
