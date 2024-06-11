@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.baremaps.database.repository.Constants;
+import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -52,7 +52,7 @@ class NodeRepositoryTest extends PostgresRepositoryTest {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.put(nodes);
     assertIterableEquals(nodes,
-        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(Element::getId).toList()));
   }
 
   @Test
@@ -68,9 +68,9 @@ class NodeRepositoryTest extends PostgresRepositoryTest {
   void deleteAll() throws RepositoryException {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.put(nodes);
-    nodeRepository.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    nodeRepository.delete(nodes.stream().map(Element::getId).toList());
     assertIterableEquals(Arrays.asList(null, null, null),
-        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(Element::getId).toList()));
   }
 
   @Test
@@ -79,6 +79,6 @@ class NodeRepositoryTest extends PostgresRepositoryTest {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.copy(nodes);
     assertIterableEquals(nodes,
-        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(Element::getId).toList()));
   }
 }

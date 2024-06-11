@@ -24,11 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -39,7 +36,7 @@ class HeaderRepositoryTest extends PostgresRepositoryTest {
   HeaderRepository headerRepository;
 
   @BeforeEach
-  void init() throws SQLException, IOException {
+  void init() {
     headerRepository = new HeaderRepository(dataSource());
   }
 
@@ -72,7 +69,7 @@ class HeaderRepositoryTest extends PostgresRepositoryTest {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerRepository.put(headers);
     assertIterableEquals(headers, headerRepository.get(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList())));
+        headers.stream().map(Header::getReplicationSequenceNumber).toList()));
   }
 
   @Test
@@ -89,9 +86,9 @@ class HeaderRepositoryTest extends PostgresRepositoryTest {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerRepository.put(headers);
     headerRepository.delete(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList()));
+        headers.stream().map(Header::getReplicationSequenceNumber).toList());
     assertIterableEquals(Arrays.asList(null, null, null), headerRepository.get(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList())));
+        headers.stream().map(Header::getReplicationSequenceNumber).toList()));
   }
 
   @Test
@@ -100,6 +97,6 @@ class HeaderRepositoryTest extends PostgresRepositoryTest {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerRepository.copy(headers);
     assertIterableEquals(headers, headerRepository.get(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList())));
+        headers.stream().map(Header::getReplicationSequenceNumber).toList()));
   }
 }

@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.openstreetmap.model.Info;
@@ -316,11 +315,11 @@ public class RelationRepository implements Repository<Long, Relation> {
           writer.writeLong(value.getInfo().getChangeset());
           writer.writeJsonb(JsonbMapper.toJson(value.getTags()));
           writer.writeLongList(
-              value.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
+              value.getMembers().stream().map(Member::getRef).toList());
           writer.writeIntegerList(value.getMembers().stream().map(Member::getType)
-              .map(MemberType::ordinal).collect(Collectors.toList()));
+              .map(MemberType::ordinal).toList());
           writer
-              .write(value.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
+              .write(value.getMembers().stream().map(Member::getRole).toList());
           writer.writeGeometry(value.getGeometry());
         }
       }
