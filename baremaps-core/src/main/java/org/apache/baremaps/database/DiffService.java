@@ -58,8 +58,11 @@ public class DiffService implements Callable<List<TileCoord>> {
   public DiffService(
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
-      HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
-      Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
+      HeaderRepository headerRepository,
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository,
+      int srid,
       int zoom) {
     this.coordinateMap = coordinateMap;
     this.referenceMap = referenceMap;

@@ -144,6 +144,16 @@ public class CopyWriter implements AutoCloseable {
   }
 
   /**
+   * Writes the number of columns affected by the query.
+   *
+   * @param columns
+   * @throws IOException
+   */
+  public void startRow(int columns) throws IOException {
+    data.writeShort(columns);
+  }
+
+  /**
    * Writes a null value.
    *
    * @throws IOException
@@ -155,263 +165,230 @@ public class CopyWriter implements AutoCloseable {
   /**
    * Writes a null value.
    *
-   * @throws IOException
+   * @param handler the value handler
+   * @param value the value
    */
-  public <T> void write(BaseValueHandler<T> handler, T value) throws IOException {
+  public <T> void write(BaseValueHandler<T> handler, T value) {
     handler.handle(data, value);
-  }
-
-  /**
-   * Writes the number of columns affected by the query.
-   *
-   * @param columns
-   * @throws IOException
-   */
-  public void startRow(int columns) throws IOException {
-    data.writeShort(columns);
   }
 
   /**
    * Writes a string value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void write(String value) throws IOException {
+  public void write(String value) {
     STRING_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of string values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void write(List<String> value) throws IOException {
+  public void write(List<String> value) {
     STRING_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a boolean value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeBoolean(Boolean value) throws IOException {
+  public void writeBoolean(Boolean value) {
     BOOLEAN_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of boolean values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeBooleanList(List<Boolean> value) throws IOException {
+  public void writeBooleanList(List<Boolean> value) {
     BOOLEAN_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a byte value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeByte(Byte value) throws IOException {
+  public void writeByte(Byte value) {
     BYTE_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a byte array value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeByteArray(byte[] value) throws IOException {
+  public void writeByteArray(byte[] value) {
     BYTE_ARRAY_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a short value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeShort(Short value) throws IOException {
+  public void writeShort(Short value) {
     SHORT_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of short values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeShortList(List<Short> value) throws IOException {
+  public void writeShortList(List<Short> value) {
     SHORT_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
    * Writes an integer value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeInteger(Integer value) throws IOException {
+  public void writeInteger(Integer value) {
     INTEGER_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of integer values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeIntegerList(List<Integer> value) throws IOException {
+  public void writeIntegerList(List<Integer> value) {
     INTEGER_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a long value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeLong(Long value) throws IOException {
+  public void writeLong(Long value) {
     LONG_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of long values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeLongList(List<Long> value) throws IOException {
+  public void writeLongList(List<Long> value) {
     LONG_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a float value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeFloat(Float value) throws IOException {
+  public void writeFloat(Float value) {
     FLOAT_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of float values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeFloatList(List<Float> value) throws IOException {
+  public void writeFloatList(List<Float> value) {
     FLOAT_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a double value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeDouble(Double value) throws IOException {
+  public void writeDouble(Double value) {
     DOUBLE_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of double values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeDoubleArray(List<Double> value) throws IOException {
+  public void writeDoubleArray(List<Double> value) {
     DOUBLE_COLLECTION_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a date value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeLocalDate(LocalDate value) throws IOException {
+  public void writeLocalDate(LocalDate value) {
     LOCAL_DATE_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of date values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeLocalDateTime(LocalDateTime value) throws IOException {
+  public void writeLocalDateTime(LocalDateTime value) {
     LOCAL_DATE_TIME_HANDLER.handle(data, value);
   }
 
   /**
    * Writes an inet adress value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeInet4Adress(Inet4Address value) throws IOException {
+  public void writeInet4Adress(Inet4Address value) {
     INET_4_ADDRESS_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a list of inet adress values.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeInet6Adress(Inet6Address value) throws IOException {
+  public void writeInet6Adress(Inet6Address value) {
     INET_6_ADDRESS_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a map value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeHstore(Map<String, String> value) throws IOException {
+  public void writeHstore(Map<String, String> value) {
     HSTORE_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a jsonb array
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeJsonb(String value) throws IOException {
+  public void writeJsonb(String value) {
     JSONB_HANDLER.handle(data, value);
   }
 
   /**
    * Writes a geometry value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeGeometry(Geometry value) throws IOException {
+  public void writeGeometry(Geometry value) {
     GEOMETRY_HANDLER.handle(data, value);
   }
 
   /**
    * Writes an envelope value.
    *
-   * @param value
-   * @throws IOException
+   * @param value the value
    */
-  public void writeEnvelope(Envelope value) throws IOException {
+  public void writeEnvelope(Envelope value) {
     ENVELOPE_HANDLER.handle(data, value);
   }
 
-  /** Close the writer. */
+  /** @inheritDoc */
   @Override
   public void close() throws IOException {
     data.writeShort(-1);
