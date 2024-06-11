@@ -30,8 +30,8 @@ class GeoPackageDataStoreTest {
     var geoPackageStore = new GeoPackageDataStore(file);
     var table = geoPackageStore.get("countries");
     var rowType = table.schema();
-    assertEquals(rowType.name(), "countries");
-    assertEquals(rowType.columns().size(), 4);
+    assertEquals("countries", rowType.name());
+    assertEquals(4, rowType.columns().size());
   }
 
   @Test
