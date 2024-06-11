@@ -48,7 +48,9 @@ public class VectorTileDecoder {
   /**
    * Constructs a new vector tile decoder.
    */
-  public VectorTileDecoder() {}
+  public VectorTileDecoder() {
+    // Default constructor
+  }
 
   /**
    * Decodes a vector tile.
@@ -208,6 +210,7 @@ public class VectorTileDecoder {
    * @param encoding The encoding of the point geometry
    * @return The decoded point geometry
    */
+  @SuppressWarnings("squid:S3776")
   protected Geometry decodePoint(List<Integer> encoding) {
     List<Coordinate> coordinates = new ArrayList<>();
 
