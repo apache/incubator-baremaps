@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.storage.DataRow;
 import org.apache.baremaps.data.storage.DataSchema;
+import org.apache.baremaps.data.storage.DataStoreException;
 import org.apache.baremaps.data.storage.DataTable;
 import org.locationtech.jts.geom.*;
 import org.wololo.flatgeobuf.Constants;
@@ -116,7 +117,7 @@ public class FlatGeoBufDataTable implements DataTable {
       // create the feature stream
       return new RowIterator(channel, headerMeta, schema, buffer);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -125,7 +126,7 @@ public class FlatGeoBufDataTable implements DataTable {
    */
   @Override
   public void clear() {
-
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -138,7 +139,7 @@ public class FlatGeoBufDataTable implements DataTable {
       HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
       return headerMeta.featuresCount;
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 

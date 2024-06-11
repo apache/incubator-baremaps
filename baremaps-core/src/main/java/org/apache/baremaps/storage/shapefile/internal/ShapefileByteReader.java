@@ -131,23 +131,23 @@ public class ShapefileByteReader extends CommonByteReader {
       var fieldDescriptor = this.databaseFieldsDescriptors.get(i);
       var columnName = fieldDescriptor.getName();
       var columnType = switch (fieldDescriptor.getType()) {
-        case Character -> Type.STRING;
-        case Number -> fieldDescriptor.getDecimalCount() == 0 ? Type.LONG : Type.DOUBLE;
-        case Currency -> Type.DOUBLE;
-        case Double -> Type.DOUBLE;
-        case Integer -> Type.INTEGER;
-        case AutoIncrement -> Type.INTEGER;
+        case CHARACTER -> Type.STRING;
+        case NUMBER -> fieldDescriptor.getDecimalCount() == 0 ? Type.LONG : Type.DOUBLE;
+        case CURRENCY -> Type.DOUBLE;
+        case DOUBLE -> Type.DOUBLE;
+        case INTEGER -> Type.INTEGER;
+        case AUTO_INCREMENT -> Type.INTEGER;
 
         // TODO: Implement the following types
-        case Logical -> Type.STRING;
-        case Date -> Type.STRING;
-        case Memo -> Type.STRING;
-        case FloatingPoint -> Type.STRING;
-        case Picture -> Type.STRING;
-        case VariField -> Type.STRING;
-        case Variant -> Type.STRING;
-        case TimeStamp -> Type.STRING;
-        case DateTime -> Type.STRING;
+        case LOGICAL -> Type.STRING;
+        case DATE -> Type.STRING;
+        case MEMO -> Type.STRING;
+        case FLOATING_POINT -> Type.STRING;
+        case PICTURE -> Type.STRING;
+        case VARI_FIELD -> Type.STRING;
+        case VARIANT -> Type.STRING;
+        case TIMESTAMP -> Type.STRING;
+        case DATE_TIME -> Type.STRING;
       };
       columns.add(new DataColumnFixed(columnName, Cardinality.OPTIONAL, columnType));
     }

@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.lucene.search.*;
-import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -57,7 +57,7 @@ public class Search implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     try (
-        var directory = MMapDirectory.open(indexDirectory);
+        var directory = FSDirectory.open(indexDirectory);
         var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
       var query = new GeonamesQueryBuilder().queryText(terms).countryCode(countryCode).build();
       var searcher = searcherManager.acquire();

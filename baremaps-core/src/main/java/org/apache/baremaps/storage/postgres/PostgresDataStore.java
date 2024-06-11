@@ -152,7 +152,7 @@ public class PostgresDataStore implements DataStore {
         }
       }
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -166,7 +166,7 @@ public class PostgresDataStore implements DataStore {
         var statement = connection.prepareStatement(dropTable(schema))) {
       statement.execute();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 

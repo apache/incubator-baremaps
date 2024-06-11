@@ -27,7 +27,9 @@ import java.util.stream.StreamSupport;
 /** A parser for Network Coordination Center (NIC) data. */
 public class NicReader {
 
-  public NicReader() {}
+  public NicReader() {
+    // Default constructor
+  }
 
   /**
    * Creates an ordered stream of NIC objects.

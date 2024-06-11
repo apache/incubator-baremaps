@@ -23,10 +23,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-import org.apache.baremaps.data.storage.DataRow;
-import org.apache.baremaps.data.storage.DataRowImpl;
-import org.apache.baremaps.data.storage.DataSchema;
-import org.apache.baremaps.data.storage.DataTable;
+import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 
@@ -81,7 +78,7 @@ public class PostgresDataTable implements DataTable {
       resultSet.next();
       return resultSet.getLong(1);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -104,7 +101,7 @@ public class PostgresDataTable implements DataTable {
       setParameters(statement, row);
       return statement.executeUpdate() > 0;
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -122,7 +119,7 @@ public class PostgresDataTable implements DataTable {
       statement.executeBatch();
       return true;
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -131,7 +128,12 @@ public class PostgresDataTable implements DataTable {
    */
   @Override
   public void clear() {
-
+    try (var connection = dataSource.getConnection();
+        var statement = connection.createStatement()) {
+      statement.execute(truncate(schema));
+    } catch (SQLException e) {
+      throw new DataStoreException(e);
+    }
   }
 
   /**
@@ -199,6 +201,10 @@ public class PostgresDataTable implements DataTable {
     return String.format("SELECT COUNT(*) FROM \"%s\"", schema.name());
   }
 
+  private String truncate(DataSchema schema) {
+    return String.format("TRUNCATE TABLE \"%s\"", schema.name());
+  }
+
   /**
    * An iterator that iterates over the rows of a table.
    */
@@ -220,7 +226,7 @@ public class PostgresDataTable implements DataTable {
         hasNext = resultSet.next();
       } catch (SQLException e) {
         close();
-        throw new RuntimeException("Error while initializing SQL query iterator", e);
+        throw new DataStoreException("Error while initializing SQL query iterator", e);
       }
     }
 
@@ -257,7 +263,7 @@ public class PostgresDataTable implements DataTable {
         return new DataRowImpl(schema, values);
       } catch (SQLException e) {
         close();
-        throw new RuntimeException("Error while fetching the next result", e);
+        throw new DataStoreException("Error while fetching the next result", e);
       }
     }
 
@@ -277,7 +283,7 @@ public class PostgresDataTable implements DataTable {
           connection.close();
         }
       } catch (SQLException e) {
-        throw new RuntimeException("Error while closing resources", e);
+        throw new DataStoreException("Error while closing resources", e);
       }
     }
   }

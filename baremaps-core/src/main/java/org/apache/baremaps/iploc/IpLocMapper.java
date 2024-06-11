@@ -63,6 +63,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
    *         {@code NicObject}
    */
   @Override
+  @SuppressWarnings({"squid:S3776", "squid:S1192"})
   public Optional<IpLocObject> apply(NicObject nicObject) {
     try {
       if (nicObject.attributes().isEmpty()) {

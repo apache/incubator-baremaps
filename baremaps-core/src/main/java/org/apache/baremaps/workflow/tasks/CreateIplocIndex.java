@@ -31,7 +31,7 @@ import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
@@ -70,7 +70,7 @@ public class CreateIplocIndex implements Task {
    */
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    try (var directory = MMapDirectory.open(geonamesIndexPath);
+    try (var directory = FSDirectory.open(geonamesIndexPath);
         var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
 
       logger.info("Creating the Iploc database");

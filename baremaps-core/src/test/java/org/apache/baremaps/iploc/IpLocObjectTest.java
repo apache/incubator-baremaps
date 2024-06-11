@@ -34,7 +34,7 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.tasks.CreateGeonamesIndex;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +70,7 @@ class IpLocObjectTest {
     task.execute(new WorkflowContext());
 
     // Create the IPLoc mapper
-    var dir = MMapDirectory.open(directory);
+    var dir = FSDirectory.open(directory);
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
     ipLocMapper = new IpLocMapper(searcherManager);
     ipLocObjects = nicObjects.stream()

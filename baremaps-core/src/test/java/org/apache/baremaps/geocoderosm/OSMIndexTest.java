@@ -42,7 +42,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
-import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -64,7 +64,7 @@ public class OSMIndexTest {
 
     var task = new CreateGeocoderOpenStreetMap(SAMPLE_OSM_PBF, directory);
     task.execute(new WorkflowContext());
-    var dir = MMapDirectory.open(directory);
+    var dir = FSDirectory.open(directory);
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
     searcher = searcherManager.acquire();
   }

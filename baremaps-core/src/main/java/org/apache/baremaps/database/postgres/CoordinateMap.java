@@ -258,6 +258,6 @@ public class CoordinateMap extends PostgresMap<Long, Coordinate> {
 
   @Override
   public void clear() {
-
+    throw new UnsupportedOperationException();
   }
 }
