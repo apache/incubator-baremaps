@@ -60,7 +60,10 @@ public class PMTilesReader {
   public List<Entry> getDirectory(long offset) {
     var header = getHeader();
     try (var input = Files.newInputStream(path)) {
-      input.skip(offset);
+      long skipped = 0;
+      while (skipped < offset) {
+        skipped += input.skip(offset - skipped);
+      }
       try (var decompressed =
           new LittleEndianDataInputStream(header.getInternalCompression().decompress(input))) {
         return PMTiles.deserializeEntries(decompressed);
