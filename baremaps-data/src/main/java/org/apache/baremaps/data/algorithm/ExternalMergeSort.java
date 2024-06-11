@@ -30,6 +30,7 @@ import org.apache.baremaps.data.collection.DataList;
  * <a href="https://github.com/lemire/externalsortinginjava">externalsortinginjava</a> (public
  * domain).
  */
+@SuppressWarnings("squid:S2095")
 public class ExternalMergeSort {
 
   /**
