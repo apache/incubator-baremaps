@@ -55,6 +55,7 @@ limitations under the License.
     <module>baremaps-flatgeobuf</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
+    <module>baremaps-martini</module>
     <module>baremaps-openstreetmap</module>
     <module>baremaps-pmtiles</module>
     <module>baremaps-server</module>
