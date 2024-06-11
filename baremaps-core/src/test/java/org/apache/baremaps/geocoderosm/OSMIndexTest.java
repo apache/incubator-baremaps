@@ -18,8 +18,7 @@
 package org.apache.baremaps.geocoderosm;
 
 import static org.apache.baremaps.testing.TestFiles.SAMPLE_OSM_PBF;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -162,6 +161,7 @@ public class OSMIndexTest {
     for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
       System.out.println(searcher.doc(scoreDoc.doc));
     }
+    assertNotNull(topDocs);
   }
 
 }
