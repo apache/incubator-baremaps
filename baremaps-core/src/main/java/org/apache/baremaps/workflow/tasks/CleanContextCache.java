@@ -29,7 +29,9 @@ public class CleanContextCache implements Task {
   /**
    * Constructs an {@code CleanContextCache}.
    */
-  public CleanContextCache() {}
+  public CleanContextCache() {
+    // Default constructor
+  }
 
   /**
    * {@inheritDoc}

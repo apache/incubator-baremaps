@@ -98,8 +98,6 @@ public class WorkflowExecutor implements AutoCloseable {
     if (Graphs.hasCycle(this.graph)) {
       throw new WorkflowException("The workflow must be a directed acyclic graph");
     }
-
-    logger.info("Workflow graph: {}", this.graph);
   }
 
   /**
@@ -230,10 +228,8 @@ public class WorkflowExecutor implements AutoCloseable {
 
     if (workflowStart.isPresent() && workflowEnd.isPresent()) {
       var workflowDuration = Duration.ofMillis(workflowEnd.getAsLong() - workflowStart.getAsLong());
-      logger.info("Workflow graph: {}", this.graph);
       logger.info("  Duration: {}", formatDuration(workflowDuration));
     } else {
-      logger.info("Workflow graph: {}", this.graph);
       logger.info("  Duration: unknown");
     }
 
