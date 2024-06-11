@@ -105,8 +105,10 @@ public class UpdateOsmDatabase implements Task {
   public static void execute(
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
-      HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
-      Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
+      HeaderRepository headerRepository,
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository,
       Integer databaseSrid,
       String replicationUrl) throws Exception {
 
