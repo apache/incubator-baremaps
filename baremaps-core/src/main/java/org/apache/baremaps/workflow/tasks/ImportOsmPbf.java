@@ -33,8 +33,6 @@ import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Import an OSM PBF file into a database.

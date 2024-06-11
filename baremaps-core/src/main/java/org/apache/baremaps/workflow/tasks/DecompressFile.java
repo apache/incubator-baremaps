@@ -154,7 +154,8 @@ public class DecompressFile implements Task {
     }
   }
 
-  private static void decompressTar(Path target, TarArchiveInputStream tarInputStream) throws IOException {
+  private static void decompressTar(Path target, TarArchiveInputStream tarInputStream)
+      throws IOException {
     TarArchiveEntry entry;
     while ((entry = tarInputStream.getNextEntry()) != null) {
       var path = target.resolve(entry.getName());
@@ -163,10 +164,10 @@ public class DecompressFile implements Task {
       } else {
         Files.createDirectories(path.getParent());
         Files.write(path, new byte[] {},
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING);
+            StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING);
         try (BufferedOutputStream outputStream =
-                     new BufferedOutputStream(Files.newOutputStream(path))) {
+            new BufferedOutputStream(Files.newOutputStream(path))) {
           tarInputStream.transferTo(outputStream);
         }
       }
