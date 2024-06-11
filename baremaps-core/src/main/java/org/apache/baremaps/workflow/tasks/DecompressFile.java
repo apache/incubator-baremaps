@@ -191,6 +191,7 @@ public class DecompressFile implements Task {
    * @param target the target directory
    * @throws IOException if an I/O error occurs
    */
+  @SuppressWarnings("squid:S5042")
   protected static void decompressZip(Path source, Path target) throws IOException {
     Files.createDirectories(target);
     try (var zipFile = new ZipFile(source.toFile())) {
