@@ -134,22 +134,7 @@ public class DecompressFile implements Task {
     try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var gzipInputStream = new GZIPInputStream(bufferedInputStream);
         var tarInputStream = new TarArchiveInputStream(gzipInputStream)) {
-      TarArchiveEntry entry;
-      while ((entry = tarInputStream.getNextEntry()) != null) {
-        var path = target.resolve(entry.getName());
-        if (entry.isDirectory()) {
-          Files.createDirectories(path);
-        } else {
-          Files.createDirectories(path.getParent());
-          Files.write(path, new byte[] {},
-              StandardOpenOption.CREATE,
-              StandardOpenOption.TRUNCATE_EXISTING);
-          try (BufferedOutputStream outputStream =
-              new BufferedOutputStream(Files.newOutputStream(path))) {
-            tarInputStream.transferTo(outputStream);
-          }
-        }
-      }
+      decompressTar(target, tarInputStream);
     }
   }
 
@@ -165,20 +150,24 @@ public class DecompressFile implements Task {
     try (var bufferedInputStream = new BufferedInputStream(Files.newInputStream(source));
         var bzip2InputStream = new BZip2CompressorInputStream(bufferedInputStream);
         var tarInputStream = new TarArchiveInputStream(bzip2InputStream)) {
-      TarArchiveEntry entry;
-      while ((entry = (TarArchiveEntry) tarInputStream.getNextEntry()) != null) {
-        var path = target.resolve(entry.getName());
-        if (entry.isDirectory()) {
-          Files.createDirectories(path);
-        } else {
-          Files.createDirectories(path.getParent());
-          Files.write(path, new byte[] {},
-              StandardOpenOption.CREATE,
-              StandardOpenOption.TRUNCATE_EXISTING);
-          try (BufferedOutputStream outputStream =
-              new BufferedOutputStream(Files.newOutputStream(path))) {
-            tarInputStream.transferTo(outputStream);
-          }
+      decompressTar(target, tarInputStream);
+    }
+  }
+
+  private static void decompressTar(Path target, TarArchiveInputStream tarInputStream) throws IOException {
+    TarArchiveEntry entry;
+    while ((entry = tarInputStream.getNextEntry()) != null) {
+      var path = target.resolve(entry.getName());
+      if (entry.isDirectory()) {
+        Files.createDirectories(path);
+      } else {
+        Files.createDirectories(path.getParent());
+        Files.write(path, new byte[] {},
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING);
+        try (BufferedOutputStream outputStream =
+                     new BufferedOutputStream(Files.newOutputStream(path))) {
+          tarInputStream.transferTo(outputStream);
         }
       }
     }
