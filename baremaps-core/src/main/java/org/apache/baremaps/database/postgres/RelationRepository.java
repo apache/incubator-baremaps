@@ -66,9 +66,20 @@ public class RelationRepository implements Repository<Long, Relation> {
    * @param dataSource
    */
   public RelationRepository(DataSource dataSource) {
-    this(dataSource, "public", "osm_relations", "id", "version", "uid", "timestamp", "changeset",
+    this(
+        dataSource,
+        "public",
+        "osm_relations",
+        "id",
+        "version",
+        "uid",
+        "timestamp",
+        "changeset",
         "tags",
-        "member_refs", "member_types", "member_roles", "geom");
+        "member_refs",
+        "member_types",
+        "member_roles",
+        "geom");
   }
 
   /**
@@ -88,10 +99,20 @@ public class RelationRepository implements Repository<Long, Relation> {
    * @param memberRoles
    * @param geometryColumn
    */
-  public RelationRepository(DataSource dataSource, String schema, String table,
+  @SuppressWarnings("squid:S107")
+  public RelationRepository(
+      DataSource dataSource,
+      String schema,
+      String table,
       String idColumn,
-      String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
-      String tagsColumn, String memberRefs, String memberTypes, String memberRoles,
+      String versionColumn,
+      String uidColumn,
+      String timestampColumn,
+      String changesetColumn,
+      String tagsColumn,
+      String memberRefs,
+      String memberTypes,
+      String memberRoles,
       String geometryColumn) {
     var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;

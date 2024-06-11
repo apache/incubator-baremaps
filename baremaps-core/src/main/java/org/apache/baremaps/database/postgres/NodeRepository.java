@@ -71,9 +71,19 @@ public class NodeRepository implements Repository<Long, Node> {
    * @param dataSource
    */
   public NodeRepository(DataSource dataSource) {
-    this(dataSource, "public", "osm_nodes", "id", "version", "uid", "timestamp", "changeset",
-        "tags", "lon",
-        "lat", "geom");
+    this(
+        dataSource,
+        "public",
+        "osm_nodes",
+        "id",
+        "version",
+        "uid",
+        "timestamp",
+        "changeset",
+        "tags",
+        "lon",
+        "lat",
+        "geom");
   }
 
   /**
@@ -92,9 +102,20 @@ public class NodeRepository implements Repository<Long, Node> {
    * @param latitudeColumn
    * @param geometryColumn
    */
-  public NodeRepository(DataSource dataSource, String schema, String table, String idColumn,
-      String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
-      String tagsColumn, String longitudeColumn, String latitudeColumn, String geometryColumn) {
+  @SuppressWarnings("squid:S107")
+  public NodeRepository(
+      DataSource dataSource,
+      String schema,
+      String table,
+      String idColumn,
+      String versionColumn,
+      String uidColumn,
+      String timestampColumn,
+      String changesetColumn,
+      String tagsColumn,
+      String longitudeColumn,
+      String latitudeColumn,
+      String geometryColumn) {
     var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""

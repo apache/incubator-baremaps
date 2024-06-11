@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
-
 import org.apache.baremaps.cli.BaremapsException;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
