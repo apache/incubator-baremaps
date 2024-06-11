@@ -90,54 +90,58 @@ public class Serve implements Callable<Integer> {
     var tileset = objectMapper.readValue(configReader.read(tilesetPath), Tileset.class);
     var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
 
-    var tileStore = new PostgresTileStore(datasource, tileset);
-    var tileCache = new TileCache(tileStore, caffeineSpec);
-    var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
+    try (
+        var tileStore = new PostgresTileStore(datasource, tileset);
+        var tileCache = new TileCache(tileStore, caffeineSpec)) {
 
-    var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
-    var styleSupplier = (Supplier<Style>) () -> style;
+      var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
 
-    var tileJSON = objectMapper.readValue(configReader.read(tilesetPath), TileJSON.class);
-    var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
+      var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
+      var styleSupplier = (Supplier<Style>) () -> style;
 
-    var serverBuilder = Server.builder();
-    serverBuilder.http(port);
+      var tileJSON = objectMapper.readValue(configReader.read(tilesetPath), TileJSON.class);
+      var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
 
-    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
-    serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
-    serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
-    serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
-    serverBuilder.annotatedService(new SearchResource(datasource), jsonResponseConverter);
+      var serverBuilder = Server.builder();
+      serverBuilder.http(port);
 
-    var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/static/server.html");
-    serverBuilder.service("/", index.asService());
-    serverBuilder.serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/static"));
+      var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
+      serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
+      serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
+      serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
+      serverBuilder.annotatedService(new SearchResource(datasource), jsonResponseConverter);
 
-    if (assetsPath != null) {
-      serverBuilder.serviceUnder("/assets", FileService.of(assetsPath));
+      var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/static/server.html");
+      serverBuilder.service("/", index.asService());
+      serverBuilder.serviceUnder("/",
+          FileService.of(ClassLoader.getSystemClassLoader(), "/static"));
+
+      if (assetsPath != null) {
+        serverBuilder.serviceUnder("/assets", FileService.of(assetsPath));
+      }
+
+      serverBuilder.decorator(CorsService.builderForAnyOrigin()
+          .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
+              HttpMethod.OPTIONS, HttpMethod.HEAD)
+          .allowRequestHeaders(HttpHeaderNames.ORIGIN, HttpHeaderNames.CONTENT_TYPE,
+              HttpHeaderNames.ACCEPT, HttpHeaderNames.AUTHORIZATION)
+          .allowCredentials()
+          .exposeHeaders(HttpHeaderNames.LOCATION)
+          .newDecorator());
+
+      serverBuilder.serviceUnder("/docs", new DocService());
+
+      serverBuilder.disableServerHeader();
+      serverBuilder.disableDateHeader();
+
+      var server = serverBuilder.build();
+
+      var startFuture = server.start();
+      startFuture.join();
+
+      var shutdownFuture = server.closeOnJvmShutdown();
+      shutdownFuture.join();
     }
-
-    serverBuilder.decorator(CorsService.builderForAnyOrigin()
-        .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE,
-            HttpMethod.OPTIONS, HttpMethod.HEAD)
-        .allowRequestHeaders(HttpHeaderNames.ORIGIN, HttpHeaderNames.CONTENT_TYPE,
-            HttpHeaderNames.ACCEPT, HttpHeaderNames.AUTHORIZATION)
-        .allowCredentials()
-        .exposeHeaders(HttpHeaderNames.LOCATION)
-        .newDecorator());
-
-    serverBuilder.serviceUnder("/docs", new DocService());
-
-    serverBuilder.disableServerHeader();
-    serverBuilder.disableDateHeader();
-
-    var server = serverBuilder.build();
-
-    var startFuture = server.start();
-    startFuture.join();
-
-    var shutdownFuture = server.closeOnJvmShutdown();
-    shutdownFuture.join();
 
     return 0;
   }

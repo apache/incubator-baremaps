@@ -278,19 +278,19 @@ public class ShapefileByteReader extends CommonByteReader {
     }
 
     switch (shapefileGeometryType) {
-      case NullShape:
+      case NULL_SHAPE:
         loadNullRow(row);
         break;
 
-      case Point:
+      case POINT:
         loadPointRow(row);
         break;
 
-      case Polygon:
+      case POLYGON:
         loadPolygonRow(row);
         break;
 
-      case PolyLine:
+      case POLY_LINE:
         loadPolylineRow(row);
         break;
 
