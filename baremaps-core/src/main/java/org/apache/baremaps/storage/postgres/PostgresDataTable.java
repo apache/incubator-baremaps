@@ -131,7 +131,12 @@ public class PostgresDataTable implements DataTable {
    */
   @Override
   public void clear() {
-
+    try (var connection = dataSource.getConnection();
+        var statement = connection.createStatement()) {
+      statement.execute(truncate(schema));
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -197,6 +202,10 @@ public class PostgresDataTable implements DataTable {
    */
   protected String count(DataSchema schema) {
     return String.format("SELECT COUNT(*) FROM \"%s\"", schema.name());
+  }
+
+  private String truncate(DataSchema schema) {
+    return String.format("TRUNCATE TABLE \"%s\"", schema.name());
   }
 
   /**
