@@ -437,16 +437,16 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
   public List<Envelope> getEnvelopeValues(int fieldIndex) {
     return getGroupValues(fieldIndex).stream().map(group -> {
       double xMin = group.getSchema().fields().get(0).type().equals(Type.FLOAT)
-          ? group.getFloatValue(0)
+          ? (double) group.getFloatValue(0)
           : group.getDoubleValue(0);
       double yMin = group.getSchema().fields().get(1).type().equals(Type.FLOAT)
-          ? group.getFloatValue(1)
+          ? (double) group.getFloatValue(1)
           : group.getDoubleValue(1);
       double xMax = group.getSchema().fields().get(2).type().equals(Type.FLOAT)
-          ? group.getFloatValue(2)
+          ? (double) group.getFloatValue(2)
           : group.getDoubleValue(2);
       double yMax = group.getSchema().fields().get(0).type().equals(Type.FLOAT)
-          ? group.getFloatValue(3)
+          ? (double) group.getFloatValue(3)
           : group.getDoubleValue(3);
       return new Envelope(xMin, xMax, yMin, yMax);
     }).toList();
