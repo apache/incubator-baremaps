@@ -62,4 +62,8 @@ public class SqlTypeConversion {
     types.put(Type.GEOMETRYCOLLECTION, new JavaTypeFactoryImpl()
         .createJavaType(GeometryCollection.class));
   }
+
+  private SqlTypeConversion() {
+    // Prevent instantiation
+  }
 }
