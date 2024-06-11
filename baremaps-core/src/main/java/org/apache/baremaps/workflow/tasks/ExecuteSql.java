@@ -92,7 +92,7 @@ public class ExecuteSql implements Task {
    * @param sql The SQL string.
    * @return The SQL statements.
    */
-  @SuppressWarnings("squid:S5852")
+  @SuppressWarnings({"squid:S5852", "squid:S5998"})
   public static Stream<String> split(String sql) {
     return Arrays.stream(sql.split("\\s*;\\s*(?=(?:[^']*'[^']*')*[^']*$)"));
   }
