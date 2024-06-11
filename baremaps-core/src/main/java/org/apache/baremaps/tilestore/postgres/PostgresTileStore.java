@@ -125,6 +125,7 @@ public class PostgresTileStore implements TileStore {
    * @param zoom the zoom level
    * @return
    */
+  @SuppressWarnings("squid:S3776")
   protected static Query prepareQuery(Tileset tileset, int zoom) {
     // Initialize a builder for the tile sql
     var tileSql = new StringBuilder();
@@ -164,8 +165,8 @@ public class PostgresTileStore implements TileStore {
               .replace("$zoom", String.valueOf(zoom));
           var querySqlWithParams = String.format(
               "SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags - 'id' AS tags, t.id AS id "
-                  +
-                  "FROM (%s) AS t WHERE t.geom IS NOT NULL AND t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))",
+                  + "FROM (%s) AS t WHERE t.geom IS NOT NULL "
+                  + "AND t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))",
               querySql);
           layerSql.append(querySqlWithParams);
 
