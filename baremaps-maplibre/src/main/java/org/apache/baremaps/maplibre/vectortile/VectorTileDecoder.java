@@ -77,7 +77,7 @@ public class VectorTileDecoder {
   public Tile decodeTile(VectorTile.Tile tile) {
     List<Layer> layers = tile.getLayersList().stream()
         .map(this::decodeLayer)
-        .collect(Collectors.toList());
+        .toList();
     return new Tile(layers);
   }
 
@@ -113,11 +113,11 @@ public class VectorTileDecoder {
     keys = layer.getKeysList();
     values = layer.getValuesList().stream()
         .map(this::decodeValue)
-        .collect(Collectors.toList());
+        .toList();
 
     List<Feature> features = layer.getFeaturesList().stream()
         .map(this::decodeFeature)
-        .collect(Collectors.toList());
+        .toList();
 
     return new Layer(name, extent, features);
   }

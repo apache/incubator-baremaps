@@ -68,7 +68,7 @@ public class PostgresDataStore implements DataStore {
     DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
     return metadata.getTableMetaData(null, "public", null, TYPES).stream()
         .map(table -> table.table().tableName())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -252,7 +252,7 @@ public class PostgresDataStore implements DataStore {
   protected List<DataColumn> getColumns(DataSchema schema) {
     return schema.columns().stream()
         .filter(this::isSupported)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -264,7 +264,7 @@ public class PostgresDataStore implements DataStore {
   protected List<BaseValueHandler> getHandlers(DataSchema schema) {
     return getColumns(schema).stream()
         .map(column -> getHandler(column.type()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
