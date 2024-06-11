@@ -23,7 +23,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.baremaps.maplibre.binary.VectorTile;
 import org.apache.baremaps.maplibre.binary.VectorTile.Tile.GeomType;
 import org.apache.baremaps.maplibre.binary.VectorTile.Tile.Value;

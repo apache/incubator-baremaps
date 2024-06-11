@@ -176,22 +176,22 @@ public class ShapefileByteReader extends CommonByteReader {
 
     try (FileInputStream fis = new FileInputStream(this.shapeFileIndex);
         FileChannel fc = fis.getChannel()) {
-        int fsize = (int) fc.size();
-        MappedByteBuffer indexesByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
+      int fsize = (int) fc.size();
+      MappedByteBuffer indexesByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
 
-        // Indexes entries follow.
-        this.indexes = new ArrayList<>();
-        this.recordsLengths = new ArrayList<>();
-        indexesByteBuffer.position(100);
-        indexesByteBuffer.order(ByteOrder.BIG_ENDIAN);
+      // Indexes entries follow.
+      this.indexes = new ArrayList<>();
+      this.recordsLengths = new ArrayList<>();
+      indexesByteBuffer.position(100);
+      indexesByteBuffer.order(ByteOrder.BIG_ENDIAN);
 
-        while (indexesByteBuffer.hasRemaining()) {
-          this.indexes.add(indexesByteBuffer.getInt()); // Data offset : the position of the record
-                                                        // in the main shapefile,
-          // expressed in words (16 bits).
-          this.recordsLengths.add(indexesByteBuffer.getInt()); // Length of this shapefile record.
-        }
-        return true;
+      while (indexesByteBuffer.hasRemaining()) {
+        this.indexes.add(indexesByteBuffer.getInt()); // Data offset : the position of the record
+                                                      // in the main shapefile,
+        // expressed in words (16 bits).
+        this.recordsLengths.add(indexesByteBuffer.getInt()); // Length of this shapefile record.
+      }
+      return true;
     } catch (IOException e) {
       this.shapeFileIndex = null;
       return false;
