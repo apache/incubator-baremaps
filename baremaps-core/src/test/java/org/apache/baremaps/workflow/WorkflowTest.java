@@ -27,6 +27,7 @@ import org.apache.baremaps.workflow.tasks.DecompressFile.Compression;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("squid:S2699")
 class WorkflowTest extends PostgresContainerTest {
 
   @Test
