@@ -84,7 +84,9 @@ public class GeonamesRecord {
   // date of last modification in yyyy-MM-dd format
   private String modificationDate;
 
-  public GeonamesRecord() {}
+  public GeonamesRecord() {
+    // Default constructor
+  }
 
   public Integer getGeonameid() {
     return geonameid;
