@@ -23,15 +23,19 @@ import org.locationtech.jts.precision.GeometryPrecisionReducer;
 
 public class GeometryAssertions {
 
+  private static void throwAssertionError(Object expected, Object actual) {
+    throw new AssertionError("Expected " + expected + " but was " + actual);
+  }
+
   public static void assertGeometryEquals(Geometry expected, Geometry actual) {
     if (expected == null && actual == null) {
       return;
     }
     if (expected == null || actual == null) {
-      throw new AssertionError("Expected " + expected + " but was " + actual);
+      throwAssertionError(expected, actual);
     }
     if (!expected.equalsExact(actual)) {
-      throw new AssertionError("Expected " + expected + " but was " + actual);
+      throwAssertionError(expected, actual);
     }
   }
 
@@ -40,7 +44,7 @@ public class GeometryAssertions {
       return;
     }
     if (expected == null || actual == null) {
-      throw new AssertionError("Expected " + expected + " but was " + actual);
+      throwAssertionError(expected, actual);
     }
     PrecisionModel precisionModel = new PrecisionModel(tolerance);
     GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(precisionModel);
