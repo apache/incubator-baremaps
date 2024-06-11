@@ -37,7 +37,7 @@ class WayRepositoryTest extends PostgresRepositoryTest {
   WayRepository wayRepository;
 
   @BeforeEach
-  void init() throws SQLException, IOException {
+  void init() {
     wayRepository = new WayRepository(dataSource());
   }
 

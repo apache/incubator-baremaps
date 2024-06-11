@@ -37,7 +37,7 @@ class RelationRepositoryTest extends PostgresRepositoryTest {
   RelationRepository relationRepository;
 
   @BeforeEach
-  void init() throws SQLException, IOException {
+  void init() {
     relationRepository = new RelationRepository(dataSource());
   }
 
