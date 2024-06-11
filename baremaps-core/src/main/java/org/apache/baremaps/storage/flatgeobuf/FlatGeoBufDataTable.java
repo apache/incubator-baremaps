@@ -125,7 +125,7 @@ public class FlatGeoBufDataTable implements DataTable {
    */
   @Override
   public void clear() {
-
+    throw new UnsupportedOperationException();
   }
 
   /**
