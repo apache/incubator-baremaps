@@ -120,20 +120,18 @@ public class MBTilesStore implements TileStore {
    */
   @Override
   public void write(List<TileEntry> tileEntries) throws TileStoreException {
-    try (Connection connection = dataSource.getConnection()) {
-      // connection.setAutoCommit(false);
-      try (PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
-        for (TileEntry tileEntry : tileEntries) {
-          TileCoord tileCoord = tileEntry.getTileCoord();
-          ByteBuffer byteBuffer = tileEntry.getByteBuffer();
-          statement.setInt(1, tileCoord.z());
-          statement.setInt(2, tileCoord.x());
-          statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
-          statement.setBytes(4, byteBuffer.array());
-          statement.execute();
-        }
+    try (
+        Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
+      for (TileEntry tileEntry : tileEntries) {
+        TileCoord tileCoord = tileEntry.getTileCoord();
+        ByteBuffer byteBuffer = tileEntry.getByteBuffer();
+        statement.setInt(1, tileCoord.z());
+        statement.setInt(2, tileCoord.x());
+        statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
+        statement.setBytes(4, byteBuffer.array());
+        statement.execute();
       }
-      // connection.commit();
     } catch (SQLException e) {
       throw new TileStoreException(e);
     }

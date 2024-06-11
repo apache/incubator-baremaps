@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
+import org.apache.baremaps.cli.BaremapsException;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.maplibre.style.Style;
@@ -88,7 +89,7 @@ public class Dev implements Callable<Integer> {
         var config = configReader.read(tilesetPath);
         return objectMapper.readValue(config, Tileset.class);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new BaremapsException(e);
       }
     };
 
@@ -102,7 +103,7 @@ public class Dev implements Callable<Integer> {
         var config = configReader.read(stylePath);
         return objectMapper.readValue(config, Style.class);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new BaremapsException(e);
       }
     };
 

@@ -43,11 +43,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 
-public class CalciteTest {
-
+class CalciteTest {
 
   @Test
-  public void test() throws SQLException {
+  void test() throws SQLException {
     GeometryFactory geometryFactory = new GeometryFactory();
 
     Properties info = new Properties();

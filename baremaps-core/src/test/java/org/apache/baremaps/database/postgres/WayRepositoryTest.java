@@ -21,12 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.baremaps.database.repository.Constants;
+import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -37,7 +35,7 @@ class WayRepositoryTest extends PostgresRepositoryTest {
   WayRepository wayRepository;
 
   @BeforeEach
-  void init() throws SQLException, IOException {
+  void init() {
     wayRepository = new WayRepository(dataSource());
   }
 
@@ -54,7 +52,7 @@ class WayRepositoryTest extends PostgresRepositoryTest {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.put(ways);
     assertIterableEquals(ways,
-        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(Element::getId).toList()));
   }
 
   @Test
@@ -70,9 +68,9 @@ class WayRepositoryTest extends PostgresRepositoryTest {
   void deleteAll() throws RepositoryException {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.put(ways);
-    wayRepository.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    wayRepository.delete(ways.stream().map(Element::getId).toList());
     assertIterableEquals(Arrays.asList(null, null, null),
-        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(Element::getId).toList()));
   }
 
   @Test
@@ -81,6 +79,6 @@ class WayRepositoryTest extends PostgresRepositoryTest {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.copy(ways);
     assertIterableEquals(ways,
-        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(Element::getId).toList()));
   }
 }

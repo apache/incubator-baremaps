@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
@@ -38,7 +37,7 @@ import org.wololo.flatgeobuf.generated.Header;
 
 public class FlatGeoBufTypeConversion {
 
-  public static final EnumMap<Type, Integer> types = new EnumMap<>(Type.class);
+  private static final Map<Type, Integer> types = new EnumMap<>(Type.class);
 
   static {
     types.put(Type.BYTE, ColumnType.Byte);
@@ -49,6 +48,10 @@ public class FlatGeoBufTypeConversion {
     types.put(Type.FLOAT, ColumnType.Float);
     types.put(Type.DOUBLE, ColumnType.Double);
     types.put(Type.STRING, ColumnType.String);
+  }
+
+  private FlatGeoBufTypeConversion() {
+    // Prevent instantiation
   }
 
   public static DataSchema asSchema(HeaderMeta headerMeta) {
@@ -199,13 +202,11 @@ public class FlatGeoBufTypeConversion {
     throw new UnsupportedOperationException();
   }
 
-
-
   public static List<ColumnMeta> asColumns(List<DataColumn> columns) {
     return columns.stream()
         .map(FlatGeoBufTypeConversion::asColumn)
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public static ColumnMeta asColumn(DataColumn column) {

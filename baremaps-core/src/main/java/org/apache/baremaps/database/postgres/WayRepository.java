@@ -74,7 +74,15 @@ public class WayRepository implements Repository<Long, Way> {
    * @param dataSource the datasource
    */
   public WayRepository(DataSource dataSource) {
-    this(dataSource, "public", "osm_ways", "id", "version", "uid", "timestamp", "changeset", "tags",
+    this(dataSource,
+        "public",
+        "osm_ways",
+        "id",
+        "version",
+        "uid",
+        "timestamp",
+        "changeset",
+        "tags",
         "nodes",
         "geom");
   }
@@ -94,9 +102,19 @@ public class WayRepository implements Repository<Long, Way> {
    * @param nodesColumn
    * @param geometryColumn
    */
-  public WayRepository(DataSource dataSource, String schema, String table, String idColumn,
-      String versionColumn, String uidColumn, String timestampColumn, String changesetColumn,
-      String tagsColumn, String nodesColumn, String geometryColumn) {
+  @SuppressWarnings("squid:S107")
+  public WayRepository(
+      DataSource dataSource,
+      String schema,
+      String table,
+      String idColumn,
+      String versionColumn,
+      String uidColumn,
+      String timestampColumn,
+      String changesetColumn,
+      String tagsColumn,
+      String nodesColumn,
+      String geometryColumn) {
     var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""

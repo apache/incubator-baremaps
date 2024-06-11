@@ -33,15 +33,11 @@ import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Import an OSM PBF file into a database.
  */
 public class ImportOsmPbf implements Task {
-
-  private static final Logger logger = LoggerFactory.getLogger(ImportOsmPbf.class);
 
   private Path file;
   private Object database;
@@ -52,7 +48,7 @@ public class ImportOsmPbf implements Task {
    * Constructs a {@code ImportOsmPbf}.
    */
   public ImportOsmPbf() {
-
+    // Default constructor
   }
 
   /**

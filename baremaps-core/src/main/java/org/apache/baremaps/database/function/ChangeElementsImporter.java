@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.database.function;
 
-
 import java.util.function.Consumer;
 import org.apache.baremaps.database.postgres.Repository;
 import org.apache.baremaps.database.postgres.RepositoryException;

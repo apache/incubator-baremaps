@@ -176,30 +176,22 @@ public class ShapefileByteReader extends CommonByteReader {
 
     try (FileInputStream fis = new FileInputStream(this.shapeFileIndex);
         FileChannel fc = fis.getChannel()) {
-      try {
-        int fsize = (int) fc.size();
-        MappedByteBuffer indexesByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
+      int fsize = (int) fc.size();
+      MappedByteBuffer indexesByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
 
-        // Indexes entries follow.
-        this.indexes = new ArrayList<>();
-        this.recordsLengths = new ArrayList<>();
-        indexesByteBuffer.position(100);
-        indexesByteBuffer.order(ByteOrder.BIG_ENDIAN);
+      // Indexes entries follow.
+      this.indexes = new ArrayList<>();
+      this.recordsLengths = new ArrayList<>();
+      indexesByteBuffer.position(100);
+      indexesByteBuffer.order(ByteOrder.BIG_ENDIAN);
 
-        while (indexesByteBuffer.hasRemaining()) {
-          this.indexes.add(indexesByteBuffer.getInt()); // Data offset : the position of the record
-                                                        // in the main shapefile,
-          // expressed in words (16 bits).
-          this.recordsLengths.add(indexesByteBuffer.getInt()); // Length of this shapefile record.
-        }
-        return true;
-      } catch (IOException e) {
-        this.shapeFileIndex = null;
-        return false;
+      while (indexesByteBuffer.hasRemaining()) {
+        this.indexes.add(indexesByteBuffer.getInt()); // Data offset : the position of the record
+                                                      // in the main shapefile,
+        // expressed in words (16 bits).
+        this.recordsLengths.add(indexesByteBuffer.getInt()); // Length of this shapefile record.
       }
-    } catch (FileNotFoundException e) {
-      this.shapeFileIndex = null;
-      return false;
+      return true;
     } catch (IOException e) {
       this.shapeFileIndex = null;
       return false;
@@ -264,8 +256,8 @@ public class ShapefileByteReader extends CommonByteReader {
    */
   public void completeRow(DataRow row) throws ShapefileException {
     // insert points into some type of list
-    int RecordNumber = getByteBuffer().getInt();
-    int ContentLength = getByteBuffer().getInt();
+    getByteBuffer().getInt(); // record number
+    getByteBuffer().getInt(); // content length
 
     getByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
     int shapeTypeId = getByteBuffer().getInt();
@@ -409,26 +401,27 @@ public class ShapefileByteReader extends CommonByteReader {
     /* double xmax = */ getByteBuffer().getDouble();
     /* double ymax = */ getByteBuffer().getDouble();
 
-    int NumParts = getByteBuffer().getInt();
-    int NumPoints = getByteBuffer().getInt();
+    int numParts = getByteBuffer().getInt();
+    int numPoints = getByteBuffer().getInt();
 
-    int[] NumPartArr = new int[NumParts + 1];
+    int[] numPartArr = new int[numParts + 1];
 
-    for (int n = 0; n < NumParts; n++) {
+    for (int n = 0; n < numParts; n++) {
       int idx = getByteBuffer().getInt();
-      NumPartArr[n] = idx;
+      numPartArr[n] = idx;
     }
-    NumPartArr[NumParts] = NumPoints;
+    numPartArr[numParts] = numPoints;
 
-    double xpnt, ypnt;
+    double xpnt;
+    double ypnt;
     var coordinates = new CoordinateList();
 
-    for (int m = 0; m < NumParts; m++) {
+    for (int m = 0; m < numParts; m++) {
       xpnt = getByteBuffer().getDouble();
       ypnt = getByteBuffer().getDouble();
       coordinates.add(new Coordinate(xpnt, ypnt));
 
-      for (int j = NumPartArr[m]; j < NumPartArr[m + 1] - 1; j++) {
+      for (int j = numPartArr[m]; j < numPartArr[m + 1] - 1; j++) {
         xpnt = getByteBuffer().getDouble();
         ypnt = getByteBuffer().getDouble();
         coordinates.add(new Coordinate(xpnt, ypnt));

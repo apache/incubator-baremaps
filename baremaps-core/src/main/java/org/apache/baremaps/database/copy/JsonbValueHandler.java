@@ -55,17 +55,17 @@ public class JsonbValueHandler extends BaseValueHandler<Object> {
     this.jsonbProtocolVersion = jsonbProtocolVersion;
   }
 
-  private static byte[] asJson(Object object) {
+  private static byte[] asJson(Object object) throws IOException {
     try {
       String value = objectMapper.writeValueAsString(object);
       return value.getBytes("UTF-8");
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new IOException(e);
     }
   }
 
   @Override
-  protected void internalHandle(DataOutputStream buffer, Object value) throws Exception {
+  protected void internalHandle(DataOutputStream buffer, Object value) throws IOException {
     byte[] utf8Bytes = asJson(value);
     buffer.writeInt(utf8Bytes.length + 1);
     buffer.writeByte(jsonbProtocolVersion);
@@ -74,7 +74,11 @@ public class JsonbValueHandler extends BaseValueHandler<Object> {
 
   @Override
   public int getLength(Object value) {
-    byte[] utf8Bytes = asJson(value);
-    return utf8Bytes.length;
+    try {
+      byte[] utf8Bytes = asJson(value);
+      return utf8Bytes.length;
+    } catch (IOException e) {
+      return 0;
+    }
   }
 }

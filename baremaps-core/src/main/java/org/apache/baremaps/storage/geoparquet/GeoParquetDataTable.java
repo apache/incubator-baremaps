@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.baremaps.geoparquet.GeoParquetReader;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
 
 public class GeoParquetDataTable implements DataTable {
 
@@ -86,8 +85,9 @@ public class GeoParquetDataTable implements DataTable {
   @Override
   public DataSchema schema() {
     if (schema == null) {
-      Schema schema = reader().getGeoParquetSchema();
-      this.schema = GeoParquetTypeConversion.asSchema(path.toString(), schema);
+      this.schema = GeoParquetTypeConversion.asSchema(
+          path.toString(),
+          reader().getGeoParquetSchema());
       return this.schema;
     }
     return schema;
