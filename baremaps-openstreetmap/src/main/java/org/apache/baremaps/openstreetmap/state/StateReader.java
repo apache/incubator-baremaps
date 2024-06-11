@@ -147,7 +147,7 @@ public class StateReader implements Reader<State> {
             - lower.get().getTimestamp().toEpochSecond(ZoneOffset.UTC);
         var seqInt = upper.get().getSequenceNumber() - lower.get().getSequenceNumber();
         var goal = timestamp.getSecond() - lower.get().getTimestamp().getSecond();
-        baseSplitId = lower.get().getSequenceNumber() + (long) Math.ceil(goal * seqInt / tsInt);
+        baseSplitId = lower.get().getSequenceNumber() + (long) Math.ceil((double) (goal * seqInt) / tsInt);
         if (baseSplitId >= upper.get().getSequenceNumber()) {
           baseSplitId = upper.get().getSequenceNumber() - 1;
         }
