@@ -376,6 +376,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
    * @param pageCodeBinaryValue binary code page value.
    * @return Page code.
    */
+  @SuppressWarnings("squid:S1192")
   private String toCodePage(byte pageCodeBinaryValue) {
     // From http://trac.osgeo.org/gdal/ticket/2864
     HashMap<Integer, String> knownConversions = new HashMap<>();
