@@ -26,54 +26,54 @@ package org.apache.baremaps.storage.shapefile.internal;
  */
 public enum DBaseDataType {
   /** Character (less than 254 characters). */
-  Character('C'),
+  CHARACTER('C'),
 
   /** Number (less than 18 characters, can include sign and decimal). */
-  Number('N'),
+  NUMBER('N'),
 
   /** Logical (3 way, ? Y,y,T,t N,n,F,f). */
-  Logical('L'),
+  LOGICAL('L'),
 
   /** Date (YYYYMMDD format). */
-  Date('D'),
+  DATE('D'),
 
   /** Memo (Pointer to ASCII text field). */
-  Memo('M'),
+  MEMO('M'),
 
   /** Floating point (20 digits). */
-  FloatingPoint('F'),
+  FLOATING_POINT('F'),
 
   // CharacterNameVariable("?"), //1-254 Characters
 
   /** Picture (memo). */
-  Picture('P'),
+  PICTURE('P'),
 
   /** Currency (Foxpro). */
-  Currency('Y'),
+  CURRENCY('Y'),
 
   /**
    * Date time (32 bit little-endian Julian date, 32 byte little endian milliseconds since
    * midnight).
    */
-  DateTime('T'),
+  DATE_TIME('T'),
 
   /** Integer (4 byte little endian). */
-  Integer('I'),
+  INTEGER('I'),
 
   /** Varifield (???). */
-  VariField('V'),
+  VARI_FIELD('V'),
 
   /** Variant (???). */
-  Variant('X'),
+  VARIANT('X'),
 
   /** Time stamp (see url). */
-  TimeStamp('@'),
+  TIMESTAMP('@'),
 
   /** Double. */
-  Double('O'),
+  DOUBLE('O'),
 
   /** Auto increment. */
-  AutoIncrement('+');
+  AUTO_INCREMENT('+');
 
   /** Data type. */
   public final char datatype;

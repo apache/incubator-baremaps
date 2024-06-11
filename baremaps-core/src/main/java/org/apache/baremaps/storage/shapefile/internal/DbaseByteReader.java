@@ -126,21 +126,21 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
 
       // TODO: move somewhere else
       Object object = switch (fieldDescriptor.getType()) {
-        case Character -> value;
-        case Number -> getNumber(fieldDescriptor, value);
-        case Currency -> Double.parseDouble(value.trim());
-        case Integer -> Integer.parseInt(value.trim());
-        case Double -> Double.parseDouble(value.trim());
-        case AutoIncrement -> Integer.parseInt(value.trim());
-        case Logical -> value;
-        case Date -> value;
-        case Memo -> value;
-        case FloatingPoint -> value;
-        case Picture -> value;
-        case VariField -> value;
-        case Variant -> value;
-        case TimeStamp -> value;
-        case DateTime -> value;
+        case CHARACTER -> value;
+        case NUMBER -> getNumber(fieldDescriptor, value);
+        case CURRENCY -> Double.parseDouble(value.trim());
+        case INTEGER -> Integer.parseInt(value.trim());
+        case DOUBLE -> Double.parseDouble(value.trim());
+        case AUTO_INCREMENT -> Integer.parseInt(value.trim());
+        case LOGICAL -> value;
+        case DATE -> value;
+        case MEMO -> value;
+        case FLOATING_POINT -> value;
+        case PICTURE -> value;
+        case VARI_FIELD -> value;
+        case VARIANT -> value;
+        case TIMESTAMP -> value;
+        case DATE_TIME -> value;
       };
 
       row.set(fieldDescriptor.getName(), object);
