@@ -57,23 +57,23 @@ public class PutChangeImporter implements Consumer<Change> {
   /** {@inheritDoc} */
   @Override
   public void accept(Change change) {
-    var nodes = change.getEntities().stream()
+    var nodes = change.entities().stream()
         .filter(entity -> entity instanceof Node)
         .map(entity -> (Node) entity)
         .toList();
     var nodeIds = nodes.stream().map(Node::getId).toList();
-    var ways = change.getEntities().stream()
+    var ways = change.entities().stream()
         .filter(entity -> entity instanceof Way)
         .map(entity -> (Way) entity)
         .toList();
     var wayIds = ways.stream().map(Way::getId).toList();
-    var relations = change.getEntities().stream()
+    var relations = change.entities().stream()
         .filter(entity -> entity instanceof Relation)
         .map(entity -> (Relation) entity)
         .toList();
     var relationIds = relations.stream().map(Relation::getId).toList();
     try {
-      switch (change.getType()) {
+      switch (change.type()) {
         case CREATE, MODIFY -> {
           if (!nodes.isEmpty()) {
             logger.trace("Creating {} nodes", nodes.size());
