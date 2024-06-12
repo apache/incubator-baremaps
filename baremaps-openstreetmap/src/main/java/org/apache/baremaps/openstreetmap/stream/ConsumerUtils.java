@@ -20,7 +20,6 @@ package org.apache.baremaps.openstreetmap.stream;
 
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /** Utility methods for dealing with consumers. */

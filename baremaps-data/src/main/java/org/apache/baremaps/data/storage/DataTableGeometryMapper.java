@@ -17,14 +17,14 @@
 
 package org.apache.baremaps.data.storage;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
  * A decorator for a {@link DataTable} that applies a geometry transformation to each row.
  */
-public class DataTableGeometryMapper implements Function<DataRow, DataRow> {
+public class DataTableGeometryMapper implements UnaryOperator<DataRow> {
 
   private final DataTable table;
 

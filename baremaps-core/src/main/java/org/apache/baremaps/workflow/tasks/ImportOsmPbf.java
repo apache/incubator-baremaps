@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import static java.lang.Boolean.TRUE;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,8 +35,6 @@ import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
-
-import static java.lang.Boolean.TRUE;
 
 /**
  * Import an OSM PBF file into a database.

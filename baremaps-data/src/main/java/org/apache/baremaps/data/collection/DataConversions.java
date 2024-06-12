@@ -17,8 +17,6 @@
 
 package org.apache.baremaps.data.collection;
 
-import com.google.common.base.Objects;
-
 import java.util.*;
 import java.util.Map.Entry;
 
