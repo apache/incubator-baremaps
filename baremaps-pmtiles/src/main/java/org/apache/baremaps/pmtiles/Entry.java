@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.pmtiles;
 
-class Entry {
+public class Entry {
   private long tileId;
   private long offset;
   private long length;

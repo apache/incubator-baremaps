@@ -21,7 +21,7 @@ import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-enum Compression {
+public enum Compression {
   UNKNOWN,
   NONE,
   GZIP,

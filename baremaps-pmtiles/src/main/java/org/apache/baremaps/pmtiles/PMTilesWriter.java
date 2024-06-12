@@ -80,7 +80,7 @@ public class PMTilesWriter {
 
   public void setTile(int z, int x, int y, byte[] bytes) throws IOException {
     // Write the tile
-    var tileId = PMTiles.zxyToTileId(z, x, y);
+    var tileId = PMTilesUtils.zxyToTileId(z, x, y);
     var tileLength = bytes.length;
     Long tileHash = Hashing.farmHashFingerprint64().hashBytes(bytes).asLong();
 
@@ -155,7 +155,7 @@ public class PMTilesWriter {
       entries.sort(Comparator.comparingLong(Entry::getTileId));
     }
 
-    var directories = PMTiles.optimizeDirectories(entries, 16247, compression);
+    var directories = PMTilesUtils.optimizeDirectories(entries, 16247, compression);
 
     byte[] metadataBytes;
     try (var metadataOutput = new ByteArrayOutputStream()) {
@@ -204,7 +204,7 @@ public class PMTilesWriter {
     header.setCenterLon(centerLon);
 
     try (var output = new FileOutputStream(path.toFile())) {
-      output.write(PMTiles.serializeHeader(header));
+      output.write(PMTilesUtils.serializeHeader(header));
       output.write(directories.getRoot());
       output.write(metadataBytes);
       output.write(directories.getLeaves());

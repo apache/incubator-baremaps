@@ -19,7 +19,7 @@ package org.apache.baremaps.pmtiles;
 
 import java.util.Objects;
 
-class Header {
+public class Header {
 
   private int specVersion;
   private long rootDirectoryOffset;

@@ -41,7 +41,7 @@ public class PMTilesReader {
   public Header getHeader() {
     if (header == null) {
       try (var inputStream = new LittleEndianDataInputStream(Files.newInputStream(path))) {
-        header = PMTiles.deserializeHeader(inputStream);
+        header = PMTilesUtils.deserializeHeader(inputStream);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -66,7 +66,7 @@ public class PMTilesReader {
       }
       try (var decompressed =
           new LittleEndianDataInputStream(header.getInternalCompression().decompress(input))) {
-        return PMTiles.deserializeEntries(decompressed);
+        return PMTilesUtils.deserializeEntries(decompressed);
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -74,10 +74,10 @@ public class PMTilesReader {
   }
 
   public ByteBuffer getTile(int z, long x, long y) {
-    var tileId = PMTiles.zxyToTileId(z, x, y);
+    var tileId = PMTilesUtils.zxyToTileId(z, x, y);
     var header = getHeader();
     var entries = getRootDirectory();
-    var entry = PMTiles.findTile(entries, tileId);
+    var entry = PMTilesUtils.findTile(entries, tileId);
 
     if (entry == null) {
       return null;
