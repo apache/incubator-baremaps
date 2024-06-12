@@ -24,7 +24,13 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /** Represents a header entity in an OpenStreetMap dataset. */
-public final class Header implements Entity {
+public record Header(
+        Long replicationSequenceNumber,
+        LocalDateTime replicationTimestamp,
+                     String replicationUrl,
+        String source,
+        String writingProgram
+) implements Entity {
 
   private final Long replicationSequenceNumber;
   private final LocalDateTime replicationTimestamp;
