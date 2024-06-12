@@ -143,7 +143,6 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
    */
   @Override
   public AppendOnlyLogIterator iterator() {
-    final long size = size();
     return new AppendOnlyLogIterator(size);
   }
 
