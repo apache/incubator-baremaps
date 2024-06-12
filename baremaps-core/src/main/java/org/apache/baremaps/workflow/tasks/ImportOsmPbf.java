@@ -34,6 +34,8 @@ import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
 
+import static java.lang.Boolean.TRUE;
+
 /**
  * Import an OSM PBF file into a database.
  */
@@ -81,7 +83,7 @@ public class ImportOsmPbf implements Task {
     var wayRepository = new WayRepository(datasource);
     var relationRepository = new RelationRepository(datasource);
 
-    if (replaceExisting) {
+    if (TRUE.equals(replaceExisting)) {
       // Drop the existing tables
       headerRepository.drop();
       nodeRepository.drop();

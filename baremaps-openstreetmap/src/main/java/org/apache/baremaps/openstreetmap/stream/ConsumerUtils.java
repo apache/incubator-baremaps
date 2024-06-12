@@ -21,6 +21,7 @@ package org.apache.baremaps.openstreetmap.stream;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /** Utility methods for dealing with consumers. */
 public class ConsumerUtils {
@@ -46,7 +47,7 @@ public class ConsumerUtils {
    * @param <T> the type
    * @return the function
    */
-  public static <T> Function<T, T> consumeThenReturn(Consumer<T> consumer) {
+  public static <T> UnaryOperator<T> consumeThenReturn(Consumer<T> consumer) {
     return t -> {
       consumer.accept(t);
       return t;
