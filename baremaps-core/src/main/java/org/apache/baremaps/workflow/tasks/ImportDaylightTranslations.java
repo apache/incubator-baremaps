@@ -20,11 +20,13 @@ package org.apache.baremaps.workflow.tasks;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import org.apache.baremaps.database.postgres.NodeRepository;
-import org.apache.baremaps.database.postgres.RelationRepository;
-import org.apache.baremaps.database.postgres.WayRepository;
+
+import org.apache.baremaps.database.postgres.*;
+import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -86,11 +88,11 @@ public class ImportDaylightTranslations implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
-
-    // Initialize the repositories
     var nodeRepository = new NodeRepository(datasource);
     var wayRepository = new WayRepository(datasource);
     var relationRepository = new RelationRepository(datasource);
+
+    // Initialize the repositories
     nodeRepository.create();
     wayRepository.create();
     relationRepository.create();
@@ -99,43 +101,26 @@ public class ImportDaylightTranslations implements Task {
     try (var lines = Files.lines(file)) {
       var entries = lines.map(Line::parse).collect(Collectors.groupingBy(Line::group));
       for (var entry : entries.entrySet()) {
-        var group = entry.getKey();
-        switch (group.type()) {
-          case "node" -> {
-            var node = nodeRepository.get(group.id());
-            if (node != null) {
-              var tags = new HashMap<>(node.getTags());
-              for (var line : entry.getValue()) {
-                tags.put(line.attributeKey(), line.attributeValue());
-              }
-              node.setTags(tags);
-              nodeRepository.put(node);
-            }
-          }
-          case "way" -> {
-            var way = wayRepository.get(group.id());
-            if (way != null) {
-              var tags = new HashMap<>(way.getTags());
-              for (var line : entry.getValue()) {
-                tags.put(line.attributeKey(), line.attributeValue());
-              }
-              way.setTags(tags);
-              wayRepository.put(way);
-            }
-          }
-          case "relation" -> {
-            var relation = relationRepository.get(group.id());
-            if (relation != null) {
-              var tags = new HashMap<>(relation.getTags());
-              for (var line : entry.getValue()) {
-                tags.put(line.attributeKey(), line.attributeValue());
-              }
-              relation.setTags(tags);
-              relationRepository.put(relation);
-            }
-          }
+        var key = entry.getKey();
+        var value = entry.getValue();
+        switch (entry.getKey().type()) {
+          case "node" -> save(key, value, nodeRepository);
+          case "way" -> save(key, value, wayRepository);
+          case "relation" -> save(key, value, relationRepository);
         }
       }
+    }
+  }
+
+  private <T extends Element> void save(Group group, List<Line> lines, Repository<Long, T> repository) throws RepositoryException {
+    var entity = repository.get(group.id());
+    if (entity != null) {
+      var tags = new HashMap<>(entity.getTags());
+      for (var line : lines) {
+        tags.put(line.attributeKey(), line.attributeValue());
+      }
+      entity.setTags(tags);
+      repository.put(entity);
     }
   }
 
