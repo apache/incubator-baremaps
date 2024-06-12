@@ -134,8 +134,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
       case ELEMENT_NAME_OSM:
         consumer.accept(readHeader());
         return;
-      case ELEMENT_NAME_BOUND:
-      case ELEMENT_NAME_BOUNDS:
+      case ELEMENT_NAME_BOUND, ELEMENT_NAME_BOUNDS:
         consumer.accept(readBounds());
         return;
       case ELEMENT_NAME_NODE:
@@ -149,7 +148,6 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
         return;
       default:
         readUnknownElement();
-        return;
     }
   }
 
