@@ -19,7 +19,6 @@ package org.apache.baremaps.martini;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
@@ -29,12 +28,12 @@ public class MartiniTest {
 
   @Test
   public void generateAMesh() throws IOException {
-    BufferedImage png = ImageIO.read(
+    var png = ImageIO.read(
         Path.of("")
             .toAbsolutePath()
-            .resolveSibling("baremaps-geotiff/src/test/resources/fuji.png")
+            .resolveSibling("baremaps-martini/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    float[] terrainGrid = MartiniUtils.mapboxTerrainToGrid(png);
+    var terrainGrid = MartiniUtils.mapboxTerrainToGrid(png);
     var martini = new Martini(png.getWidth() + 1);
     var tile = martini.createTile(terrainGrid);
     var mesh = tile.getMesh(500);
