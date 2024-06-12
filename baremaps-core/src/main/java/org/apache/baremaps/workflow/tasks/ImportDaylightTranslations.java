@@ -21,10 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-
 import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.workflow.Task;
@@ -107,12 +105,14 @@ public class ImportDaylightTranslations implements Task {
           case "node" -> save(key, value, nodeRepository);
           case "way" -> save(key, value, wayRepository);
           case "relation" -> save(key, value, relationRepository);
+          default -> logger.warn("Unknown type: {}", key.type());
         }
       }
     }
   }
 
-  private <T extends Element> void save(Group group, List<Line> lines, Repository<Long, T> repository) throws RepositoryException {
+  private <T extends Element> void save(Group group, List<Line> lines,
+      Repository<Long, T> repository) throws RepositoryException {
     var entity = repository.get(group.id());
     if (entity != null) {
       var tags = new HashMap<>(entity.getTags());

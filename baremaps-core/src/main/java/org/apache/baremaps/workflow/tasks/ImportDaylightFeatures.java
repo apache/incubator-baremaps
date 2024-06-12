@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-
 import org.apache.baremaps.database.postgres.*;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.workflow.Task;
@@ -93,11 +92,13 @@ public class ImportDaylightFeatures implements Task {
         case "node" -> save(feature, nodeRepository);
         case "way" -> save(feature, wayRepository);
         case "relation" -> save(feature, relationRepository);
+        default -> logger.warn("Unknown type: {}", feature.type());
       }
     }
   }
 
-  private <T extends Element> void save(Feature feature, Repository<Long, T> repository) throws RepositoryException {
+  private <T extends Element> void save(Feature feature, Repository<Long, T> repository)
+      throws RepositoryException {
     var entity = repository.get(feature.id());
     if (entity != null) {
       var tags = new HashMap<>(feature.tags());
