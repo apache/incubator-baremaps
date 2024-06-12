@@ -33,7 +33,7 @@ public class PMTilesStore implements TileStore {
 
   private final PMTilesWriter writer;
 
-  public PMTilesStore(Path path, Tileset tileset) {
+  public PMTilesStore(Path path, Tileset tileset) throws TileStoreException {
     try {
       var metadata = new HashMap<String, Object>();
       metadata.put("name", tileset.getName());
@@ -62,7 +62,7 @@ public class PMTilesStore implements TileStore {
       writer.setMaxZoom(tileset.getMaxzoom());
 
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new TileStoreException(e);
     }
   }
 
