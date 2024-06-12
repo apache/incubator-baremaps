@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.data.collection;
 
+import com.google.common.base.Objects;
+
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -196,6 +198,16 @@ public class DataConversions {
     public int size() {
       return size;
     }
+
+    @Override
+    public boolean equals(Object object) {
+      return list.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+      return list.hashCode();
+    }
   }
 
   private static class DataListAdapter<E> implements DataList<E> {
@@ -231,6 +243,16 @@ public class DataConversions {
     public E get(long index) {
       return list.get((int) index);
     }
+
+    @Override
+    public boolean equals(Object object) {
+      return list.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+      return list.hashCode();
+    }
   }
 
   private static class MapAdapter<K, V> extends AbstractMap<K, V> {
@@ -261,6 +283,16 @@ public class DataConversions {
           return size;
         }
       };
+    }
+
+    @Override
+    public boolean equals(Object object) {
+      return map.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+      return map.hashCode();
     }
   }
 
@@ -315,6 +347,16 @@ public class DataConversions {
     @Override
     public Iterator<Entry<K, V>> entryIterator() {
       return map.entrySet().iterator();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+      return map.equals(object);
+    }
+
+    @Override
+    public int hashCode() {
+      return map.hashCode();
     }
   }
 
