@@ -55,6 +55,7 @@ public class DiffService implements Callable<List<TileCoord>> {
   private final int srid;
   private final int zoom;
 
+  @SuppressWarnings("squid:S107")
   public DiffService(
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
