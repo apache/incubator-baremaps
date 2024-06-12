@@ -65,14 +65,14 @@ public class HeaderRepository implements Repository<Long, Header> {
    */
   public HeaderRepository(DataSource dataSource) {
     this(
-            dataSource,
-            "public",
-            "osm_headers",
-            "replication_sequence_number",
+        dataSource,
+        "public",
+        "osm_headers",
+        "replication_sequence_number",
         "replication_timestamp",
         "replication_url",
-            "source",
-            "writing_program");
+        "source",
+        "writing_program");
   }
 
   /**
@@ -87,15 +87,16 @@ public class HeaderRepository implements Repository<Long, Header> {
    * @param sourceColumn
    * @param writingProgramColumn
    */
+  @SuppressWarnings("squid:S107")
   public HeaderRepository(
-          DataSource dataSource,
-          String schema,
-          String table,
+      DataSource dataSource,
+      String schema,
+      String table,
       String replicationSequenceNumberColumn,
-          String replicationTimestampColumn,
+      String replicationTimestampColumn,
       String replicationUrlColumn,
-          String sourceColumn,
-          String writingProgramColumn) {
+      String sourceColumn,
+      String writingProgramColumn) {
     var fullTableName = String.format("%1$s.%2$s", schema, table);
     this.dataSource = dataSource;
     this.createTable = String.format("""
