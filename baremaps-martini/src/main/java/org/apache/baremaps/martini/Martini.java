@@ -22,16 +22,20 @@ package org.apache.baremaps.martini;
  * from height data.
  * <p>
  * 
- * @see <a href="https://github.com/mapbox/martini">Martini GitHub
+ * @see <a href="https://github.com/mapbox/martini">Martini GitHub</a>
  */
 public class Martini {
 
   private final int gridSize;
   private final int numTriangles;
   private final int numParentTriangles;
-
   private final int[] baseCoords;
 
+  /**
+   * Constructs a new {@code Martini} instance with the specified grid size.
+   *
+   * @param gridSize the grid size
+   */
   public Martini(int gridSize) {
     this.gridSize = gridSize;
 
@@ -78,10 +82,19 @@ public class Martini {
     }
   }
 
+  /**
+   * Creates a new {@code Tile} instance with the specified terrain data.
+   *
+   * @param terrain the terrain data
+   * @return the tile
+   */
   public Tile createTile(float[] terrain) {
     return new Tile(terrain, gridSize, numTriangles, numParentTriangles, baseCoords);
   }
 
+  /**
+   * The {@code Tile} class represents a tile of terrain data.
+   */
   public static class Tile {
 
     private final int gridSize;
@@ -133,6 +146,12 @@ public class Martini {
       }
     }
 
+    /**
+     * Returns the mesh of the tile with the specified maximum error.
+     *
+     * @param maxError the maximum error
+     * @return the mesh
+     */
     public Mesh getMesh(float maxError) {
       int max = gridSize - 1;
 
@@ -194,12 +213,15 @@ public class Martini {
     }
   }
 
+  /**
+   * The {@code Mesh} class represents a mesh of vertices and triangles.
+   */
   public static class Mesh {
 
     private final int[] vertices;
     private final int[] triangles;
 
-    public Mesh(int[] vertices, int[] triangles) {
+    private Mesh(int[] vertices, int[] triangles) {
       this.vertices = vertices;
       this.triangles = triangles;
     }
