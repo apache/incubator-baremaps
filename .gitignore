@@ -49,6 +49,9 @@ examples/openstreetmap/tiles/
 
 examples/transformation/*.pbf
 
+# Benchmarking
+baremaps-benchmarking/small/
+
 # Docs
 .jekyll-cache/
 _site/
