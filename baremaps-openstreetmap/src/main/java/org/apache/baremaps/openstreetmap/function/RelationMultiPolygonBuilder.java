@@ -88,8 +88,8 @@ public class RelationMultiPolygonBuilder implements Consumer<Entity> {
     var innerMembers = new ArrayList<Member>();
     var otherMembers = new ArrayList<Member>();
     for (var member : relation.getMembers()) {
-      if (MemberType.WAY.equals(member.getType())) {
-        switch (member.getRole()) {
+      if (MemberType.WAY.equals(member.type())) {
+        switch (member.role()) {
           case "outer" -> outerMembers.add(member);
           case "inner" -> innerMembers.add(member);
           default -> otherMembers.add(member);
@@ -203,7 +203,7 @@ public class RelationMultiPolygonBuilder implements Consumer<Entity> {
   }
 
   private LineString createLineString(Member member) {
-    List<Long> refs = referenceMap.get(member.getRef());
+    List<Long> refs = referenceMap.get(member.ref());
 
     // Build the coordinate list and remove duplicates.
     List<Coordinate> list = new ArrayList<>();
