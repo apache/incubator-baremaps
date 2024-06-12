@@ -45,10 +45,10 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 
-public class OsmTestData {
+class OsmTestData {
 
   @TestFactory
-  public Stream<DynamicTest> runTests() throws IOException {
+  Stream<DynamicTest> runTests() throws IOException {
     var directory = resolve("osm-testdata");
     try (var files = Files.walk(directory)) {
       return files.filter(f -> f.endsWith("test.json"))
@@ -61,7 +61,7 @@ public class OsmTestData {
   }
 
   @NotNull
-  private Stream<DynamicTest> createDynamicTest(OsmTest osmTest) {
+  Stream<DynamicTest> createDynamicTest(OsmTest osmTest) {
     String displayNameFormat = "%s (%s): %s";
     var xmlDisplayName =
         String.format(displayNameFormat, osmTest.getId(), "xml", osmTest.getDescription());
@@ -81,7 +81,7 @@ public class OsmTestData {
         .build();
   }
 
-  public void runTest(OsmTest osmTest, Stream<Entity> entities) {
+  void runTest(OsmTest osmTest, Stream<Entity> entities) {
     var elements = entities
         .filter(e -> e instanceof Element)
         .map(e -> (Element) e)
@@ -127,7 +127,7 @@ public class OsmTestData {
     }
   }
 
-  private class OsmTest implements Comparable<OsmTest> {
+  static class OsmTest implements Comparable<OsmTest> {
 
     private static final ObjectMapper objectMapper =
         new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -264,7 +264,7 @@ public class OsmTestData {
   /**
    * A transformer that rounds the coordinates of a geometry to a given precision.
    */
-  public static class RoundingTransformer extends GeometryTransformer {
+  static class RoundingTransformer extends GeometryTransformer {
 
     private int precision;
 
