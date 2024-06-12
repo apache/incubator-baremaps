@@ -118,16 +118,16 @@ public class UpdateOsmDatabase implements Task {
 
     // If the replicationUrl is not provided, use the one from the latest header.
     if (replicationUrl == null) {
-      replicationUrl = header.getReplicationUrl();
+      replicationUrl = header.replicationUrl();
     }
 
     // Get the sequence number of the latest header
     var stateReader = new StateReader(replicationUrl, true);
-    var sequenceNumber = header.getReplicationSequenceNumber();
+    var sequenceNumber = header.replicationSequenceNumber();
 
     // If the replicationTimestamp is not provided, guess it from the replication timestamp.
     if (sequenceNumber <= 0) {
-      var replicationTimestamp = header.getReplicationTimestamp();
+      var replicationTimestamp = header.replicationTimestamp();
       var state = stateReader.getStateFromTimestamp(replicationTimestamp);
       if (state.isPresent()) {
         sequenceNumber = state.get().getSequenceNumber();
@@ -175,7 +175,7 @@ public class UpdateOsmDatabase implements Task {
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       var state = new StateReader().read(stateInputStream);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
-          header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
+          header.replicationUrl(), header.source(), header.writingProgram()));
     }
   }
 

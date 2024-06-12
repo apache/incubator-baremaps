@@ -80,8 +80,8 @@ public class DiffService implements Callable<List<TileCoord>> {
     logger.info("Importing changes");
 
     var header = headerRepository.selectLatest();
-    var replicationUrl = header.getReplicationUrl();
-    var sequenceNumber = header.getReplicationSequenceNumber() + 1;
+    var replicationUrl = header.replicationUrl();
+    var sequenceNumber = header.replicationSequenceNumber() + 1;
     var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
     var projectionTransformer = new ProjectionTransformer(srid, 4326);

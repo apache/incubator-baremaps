@@ -75,7 +75,7 @@ class OsmSampleTest {
     stream.forEach(entity -> {
       if (entity instanceof Header header) {
         Assertions.assertNotNull(header);
-        Assertions.assertEquals("osmium/1.16.0", header.getWritingProgram());
+        Assertions.assertEquals("osmium/1.16.0", header.writingProgram());
         headers.incrementAndGet();
       } else if (entity instanceof Bound bound) {
         Assertions.assertNotNull(bound);

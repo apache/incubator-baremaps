@@ -232,7 +232,7 @@ public class HeaderRepository implements Repository<Long, Header> {
         Map<Long, Header> values = new HashMap<>();
         while (result.next()) {
           Header value = getValue(result);
-          values.put(value.getReplicationSequenceNumber(), value);
+          values.put(value.replicationSequenceNumber(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -315,11 +315,11 @@ public class HeaderRepository implements Repository<Long, Header> {
         writer.writeHeader();
         for (Header value : values) {
           writer.startRow(5);
-          writer.writeLong(value.getReplicationSequenceNumber());
-          writer.writeLocalDateTime(value.getReplicationTimestamp());
-          writer.write(value.getReplicationUrl());
-          writer.write(value.getSource());
-          writer.write(value.getWritingProgram());
+          writer.writeLong(value.replicationSequenceNumber());
+          writer.writeLocalDateTime(value.replicationTimestamp());
+          writer.write(value.replicationUrl());
+          writer.write(value.source());
+          writer.write(value.writingProgram());
         }
       }
     } catch (IOException | SQLException e) {
@@ -338,10 +338,10 @@ public class HeaderRepository implements Repository<Long, Header> {
   }
 
   private void setValue(PreparedStatement statement, Header value) throws SQLException {
-    statement.setObject(1, value.getReplicationSequenceNumber());
-    statement.setObject(2, value.getReplicationTimestamp());
-    statement.setObject(3, value.getReplicationUrl());
-    statement.setObject(4, value.getSource());
-    statement.setObject(5, value.getWritingProgram());
+    statement.setObject(1, value.replicationSequenceNumber());
+    statement.setObject(2, value.replicationTimestamp());
+    statement.setObject(3, value.replicationUrl());
+    statement.setObject(4, value.source());
+    statement.setObject(5, value.writingProgram());
   }
 }
