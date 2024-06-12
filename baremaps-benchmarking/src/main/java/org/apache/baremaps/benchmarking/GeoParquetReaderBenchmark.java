@@ -40,7 +40,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 @Measurement(iterations = 1)
 public class GeoParquetReaderBenchmark {
 
-  private static Path directory = Path.of("baremaps-benchmarks/data");
+  private static Path directory = Path.of("baremaps-benchmarking/data");
 
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
@@ -81,6 +81,12 @@ public class GeoParquetReaderBenchmark {
 
   @Benchmark
   public void read() {
+    GeoParquetReader reader = new GeoParquetReader(directory.toUri());
+    reader.read().count();
+  }
+
+  @Benchmark
+  public void readParallel() {
     GeoParquetReader reader = new GeoParquetReader(directory.toUri());
     reader.readParallel().count();
   }

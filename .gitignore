@@ -51,6 +51,7 @@ examples/transformation/*.pbf
 
 # Benchmarking
 baremaps-benchmarking/small/
+baremaps-benchmarking/data/
 
 # Docs
 .jekyll-cache/
