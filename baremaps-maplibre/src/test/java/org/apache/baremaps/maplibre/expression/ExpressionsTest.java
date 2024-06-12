@@ -29,13 +29,13 @@ import org.junit.jupiter.api.Test;
 class ExpressionsTest {
 
   @Test
-   void literal() {
+  void literal() {
     assertEquals(1, new Literal(1).evaluate(null));
     assertEquals("value", new Literal("value").evaluate(null));
   }
 
   @Test
-   void at()  {
+  void at() {
     var literal = new Literal(List.of(0, 1, 2));
     assertEquals(0, new At(0, literal).evaluate(null));
     assertEquals(1, new At(1, literal).evaluate(null));
@@ -45,21 +45,21 @@ class ExpressionsTest {
   }
 
   @Test
-   void get()  {
+  void get() {
     assertEquals("value",
         new Get("key").evaluate(new Feature(0L, Map.of("key", "value"), null)));
     assertEquals(null, new Get("key").evaluate(new Feature(0L, Map.of(), null)));
   }
 
   @Test
-   void has()  {
+  void has() {
     assertEquals(true,
         new Has("key").evaluate(new Feature(0L, Map.of("key", "value"), null)));
     assertEquals(false, new Has("key").evaluate(new Feature(0L, Map.of(), null)));
   }
 
   @Test
-   void inList() {
+  void inList() {
     var literal = new Literal(List.of(0, 1, 2));
     assertEquals(true, new In(0, literal).evaluate(null));
     assertEquals(true, new In(1, literal).evaluate(null));
@@ -76,7 +76,7 @@ class ExpressionsTest {
   }
 
   @Test
-   void indexOfList()  {
+  void indexOfList() {
     var literal = new Literal(List.of(0, 1, 2));
     assertEquals(0, new IndexOf(0, literal).evaluate(null));
     assertEquals(1, new IndexOf(1, literal).evaluate(null));
@@ -85,7 +85,7 @@ class ExpressionsTest {
   }
 
   @Test
-   void indexOfString() {
+  void indexOfString() {
     var literal = new Literal("foobar");
     assertEquals(0, new IndexOf("foo", literal).evaluate(null));
     assertEquals(3, new IndexOf("bar", literal).evaluate(null));

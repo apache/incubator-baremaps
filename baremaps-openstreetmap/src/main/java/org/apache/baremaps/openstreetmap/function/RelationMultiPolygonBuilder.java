@@ -192,12 +192,10 @@ public class RelationMultiPolygonBuilder implements Consumer<Entity> {
 
     // Merge the lines to build the polygons
     for (Object geometry : lineMerger.getMergedLineStrings()) {
-      if (geometry instanceof LineString lineString) {
-        if (lineString.isClosed()) {
-          var polygon =
-              GeometryUtils.GEOMETRY_FACTORY_WGS84.createPolygon(lineString.getCoordinates());
-          repairPolygon(polygon, polygons);
-        }
+      if (geometry instanceof LineString lineString && lineString.isClosed()) {
+        var polygon =
+            GeometryUtils.GEOMETRY_FACTORY_WGS84.createPolygon(lineString.getCoordinates());
+        repairPolygon(polygon, polygons);
       }
     }
 
