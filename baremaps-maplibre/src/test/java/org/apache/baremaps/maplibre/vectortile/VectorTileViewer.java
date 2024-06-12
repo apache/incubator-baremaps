@@ -73,10 +73,7 @@ public class VectorTileViewer {
         case "Polygon":
           paintPolygon(graphics, (Polygon) geometry, extent);
           break;
-        case "MultiPoint":
-        case "MultiLineString":
-        case "MultiPolygon":
-        case "GeometryCollection":
+        case "MultiPoint", "MultiLineString", "MultiPolygon", "GeometryCollection":
           paintGeometryCollection(graphics, (GeometryCollection) geometry, extent);
           break;
         default:
