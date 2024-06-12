@@ -20,7 +20,6 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 import java.util.List;
-import java.util.StringJoiner;
 
 /** Represents a change in an OpenStreetMap dataset. */
 public record Change(ChangeType type, List<Entity> entities) {
