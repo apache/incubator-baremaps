@@ -40,49 +40,49 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 @Measurement(iterations = 1)
 public class GeoParquetReaderBenchmark {
 
-    private static Path directory = Path.of("baremaps-benchmarks/data");
+  private static Path directory = Path.of("baremaps-benchmarks/data");
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(GeoParquetReaderBenchmark.class.getSimpleName())
-                .forks(1)
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(GeoParquetReaderBenchmark.class.getSimpleName())
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
+
+  @Setup
+  public void setup() throws IOException {
+    if (!Files.exists(directory)) {
+      try (var client = S3Client.builder()
+          .region(Region.US_EAST_1)
+          .credentialsProvider(new AnonymousAWSCredentialsProvider())
+          .build()) {
+        var listRequest = ListObjectsV2Request.builder()
+            .bucket("overturemaps-us-west-2")
+            .prefix("release/2024-03-12-alpha.0/theme=admins/type=locality_area/")
+            .build();
+        var objects = client.listObjectsV2(listRequest).contents();
+        for (var object : objects) {
+          var key = object.key();
+          var name = key.substring(key.lastIndexOf("/") + 1);
+          var file = directory.resolve(name);
+          Files.createDirectories(file.getParent());
+          if (!Files.exists(file)) {
+            var getRequest = GetObjectRequest.builder()
+                .bucket("overturemaps-us-west-2")
+                .key(key)
                 .build();
-        new Runner(opt).run();
-    }
-
-    @Setup
-    public void setup() throws IOException {
-        if (!Files.exists(directory)) {
-            try (var client = S3Client.builder()
-                    .region(Region.US_EAST_1)
-                    .credentialsProvider(new AnonymousAWSCredentialsProvider())
-                    .build()) {
-                var listRequest = ListObjectsV2Request.builder()
-                        .bucket("overturemaps-us-west-2")
-                        .prefix("release/2024-03-12-alpha.0/theme=admins/type=locality_area/")
-                        .build();
-                var objects = client.listObjectsV2(listRequest).contents();
-                for (var object : objects) {
-                    var key = object.key();
-                    var name = key.substring(key.lastIndexOf("/") + 1);
-                    var file = directory.resolve(name);
-                    Files.createDirectories(file.getParent());
-                    if (!Files.exists(file)) {
-                        var getRequest = GetObjectRequest.builder()
-                                .bucket("overturemaps-us-west-2")
-                                .key(key)
-                                .build();
-                        client.getObject(getRequest, file);
-                    }
-                }
-            }
+            client.getObject(getRequest, file);
+          }
         }
+      }
     }
+  }
 
-    @Benchmark
-    public void read() {
-        GeoParquetReader reader = new GeoParquetReader(directory.toUri());
-        reader.readParallel().count();
-    }
+  @Benchmark
+  public void read() {
+    GeoParquetReader reader = new GeoParquetReader(directory.toUri());
+    reader.readParallel().count();
+  }
 
 }
