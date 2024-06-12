@@ -115,16 +115,16 @@ public class StateReader implements Reader<State> {
     if (upper.isEmpty()) {
       return Optional.empty();
     }
-    if (timestamp.isAfter(upper.get().getTimestamp()) || upper.get().getSequenceNumber() <= 0) {
+    if (timestamp.isAfter(upper.get().timestamp()) || upper.get().sequenceNumber() <= 0) {
       return upper;
     }
     var lower = Optional.<State>empty();
     var lowerId = Optional.of(0L);
     while (lower.isEmpty()) {
       lower = getState(lowerId);
-      if (lower.isPresent() && lower.get().getTimestamp().isAfter(timestamp)) {
-        if (lower.get().getSequenceNumber() == 0
-            || lower.get().getSequenceNumber() + 1 >= upper.get().getSequenceNumber()) {
+      if (lower.isPresent() && lower.get().timestamp().isAfter(timestamp)) {
+        if (lower.get().sequenceNumber() == 0
+            || lower.get().sequenceNumber() + 1 >= upper.get().sequenceNumber()) {
           return lower;
         }
         upper = lower;
@@ -132,7 +132,7 @@ public class StateReader implements Reader<State> {
         lowerId = Optional.of(0L);
       }
       if (lower.isEmpty()) {
-        var newId = (lowerId.get() + upper.get().getSequenceNumber()) / 2;
+        var newId = (lowerId.get() + upper.get().sequenceNumber()) / 2;
         if (newId <= lowerId.get()) {
           return upper;
         }
@@ -142,29 +142,29 @@ public class StateReader implements Reader<State> {
     long baseSplitId;
     while (true) {
       if (balancedSearch) {
-        baseSplitId = ((lower.get().getSequenceNumber() + upper.get().getSequenceNumber()) / 2);
+        baseSplitId = ((lower.get().sequenceNumber() + upper.get().sequenceNumber()) / 2);
       } else {
-        var tsInt = upper.get().getTimestamp().toEpochSecond(ZoneOffset.UTC)
-            - lower.get().getTimestamp().toEpochSecond(ZoneOffset.UTC);
-        var seqInt = upper.get().getSequenceNumber() - lower.get().getSequenceNumber();
-        var goal = timestamp.getSecond() - lower.get().getTimestamp().getSecond();
+        var tsInt = upper.get().timestamp().toEpochSecond(ZoneOffset.UTC)
+            - lower.get().timestamp().toEpochSecond(ZoneOffset.UTC);
+        var seqInt = upper.get().sequenceNumber() - lower.get().sequenceNumber();
+        var goal = timestamp.getSecond() - lower.get().timestamp().getSecond();
         baseSplitId =
-            lower.get().getSequenceNumber() + (long) Math.ceil((double) (goal * seqInt) / tsInt);
-        if (baseSplitId >= upper.get().getSequenceNumber()) {
-          baseSplitId = upper.get().getSequenceNumber() - 1;
+            lower.get().sequenceNumber() + (long) Math.ceil((double) (goal * seqInt) / tsInt);
+        if (baseSplitId >= upper.get().sequenceNumber()) {
+          baseSplitId = upper.get().sequenceNumber() - 1;
         }
       }
       var split = getState(Optional.of(baseSplitId));
       if (split.isEmpty()) {
         var splitId = baseSplitId - 1;
-        while (split.isEmpty() && splitId > lower.get().getSequenceNumber()) {
+        while (split.isEmpty() && splitId > lower.get().sequenceNumber()) {
           split = getState(Optional.of(splitId));
           splitId--;
         }
       }
       if (split.isEmpty()) {
         var splitId = baseSplitId + 1;
-        while (split.isEmpty() && splitId < upper.get().getSequenceNumber()) {
+        while (split.isEmpty() && splitId < upper.get().sequenceNumber()) {
           split = getState(Optional.of(splitId));
           splitId++;
         }
@@ -172,12 +172,12 @@ public class StateReader implements Reader<State> {
       if (split.isEmpty()) {
         return lower;
       }
-      if (split.get().getTimestamp().isBefore(timestamp)) {
+      if (split.get().timestamp().isBefore(timestamp)) {
         lower = split;
       } else {
         upper = split;
       }
-      if (lower.get().getSequenceNumber() + 1 >= upper.get().getSequenceNumber()) {
+      if (lower.get().sequenceNumber() + 1 >= upper.get().sequenceNumber()) {
         return lower;
       }
     }

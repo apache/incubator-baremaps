@@ -44,8 +44,8 @@ class OsmSampleTest {
   void sampleStateTxt() throws IOException {
     try (InputStream inputStream = Files.newInputStream(TestFiles.SAMPLE_STATE_TXT)) {
       State state = new StateReader().read(inputStream);
-      Assertions.assertEquals(1, state.getSequenceNumber());
-      Assertions.assertEquals(LocalDateTime.parse("2000-01-01T00:00:00"), state.getTimestamp());
+      Assertions.assertEquals(1, state.sequenceNumber());
+      Assertions.assertEquals(LocalDateTime.parse("2000-01-01T00:00:00"), state.timestamp());
     }
   }
 

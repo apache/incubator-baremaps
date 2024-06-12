@@ -130,7 +130,7 @@ public class UpdateOsmDatabase implements Task {
       var replicationTimestamp = header.replicationTimestamp();
       var state = stateReader.getStateFromTimestamp(replicationTimestamp);
       if (state.isPresent()) {
-        sequenceNumber = state.get().getSequenceNumber();
+        sequenceNumber = state.get().sequenceNumber();
       }
     }
 
@@ -174,7 +174,7 @@ public class UpdateOsmDatabase implements Task {
     var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       var state = new StateReader().read(stateInputStream);
-      headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
+      headerRepository.put(new Header(state.sequenceNumber(), state.timestamp(),
           header.replicationUrl(), header.source(), header.writingProgram()));
     }
   }
