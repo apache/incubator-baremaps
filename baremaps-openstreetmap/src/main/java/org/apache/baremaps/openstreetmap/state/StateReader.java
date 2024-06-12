@@ -109,7 +109,7 @@ public class StateReader implements Reader<State> {
    * @param timestamp the timestamp
    * @return the state
    */
-  @SuppressWarnings("squid:S3776")
+  @SuppressWarnings({"squid:S3776", "squid:S6541"})
   public Optional<State> getStateFromTimestamp(LocalDateTime timestamp) {
     var upper = getState(Optional.empty());
     if (upper.isEmpty()) {
