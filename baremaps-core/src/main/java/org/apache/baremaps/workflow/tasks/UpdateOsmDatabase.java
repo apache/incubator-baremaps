@@ -102,7 +102,8 @@ public class UpdateOsmDatabase implements Task {
    * @param databaseSrid the SRID
    * @throws Exception if something went wrong
    */
-  public static void execute(
+  @SuppressWarnings("squid:S107")
+  static void execute(
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository,

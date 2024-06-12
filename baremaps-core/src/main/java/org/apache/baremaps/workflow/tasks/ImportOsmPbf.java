@@ -124,7 +124,8 @@ public class ImportOsmPbf implements Task {
    * @param databaseSrid the database SRID
    * @throws IOException
    */
-  public static void execute(
+  @SuppressWarnings("squid:S107")
+  static void execute(
       Path path,
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
