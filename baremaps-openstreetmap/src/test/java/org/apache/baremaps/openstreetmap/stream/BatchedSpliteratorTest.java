@@ -60,7 +60,7 @@ class BatchedSpliteratorTest {
   }
 
   @Test
-  void tryAdvance() throws Exception {
+  void tryAdvance() {
     for (int i = 0; i < spliteratorSize; i++) {
       assertTrue(spliterator.tryAdvance(block -> {
       }));
@@ -70,7 +70,7 @@ class BatchedSpliteratorTest {
   }
 
   @Test
-  void forEachRemaining() throws Exception {
+  void forEachRemaining() {
     AccumulatingConsumer<Integer> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
     assertEquals(accumulator.values().size(), spliteratorSize);
