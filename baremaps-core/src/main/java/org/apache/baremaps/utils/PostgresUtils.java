@@ -165,23 +165,6 @@ public final class PostgresUtils {
   }
 
   /**
-   * Appends the multi-queries parameter to the given JDBC URL.
-   *
-   * @param jdbcUrl the JDBC URL
-   * @return the JDBC URL with the multi-queries parameter
-   */
-  private static String withAllowMultiQueriesParameter(String jdbcUrl) {
-    if (jdbcUrl == null || jdbcUrl.isEmpty()) {
-      return jdbcUrl;
-    }
-    if (jdbcUrl.contains("?")) {
-      return jdbcUrl + "&allowMultiQueries=true";
-    } else {
-      return jdbcUrl + "?allowMultiQueries=true";
-    }
-  }
-
-  /**
    * Executes the queries contained in a resource file.
    *
    * @param connection the JDBC connection
