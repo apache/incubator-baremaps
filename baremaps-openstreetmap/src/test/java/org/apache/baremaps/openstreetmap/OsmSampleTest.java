@@ -79,10 +79,10 @@ class OsmSampleTest {
         headers.incrementAndGet();
       } else if (entity instanceof Bound bound) {
         Assertions.assertNotNull(bound);
-        Assertions.assertEquals(0.0, bound.getMinLat(), 0.000001);
-        Assertions.assertEquals(0.0, bound.getMinLon(), 0.000001);
-        Assertions.assertEquals(20.0, bound.getMaxLat(), 0.000001);
-        Assertions.assertEquals(20.0, bound.getMaxLon(), 0.000001);
+        Assertions.assertEquals(0.0, bound.minLat(), 0.000001);
+        Assertions.assertEquals(0.0, bound.minLon(), 0.000001);
+        Assertions.assertEquals(20.0, bound.maxLat(), 0.000001);
+        Assertions.assertEquals(20.0, bound.maxLon(), 0.000001);
         bounds.incrementAndGet();
       } else if (entity instanceof Node node) {
         Assertions.assertNotNull(node);
