@@ -70,13 +70,17 @@ public class GeoParquetWriter extends ParquetWriter<GeoParquetGroupImpl> {
    * @param conf The Configuration to use.
    * @throws IOException
    */
-  GeoParquetWriter(Path file, WriteSupport<GeoParquetGroupImpl> writeSupport,
+  @SuppressWarnings("squid:S107")
+  GeoParquetWriter(
+      Path file,
+      WriteSupport<GeoParquetGroupImpl> writeSupport,
       CompressionCodecName compressionCodecName,
-      int blockSize, int pageSize, boolean enableDictionary,
+      int blockSize,
+      int pageSize,
+      boolean enableDictionary,
       boolean enableValidation,
       ParquetProperties.WriterVersion writerVersion,
-      Configuration conf)
-      throws IOException {
+      Configuration conf) throws IOException {
     super(file, writeSupport, compressionCodecName, blockSize, pageSize,
         pageSize, enableDictionary, enableValidation, writerVersion, conf);
   }
