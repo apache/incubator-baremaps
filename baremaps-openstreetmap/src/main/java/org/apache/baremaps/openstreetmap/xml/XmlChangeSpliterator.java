@@ -123,9 +123,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private Change readChange() throws XMLStreamException {
     switch (reader.getLocalName()) {
-      case ELEMENT_NAME_CREATE:
-      case ELEMENT_NAME_DELETE:
-      case ELEMENT_NAME_MODIFY:
+      case ELEMENT_NAME_CREATE, ELEMENT_NAME_DELETE, ELEMENT_NAME_MODIFY:
         Change.ChangeType type = Change.ChangeType.valueOf(reader.getLocalName().toUpperCase());
         List<Entity> elements = new ArrayList<>();
         reader.nextTag();
