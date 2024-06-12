@@ -38,7 +38,7 @@ public class SmallFileBenchmark {
   private Path source = Path.of("baremaps-testing/data/samples/example.parquet").toAbsolutePath();
   private Path directory = Path.of("baremaps-benchmarking/small").toAbsolutePath();
 
-  public static void main(String[] args) throws RunnerException, IOException {
+  public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
         .include(SmallFileBenchmark.class.getSimpleName())
         .forks(1)
@@ -59,6 +59,12 @@ public class SmallFileBenchmark {
 
   @Benchmark
   public void read() {
+    GeoParquetReader reader = new GeoParquetReader(directory.toUri());
+    reader.read().count();
+  }
+
+  @Benchmark
+  public void readParallel() {
     GeoParquetReader reader = new GeoParquetReader(directory.toUri());
     reader.readParallel().count();
   }

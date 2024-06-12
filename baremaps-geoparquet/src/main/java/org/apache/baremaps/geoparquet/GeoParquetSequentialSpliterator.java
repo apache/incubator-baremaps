@@ -71,14 +71,15 @@ public class GeoParquetSequentialSpliterator implements Spliterator<GeoParquetGr
 
   @Override
   public Spliterator<GeoParquetGroup> trySplit() {
-    List<GeoParquetGroup> batch = new ArrayList<>();
-    while (batch.size() < 1_000 && tryAdvance(batch::add)) {
-    }
-    if (!batch.isEmpty()) {
-      return Spliterators.spliterator(batch, characteristics() | SIZED);
-    } else {
-      return null;
-    }
+    return null;
+//    List<GeoParquetGroup> batch = new ArrayList<>();
+//    while (batch.size() < 1_000 && tryAdvance(batch::add)) {
+//    }
+//    if (!batch.isEmpty()) {
+//      return Spliterators.spliterator(batch, characteristics() | SIZED);
+//    } else {
+//      return null;
+//    }
   }
 
   @Override

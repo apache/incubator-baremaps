@@ -124,6 +124,15 @@ public class GeoParquetReader {
     return files;
   }
 
+  private FileStatus file() {
+    try {
+      FileSystem fileSystem = FileSystem.get(uri, configuration);
+      return fileSystem.getFileStatus(new Path(uri));
+    } catch (IOException e) {
+      throw new GeoParquetException("IOException while attempting to list files.", e);
+    }
+  }
+
   private FileInfo buildFileInfo(FileStatus file) throws IOException {
     long recordCount;
     MessageType messageType;
@@ -156,7 +165,7 @@ public class GeoParquetReader {
   }
 
   public Stream<GeoParquetGroup> read() {
-    return retrieveGeoParquetGroups(false);
+    return StreamSupport.stream(new GeoParquetSequentialSpliterator(file(), configuration), false);
   }
 
   private static Configuration createConfiguration() {
