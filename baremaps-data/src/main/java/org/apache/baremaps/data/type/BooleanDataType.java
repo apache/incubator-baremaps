@@ -21,6 +21,8 @@ package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
 
+import static java.lang.Boolean.TRUE;
+
 /** A {@link DataType} for reading and writing bytes in {@link ByteBuffer}s. */
 public class BooleanDataType extends MemoryAlignedDataType<Boolean> {
 
@@ -32,7 +34,7 @@ public class BooleanDataType extends MemoryAlignedDataType<Boolean> {
   /** {@inheritDoc} */
   @Override
   public void write(final ByteBuffer buffer, final int position, final Boolean value) {
-    buffer.put(position, value ? (byte) 1 : (byte) 0);
+    buffer.put(position, TRUE.equals(value) ? (byte) 1 : (byte) 0);
   }
 
   /** {@inheritDoc} */
