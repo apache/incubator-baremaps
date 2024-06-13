@@ -22,8 +22,11 @@ package org.apache.baremaps.cli.workflow;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "workflow", subcommands = {Init.class, Execute.class},
-    description = "Manage a workflow.")
+@Command(
+    name = "workflow",
+    description = "Manage a workflow.",
+    subcommands = {Init.class, Execute.class})
+@SuppressWarnings("squid:S106")
 public class Workflow implements Runnable {
 
   @Override

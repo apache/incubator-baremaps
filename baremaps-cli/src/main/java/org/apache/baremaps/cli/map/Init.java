@@ -34,7 +34,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "init", description = "Init configuration files.")
+@Command(
+    name = "init",
+    description = "Init configuration files.")
+@SuppressWarnings("squid:S106")
 public class Init implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Init.class);

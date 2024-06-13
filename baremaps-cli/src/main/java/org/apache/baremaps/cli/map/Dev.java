@@ -48,7 +48,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "dev", description = "Start a development server with live reload.")
+@Command(
+    name = "dev",
+    description = "Start a development server with live reload.")
+@SuppressWarnings("squid:S106")
 public class Dev implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Dev.class);

@@ -22,8 +22,11 @@ package org.apache.baremaps.cli.iploc;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "iploc", subcommands = {Serve.class},
-    description = "IP to location commands (experimental).")
+@Command(
+    name = "iploc",
+    description = "IP to location commands (experimental).",
+    subcommands = {Serve.class})
+@SuppressWarnings("squid:S106")
 public class IpLoc implements Runnable {
 
   @Override

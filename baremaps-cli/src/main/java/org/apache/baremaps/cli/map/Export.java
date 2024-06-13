@@ -30,7 +30,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "export", description = "Export vector tiles from the database.")
+@Command(
+    name = "export",
+    description = "Export vector tiles from the database.")
+@SuppressWarnings("squid:S106")
 public class Export implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Export.class);

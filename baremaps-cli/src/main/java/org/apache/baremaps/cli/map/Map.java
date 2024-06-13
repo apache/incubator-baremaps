@@ -22,9 +22,12 @@ package org.apache.baremaps.cli.map;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "map", description = "Map commands.",
-    subcommands = {Init.class, Export.class, Serve.class, Dev.class, MBTiles.class},
-    sortOptions = false)
+@Command(
+    name = "map",
+    description = "Map commands.",
+    sortOptions = false,
+    subcommands = {Init.class, Export.class, Serve.class, Dev.class, MBTiles.class})
+@SuppressWarnings("squid:S106")
 public class Map implements Runnable {
 
   @Override

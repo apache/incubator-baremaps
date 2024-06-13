@@ -31,7 +31,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "execute", description = "Execute a workflow.")
+@Command(
+    name = "execute",
+    description = "Execute a workflow.")
+@SuppressWarnings("squid:S106")
 public class Execute implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Execute.class);

@@ -50,7 +50,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Start a tile server with caching capabilities.")
+@Command(
+    name = "serve",
+    description = "Start a tile server with caching capabilities.")
+@SuppressWarnings("squid:S106")
 public class Serve implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Serve.class);

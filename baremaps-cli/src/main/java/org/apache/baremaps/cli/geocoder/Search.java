@@ -29,7 +29,10 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "search", description = "Search geonames index.")
+@Command(
+    name = "search",
+    description = "Search geonames index.")
+@SuppressWarnings("squid:S106")
 public class Search implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Search.class);
