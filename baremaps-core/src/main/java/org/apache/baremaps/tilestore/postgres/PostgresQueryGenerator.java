@@ -18,6 +18,7 @@
 package org.apache.baremaps.tilestore.postgres;
 
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
@@ -67,8 +68,13 @@ public class PostgresQueryGenerator {
    * @param columnNamePattern the column name pattern
    * @param types the types
    */
-  public PostgresQueryGenerator(DataSource dataSource, String catalog, String schemaPattern,
-      String typeNamePattern, String columnNamePattern, String... types) {
+  public PostgresQueryGenerator(
+      DataSource dataSource,
+      String catalog,
+      String schemaPattern,
+      String typeNamePattern,
+      String columnNamePattern,
+      String... types) {
     this.dataSource = dataSource;
     this.catalog = catalog;
     this.schemaPattern = schemaPattern;
@@ -82,11 +88,12 @@ public class PostgresQueryGenerator {
    *
    * @return the queries
    */
-  public List<TilesetQuery> generate() {
+  public List<TilesetQuery> generate() throws SQLException {
     return new DatabaseMetadata(dataSource)
         .getTableMetaData(catalog, schemaPattern, tableNamePattern, types).stream()
         .filter(table -> table.primaryKeys().size() == 1)
-        .filter(table -> table.getGeometryColumns().size() == 1).map(this::getLayer).toList();
+        .filter(table -> table.getGeometryColumns().size() == 1)
+        .map(this::getLayer).toList();
   }
 
   private TilesetQuery getLayer(TableMetadata table) {

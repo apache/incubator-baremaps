@@ -19,6 +19,7 @@ package org.apache.baremaps.tilestore.postgres;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.postgres.PostgresRepositoryTest;
@@ -30,7 +31,7 @@ class PostgresQueryGeneratorTest extends PostgresRepositoryTest {
 
   @Test
   @Tag("integration")
-  void generate() {
+  void generate() throws SQLException {
     DataSource dataSource = dataSource();
     List<TilesetQuery> queries =
         new PostgresQueryGenerator(dataSource, null, "public", null, null, "TABLE").generate();

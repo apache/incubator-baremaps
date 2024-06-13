@@ -65,10 +65,14 @@ public class PostgresDataStore implements DataStore {
    */
   @Override
   public List<String> list() throws DataStoreException {
-    DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
-    return metadata.getTableMetaData(null, "public", null, TYPES).stream()
-        .map(table -> table.table().tableName())
-        .toList();
+    try {
+      DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
+      return metadata.getTableMetaData(null, "public", null, TYPES).stream()
+          .map(table -> table.table().tableName())
+          .toList();
+    } catch (SQLException e) {
+      throw new DataStoreException(e);
+    }
   }
 
   /**
@@ -76,15 +80,19 @@ public class PostgresDataStore implements DataStore {
    */
   @Override
   public DataTable get(String name) throws DataStoreException {
-    var databaseMetadata = new DatabaseMetadata(dataSource);
-    var postgresName = name.replaceAll(REGEX, "_").toLowerCase();
-    var tableMetadata = databaseMetadata.getTableMetaData(null, null, postgresName, TYPES)
-        .stream().findFirst();
-    if (tableMetadata.isEmpty()) {
-      throw new DataStoreException("Table " + name + " does not exist.");
+    try {
+      var databaseMetadata = new DatabaseMetadata(dataSource);
+      var postgresName = name.replaceAll(REGEX, "_").toLowerCase();
+      var tableMetadata = databaseMetadata.getTableMetaData(null, null, postgresName, TYPES)
+          .stream().findFirst();
+      if (tableMetadata.isEmpty()) {
+        throw new DataStoreException("Table " + name + " does not exist.");
+      }
+      var schema = createSchema(tableMetadata.get());
+      return new PostgresDataTable(dataSource, schema);
+    } catch (SQLException e) {
+      throw new DataStoreException(e);
     }
-    var schema = createSchema(tableMetadata.get());
-    return new PostgresDataTable(dataSource, schema);
   }
 
   /**
