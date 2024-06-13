@@ -75,8 +75,16 @@ public class StyleLayer {
    * @param maxzoom the maximum zoom of the layer
    * @param paint the paint of the layer
    */
-  public StyleLayer(String type, List<Object> filter, String source, String sourceLayer,
-      Object layout, Integer minzoom, Integer maxzoom, Object paint) {
+  @SuppressWarnings("squid:S107")
+  public StyleLayer(
+      String type,
+      List<Object> filter,
+      String source,
+      String sourceLayer,
+      Object layout,
+      Integer minzoom,
+      Integer maxzoom,
+      Object paint) {
     this.type = type;
     this.filter = filter;
     this.source = source;

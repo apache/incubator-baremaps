@@ -72,7 +72,7 @@ class PMTilesUtils {
     if (b < 0x80) {
       return toNum(l, h);
     }
-    throw new RuntimeException("Expected varint not more than 10 bytes");
+    throw new IllegalArgumentException("Expected varint not more than 10 bytes");
   }
 
   static int writeVarInt(OutputStream output, long value)
@@ -151,10 +151,10 @@ class PMTilesUtils {
 
   static long zxyToTileId(int z, long x, long y) {
     if (z > 26) {
-      throw new RuntimeException("Tile zoom level exceeds max safe number limit (26)");
+      throw new IllegalArgumentException("Tile zoom level exceeds max safe number limit (26)");
     }
     if (x > Math.pow(2, z) - 1 || y > Math.pow(2, z) - 1) {
-      throw new RuntimeException("tile x/y outside zoom level bounds");
+      throw new IllegalArgumentException("tile x/y outside zoom level bounds");
     }
     long acc = tzValues[z];
     long n = LongMath.pow(2, z);
@@ -182,7 +182,7 @@ class PMTilesUtils {
       }
       acc += numTiles;
     }
-    throw new RuntimeException("Tile zoom level exceeds max safe number limit (26)");
+    throw new IllegalArgumentException("Tile zoom level exceeds max safe number limit (26)");
   }
 
   static Header deserializeHeader(InputStream input) throws IOException {
@@ -311,7 +311,7 @@ class PMTilesUtils {
       long value = readVarInt(buffer);
       if (value == 0 && i > 0) {
         Entry prevEntry = entries.get(i - 1);
-        entries.get(i).setOffset(prevEntry.getOffset() + prevEntry.getLength());;
+        entries.get(i).setOffset(prevEntry.getOffset() + prevEntry.getLength());
       } else {
         entries.get(i).setOffset(value - 1);
       }

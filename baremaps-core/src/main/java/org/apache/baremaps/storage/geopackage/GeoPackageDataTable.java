@@ -100,22 +100,6 @@ public class GeoPackageDataTable implements DataTable {
   }
 
   /**
-   * Converts a GeoPackage value to a Java value.
-   *
-   * @param value the GeoPackage value
-   * @return the Java value
-   */
-  private Object asJavaValue(Object value) {
-    if (value instanceof GeoPackageGeometryData geometry) {
-      return asJtsGeometry(geometry.getGeometry());
-    } else if (value instanceof Date date) {
-      return value.toString();
-    } else {
-      return value;
-    }
-  }
-
-  /**
    * Converts a GeoPackage geometry to a JTS geometry.
    *
    * @param geometry the GeoPackage geometry
@@ -134,7 +118,7 @@ public class GeoPackageDataTable implements DataTable {
       return asJtsMultiLineString(multiLineString);
     } else if (geometry instanceof mil.nga.sf.MultiPolygon multiPolygon) {
       return asJtsMultiPolygon(multiPolygon);
-    } else if (geometry instanceof mil.nga.sf.GeometryCollection geometryCollection) {
+    } else if (geometry instanceof mil.nga.sf.GeometryCollection<? extends mil.nga.sf.Geometry>geometryCollection) {
       return asJstGeometryCollection(geometryCollection);
     } else {
       // Unknown geometries are discarded
@@ -149,8 +133,8 @@ public class GeoPackageDataTable implements DataTable {
    * @return the JTS geometry collection
    */
   private GeometryCollection asJstGeometryCollection(
-      mil.nga.sf.GeometryCollection geometryCollection) {
-    List<mil.nga.sf.Geometry> geometries = geometryCollection.getGeometries();
+      mil.nga.sf.GeometryCollection<? extends mil.nga.sf.Geometry> geometryCollection) {
+    List<? extends mil.nga.sf.Geometry> geometries = geometryCollection.getGeometries();
     return geometryFactory.createGeometryCollection(
         geometries.stream().map(this::asJtsGeometry).toArray(Geometry[]::new));
   }
@@ -275,6 +259,21 @@ public class GeoPackageDataTable implements DataTable {
       hasNext = featureResultSet.moveToNext();
       return row;
     }
-  }
 
+    /**
+     * Converts a GeoPackage value to a Java value.
+     *
+     * @param value the GeoPackage value
+     * @return the Java value
+     */
+    private Object asJavaValue(Object value) {
+      if (value instanceof GeoPackageGeometryData geometry) {
+        return asJtsGeometry(geometry.getGeometry());
+      } else if (value instanceof Date date) {
+        return date.toString();
+      } else {
+        return value;
+      }
+    }
+  }
 }

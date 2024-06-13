@@ -18,6 +18,7 @@
 package org.apache.baremaps.openstreetmap;
 
 import static org.apache.baremaps.testing.TestFiles.resolve;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,11 +46,11 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 
-class OsmTestData {
+class OsmDataTest {
 
   @TestFactory
   Stream<DynamicTest> runTests() throws IOException {
-    var directory = resolve("osm-testdata");
+    var directory = resolve("baremaps-testing/data/osm-testdata");
     try (var files = Files.walk(directory)) {
       return files.filter(f -> f.endsWith("test.json"))
           .map(OsmTest::new)
@@ -116,14 +117,13 @@ class OsmTestData {
       }
 
       // The test geometry and the file geometry should be equal
-      var message = String.format("%s: %s\nExpected:\n%s\nActual:\n%s",
+      var message = String.format("%s: %s%nExpected:%n%s%nActual:%n%s",
           osmTest.getId(), osmTest.getDescription(), testGeometry, fileGeometry);
 
       RoundingTransformer transformer = new RoundingTransformer(2);
       fileGeometry = transformer.transform(fileGeometry);
 
-      Assert.assertTrue(message, testGeometry.equalsTopo(fileGeometry));
-
+      assertTrue(testGeometry.equalsTopo(fileGeometry), message);
     }
   }
 
@@ -256,7 +256,7 @@ class OsmTestData {
     }
 
     @Override
-    public int compareTo(@NotNull OsmTestData.OsmTest o) {
+    public int compareTo(@NotNull OsmDataTest.OsmTest o) {
       return Long.compare(getId(), o.getId());
     }
   }

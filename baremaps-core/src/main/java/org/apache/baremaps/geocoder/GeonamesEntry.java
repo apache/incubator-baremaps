@@ -20,7 +20,7 @@ package org.apache.baremaps.geocoder;
 /**
  * A record from the Geonames database.
  */
-public class GeonamesRecord {
+public class GeonamesEntry {
 
   // integer id of record in geonames database
   private Integer geonameid;
@@ -84,7 +84,7 @@ public class GeonamesRecord {
   // date of last modification in yyyy-MM-dd format
   private String modificationDate;
 
-  public GeonamesRecord() {
+  public GeonamesEntry() {
     // Default constructor
   }
 

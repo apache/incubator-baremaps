@@ -25,7 +25,7 @@ import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class GeoPackageToPostgresTest extends PostgresContainerTest {
+class GeoPackageToPostgresTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")

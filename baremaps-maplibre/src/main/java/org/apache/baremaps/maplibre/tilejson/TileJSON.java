@@ -33,37 +33,52 @@ import java.util.List;
  *      https://github.com/mapbox/tilejson-spec</a>
  */
 public class TileJSON {
-  String tilejson;
+
   @JsonProperty("tiles")
   List<String> tiles;
+
   @JsonProperty("vector_layers")
   List<VectorLayer> vectorLayers;
+
   @JsonProperty("attribution")
   String attribution;
+
   @JsonProperty("bounds")
   List<Double> bounds;
+
   @JsonProperty("center")
   List<Double> center;
+
   @JsonProperty("data")
   List<String> data;
+
   @JsonProperty("description")
   String description;
+
   @JsonProperty("fillzoom")
   Integer fillzoom;
+
   @JsonProperty("grids")
   List<String> grids;
+
   @JsonProperty("legend")
   String legend;
+
   @JsonProperty("maxzoom")
   Integer maxzoom;
+
   @JsonProperty("minzoom")
   Integer minzoom;
+
   @JsonProperty("name")
   String name;
+
   @JsonProperty("scheme")
   String scheme;
+
   @JsonProperty("template")
   String template;
+
   @JsonProperty("version")
   String version;
 

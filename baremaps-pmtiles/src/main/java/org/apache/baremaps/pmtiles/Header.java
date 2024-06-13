@@ -86,6 +86,7 @@ public class Header {
     this.specVersion = 3;
   }
 
+  @SuppressWarnings("squid:S107")
   public Header(
       int specVersion,
       long rootDirectoryOffset,

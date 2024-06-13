@@ -46,7 +46,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "mbtiles", description = "Start a mbtiles server with caching capabilities.")
+@Command(
+    name = "mbtiles",
+    description = "Start a mbtiles server with caching capabilities.")
+@SuppressWarnings("squid:S106")
 public class MBTiles implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(MBTiles.class);

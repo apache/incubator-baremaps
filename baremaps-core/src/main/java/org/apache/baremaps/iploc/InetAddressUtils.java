@@ -23,6 +23,10 @@ import java.net.UnknownHostException;
 /** Utility methods for {@code InetAddress}. */
 public class InetAddressUtils {
 
+  private InetAddressUtils() {
+    // Prevent instantiation
+  }
+
   /**
    * Returns the {@code InetAddress} having the given address.
    *

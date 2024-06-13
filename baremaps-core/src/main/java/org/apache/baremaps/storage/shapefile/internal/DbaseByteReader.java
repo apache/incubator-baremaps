@@ -186,9 +186,8 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
    */
   public int getRowNum() {
     int position = getByteBuffer().position();
-    int recordNumber = (position - Short.toUnsignedInt(this.firstRecordPosition))
-        / Short.toUnsignedInt(this.recordLength);
-    return recordNumber;
+    return (position - Short.toUnsignedInt(firstRecordPosition))
+        / Short.toUnsignedInt(recordLength);
   }
 
   /**

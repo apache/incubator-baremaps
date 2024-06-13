@@ -62,8 +62,8 @@ public class BatchedSpliterator<T> implements Spliterator<T> {
   public Spliterator<T> trySplit() {
     List<T> batch = new ArrayList<>();
     while (batch.size() < batchSize && tryAdvance(batch::add)) {
+      // Do nothing
     }
-
     if (!batch.isEmpty()) {
       return Spliterators.spliterator(batch, characteristics());
     } else {

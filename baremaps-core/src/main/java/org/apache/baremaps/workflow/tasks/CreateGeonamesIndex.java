@@ -47,7 +47,7 @@ public class CreateGeonamesIndex implements Task {
    * Constructs a {@code CreateGeonamesIndex}.
    */
   public CreateGeonamesIndex() {
-
+    // Default constructor
   }
 
   /**
@@ -65,7 +65,7 @@ public class CreateGeonamesIndex implements Task {
    * {@inheritDoc}
    */
   @Override
-  public void execute(WorkflowContext context) throws Exception {
+  public void execute(WorkflowContext context) throws IOException {
     var directory = FSDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
     try (var indexWriter = new IndexWriter(directory, config);
@@ -75,8 +75,6 @@ public class CreateGeonamesIndex implements Task {
           .stream(inputStream)
           .map(new GeonamesDocumentMapper());
       indexWriter.addDocuments((Iterable<Document>) documents::iterator);
-    } catch (IOException exception) {
-      throw new RuntimeException();
     }
   }
 

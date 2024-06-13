@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * A row in a table.
  */
-public record DataRowImpl(DataSchema schema, List values) implements DataRow {
+public record DataRowImpl(DataSchema schema, List<Object> values) implements DataRow {
 
   /**
    * {@inheritDoc}

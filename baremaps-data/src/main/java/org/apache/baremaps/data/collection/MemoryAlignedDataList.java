@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.baremaps.data.memory.Memory;
+import org.apache.baremaps.data.memory.MemoryException;
 import org.apache.baremaps.data.memory.OffHeapMemory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
@@ -36,7 +37,7 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
 
   private final FixedSizeDataType<E> dataType;
 
-  private final Memory memory;
+  private final Memory<?> memory;
 
   private final int valueShift;
 
@@ -61,7 +62,7 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory memory) {
+  public MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }
@@ -124,7 +125,7 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
     try {
       memory.clear();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new MemoryException(e);
     }
   }
 

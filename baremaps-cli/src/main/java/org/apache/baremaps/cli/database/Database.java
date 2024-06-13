@@ -22,9 +22,12 @@ package org.apache.baremaps.cli.database;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "database", description = "Database commands.",
+@Command(
+    name = "database",
+    description = "Database commands.",
     subcommands = {ExecuteSql.class, ImportOsm.class, UpdateOsm.class},
     sortOptions = false)
+@SuppressWarnings("squid:S106")
 public class Database implements Runnable {
 
   @Override

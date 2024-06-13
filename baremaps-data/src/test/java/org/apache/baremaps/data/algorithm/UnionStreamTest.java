@@ -64,10 +64,8 @@ class UnionStreamTest {
     DataList<Geometry> list =
         DataConversions.asDataList(List.of(polygon1, polygon2, polygon3, polygon4));
     var union = new UnionStream(list).union().toList();
-    assertEquals(union.size(), 2);
-    assertEquals(union.get(0), UnaryUnionOp.union(List.of(polygon1, polygon2, polygon3)));
-    assertEquals(union.get(1), polygon4);
-
+    assertEquals(2, union.size());
+    assertEquals(UnaryUnionOp.union(List.of(polygon1, polygon2, polygon3)), union.get(0));
+    assertEquals(polygon4, union.get(1));
   }
-
 }

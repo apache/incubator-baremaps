@@ -86,10 +86,25 @@ public class Tileset {
 
   public Tileset() {}
 
-  public Tileset(String tilejson, String name, String description, String version,
-      String attribution, String template, String legend, String scheme, List<String> tiles,
-      List<String> grids, List<String> data, Integer minzoom, Integer maxzoom, List<Double> bounds,
-      List<Double> center, List<TilesetLayer> vectorLayers, Integer fillzoom) {
+  @SuppressWarnings("squid:S107")
+  public Tileset(
+      String tilejson,
+      String name,
+      String description,
+      String version,
+      String attribution,
+      String template,
+      String legend,
+      String scheme,
+      List<String> tiles,
+      List<String> grids,
+      List<String> data,
+      Integer minzoom,
+      Integer maxzoom,
+      List<Double> bounds,
+      List<Double> center,
+      List<TilesetLayer> vectorLayers,
+      Integer fillzoom) {
     this.tilejson = tilejson;
     this.name = name;
     this.description = description;

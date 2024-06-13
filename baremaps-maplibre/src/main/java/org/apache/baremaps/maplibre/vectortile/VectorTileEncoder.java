@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import org.apache.baremaps.maplibre.binary.VectorTile;
 import org.locationtech.jts.geom.*;
 
@@ -159,7 +160,7 @@ public class VectorTileEncoder {
    * @param tags The tags of a feature.
    * @param encoding The consumer of the tags.
    */
-  protected void encodeTag(Map<String, Object> tags, Consumer<Integer> encoding) {
+  protected void encodeTag(Map<String, Object> tags, IntConsumer encoding) {
     for (Entry<String, Object> tag : tags.entrySet()) {
       int keyIndex = keys.indexOf(tag.getKey());
       if (keyIndex == -1) {
@@ -182,7 +183,7 @@ public class VectorTileEncoder {
    * @param geometry The geometry to encode.
    * @param encoding The consumer of commands and parameters.
    */
-  protected void encodeGeometry(Geometry geometry, Consumer<Integer> encoding) {
+  protected void encodeGeometry(Geometry geometry, IntConsumer encoding) {
     if (geometry instanceof Point point) {
       encodePoint(point, encoding);
     } else if (geometry instanceof MultiPoint multiPoint) {
@@ -206,7 +207,7 @@ public class VectorTileEncoder {
    * @param point The point to encode.
    * @param encoding The consumer of commands and parameters.
    */
-  protected void encodePoint(Point point, Consumer<Integer> encoding) {
+  protected void encodePoint(Point point, IntConsumer encoding) {
     encoding.accept(command(MOVE_TO, 1));
     Coordinate coordinate = point.getCoordinate();
     int dx = (int) Math.round(coordinate.getX()) - cx;
@@ -223,7 +224,7 @@ public class VectorTileEncoder {
    * @param multiPoint The multipoint to encode.
    * @param encoding The consumer of commands and parameters.
    */
-  protected void encodeMultiPoint(MultiPoint multiPoint, Consumer<Integer> encoding) {
+  protected void encodeMultiPoint(MultiPoint multiPoint, IntConsumer encoding) {
     List<Coordinate> coordinates = List.of(multiPoint.getCoordinates());
     encoding.accept(command(MOVE_TO, coordinates.size()));
     encodeCoordinates(coordinates, encoding);
@@ -235,7 +236,7 @@ public class VectorTileEncoder {
    * @param lineString The linestring to encode.
    * @param encoding The consumer of commands and parameters.
    */
-  protected void encodeLineString(LineString lineString, Consumer<Integer> encoding) {
+  protected void encodeLineString(LineString lineString, IntConsumer encoding) {
     List<Coordinate> coordinates = List.of(lineString.getCoordinates());
     encoding.accept(command(MOVE_TO, 1));
     encodeCoordinates(coordinates.subList(0, 1), encoding);
@@ -249,8 +250,7 @@ public class VectorTileEncoder {
    * @param multiLineString The multilinestring to encode.
    * @param encoding The consumer of commands and parameters.
    */
-  protected void encodeMultiLineString(MultiLineString multiLineString,
-      Consumer<Integer> encoding) {
+  protected void encodeMultiLineString(MultiLineString multiLineString, IntConsumer encoding) {
     for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
       Geometry geometry = multiLineString.getGeometryN(i);
       if (geometry instanceof LineString lineString) {
@@ -265,7 +265,7 @@ public class VectorTileEncoder {
    * @param polygon The polygon to encode.
    * @param encoding The consumer of commands and parameters.
    */
-  protected void encodePolygon(Polygon polygon, Consumer<Integer> encoding) {
+  protected void encodePolygon(Polygon polygon, IntConsumer encoding) {
     LinearRing exteriorRing = polygon.getExteriorRing();
     List<Coordinate> exteriorRingCoordinates = List.of(exteriorRing.getCoordinates());
 
@@ -295,7 +295,7 @@ public class VectorTileEncoder {
    * @param coordinates The coordinates of the ring
    * @param encoding The consumer of commands and parameters
    */
-  protected void encodeRing(List<Coordinate> coordinates, Consumer<Integer> encoding) {
+  protected void encodeRing(List<Coordinate> coordinates, IntConsumer encoding) {
     // Move to first point
     List<Coordinate> head = coordinates.subList(0, 1);
     encoding.accept(command(MOVE_TO, 1));
@@ -316,7 +316,7 @@ public class VectorTileEncoder {
    * @param multiPolygon The multipolygon to encode
    * @param encoding The consumer of commands and parameters
    */
-  protected void encodeMultiPolygon(MultiPolygon multiPolygon, Consumer<Integer> encoding) {
+  protected void encodeMultiPolygon(MultiPolygon multiPolygon, IntConsumer encoding) {
     for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
       Geometry geometry = multiPolygon.getGeometryN(i);
       if (geometry instanceof Polygon polygon) {
@@ -331,7 +331,7 @@ public class VectorTileEncoder {
    * @param coordinates The coordinates to encode
    * @param encoding The consumer of parameters
    */
-  protected void encodeCoordinates(List<Coordinate> coordinates, Consumer<Integer> encoding) {
+  protected void encodeCoordinates(List<Coordinate> coordinates, IntConsumer encoding) {
     for (Coordinate coordinate : coordinates) {
       int dx = (int) Math.round(coordinate.getX()) - cx;
       int dy = (int) Math.round(coordinate.getY()) - cy;

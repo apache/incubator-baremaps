@@ -35,6 +35,10 @@ public class VectorTileFunctions {
 
   public static final int CLOSE_PATH = 7;
 
+  private VectorTileFunctions() {
+    // Prevent instantiation
+  }
+
   /**
    * Transforms a geometry into a vector tile geometry.
    *

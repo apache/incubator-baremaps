@@ -25,7 +25,9 @@ import java.util.function.UnaryOperator;
 /** Utility methods for dealing with consumers. */
 public class ConsumerUtils {
 
-  private ConsumerUtils() {}
+  private ConsumerUtils() {
+    // Prevent instantiation
+  }
 
   /**
    * Returns a consumer that applies a function to its input, and then passes the result to the
@@ -34,8 +36,10 @@ public class ConsumerUtils {
    * @return
    * @param <T>
    */
+  @SuppressWarnings("squid:S1172")
   public static <T> Consumer<T> chain(Class<T> type) {
-    return T -> {
+    return t -> {
+      // Do nothing
     };
   }
 

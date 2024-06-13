@@ -28,6 +28,10 @@ import org.apache.baremaps.data.collection.DataList;
  */
 public class BinarySearch {
 
+  private BinarySearch() {
+    // Prevent instantiation
+  }
+
   /**
    * Returns the index of the search key, if it is contained in the list; null otherwise.
    *

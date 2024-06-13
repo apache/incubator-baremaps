@@ -24,38 +24,38 @@ import org.apache.baremaps.utils.IsoCountriesUtils;
 import org.apache.lucene.document.*;
 
 /**
- * Maps a {@link GeonamesRecord} to a Lucene {@link Document}.
+ * Maps a {@link GeonamesEntry} to a Lucene {@link Document}.
  */
-public class GeonamesDocumentMapper implements Function<GeonamesRecord, Document> {
+public class GeonamesDocumentMapper implements Function<GeonamesEntry, Document> {
 
   @Override
-  public Document apply(GeonamesRecord record) {
+  public Document apply(GeonamesEntry entry) {
     Document document = new Document();
-    document.add(new TextField("name", record.getName(), Field.Store.YES));
-    document.add(new TextField("country", IsoCountriesUtils.getCountry(record.getCountryCode()),
+    document.add(new TextField("name", entry.getName(), Field.Store.YES));
+    document.add(new TextField("country", IsoCountriesUtils.getCountry(entry.getCountryCode()),
         Field.Store.YES));
     // countryCode is not analyzed and thus must be queried using uppercase
-    document.add(new StringField("countryCode", record.getCountryCode(), Field.Store.YES));
-    document.add(new LatLonPoint("point", record.getLatitude(), record.getLongitude()));
-    document.add(new StoredField("longitude", record.getLongitude()));
-    document.add(new StoredField("latitude", record.getLatitude()));
-    document.add(new TextField("asciiname", record.getAsciiname(), Field.Store.YES));
-    document.add(new StoredField("alternatenames", record.getAlternatenames()));
-    document.add(new StringField("featureClass", record.getFeatureClass(), Field.Store.YES));
-    document.add(new StringField("featureCode", record.getFeatureCode(), Field.Store.YES));
-    document.add(new StoredField("cc2", record.getCc2()));
-    document.add(new StoredField("admin1Code", record.getAdmin1Code()));
-    document.add(new StoredField("admin2Code", record.getAdmin2Code()));
-    document.add(new StoredField("admin3Code", record.getAdmin3Code()));
-    document.add(new StoredField("admin4Code", record.getAdmin4Code()));
-    document.add(new NumericDocValuesField("population", record.getPopulation()));
-    document.add(new StoredField("population", record.getPopulation()));
-    if (record.getElevation() != null) {
-      document.add(new StoredField("elevation", record.getElevation()));
+    document.add(new StringField("countryCode", entry.getCountryCode(), Field.Store.YES));
+    document.add(new LatLonPoint("point", entry.getLatitude(), entry.getLongitude()));
+    document.add(new StoredField("longitude", entry.getLongitude()));
+    document.add(new StoredField("latitude", entry.getLatitude()));
+    document.add(new TextField("asciiname", entry.getAsciiname(), Field.Store.YES));
+    document.add(new StoredField("alternatenames", entry.getAlternatenames()));
+    document.add(new StringField("featureClass", entry.getFeatureClass(), Field.Store.YES));
+    document.add(new StringField("featureCode", entry.getFeatureCode(), Field.Store.YES));
+    document.add(new StoredField("cc2", entry.getCc2()));
+    document.add(new StoredField("admin1Code", entry.getAdmin1Code()));
+    document.add(new StoredField("admin2Code", entry.getAdmin2Code()));
+    document.add(new StoredField("admin3Code", entry.getAdmin3Code()));
+    document.add(new StoredField("admin4Code", entry.getAdmin4Code()));
+    document.add(new NumericDocValuesField("population", entry.getPopulation()));
+    document.add(new StoredField("population", entry.getPopulation()));
+    if (entry.getElevation() != null) {
+      document.add(new StoredField("elevation", entry.getElevation()));
     }
-    document.add(new StoredField("dem", record.getDem()));
-    document.add(new StoredField("timezone", record.getTimezone()));
-    document.add(new StoredField("modificationDate", record.getModificationDate()));
+    document.add(new StoredField("dem", entry.getDem()));
+    document.add(new StoredField("timezone", entry.getTimezone()));
+    document.add(new StoredField("modificationDate", entry.getModificationDate()));
     return document;
   }
 }

@@ -189,13 +189,10 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     Map<String, Object> tags = new HashMap<>();
     reader.nextTag();
     while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
-      switch (reader.getLocalName()) {
-        case ELEMENT_NAME_TAG:
-          readTag(tags);
-          break;
-        default:
-          readUnknownElement();
-          break;
+      if (ELEMENT_NAME_TAG.equals(reader.getLocalName())) {
+        readTag(tags);
+      } else {
+        readUnknownElement();
       }
     }
 

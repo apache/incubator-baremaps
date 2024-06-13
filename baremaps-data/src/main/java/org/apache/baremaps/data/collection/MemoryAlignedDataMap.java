@@ -37,7 +37,7 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
 
   private final FixedSizeDataType<E> dataType;
 
-  private final Memory memory;
+  private final Memory<?> memory;
 
   private final int valueShift;
 
@@ -51,7 +51,7 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedDataMap(FixedSizeDataType<E> dataType, Memory memory) {
+  public MemoryAlignedDataMap(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }

@@ -66,12 +66,15 @@ public class DatabaseMetadata {
     this.dataSource = dataSource;
   }
 
-  public List<TableMetadata> getTableMetaData() {
+  public List<TableMetadata> getTableMetaData() throws SQLException {
     return getTableMetaData(null, null, null, null);
   }
 
-  public List<TableMetadata> getTableMetaData(String catalog, String schema,
-      String tableNamePattern, String[] types) {
+  public List<TableMetadata> getTableMetaData(
+      String catalog,
+      String schema,
+      String tableNamePattern,
+      String[] types) throws SQLException {
     Map<String, TableResult> descriptions = getTables(catalog, schema, tableNamePattern, types)
         .stream().collect(Collectors.toMap(TableResult::tableName, Function.identity()));
     Map<String, List<ColumnResult>> columns = getColumns(catalog, schema, tableNamePattern, null)
@@ -86,8 +89,11 @@ public class DatabaseMetadata {
         .toList();
   }
 
-  private List<TableResult> getTables(String catalog, String schemaPattern, String tableNamePattern,
-      String[] types) {
+  private List<TableResult> getTables(
+      String catalog,
+      String schemaPattern,
+      String tableNamePattern,
+      String[] types) throws SQLException {
     var tableDescriptions = new ArrayList<TableResult>();
     try (var connection = dataSource.getConnection();
         var resultSet =
@@ -105,14 +111,15 @@ public class DatabaseMetadata {
             resultSet.getString(SELF_REFERENCING_COL_NAME),
             resultSet.getString(REF_GENERATION)));
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
     return tableDescriptions;
   }
 
-  private List<ColumnResult> getColumns(String catalog, String schemaPattern,
-      String tableNamePattern, String columnNamePattern) {
+  private List<ColumnResult> getColumns(
+      String catalog,
+      String schemaPattern,
+      String tableNamePattern,
+      String columnNamePattern) throws SQLException {
     var tableColumns = new ArrayList<ColumnResult>();
     try (var connection = dataSource.getConnection();
         var resultSet = connection.getMetaData().getColumns(catalog, schemaPattern,
@@ -143,14 +150,14 @@ public class DatabaseMetadata {
             resultSet.getString(IS_AUTOINCREMENT),
             resultSet.getString(IS_GENERATEDCOLUMN)));
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
     return tableColumns;
   }
 
-  private List<PrimaryKeyResult> getPrimaryKeys(String catalog, String schemaPattern,
-      String table) {
+  private List<PrimaryKeyResult> getPrimaryKeys(
+      String catalog,
+      String schemaPattern,
+      String table) throws SQLException {
     var tablePrimaryKeyColumns = new ArrayList<PrimaryKeyResult>();
     try (var connection = dataSource.getConnection();
         var resultSet = connection.getMetaData().getPrimaryKeys(catalog, schemaPattern, table)) {
@@ -163,8 +170,6 @@ public class DatabaseMetadata {
             resultSet.getShort(KEY_SEQ),
             resultSet.getString(PK_NAME)));
       }
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
     }
     return tablePrimaryKeyColumns;
   }

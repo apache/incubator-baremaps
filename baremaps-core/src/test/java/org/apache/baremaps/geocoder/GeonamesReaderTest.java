@@ -36,9 +36,9 @@ class GeonamesReaderTest {
       var list = stream.toList();
       assertEquals(5, list.size());
 
-      var record = list.get(0);
-      assertEquals(1, record.getGeonameid());
-      assertEquals("HEIG", record.getAsciiname());
+      var entry = list.get(0);
+      assertEquals(1, entry.getGeonameid());
+      assertEquals("HEIG", entry.getAsciiname());
     }
   }
 }

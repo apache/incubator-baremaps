@@ -22,8 +22,12 @@ package org.apache.baremaps.cli.geocoder;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "geocoder", description = "Geocoder commands (experimental).",
-    subcommands = {Serve.class, Search.class}, sortOptions = false)
+@Command(
+    name = "geocoder",
+    description = "Geocoder commands (experimental).",
+    sortOptions = false,
+    subcommands = {Serve.class, Search.class})
+@SuppressWarnings("squid:S106")
 public class Geocoder implements Runnable {
 
   @Override

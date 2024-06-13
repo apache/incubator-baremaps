@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 class ExecuteCommandTest {
 
   @Test
-  @Disabled
+  @Disabled("requires a shell")
   void execute() throws Exception {
     var path = Paths.get("file.txt").toAbsolutePath();
     new ExecuteCommand(String.format("echo test > %s", path)).execute(new WorkflowContext());

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 class WorkflowTest extends PostgresContainerTest {
 
   @Test
-  @Disabled
+  @Disabled("requires internet access")
   void naturalearthGeoPackage() {
     var workflow = new Workflow(List.of(new Step("fetch-geopackage", List.of(), List.of(
         new DownloadUrl("https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
@@ -45,7 +45,7 @@ class WorkflowTest extends PostgresContainerTest {
   }
 
   @Test
-  @Disabled
+  @Disabled("requires internet access")
   void coastlineShapefile() {
     var workflow = new Workflow(List.of(new Step("fetch-geopackage", List.of(),
         List.of(
@@ -60,7 +60,7 @@ class WorkflowTest extends PostgresContainerTest {
   }
 
   @Test
-  @Disabled
+  @Disabled("requires internet access")
   void simplifiedWaterPolygonsShapefile() {
     var workflow = new Workflow(List.of(new Step("simplified-water-polygons", List.of(), List.of(
         /*
@@ -78,7 +78,7 @@ class WorkflowTest extends PostgresContainerTest {
   }
 
   @Test
-  @Disabled
+  @Disabled("requires internet access")
   void workflow() {
     var workflow = new Workflow(List.of(new Step("fetch-geopackage", List.of(), List.of(
         new DownloadUrl("https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
@@ -88,7 +88,7 @@ class WorkflowTest extends PostgresContainerTest {
   }
 
   @Test
-  @Disabled
+  @Disabled("requires internet access")
   void execute() {
     var workflow = new Workflow(List.of(
         new Step("fetch-geopackage", List.of(),

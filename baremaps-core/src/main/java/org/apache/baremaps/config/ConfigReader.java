@@ -36,11 +36,10 @@ public class ConfigReader {
 
   public String read(Path path) throws IOException {
     var extension = com.google.common.io.Files.getFileExtension(path.toString());
-    var config = switch (extension) {
+    return switch (extension) {
       case "js" -> eval(path);
       default -> Files.readString(path);
     };
-    return config;
   }
 
   private String eval(Path path) throws IOException {

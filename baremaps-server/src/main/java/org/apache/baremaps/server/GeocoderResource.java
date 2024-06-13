@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
+import org.apache.baremaps.openstreetmap.stream.StreamException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
@@ -119,7 +120,7 @@ public class GeocoderResource {
       }
       return new GeocoderResult(scoreDoc.score, data);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new StreamException(e);
     }
   }
 }

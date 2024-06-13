@@ -26,7 +26,6 @@ import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.server.annotation.Get;
 import com.linecorp.armeria.server.annotation.Param;
 import com.linecorp.armeria.server.annotation.ProducesJson;
-import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
 import org.apache.baremaps.iploc.IpLocObject;
@@ -87,7 +86,7 @@ public class IpLocResource {
           Optional.ofNullable((CharSequence) ip)
               .or(() -> Optional.ofNullable(requestHeaders.get("X-Forwarded-For")))
               .or(() -> Optional.ofNullable(requestHeaders.get("X-Real-IP")))
-              .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
+              .orElse(context.remoteAddress().getAddress().getHostAddress())
               .toString().split(",")[0].trim());
       List<IpLocObject> inetnumLocations = ipLocRepository.findByInetAddress(address);
       List<InetnumLocationDto> inetnumLocationDtos =

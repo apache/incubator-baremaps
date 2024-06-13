@@ -158,7 +158,6 @@ class PMTilesUtilsTest {
 
   @Test
   void encodeHeader() throws IOException {
-    var etag = "1";
     var header = new Header(
         127,
         25,

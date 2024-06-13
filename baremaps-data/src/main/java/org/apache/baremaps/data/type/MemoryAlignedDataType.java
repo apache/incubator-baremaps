@@ -34,7 +34,7 @@ public abstract class MemoryAlignedDataType<T> extends FixedSizeDataType<T> {
    *
    * @param size
    */
-  public MemoryAlignedDataType(int size) {
+  protected MemoryAlignedDataType(int size) {
     super(size);
     if ((size & -size) != size) {
       throw new IllegalArgumentException("The size must be a power of 2");

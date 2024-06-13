@@ -27,7 +27,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "execute-sql", description = "Execute SQL queries in the database.")
+@Command(
+    name = "execute-sql",
+    description = "Execute SQL queries in the database.")
+@SuppressWarnings("squid:S106")
 public class ExecuteSql implements Callable<Integer> {
 
   @Mixin

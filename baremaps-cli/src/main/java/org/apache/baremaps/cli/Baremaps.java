@@ -31,16 +31,23 @@ import org.apache.baremaps.cli.map.Map;
 import org.apache.baremaps.cli.workflow.Workflow;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
 import picocli.CommandLine.Option;
 
-@Command(name = "baremaps", description = "A toolkit for producing vector tiles.",
-    versionProvider = VersionProvider.class, subcommands = {Workflow.class, Database.class,
-        Map.class, Geocoder.class, IpLoc.class},
+@Command(
+    name = "baremaps",
+    description = "A toolkit for producing vector tiles.",
+    versionProvider = VersionProvider.class,
+    subcommands = {Workflow.class, Database.class, Map.class, Geocoder.class, IpLoc.class},
     sortOptions = false)
+@SuppressWarnings("squid:S106")
 public class Baremaps implements Callable<Integer> {
+
+  private static final Logger logger = LoggerFactory.getLogger(Baremaps.class);
 
   @Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version info.")
   boolean version;
