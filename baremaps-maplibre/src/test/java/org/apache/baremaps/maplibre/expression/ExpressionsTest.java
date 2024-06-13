@@ -28,17 +28,14 @@ import org.junit.jupiter.api.Test;
 
 class ExpressionsTest {
 
-  record Property(String name, Object value) {
-  }
-
   @Test
-  public void literal() throws IOException {
+  void literal() {
     assertEquals(1, new Literal(1).evaluate(null));
     assertEquals("value", new Literal("value").evaluate(null));
   }
 
   @Test
-  public void at() throws IOException {
+  void at() {
     var literal = new Literal(List.of(0, 1, 2));
     assertEquals(0, new At(0, literal).evaluate(null));
     assertEquals(1, new At(1, literal).evaluate(null));
@@ -48,21 +45,21 @@ class ExpressionsTest {
   }
 
   @Test
-  public void get() throws IOException {
+  void get() {
     assertEquals("value",
         new Get("key").evaluate(new Feature(0L, Map.of("key", "value"), null)));
     assertEquals(null, new Get("key").evaluate(new Feature(0L, Map.of(), null)));
   }
 
   @Test
-  public void has() throws IOException {
+  void has() {
     assertEquals(true,
         new Has("key").evaluate(new Feature(0L, Map.of("key", "value"), null)));
     assertEquals(false, new Has("key").evaluate(new Feature(0L, Map.of(), null)));
   }
 
   @Test
-  public void inList() throws IOException {
+  void inList() {
     var literal = new Literal(List.of(0, 1, 2));
     assertEquals(true, new In(0, literal).evaluate(null));
     assertEquals(true, new In(1, literal).evaluate(null));
@@ -71,7 +68,7 @@ class ExpressionsTest {
   }
 
   @Test
-  public void inString() throws IOException {
+  void inString() {
     var literal = new Literal("foobar");
     assertEquals(true, new In("foo", literal).evaluate(null));
     assertEquals(true, new In("bar", literal).evaluate(null));
@@ -79,7 +76,7 @@ class ExpressionsTest {
   }
 
   @Test
-  public void indexOfList() throws IOException {
+  void indexOfList() {
     var literal = new Literal(List.of(0, 1, 2));
     assertEquals(0, new IndexOf(0, literal).evaluate(null));
     assertEquals(1, new IndexOf(1, literal).evaluate(null));
@@ -88,7 +85,7 @@ class ExpressionsTest {
   }
 
   @Test
-  public void indexOfString() throws IOException {
+  void indexOfString() {
     var literal = new Literal("foobar");
     assertEquals(0, new IndexOf("foo", literal).evaluate(null));
     assertEquals(3, new IndexOf("bar", literal).evaluate(null));
@@ -96,25 +93,25 @@ class ExpressionsTest {
   }
 
   @Test
-  public void lengthList() throws IOException {
+  void lengthList() {
     var literal = new Literal(List.of(0, 1, 2));
     assertEquals(3, new Length(literal).evaluate(null));
   }
 
   @Test
-  public void lengthString() throws IOException {
+  void lengthString() {
     var literal = new Literal("foo");
     assertEquals(3, new Length(literal).evaluate(null));
   }
 
   @Test
-  public void lengthNull() throws IOException {
+  void lengthNull() {
     var literal = new Literal(null);
     assertEquals(-1, new Length(literal).evaluate(null));
   }
 
   @Test
-  public void slice() throws IOException {
+  void slice() {
     var literal = new Literal("foobar");
     assertEquals("foobar", new Slice(literal, new Literal(0)).evaluate(null));
     assertEquals("bar", new Slice(literal, new Literal(3)).evaluate(null));
@@ -123,53 +120,53 @@ class ExpressionsTest {
   }
 
   @Test
-  public void not() throws IOException {
+  void not() throws IOException {
     assertEquals(true, Expressions.read("[\"!\", false]").evaluate(null));
     assertEquals(false, Expressions.read("[\"!\", true]").evaluate(null));
   }
 
   @Test
-  public void notEqual() throws IOException {
+  void notEqual() throws IOException {
     assertEquals(true, Expressions.read("[\"!=\", 1, 2]").evaluate(null));
     assertEquals(false, Expressions.read("[\"!=\", 1, 1]").evaluate(null));
   }
 
   @Test
-  public void less() throws IOException {
+  void less() throws IOException {
     assertEquals(true, Expressions.read("[\"<\", 1, 2]").evaluate(null));
     assertEquals(false, Expressions.read("[\"<\", 1, 1]").evaluate(null));
     assertEquals(false, Expressions.read("[\"<\", 1, 0]").evaluate(null));
   }
 
   @Test
-  public void lessOrEqual() throws IOException {
+  void lessOrEqual() throws IOException {
     assertEquals(true, Expressions.read("[\"<=\", 1, 2]").evaluate(null));
     assertEquals(true, Expressions.read("[\"<=\", 1, 1]").evaluate(null));
     assertEquals(false, Expressions.read("[\"<=\", 1, 0]").evaluate(null));
   }
 
   @Test
-  public void equal() throws IOException {
+  void equal() throws IOException {
     assertEquals(true, Expressions.read("[\"==\", 1, 1]").evaluate(null));
     assertEquals(false, Expressions.read("[\"==\", 1, 2]").evaluate(null));
   }
 
   @Test
-  public void greater() throws IOException {
+  void greater() throws IOException {
     assertEquals(true, Expressions.read("[\">\", 1, 0]").evaluate(null));
     assertEquals(false, Expressions.read("[\">\", 1, 1]").evaluate(null));
     assertEquals(false, Expressions.read("[\">\", 1, 2]").evaluate(null));
   }
 
   @Test
-  public void greaterOrEqual() throws IOException {
+  void greaterOrEqual() throws IOException {
     assertEquals(true, Expressions.read("[\">=\", 1, 0]").evaluate(null));
     assertEquals(true, Expressions.read("[\">=\", 1, 1]").evaluate(null));
     assertEquals(false, Expressions.read("[\">=\", 1, 2]").evaluate(null));
   }
 
   @Test
-  public void all() throws IOException {
+  void all() {
     assertEquals(true, new All(List.of(new Literal(true), new Literal(true))).evaluate(null));
     assertEquals(false, new All(List.of(new Literal(true), new Literal(false))).evaluate(null));
     assertEquals(false, new All(List.of(new Literal(false), new Literal(false))).evaluate(null));
@@ -177,7 +174,7 @@ class ExpressionsTest {
   }
 
   @Test
-  public void any() throws IOException {
+  void any() {
     assertEquals(true, new Any(List.of(new Literal(true), new Literal(true))).evaluate(null));
     assertEquals(true, new Any(List.of(new Literal(true), new Literal(false))).evaluate(null));
     assertEquals(false, new Any(List.of(new Literal(false), new Literal(false))).evaluate(null));
@@ -185,7 +182,7 @@ class ExpressionsTest {
   }
 
   @Test
-  public void caseExpression() throws IOException {
+  void caseExpression() {
     assertEquals("a",
         new Case(new Literal(true), new Literal("a"), new Literal("b")).evaluate(null));
     assertEquals("b",
@@ -193,7 +190,7 @@ class ExpressionsTest {
   }
 
   @Test
-  public void coalesce() {
+  void coalesce() {
     assertEquals("a", new Coalesce(List.of(new Literal(null), new Literal("a"), new Literal("b")))
         .evaluate(null));
     assertEquals("b", new Coalesce(List.of(new Literal(null), new Literal("b"), new Literal("a")))
@@ -203,7 +200,7 @@ class ExpressionsTest {
   }
 
   @Test
-  public void match() throws IOException {
+  void match() throws IOException {
     assertEquals("foo", Expressions
         .read("[\"match\", \"foo\", \"foo\", \"foo\", \"bar\", \"bar\", \"baz\"]").evaluate(null));
     assertEquals("bar", Expressions

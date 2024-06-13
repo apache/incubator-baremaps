@@ -20,6 +20,7 @@ package org.apache.baremaps.data.storage;
 
 import java.util.Iterator;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * A decorator for a {@link DataTable} that applies a transformation to each row.
@@ -36,7 +37,7 @@ public class DataTableMapper implements DataTable {
    * @param table the table
    * @param mapper the mapper
    */
-  public DataTableMapper(DataTable table, Function<DataRow, DataRow> mapper) {
+  public DataTableMapper(DataTable table, UnaryOperator<DataRow> mapper) {
     this.table = table;
     this.transformer = mapper;
   }

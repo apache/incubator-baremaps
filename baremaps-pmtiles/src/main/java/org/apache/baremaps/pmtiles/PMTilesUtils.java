@@ -27,13 +27,19 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PMTiles {
+class PMTilesUtils {
 
-  public static long toNum(long low, long high) {
+  private static final int HEADER_SIZE_BYTES = 127;
+
+  private PMTilesUtils() {
+    // Prevent instantiation
+  }
+
+  static long toNum(long low, long high) {
     return high * 0x100000000L + low;
   }
 
-  public static long readVarIntRemainder(InputStream input, long l)
+  static long readVarIntRemainder(InputStream input, long l)
       throws IOException {
     long h, b;
     b = input.read() & 0xff;
@@ -69,7 +75,7 @@ public class PMTiles {
     throw new RuntimeException("Expected varint not more than 10 bytes");
   }
 
-  public static int writeVarInt(OutputStream output, long value)
+  static int writeVarInt(OutputStream output, long value)
       throws IOException {
     int n = 1;
     while (value >= 0x80) {
@@ -81,7 +87,7 @@ public class PMTiles {
     return n;
   }
 
-  public static long readVarInt(InputStream input) throws IOException {
+  static long readVarInt(InputStream input) throws IOException {
     long val, b;
     b = input.read() & 0xff;
     val = b & 0x7f;
@@ -107,7 +113,7 @@ public class PMTiles {
     return readVarIntRemainder(input, val);
   }
 
-  public static void rotate(long n, long[] xy, long rx, long ry) {
+  static void rotate(long n, long[] xy, long rx, long ry) {
     if (ry == 0) {
       if (rx == 1) {
         xy[0] = n - 1 - xy[0];
@@ -119,7 +125,7 @@ public class PMTiles {
     }
   }
 
-  public static long[] idOnLevel(int z, long pos) {
+  static long[] idOnLevel(int z, long pos) {
     long n = LongMath.pow(2, z);
     long rx, ry, t = pos;
     long[] xy = new long[] {0, 0};
@@ -136,14 +142,14 @@ public class PMTiles {
     return new long[] {z, xy[0], xy[1]};
   }
 
-  private static long[] tzValues = new long[] {
+  private static final long[] tzValues = new long[] {
       0, 1, 5, 21, 85, 341, 1365, 5461, 21845, 87381, 349525, 1398101, 5592405,
       22369621, 89478485, 357913941, 1431655765, 5726623061L, 22906492245L,
       91625968981L, 366503875925L, 1466015503701L, 5864062014805L, 23456248059221L,
       93824992236885L, 375299968947541L, 1501199875790165L,
   };
 
-  public static long zxyToTileId(int z, long x, long y) {
+  static long zxyToTileId(int z, long x, long y) {
     if (z > 26) {
       throw new RuntimeException("Tile zoom level exceeds max safe number limit (26)");
     }
@@ -167,7 +173,7 @@ public class PMTiles {
     return acc + d;
   }
 
-  public static long[] tileIdToZxy(long i) {
+  static long[] tileIdToZxy(long i) {
     long acc = 0;
     for (int z = 0; z < 27; z++) {
       long numTiles = (0x1L << z) * (0x1L << z);
@@ -179,9 +185,7 @@ public class PMTiles {
     throw new RuntimeException("Tile zoom level exceeds max safe number limit (26)");
   }
 
-  private static final int HEADER_SIZE_BYTES = 127;
-
-  public static Header deserializeHeader(InputStream input) throws IOException {
+  static Header deserializeHeader(InputStream input) throws IOException {
     byte[] bytes = new byte[HEADER_SIZE_BYTES];
     var num = input.read(bytes);
     if (num != HEADER_SIZE_BYTES) {
@@ -217,7 +221,7 @@ public class PMTiles {
         (double) buffer.getInt() / 10000000);
   }
 
-  public static byte[] serializeHeader(Header header) {
+  static byte[] serializeHeader(Header header) {
     var buffer = ByteBuffer.allocate(HEADER_SIZE_BYTES).order(ByteOrder.LITTLE_ENDIAN);
     buffer.put((byte) 0x50);
     buffer.put((byte) 0x4D);
@@ -255,7 +259,7 @@ public class PMTiles {
     return buffer.array();
   }
 
-  public static void serializeEntries(OutputStream output, List<Entry> entries)
+  static void serializeEntries(OutputStream output, List<Entry> entries)
       throws IOException {
     var buffer = ByteBuffer.allocate(entries.size() * 48);
     writeVarInt(output, entries.size());
@@ -283,7 +287,7 @@ public class PMTiles {
     output.write(buffer.array(), 0, buffer.limit());
   }
 
-  public static List<Entry> deserializeEntries(InputStream buffer)
+  static List<Entry> deserializeEntries(InputStream buffer)
       throws IOException {
     long numEntries = readVarInt(buffer);
     List<Entry> entries = new ArrayList<>((int) numEntries);
@@ -315,7 +319,7 @@ public class PMTiles {
     return entries;
   }
 
-  public static Entry findTile(List<Entry> entries, long tileId) {
+  static Entry findTile(List<Entry> entries, long tileId) {
     int m = 0;
     int n = entries.size() - 1;
     while (m <= n) {
@@ -342,7 +346,7 @@ public class PMTiles {
     return null;
   }
 
-  public static Directories buildRootLeaves(List<Entry> entries, int leafSize,
+  static Directories buildRootLeaves(List<Entry> entries, int leafSize,
       Compression compression) throws IOException {
     var rootEntries = new ArrayList<Entry>();
     var numLeaves = 0;
@@ -379,7 +383,7 @@ public class PMTiles {
     return new Directories(rootBytes, leavesBytes, numLeaves);
   }
 
-  public static Directories optimizeDirectories(List<Entry> entries, int targetRootLength,
+  static Directories optimizeDirectories(List<Entry> entries, int targetRootLength,
       Compression compression)
       throws IOException {
     if (entries.size() < 16384) {

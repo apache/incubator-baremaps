@@ -109,75 +109,75 @@ public class StateReader implements Reader<State> {
    * @param timestamp the timestamp
    * @return the state
    */
-  @SuppressWarnings("squid:S3776")
+  @SuppressWarnings({"squid:S3776", "squid:S6541"})
   public Optional<State> getStateFromTimestamp(LocalDateTime timestamp) {
-    var upper = getState(Optional.empty());
+    var upper = getLatestState();
     if (upper.isEmpty()) {
       return Optional.empty();
     }
-    if (timestamp.isAfter(upper.get().getTimestamp()) || upper.get().getSequenceNumber() <= 0) {
+    if (timestamp.isAfter(upper.get().timestamp()) || upper.get().sequenceNumber() <= 0) {
       return upper;
     }
     var lower = Optional.<State>empty();
-    var lowerId = Optional.of(0L);
+    var lowerId = 0L;
     while (lower.isEmpty()) {
-      lower = getState(lowerId);
-      if (lower.isPresent() && lower.get().getTimestamp().isAfter(timestamp)) {
-        if (lower.get().getSequenceNumber() == 0
-            || lower.get().getSequenceNumber() + 1 >= upper.get().getSequenceNumber()) {
+      lower = getLatestState(lowerId);
+      if (lower.isPresent() && lower.get().timestamp().isAfter(timestamp)) {
+        if (lower.get().sequenceNumber() == 0
+            || lower.get().sequenceNumber() + 1 >= upper.get().sequenceNumber()) {
           return lower;
         }
         upper = lower;
         lower = Optional.empty();
-        lowerId = Optional.of(0L);
+        lowerId = 0L;
       }
       if (lower.isEmpty()) {
-        var newId = (lowerId.get() + upper.get().getSequenceNumber()) / 2;
-        if (newId <= lowerId.get()) {
+        var newId = (lowerId + upper.get().sequenceNumber()) / 2;
+        if (newId <= lowerId) {
           return upper;
         }
-        lowerId = Optional.of(newId);
+        lowerId = newId;
       }
     }
     long baseSplitId;
     while (true) {
       if (balancedSearch) {
-        baseSplitId = ((lower.get().getSequenceNumber() + upper.get().getSequenceNumber()) / 2);
+        baseSplitId = ((lower.get().sequenceNumber() + upper.get().sequenceNumber()) / 2);
       } else {
-        var tsInt = upper.get().getTimestamp().toEpochSecond(ZoneOffset.UTC)
-            - lower.get().getTimestamp().toEpochSecond(ZoneOffset.UTC);
-        var seqInt = upper.get().getSequenceNumber() - lower.get().getSequenceNumber();
-        var goal = timestamp.getSecond() - lower.get().getTimestamp().getSecond();
+        var tsInt = upper.get().timestamp().toEpochSecond(ZoneOffset.UTC)
+            - lower.get().timestamp().toEpochSecond(ZoneOffset.UTC);
+        var seqInt = upper.get().sequenceNumber() - lower.get().sequenceNumber();
+        var goal = timestamp.getSecond() - lower.get().timestamp().getSecond();
         baseSplitId =
-            lower.get().getSequenceNumber() + (long) Math.ceil((double) (goal * seqInt) / tsInt);
-        if (baseSplitId >= upper.get().getSequenceNumber()) {
-          baseSplitId = upper.get().getSequenceNumber() - 1;
+            lower.get().sequenceNumber() + (long) Math.ceil((double) (goal * seqInt) / tsInt);
+        if (baseSplitId >= upper.get().sequenceNumber()) {
+          baseSplitId = upper.get().sequenceNumber() - 1;
         }
       }
-      var split = getState(Optional.of(baseSplitId));
+      var split = getLatestState(baseSplitId);
       if (split.isEmpty()) {
         var splitId = baseSplitId - 1;
-        while (split.isEmpty() && splitId > lower.get().getSequenceNumber()) {
-          split = getState(Optional.of(splitId));
+        while (split.isEmpty() && splitId > lower.get().sequenceNumber()) {
+          split = getLatestState(splitId);
           splitId--;
         }
       }
       if (split.isEmpty()) {
         var splitId = baseSplitId + 1;
-        while (split.isEmpty() && splitId < upper.get().getSequenceNumber()) {
-          split = getState(Optional.of(splitId));
+        while (split.isEmpty() && splitId < upper.get().sequenceNumber()) {
+          split = getLatestState(splitId);
           splitId++;
         }
       }
       if (split.isEmpty()) {
         return lower;
       }
-      if (split.get().getTimestamp().isBefore(timestamp)) {
+      if (split.get().timestamp().isBefore(timestamp)) {
         lower = split;
       } else {
         upper = split;
       }
-      if (lower.get().getSequenceNumber() + 1 >= upper.get().getSequenceNumber()) {
+      if (lower.get().sequenceNumber() + 1 >= upper.get().sequenceNumber()) {
         return lower;
       }
     }
@@ -189,7 +189,7 @@ public class StateReader implements Reader<State> {
    * @param sequenceNumber the sequence number
    * @return the state
    */
-  public Optional<State> getState(Optional<Long> sequenceNumber) {
+  public Optional<State> getLatestState(long sequenceNumber) {
     for (int i = 0; i < retries + 1; i++) {
       try (var inputStream = getStateUrl(sequenceNumber).openStream()) {
         var state = new StateReader().read(inputStream);
@@ -202,23 +202,43 @@ public class StateReader implements Reader<State> {
   }
 
   /**
+   * Get the latest state.
+   *
+   * @return the state
+   */
+  public Optional<State> getLatestState() {
+    try (var inputStream = getStateUrl().openStream()) {
+      var state = new StateReader().read(inputStream);
+      return Optional.of(state);
+    } catch (Exception e) {
+      logger.error("Error while reading state file", e);
+    }
+    return Optional.empty();
+  }
+
+  /**
    * Get the URL of the state file corresponding to the given sequence number.
    *
    * @param sequenceNumber the sequence number
    * @return the URL
    * @throws MalformedURLException if the URL is malformed
    */
-  public URL getStateUrl(Optional<Long> sequenceNumber) throws MalformedURLException {
-    if (sequenceNumber.isPresent()) {
+  public URL getStateUrl(long sequenceNumber) throws MalformedURLException {
+    var s = String.format("%09d", sequenceNumber);
+    var uri =
+        String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+            s.substring(6, 9), "state.txt");
+    return URI.create(uri).toURL();
+  }
 
-      var s = String.format("%09d", sequenceNumber.get());
-      var uri =
-          String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
-              s.substring(6, 9), "state.txt");
-      return URI.create(uri).toURL();
-    } else {
-      return new URL(replicationUrl + "/state.txt");
-    }
+  /**
+   * Get the URL of the latest state file.
+   *
+   * @return the URL
+   * @throws MalformedURLException if the URL is malformed
+   */
+  public URL getStateUrl() throws MalformedURLException {
+    return new URL(replicationUrl + "/state.txt");
   }
 
   /**

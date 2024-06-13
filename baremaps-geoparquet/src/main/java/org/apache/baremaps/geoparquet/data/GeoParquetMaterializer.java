@@ -25,7 +25,7 @@ public class GeoParquetMaterializer extends RecordMaterializer<GeoParquetGroupIm
 
   private final GeoParquetGroupFactory groupFactory;
 
-  private GeoParquetGroupConverter root;
+  private final GeoParquetGroupConverter root;
 
   public GeoParquetMaterializer(MessageType schema, GeoParquetMetadata metadata) {
     this.groupFactory = new GeoParquetGroupFactory(schema, metadata);

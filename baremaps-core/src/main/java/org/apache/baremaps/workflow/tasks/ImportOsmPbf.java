@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import static java.lang.Boolean.TRUE;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,7 +83,7 @@ public class ImportOsmPbf implements Task {
     var wayRepository = new WayRepository(datasource);
     var relationRepository = new RelationRepository(datasource);
 
-    if (replaceExisting) {
+    if (TRUE.equals(replaceExisting)) {
       // Drop the existing tables
       headerRepository.drop();
       nodeRepository.drop();
@@ -122,7 +124,8 @@ public class ImportOsmPbf implements Task {
    * @param databaseSrid the database SRID
    * @throws IOException
    */
-  public static void execute(
+  @SuppressWarnings("squid:S107")
+  static void execute(
       Path path,
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,

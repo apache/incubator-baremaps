@@ -129,9 +129,9 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
   public Iterator<Long> keyIterator() {
     return new Iterator<>() {
 
-      private long index = 0;
+      private final long size = size();
 
-      private long size = size();
+      private long index = 0;
 
       @Override
       public boolean hasNext() {
@@ -153,9 +153,9 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
   public Iterator<E> valueIterator() {
     return new Iterator<>() {
 
-      private long index = 0;
+      private final long size = size();
 
-      private long size = size();
+      private long index = 0;
 
       @Override
       public boolean hasNext() {
@@ -176,9 +176,9 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
   public Iterator<Entry<Long, E>> entryIterator() {
     return new Iterator<>() {
 
-      private long index = 0;
+      private final long size = size();
 
-      private long size = size();
+      private long index = 0;
 
       @Override
       public boolean hasNext() {

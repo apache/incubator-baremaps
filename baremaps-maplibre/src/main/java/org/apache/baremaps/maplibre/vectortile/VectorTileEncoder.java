@@ -183,18 +183,18 @@ public class VectorTileEncoder {
    * @param encoding The consumer of commands and parameters.
    */
   protected void encodeGeometry(Geometry geometry, Consumer<Integer> encoding) {
-    if (geometry instanceof Point) {
-      encodePoint((Point) geometry, encoding);
-    } else if (geometry instanceof MultiPoint) {
-      encodeMultiPoint((MultiPoint) geometry, encoding);
-    } else if (geometry instanceof LineString) {
-      encodeLineString((LineString) geometry, encoding);
-    } else if (geometry instanceof MultiLineString) {
-      encodeMultiLineString((MultiLineString) geometry, encoding);
-    } else if (geometry instanceof Polygon) {
-      encodePolygon((Polygon) geometry, encoding);
-    } else if (geometry instanceof MultiPolygon) {
-      encodeMultiPolygon((MultiPolygon) geometry, encoding);
+    if (geometry instanceof Point point) {
+      encodePoint(point, encoding);
+    } else if (geometry instanceof MultiPoint multiPoint) {
+      encodeMultiPoint(multiPoint, encoding);
+    } else if (geometry instanceof LineString lineString) {
+      encodeLineString(lineString, encoding);
+    } else if (geometry instanceof MultiLineString multiLineString) {
+      encodeMultiLineString(multiLineString, encoding);
+    } else if (geometry instanceof Polygon polygon) {
+      encodePolygon(polygon, encoding);
+    } else if (geometry instanceof MultiPolygon multiPolygon) {
+      encodeMultiPolygon(multiPolygon, encoding);
     } else if (geometry instanceof GeometryCollection) {
       throw new UnsupportedOperationException("GeometryCollection not supported");
     }

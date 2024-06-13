@@ -67,14 +67,14 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     // Import the sample data
     ImportOsmPbf.execute(TestFiles.SAMPLE_OSM_PBF, coordinateMap, referenceMap, headerRepository,
         nodeRepository, wayRepository, relationRepository, srid);
-    assertEquals(0, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(0, headerRepository.selectLatest().replicationSequenceNumber());
 
     // Import the state file
     try (var stateInput = Files.newInputStream(TestFiles.SAMPLE_STATE_TXT)) {
       var state = new StateReader().read(stateInput);
-      headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
+      headerRepository.put(new Header(state.sequenceNumber(), state.timestamp(),
           "file:///" + TestFiles.SAMPLE_DIR, "", ""));
-      assertEquals(1, headerRepository.selectLatest().getReplicationSequenceNumber());
+      assertEquals(1, headerRepository.selectLatest().replicationSequenceNumber());
     }
     assertGeometryEquals(NODE_POINT_1, nodeRepository.get(1L).getGeometry(), 100);
     assertGeometryEquals(WAY_LINESTRING_4, wayRepository.get(4L).getGeometry(), 100);
@@ -89,7 +89,7 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     // Add elements to the database
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository, relationRepository, srid, null);
-    assertEquals(2, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2, headerRepository.selectLatest().replicationSequenceNumber());
 
     assertGeometryEquals(NODE_POINT_37, nodeRepository.get(37L).getGeometry(), 100);
     assertGeometryEquals(WAY_LINESTRING_40, wayRepository.get(40L).getGeometry(), 100);
@@ -100,7 +100,7 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     // Modify elements in the database
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository, relationRepository, srid, null);
-    assertEquals(3, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(3, headerRepository.selectLatest().replicationSequenceNumber());
     assertGeometryEquals(NODE_POINT_1_MODIFIED, nodeRepository.get(1L).getGeometry(), 100);
     assertGeometryEquals(WAY_LINESTRING_4_MODIFIED, wayRepository.get(4L).getGeometry(), 100);
     assertGeometryEquals(WAY_POLYGON_9_MODIFIED, wayRepository.get(9L).getGeometry(), 100);
@@ -112,7 +112,7 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
     // Delete elements from the database
     UpdateOsmDatabase.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
         wayRepository, relationRepository, srid, null);
-    assertEquals(4, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(4, headerRepository.selectLatest().replicationSequenceNumber());
     assertNull(nodeRepository.get(1L));
     assertNull(nodeRepository.get(4L));
     assertNull(nodeRepository.get(9L));

@@ -49,14 +49,14 @@ public class ChangeElementsImporter<T extends Element> implements Consumer<Chang
   /** {@inheritDoc} */
   @Override
   public void accept(Change change) {
-    switch (change.getType()) {
+    switch (change.type()) {
       case CREATE, MODIFY -> put(change);
       case DELETE -> delete(change);
     }
   }
 
   private void put(Change change) {
-    var nodes = change.getEntities().stream()
+    var nodes = change.entities().stream()
         .filter(type::isInstance)
         .map(type::cast)
         .toList();
@@ -70,7 +70,7 @@ public class ChangeElementsImporter<T extends Element> implements Consumer<Chang
   }
 
   private void delete(Change change) {
-    var nodes = change.getEntities().stream()
+    var nodes = change.entities().stream()
         .filter(type::isInstance)
         .map(type::cast)
         .map(Element::getId)

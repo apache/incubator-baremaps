@@ -122,21 +122,23 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   }
 
   private Change readChange() throws XMLStreamException {
-    switch (reader.getLocalName()) {
-      case ELEMENT_NAME_CREATE:
-      case ELEMENT_NAME_DELETE:
-      case ELEMENT_NAME_MODIFY:
-        Change.ChangeType type = Change.ChangeType.valueOf(reader.getLocalName().toUpperCase());
-        List<Entity> elements = new ArrayList<>();
-        reader.nextTag();
-        while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
-          elements.add(readElement());
-          reader.nextTag();
-        }
-        return new Change(type, elements);
-      default:
-        throw new StreamException("Unexpected XML element: " + reader.getLocalName());
+    if (!isChangeElement(reader.getLocalName())) {
+      throw new StreamException("Unexpected XML element: " + reader.getLocalName());
     }
+    Change.ChangeType type = Change.ChangeType.valueOf(reader.getLocalName().toUpperCase());
+    List<Entity> elements = new ArrayList<>();
+    reader.nextTag();
+    while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
+      elements.add(readElement());
+      reader.nextTag();
+    }
+    return new Change(type, elements);
+  }
+
+  private boolean isChangeElement(String elementName) {
+    return ELEMENT_NAME_CREATE.equals(elementName)
+        || ELEMENT_NAME_DELETE.equals(elementName)
+        || ELEMENT_NAME_MODIFY.equals(elementName);
   }
 
   private Element readElement() throws XMLStreamException {

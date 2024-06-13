@@ -42,9 +42,9 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   private final CoordinateTransform transform;
 
-  private ProjCoordinate min;
+  private final ProjCoordinate min;
 
-  private ProjCoordinate max;
+  private final ProjCoordinate max;
 
   /**
    * Creates a transformer that reprojects geometries with the provided SRIDs.

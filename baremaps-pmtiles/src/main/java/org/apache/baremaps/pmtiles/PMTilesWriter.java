@@ -28,19 +28,19 @@ import java.util.*;
 
 public class PMTilesWriter {
 
-  private Compression compression = Compression.GZIP;
+  private final Compression compression;
 
-  private Path path;
+  private final Path path;
+
+  private final List<Entry> entries;
+
+  private final Map<Long, Long> tileHashToOffset;
+
+  private final Path tilePath;
 
   private Map<String, Object> metadata = new HashMap<>();
 
-  private List<Entry> entries;
-
-  private Map<Long, Long> tileHashToOffset;
-
   private Long lastTileHash = null;
-
-  private Path tilePath;
 
   private boolean clustered = true;
 
@@ -63,11 +63,13 @@ public class PMTilesWriter {
   private double centerLon = 0;
 
   public PMTilesWriter(Path path) throws IOException {
-    this(path, new ArrayList<>(), new HashMap<>());
+    this(path, new ArrayList<>(), new HashMap<>(), Compression.GZIP);
   }
 
-  public PMTilesWriter(Path path, List<Entry> entries, Map<Long, Long> tileHashToOffset)
+  public PMTilesWriter(Path path, List<Entry> entries, Map<Long, Long> tileHashToOffset,
+      Compression compression)
       throws IOException {
+    this.compression = compression;
     this.path = path;
     this.entries = entries;
     this.tileHashToOffset = tileHashToOffset;
@@ -80,12 +82,12 @@ public class PMTilesWriter {
 
   public void setTile(int z, int x, int y, byte[] bytes) throws IOException {
     // Write the tile
-    var tileId = PMTiles.zxyToTileId(z, x, y);
+    var tileId = PMTilesUtils.zxyToTileId(z, x, y);
     var tileLength = bytes.length;
     Long tileHash = Hashing.farmHashFingerprint64().hashBytes(bytes).asLong();
 
     // If the tile is not greater than the last one, the index is not clustered
-    if (entries.size() > 0 && tileId < entries.get(entries.size() - 1).getTileId()) {
+    if (!entries.isEmpty() && tileId < entries.get(entries.size() - 1).getTileId()) {
       clustered = false;
     }
 
@@ -155,7 +157,7 @@ public class PMTilesWriter {
       entries.sort(Comparator.comparingLong(Entry::getTileId));
     }
 
-    var directories = PMTiles.optimizeDirectories(entries, 16247, compression);
+    var directories = PMTilesUtils.optimizeDirectories(entries, 16247, compression);
 
     byte[] metadataBytes;
     try (var metadataOutput = new ByteArrayOutputStream()) {
@@ -204,7 +206,7 @@ public class PMTilesWriter {
     header.setCenterLon(centerLon);
 
     try (var output = new FileOutputStream(path.toFile())) {
-      output.write(PMTiles.serializeHeader(header));
+      output.write(PMTilesUtils.serializeHeader(header));
       output.write(directories.getRoot());
       output.write(metadataBytes);
       output.write(directories.getLeaves());

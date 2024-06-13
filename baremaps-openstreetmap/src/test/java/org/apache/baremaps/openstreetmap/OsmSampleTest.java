@@ -44,8 +44,8 @@ class OsmSampleTest {
   void sampleStateTxt() throws IOException {
     try (InputStream inputStream = Files.newInputStream(TestFiles.SAMPLE_STATE_TXT)) {
       State state = new StateReader().read(inputStream);
-      Assertions.assertEquals(1, state.getSequenceNumber());
-      Assertions.assertEquals(LocalDateTime.parse("2000-01-01T00:00:00"), state.getTimestamp());
+      Assertions.assertEquals(1, state.sequenceNumber());
+      Assertions.assertEquals(LocalDateTime.parse("2000-01-01T00:00:00"), state.timestamp());
     }
   }
 
@@ -75,14 +75,14 @@ class OsmSampleTest {
     stream.forEach(entity -> {
       if (entity instanceof Header header) {
         Assertions.assertNotNull(header);
-        Assertions.assertEquals("osmium/1.16.0", header.getWritingProgram());
+        Assertions.assertEquals("osmium/1.16.0", header.writingProgram());
         headers.incrementAndGet();
       } else if (entity instanceof Bound bound) {
         Assertions.assertNotNull(bound);
-        Assertions.assertEquals(0.0, bound.getMinLat(), 0.000001);
-        Assertions.assertEquals(0.0, bound.getMinLon(), 0.000001);
-        Assertions.assertEquals(20.0, bound.getMaxLat(), 0.000001);
-        Assertions.assertEquals(20.0, bound.getMaxLon(), 0.000001);
+        Assertions.assertEquals(0.0, bound.minLat(), 0.000001);
+        Assertions.assertEquals(0.0, bound.minLon(), 0.000001);
+        Assertions.assertEquals(20.0, bound.maxLat(), 0.000001);
+        Assertions.assertEquals(20.0, bound.maxLon(), 0.000001);
         bounds.incrementAndGet();
       } else if (entity instanceof Node node) {
         Assertions.assertNotNull(node);

@@ -315,11 +315,11 @@ public class RelationRepository implements Repository<Long, Relation> {
           writer.writeLong(value.getInfo().getChangeset());
           writer.writeJsonb(JsonbMapper.toJson(value.getTags()));
           writer.writeLongList(
-              value.getMembers().stream().map(Member::getRef).toList());
-          writer.writeIntegerList(value.getMembers().stream().map(Member::getType)
+              value.getMembers().stream().map(Member::ref).toList());
+          writer.writeIntegerList(value.getMembers().stream().map(Member::type)
               .map(MemberType::ordinal).toList());
           writer
-              .write(value.getMembers().stream().map(Member::getRole).toList());
+              .write(value.getMembers().stream().map(Member::role).toList());
           writer.writeGeometry(value.getGeometry());
         }
       }
@@ -355,12 +355,12 @@ public class RelationRepository implements Repository<Long, Relation> {
     statement.setObject(4, value.getInfo().getTimestamp());
     statement.setObject(5, value.getInfo().getChangeset());
     statement.setObject(6, JsonbMapper.toJson(value.getTags()));
-    Object[] refs = value.getMembers().stream().map(Member::getRef).toArray();
+    Object[] refs = value.getMembers().stream().map(Member::ref).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
     Object[] types =
-        value.getMembers().stream().map(Member::getType).map(MemberType::ordinal).toArray();
+        value.getMembers().stream().map(Member::type).map(MemberType::ordinal).toArray();
     statement.setObject(8, statement.getConnection().createArrayOf("int", types));
-    Object[] roles = value.getMembers().stream().map(Member::getRole).toArray();
+    Object[] roles = value.getMembers().stream().map(Member::role).toArray();
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
     statement.setBytes(10, GeometryUtils.serialize(value.getGeometry()));
   }

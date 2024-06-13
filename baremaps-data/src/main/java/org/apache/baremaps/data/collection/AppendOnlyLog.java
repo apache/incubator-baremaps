@@ -44,7 +44,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   private long offset;
   private long size;
 
-  private Lock lock = new ReentrantLock();
+  private final Lock lock = new ReentrantLock();
 
   /**
    * Constructs an {@link AppendOnlyLog}.
@@ -143,7 +143,6 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
    */
   @Override
   public AppendOnlyLogIterator iterator() {
-    final long size = size();
     return new AppendOnlyLogIterator(size);
   }
 
@@ -180,21 +179,21 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
 
       ByteBuffer segment = memory.segment((int) segmentIndex);
 
-      int size;
+      int valueSize;
       try {
-        size = dataType.size(segment, (int) segmentOffset);
+        valueSize = dataType.size(segment, (int) segmentOffset);
       } catch (IndexOutOfBoundsException e) {
-        size = 0;
+        valueSize = 0;
       }
 
-      if (segmentOffset + size > segmentSize || size == 0) {
+      if (segmentOffset + valueSize > segmentSize || valueSize == 0) {
         segmentIndex = segmentIndex + 1;
         segmentOffset = 0;
         position = segmentIndex * segmentSize;
         segment = memory.segment((int) segmentIndex);
-        size = dataType.size(segment, (int) segmentOffset);
+        valueSize = dataType.size(segment, (int) segmentOffset);
       }
-      position += size;
+      position += valueSize;
       index++;
 
       return dataType.read(segment, (int) segmentOffset);

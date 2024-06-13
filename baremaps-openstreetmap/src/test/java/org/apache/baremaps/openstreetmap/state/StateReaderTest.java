@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 class StateReaderTest {
 
   @Test
-  @Ignore
+  @Ignore("Disabled because of the dependency on the internet")
   void getStateFromTimestamp() {
     var reader = new StateReader();
     var state = reader.getStateFromTimestamp(LocalDateTime.now().minusDays(10));

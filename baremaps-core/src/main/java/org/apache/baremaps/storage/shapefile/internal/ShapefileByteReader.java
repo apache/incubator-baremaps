@@ -214,6 +214,7 @@ public class ShapefileByteReader extends CommonByteReader {
         try {
           databaseReader.close();
         } catch (IOException e) {
+          // Ignore
         }
       }
     }

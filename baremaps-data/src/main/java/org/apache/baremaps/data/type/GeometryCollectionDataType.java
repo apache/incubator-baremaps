@@ -30,7 +30,7 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
 
   private final GeometryFactory geometryFactory;
 
-  private GeometryDataType geometryDataType;
+  private final GeometryDataType geometryDataType;
 
   /**
    * Constructs a {@code GeometryCollectionDataType} with a default {@code GeometryFactory}.

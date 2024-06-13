@@ -28,6 +28,10 @@ import java.util.stream.Stream;
 
 public class FileUtils {
 
+  private FileUtils() {
+    // Prevent instantiation
+  }
+
   public static void deleteRecursively(Path path) throws IOException {
     try (Stream<Path> files = Files.walk(path)) {
       files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);

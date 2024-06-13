@@ -67,9 +67,9 @@ public interface DataList<E> extends DataCollection<E> {
   default Iterator<E> iterator() {
     return new Iterator<>() {
 
-      private long index = 0;
+      private final long size = size();
 
-      private long size = size();
+      private long index = 0;
 
       @Override
       public boolean hasNext() {

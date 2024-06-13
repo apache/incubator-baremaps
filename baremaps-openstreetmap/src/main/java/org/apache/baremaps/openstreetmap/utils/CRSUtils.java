@@ -35,6 +35,10 @@ import org.locationtech.proj4j.CoordinateReferenceSystem;
  */
 public class CRSUtils {
 
+  private CRSUtils() {
+    // prevent instantiation
+  }
+
   private static final CRSFactory CRS_FACTORY = new CRSFactory();
 
   private static final CoordinateReferenceSystem WGS_84 =

@@ -24,8 +24,6 @@ import java.util.stream.Stream;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
-import org.apache.baremaps.data.storage.DataSchema;
-import org.apache.baremaps.data.storage.DataSchemaImpl;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
 

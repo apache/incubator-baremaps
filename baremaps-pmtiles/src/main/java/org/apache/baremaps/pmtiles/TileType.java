@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.pmtiles;
 
-enum TileType {
+public enum TileType {
   UNKNOWN,
   MVT,
   PNG,

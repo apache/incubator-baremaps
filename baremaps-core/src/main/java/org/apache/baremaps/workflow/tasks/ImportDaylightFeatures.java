@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.baremaps.database.postgres.NodeRepository;
-import org.apache.baremaps.database.postgres.RelationRepository;
-import org.apache.baremaps.database.postgres.WayRepository;
+import org.apache.baremaps.database.postgres.*;
+import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -55,7 +54,7 @@ public class ImportDaylightFeatures implements Task {
    * Constructs an {@code ImportDaylightFeatures}.
    */
   public ImportDaylightFeatures() {
-
+    // Default constructor
   }
 
   /**
@@ -75,11 +74,11 @@ public class ImportDaylightFeatures implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var datasource = context.getDataSource(database);
-
-    // Initialize the repositories
     var nodeRepository = new NodeRepository(datasource);
     var wayRepository = new WayRepository(datasource);
     var relationRepository = new RelationRepository(datasource);
+
+    // Initialize the repositories
     nodeRepository.create();
     wayRepository.create();
     relationRepository.create();
@@ -90,40 +89,24 @@ public class ImportDaylightFeatures implements Task {
     List<Feature> features = objectMapper.readValue(file.toFile(), javaType);
     for (var feature : features) {
       switch (feature.type()) {
-        case "node" -> {
-          var node = nodeRepository.get(feature.id());
-          if (node != null) {
-            var tags = new HashMap<>(feature.tags());
-            if (node.getTags() != null) {
-              tags.putAll(node.getTags());
-            }
-            node.setTags(tags);
-            nodeRepository.put(node);
-          }
-        }
-        case "way" -> {
-          var way = wayRepository.get(feature.id());
-          if (way != null) {
-            var tags = new HashMap<>(feature.tags());
-            if (way.getTags() != null) {
-              tags.putAll(way.getTags());
-            }
-            way.setTags(tags);
-            wayRepository.put(way);
-          }
-        }
-        case "relation" -> {
-          var relation = relationRepository.get(feature.id());
-          if (relation != null) {
-            var tags = new HashMap<>(feature.tags());
-            if (relation.getTags() != null) {
-              tags.putAll(relation.getTags());
-            }
-            relation.setTags(tags);
-            relationRepository.put(relation);
-          }
-        }
+        case "node" -> save(feature, nodeRepository);
+        case "way" -> save(feature, wayRepository);
+        case "relation" -> save(feature, relationRepository);
+        default -> logger.warn("Unknown type: {}", feature.type());
       }
+    }
+  }
+
+  private <T extends Element> void save(Feature feature, Repository<Long, T> repository)
+      throws RepositoryException {
+    var entity = repository.get(feature.id());
+    if (entity != null) {
+      var tags = new HashMap<>(feature.tags());
+      if (entity.getTags() != null) {
+        tags.putAll(entity.getTags());
+      }
+      entity.setTags(tags);
+      repository.put(entity);
     }
   }
 

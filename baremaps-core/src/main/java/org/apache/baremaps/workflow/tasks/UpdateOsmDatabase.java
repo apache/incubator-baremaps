@@ -102,7 +102,8 @@ public class UpdateOsmDatabase implements Task {
    * @param databaseSrid the SRID
    * @throws Exception if something went wrong
    */
-  public static void execute(
+  @SuppressWarnings("squid:S107")
+  static void execute(
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
       HeaderRepository headerRepository,
@@ -117,19 +118,19 @@ public class UpdateOsmDatabase implements Task {
 
     // If the replicationUrl is not provided, use the one from the latest header.
     if (replicationUrl == null) {
-      replicationUrl = header.getReplicationUrl();
+      replicationUrl = header.replicationUrl();
     }
 
     // Get the sequence number of the latest header
     var stateReader = new StateReader(replicationUrl, true);
-    var sequenceNumber = header.getReplicationSequenceNumber();
+    var sequenceNumber = header.replicationSequenceNumber();
 
     // If the replicationTimestamp is not provided, guess it from the replication timestamp.
     if (sequenceNumber <= 0) {
-      var replicationTimestamp = header.getReplicationTimestamp();
+      var replicationTimestamp = header.replicationTimestamp();
       var state = stateReader.getStateFromTimestamp(replicationTimestamp);
       if (state.isPresent()) {
-        sequenceNumber = state.get().getSequenceNumber();
+        sequenceNumber = state.get().sequenceNumber();
       }
     }
 
@@ -173,8 +174,8 @@ public class UpdateOsmDatabase implements Task {
     var stateUrl = stateReader.getUrl(replicationUrl, nextSequenceNumber, "state.txt");
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       var state = new StateReader().read(stateInputStream);
-      headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
-          header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
+      headerRepository.put(new Header(state.sequenceNumber(), state.timestamp(),
+          header.replicationUrl(), header.source(), header.writingProgram()));
     }
   }
 

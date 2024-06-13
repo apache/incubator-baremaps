@@ -55,6 +55,7 @@ public class DiffService implements Callable<List<TileCoord>> {
   private final int srid;
   private final int zoom;
 
+  @SuppressWarnings("squid:S107")
   public DiffService(
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
@@ -79,8 +80,8 @@ public class DiffService implements Callable<List<TileCoord>> {
     logger.info("Importing changes");
 
     var header = headerRepository.selectLatest();
-    var replicationUrl = header.getReplicationUrl();
-    var sequenceNumber = header.getReplicationSequenceNumber() + 1;
+    var replicationUrl = header.replicationUrl();
+    var sequenceNumber = header.replicationSequenceNumber() + 1;
     var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
     var projectionTransformer = new ProjectionTransformer(srid, 4326);
@@ -100,7 +101,7 @@ public class DiffService implements Callable<List<TileCoord>> {
   }
 
   private Stream<Geometry> geometriesForChange(Change change) {
-    switch (change.getType()) {
+    switch (change.type()) {
       case CREATE:
         return geometriesForNextVersion(change);
       case DELETE:
@@ -114,7 +115,7 @@ public class DiffService implements Callable<List<TileCoord>> {
   }
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
-    return change.getEntities().stream().map(this::geometriesForPreviousVersion)
+    return change.entities().stream().map(this::geometriesForPreviousVersion)
         .flatMap(Optional::stream);
   }
 
@@ -138,7 +139,7 @@ public class DiffService implements Callable<List<TileCoord>> {
   }
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
-    return change.getEntities().stream()
+    return change.entities().stream()
         .map(consumeThenReturn(new EntityGeometryBuilder(coordinateMap, referenceMap)))
         .flatMap(new EntityToGeometryMapper().andThen(Optional::stream));
   }

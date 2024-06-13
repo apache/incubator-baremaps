@@ -46,7 +46,7 @@ public class FlatGeoBufDataTable implements DataTable {
 
   private final Path file;
 
-  private DataSchema schema;
+  private final DataSchema schema;
 
   /**
    * Constructs a table from a flatgeobuf file (used for reading).

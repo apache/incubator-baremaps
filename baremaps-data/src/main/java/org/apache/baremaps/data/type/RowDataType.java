@@ -96,7 +96,7 @@ public class RowDataType implements DataType<DataRow> {
   public DataRow read(final ByteBuffer buffer, final int position) {
     int p = position + Integer.BYTES;
     var columns = rowType.columns();
-    var values = new ArrayList();
+    var values = new ArrayList<>();
     for (DataColumn column : columns) {
       var columnType = column.type();
       var dataType = types.get(columnType);

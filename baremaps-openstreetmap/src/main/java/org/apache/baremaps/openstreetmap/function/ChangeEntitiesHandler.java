@@ -41,6 +41,6 @@ public class ChangeEntitiesHandler implements Consumer<Change> {
   /** {@inheritDoc} */
   @Override
   public void accept(Change change) {
-    change.getEntities().forEach(consumer);
+    change.entities().forEach(consumer);
   }
 }

@@ -39,16 +39,20 @@ import org.junit.jupiter.api.Test;
 
 class ExternalMergeSortTest {
 
-  List<String> strings = List.of("a", "b", "k", "c", "d", "a", "i", "j", "e", "e", "h", "f", "g");
-  List<String> stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).toList();
-  List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();;
-  List<String> stringsDistinct = stringsAsc.stream().distinct().toList();
+  List<String> strings;
+  List<String> stringsAsc;
+  List<String> stringsDsc;
+  List<String> stringsDistinct;
   Supplier<DataList<String>> supplier;
   DataList<String> input;
   DataList<String> output;
 
   @BeforeEach
   void before() {
+    strings = List.of("a", "b", "k", "c", "d", "a", "i", "j", "e", "e", "h", "f", "g");
+    stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).toList();
+    stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();
+    stringsDistinct = stringsAsc.stream().distinct().toList();
     supplier = () -> new IndexedDataList<>(
         new MemoryAlignedDataList<>(new LongDataType(), new OnHeapMemory()),
         new AppendOnlyLog<>(new StringDataType(), new OnHeapMemory()));
