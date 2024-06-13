@@ -159,17 +159,21 @@ public class DecompressFile implements Task {
     TarArchiveEntry entry;
     while ((entry = tarInputStream.getNextEntry()) != null) {
       var path = target.resolve(entry.getName());
-      if (entry.isDirectory()) {
-        Files.createDirectories(path);
-      } else {
-        Files.createDirectories(path.getParent());
-        Files.write(path, new byte[] {},
-            StandardOpenOption.CREATE,
-            StandardOpenOption.TRUNCATE_EXISTING);
-        try (BufferedOutputStream outputStream =
-            new BufferedOutputStream(Files.newOutputStream(path))) {
-          tarInputStream.transferTo(outputStream);
+      if (path.toFile().getCanonicalPath().startsWith(target.toFile().getCanonicalPath())) {
+        if (entry.isDirectory()) {
+          Files.createDirectories(path);
+        } else {
+          Files.createDirectories(path.getParent());
+          Files.write(path, new byte[] {},
+              StandardOpenOption.CREATE,
+              StandardOpenOption.TRUNCATE_EXISTING);
+          try (BufferedOutputStream outputStream =
+              new BufferedOutputStream(Files.newOutputStream(path))) {
+            tarInputStream.transferTo(outputStream);
+          }
         }
+      } else {
+        throw new IOException("Entry is outside of the target directory");
       }
     }
   }
@@ -189,16 +193,18 @@ public class DecompressFile implements Task {
       while (entries.hasMoreElements()) {
         var entry = entries.nextElement();
         var path = target.resolve(entry.getName());
-        if (entry.isDirectory()) {
-          Files.createDirectories(path);
-        } else {
-          Files.createDirectories(path.getParent());
-          Files.write(path, new byte[] {},
-              StandardOpenOption.CREATE,
-              StandardOpenOption.TRUNCATE_EXISTING);
-          try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
-              var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
-            input.transferTo(output);
+        if (path.toFile().getCanonicalPath().startsWith(target.toFile().getCanonicalPath())) {
+          if (entry.isDirectory()) {
+            Files.createDirectories(path);
+          } else {
+            Files.createDirectories(path.getParent());
+            Files.write(path, new byte[] {},
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING);
+            try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
+                var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
+              input.transferTo(output);
+            }
           }
         }
       }
