@@ -40,7 +40,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
 
   private static final Logger logger = LoggerFactory.getLogger(IpLocMapper.class);
 
-  private final float SCORE_THRESHOLD = 0.1f;
+  private static final float SCORE_THRESHOLD = 0.1f;
 
   private final SearcherManager searcherManager;
 
