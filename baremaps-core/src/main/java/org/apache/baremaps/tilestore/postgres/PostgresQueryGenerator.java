@@ -97,9 +97,7 @@ public class PostgresQueryGenerator {
   }
 
   private TilesetQuery getLayer(TableMetadata table) {
-    String tableSchema = table.table().tableSchem();
     String tableName = table.table().tableName();
-    String layer = String.format("%s.%s", tableSchema, tableName);
     String idColumn = table.primaryKeys().get(0).columnName();
     String geometryColumn = table.getGeometryColumns().get(0).columnName();
     String tagsColumns =

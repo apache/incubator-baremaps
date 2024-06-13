@@ -25,12 +25,12 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 
-public class VectorTileTest {
+class VectorTileTest {
 
-  private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+  static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
   @Test
-  public void endToEnd() {
+  void endToEnd() {
     var tile = new Tile(List.of(
         new Layer("layer", 256, List.of(
             new Feature(1, Map.of("a", 1.0, "b", "2"),

@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
-import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
@@ -77,7 +76,6 @@ public class GeometryUtils {
    * @return the coordinate transform
    */
   public static CoordinateTransform coordinateTransform(Integer sourceSrid, Integer targetSrid) {
-    CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem sourceCRS = CRSUtils.createFromSrid(sourceSrid);
     CoordinateReferenceSystem targetCRS = CRSUtils.createFromSrid(targetSrid);
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();

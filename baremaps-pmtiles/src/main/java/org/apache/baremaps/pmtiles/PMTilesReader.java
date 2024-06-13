@@ -38,18 +38,16 @@ public class PMTilesReader {
     this.path = path;
   }
 
-  public Header getHeader() {
+  public Header getHeader() throws IOException {
     if (header == null) {
       try (var inputStream = new LittleEndianDataInputStream(Files.newInputStream(path))) {
         header = PMTilesUtils.deserializeHeader(inputStream);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
       }
     }
     return header;
   }
 
-  public List<Entry> getRootDirectory() {
+  public List<Entry> getRootDirectory() throws IOException {
     if (rootEntries == null) {
       var header = getHeader();
       rootEntries = getDirectory(header.getRootDirectoryOffset());
@@ -57,7 +55,7 @@ public class PMTilesReader {
     return rootEntries;
   }
 
-  public List<Entry> getDirectory(long offset) {
+  public List<Entry> getDirectory(long offset) throws IOException {
     var header = getHeader();
     try (var input = Files.newInputStream(path)) {
       long skipped = 0;
@@ -68,14 +66,12 @@ public class PMTilesReader {
           new LittleEndianDataInputStream(header.getInternalCompression().decompress(input))) {
         return PMTilesUtils.deserializeEntries(decompressed);
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
 
-  public ByteBuffer getTile(int z, long x, long y) {
+  public ByteBuffer getTile(int z, long x, long y) throws IOException {
     var tileId = PMTilesUtils.zxyToTileId(z, x, y);
-    var header = getHeader();
+    var fileHeader = getHeader();
     var entries = getRootDirectory();
     var entry = PMTilesUtils.findTile(entries, tileId);
 
@@ -85,14 +81,12 @@ public class PMTilesReader {
 
     try (var channel = FileChannel.open(path)) {
       var compressed = ByteBuffer.allocate((int) entry.getLength());
-      channel.position(header.getTileDataOffset() + entry.getOffset());
+      channel.position(fileHeader.getTileDataOffset() + entry.getOffset());
       channel.read(compressed);
       compressed.flip();
       try (var tile = new ByteArrayInputStream(compressed.array())) {
         return ByteBuffer.wrap(tile.readAllBytes());
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
   }
 }

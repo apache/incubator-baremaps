@@ -27,7 +27,11 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class Hilbert {
 
-  final static int HILBERT_MAX = (1 << 16) - 1;
+  private static final int HILBERT_MAX = (1 << 16) - 1;
+
+  private Hilbert() {
+    // Prevent instantiation
+  }
 
   /**
    * A comparator for sorting geometries by their Hilbert curve index.

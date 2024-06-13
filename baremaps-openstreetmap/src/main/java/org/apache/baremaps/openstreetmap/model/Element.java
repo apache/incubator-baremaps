@@ -28,9 +28,9 @@ import org.locationtech.jts.geom.Geometry;
  * Represents an element in an OpenStreetMap dataset. Elements are a basis to model the physical
  * world.
  */
-public sealed
+public abstract sealed
 
-abstract class Element implements Entity
+class Element implements Entity
 permits Node, Way, Relation
 {
 

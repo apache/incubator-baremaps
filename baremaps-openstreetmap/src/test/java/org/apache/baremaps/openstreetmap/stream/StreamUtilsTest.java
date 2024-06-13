@@ -31,15 +31,15 @@ class StreamUtilsTest {
   void partition() {
     List<Integer> list = IntStream.range(0, 100).boxed().toList();
     List<List<Integer>> partitions = StreamUtils.partition(list.stream(), 10).toList();
-    assertEquals(partitions.size(), 10);
+    assertEquals(10, partitions.size());
   }
 
   @Test
   void bufferInSourceOrder() {
     List<Integer> l1 = IntStream.range(0, 100).boxed().toList();
     List<Integer> l2 = StreamUtils.bufferInSourceOrder(l1.stream(), i -> i, 10).toList();
-    assertEquals(l2.size(), l1.size());
-    assertEquals(l2, l1);
+    assertEquals(l1.size(), l2.size());
+    assertEquals(l1, l2);
   }
 
   @Test
@@ -58,8 +58,8 @@ class StreamUtilsTest {
     List<Integer> l1 = IntStream.range(0, 100).boxed().toList();
     List<Integer> l2 =
         StreamUtils.bufferInCompletionOrder(l1.stream(), i -> i, 10).sorted().toList();
-    assertEquals(l2.size(), l1.size());
-    assertEquals(l2, l1);
+    assertEquals(l1.size(), l2.size());
+    assertEquals(l1, l2);
   }
 
   @Test
@@ -72,5 +72,4 @@ class StreamUtilsTest {
       StreamUtils.bufferInCompletionOrder(l1.stream(), throwException, 10).sorted().toList();
     });
   }
-
 }

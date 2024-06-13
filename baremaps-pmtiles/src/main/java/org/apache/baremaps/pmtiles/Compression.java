@@ -34,7 +34,7 @@ public enum Compression {
       case GZIP -> decompressGzip(inputStream);
       case BROTLI -> decompressBrotli(inputStream);
       case ZSTD -> decompressZstd(inputStream);
-      default -> throw new RuntimeException("Unknown compression");
+      default -> throw new UnsupportedOperationException("Unknown compression format");
     };
   }
 
@@ -43,11 +43,11 @@ public enum Compression {
   }
 
   static InputStream decompressBrotli(InputStream buffer) {
-    throw new RuntimeException("Brotli compression not implemented");
+    throw new UnsupportedOperationException("Brotli compression not implemented");
   }
 
   static InputStream decompressZstd(InputStream buffer) {
-    throw new RuntimeException("Zstd compression not implemented");
+    throw new UnsupportedOperationException("Zstd compression not implemented");
   }
 
   OutputStream compress(OutputStream outputStream) throws IOException {
@@ -56,7 +56,7 @@ public enum Compression {
       case GZIP -> compressGzip(outputStream);
       case BROTLI -> compressBrotli(outputStream);
       case ZSTD -> compressZstd(outputStream);
-      default -> throw new RuntimeException("Unknown compression");
+      default -> throw new UnsupportedOperationException("Unknown compression format");
     };
   }
 
@@ -65,10 +65,10 @@ public enum Compression {
   }
 
   static OutputStream compressBrotli(OutputStream outputStream) {
-    throw new RuntimeException("Brotli compression not implemented");
+    throw new UnsupportedOperationException("Brotli compression not implemented");
   }
 
   static OutputStream compressZstd(OutputStream outputStream) {
-    throw new RuntimeException("Zstd compression not implemented");
+    throw new UnsupportedOperationException("Zstd compression not implemented");
   }
 }

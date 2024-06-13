@@ -40,7 +40,7 @@ public class SearchResource {
 
   private static final Logger logger = LoggerFactory.getLogger(SearchResource.class);
 
-  private final String SEARCH_QUERY =
+  private static final String SEARCH_QUERY =
       """
           SELECT id, tags, st_asewkt(st_transform(geom, 'EPSG:4326')), ts_rank_cd(to_tsvector('english', tags), query) as rank
           FROM osm_entities, phraseto_tsquery('english', ?) as query

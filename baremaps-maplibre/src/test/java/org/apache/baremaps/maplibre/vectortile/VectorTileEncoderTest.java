@@ -34,7 +34,7 @@ class VectorTileEncoderTest {
    * (25,17)
    */
   @Test
-  public void encodePoint() {
+  void encodePoint() {
     var coordinate = new Coordinate(25, 17);
     var point = geometryFactory.createPoint(coordinate);
     var encoder = new VectorTileEncoder();
@@ -51,7 +51,7 @@ class VectorTileEncoderTest {
    * (5,7) (3,2)
    */
   @Test
-  public void encodeMultiPoint() {
+  void encodeMultiPoint() {
     var coordinates = new Coordinate[] {
         new Coordinate(5, 7),
         new Coordinate(3, 2)
@@ -71,7 +71,7 @@ class VectorTileEncoderTest {
    * (2,2) (2,10) (10,10)
    */
   @Test
-  public void encodeLineString() {
+  void encodeLineString() {
     var lineString = geometryFactory.createLineString(new Coordinate[] {
         new Coordinate(2, 2),
         new Coordinate(2, 10),
@@ -91,7 +91,7 @@ class VectorTileEncoderTest {
    * Line 1: - (2,2) - (2,10) - (10,10) Line 2: - (1,1) - (3,5)
    */
   @Test
-  public void encodeMultiLineString() {
+  void encodeMultiLineString() {
     var lineString1 = geometryFactory.createLineString(new Coordinate[] {
         new Coordinate(2, 2),
         new Coordinate(2, 10),
@@ -117,7 +117,7 @@ class VectorTileEncoderTest {
    * (3,6) (8,12) (20,34) (3,6) Path Closing as Last Point
    */
   @Test
-  public void encodePolygon() {
+  void encodePolygon() {
     var polygon = geometryFactory.createPolygon(new Coordinate[] {
         new Coordinate(3, 6),
         new Coordinate(8, 12),
@@ -141,7 +141,7 @@ class VectorTileEncoderTest {
    * Ring: (13,13) (13,17) (17,17) (17,13) (13,13) Path Closing as Last Point
    */
   @Test
-  public void encodeMultiPolygon() {
+  void encodeMultiPolygon() {
     var multiPolygon = geometryFactory.createMultiPolygon(
         new Polygon[] {
             geometryFactory.createPolygon(
@@ -177,7 +177,5 @@ class VectorTileEncoderTest {
     encoder.encodeMultiPolygon(multiPolygon, encoding::add);
     assertEquals(List.of(9, 0, 0, 26, 20, 0, 0, 20, 19, 0, 15, 9, 22, 2, 26, 18, 0, 0, 18, 17, 0,
         15, 9, 4, 13, 26, 0, 8, 8, 0, 0, 7, 15), encoding);
-
-
   }
 }

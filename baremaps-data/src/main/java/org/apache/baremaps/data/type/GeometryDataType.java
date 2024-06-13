@@ -26,6 +26,7 @@ import org.locationtech.jts.geom.*;
  */
 public class GeometryDataType implements DataType<Geometry> {
 
+  public static final String UNSUPPORTED_GEOMETRY = "Unsupported geometry type: ";
   private final PointDataType pointDataType;
 
   private final LineStringDataType lineStringDataType;
@@ -88,7 +89,7 @@ public class GeometryDataType implements DataType<Geometry> {
     } else if (value instanceof GeometryCollection geometryCollection) {
       size += geometryCollectionDataType.size(geometryCollection);
     } else {
-      throw new IllegalArgumentException("Unsupported geometry type: " + value.getClass());
+      throw new IllegalArgumentException(UNSUPPORTED_GEOMETRY + value.getClass());
     }
 
     return size;
@@ -121,7 +122,7 @@ public class GeometryDataType implements DataType<Geometry> {
     } else if (type == 7) {
       size += geometryCollectionDataType.size(buffer, position + Byte.BYTES);
     } else {
-      throw new IllegalArgumentException("Unsupported geometry type: " + type);
+      throw new IllegalArgumentException(UNSUPPORTED_GEOMETRY + type);
     }
 
     return size;
@@ -158,7 +159,7 @@ public class GeometryDataType implements DataType<Geometry> {
       buffer.put(position, (byte) 7);
       geometryCollectionDataType.write(buffer, position + Byte.BYTES, geometryCollection);
     } else {
-      throw new IllegalArgumentException("Unsupported geometry type: " + value.getClass());
+      throw new IllegalArgumentException(UNSUPPORTED_GEOMETRY + value.getClass());
     }
   }
 
@@ -191,7 +192,7 @@ public class GeometryDataType implements DataType<Geometry> {
     } else if (type == 7) {
       return geometryCollectionDataType.read(buffer, p);
     } else {
-      throw new IllegalArgumentException("Unsupported geometry type: " + type);
+      throw new IllegalArgumentException(UNSUPPORTED_GEOMETRY + type);
     }
   }
 }

@@ -19,7 +19,6 @@ package org.apache.baremaps.openstreetmap.xml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,15 +28,16 @@ import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.stream.AccumulatingConsumer;
 import org.apache.baremaps.openstreetmap.stream.HoldingConsumer;
 import org.apache.baremaps.testing.TestFiles;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class XmlEntitySpliteratorTestDataType {
+class XmlEntitySpliteratorTest {
 
   @Test
   void tryAdvance() throws IOException {
     try (InputStream input = Files.newInputStream(TestFiles.SAMPLE_OSM_XML)) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
-      spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
+      spliterator.forEachRemaining(Assertions::assertNotNull);
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
     }
   }

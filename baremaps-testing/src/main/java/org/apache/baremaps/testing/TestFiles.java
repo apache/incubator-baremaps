@@ -22,6 +22,10 @@ import org.locationtech.jts.geom.*;
 
 public class TestFiles {
 
+  private TestFiles() {
+    // Prevent instantiation
+  }
+
   /* The paths of the sample directory and files */
 
   public static final Path SAMPLE_DIR =

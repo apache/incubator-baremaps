@@ -35,7 +35,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
 
   private final FixedSizeDataType<E> dataType;
 
-  private final Memory memory;
+  private final Memory<?> memory;
 
   private AtomicLong size;
 
@@ -54,7 +54,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public FixedSizeDataList(FixedSizeDataType<E> dataType, Memory memory) {
+  public FixedSizeDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }

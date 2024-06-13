@@ -315,9 +315,10 @@ public class GeoParquetGroupImpl implements GeoParquetGroup {
     }
 
     GroupField field = ((GroupField) geoParquetSchema.fields().get(fieldIndex));
-    GeoParquetGroupImpl group =
-        new GeoParquetGroupImpl(schema.getType(fieldIndex).asGroupType(), metadata, field.schema());
-    return group;
+    return new GeoParquetGroupImpl(
+        schema.getType(fieldIndex).asGroupType(),
+        metadata,
+        field.schema());
   }
 
   @Override

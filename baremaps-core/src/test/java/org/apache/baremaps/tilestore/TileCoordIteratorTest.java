@@ -32,15 +32,15 @@ class TileCoordIteratorTest {
 
     TileCoordIterator i0 = new TileCoordIterator(e, 0, 0);
     List<TileCoord> l0 = ImmutableList.copyOf(i0);
-    assertEquals(l0.size(), 1);
+    assertEquals(1, l0.size());
 
     TileCoordIterator i1 = new TileCoordIterator(e, 1, 1);
     List<TileCoord> l1 = ImmutableList.copyOf(i1);
-    assertEquals(l1.size(), 4);
+    assertEquals(4, l1.size());
 
     TileCoordIterator i2 = new TileCoordIterator(e, 2, 2);
     List<TileCoord> l2 = ImmutableList.copyOf(i2);
-    assertEquals(l2.size(), 16);
+    assertEquals(16, l2.size());
   }
 
   @Test
@@ -48,11 +48,11 @@ class TileCoordIteratorTest {
     Envelope e0 = new TileCoord(0, 0, 1).envelope();
     TileCoordIterator i0 = new TileCoordIterator(e0, 2, 2);
     List<TileCoord> l0 = ImmutableList.copyOf(i0);
-    assertEquals(l0.size(), 4);
+    assertEquals(4, l0.size());
 
     Envelope e1 = new TileCoord(1, 1, 1).envelope();
     TileCoordIterator i1 = new TileCoordIterator(e1, 2, 2);
     List<TileCoord> l1 = ImmutableList.copyOf(i1);
-    assertEquals(l1.size(), 4);
+    assertEquals(4, l1.size());
   }
 }

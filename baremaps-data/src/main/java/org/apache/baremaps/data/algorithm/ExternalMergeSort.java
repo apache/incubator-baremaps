@@ -19,7 +19,6 @@ package org.apache.baremaps.data.algorithm;
 
 
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -33,6 +32,10 @@ import org.apache.baremaps.data.collection.DataList;
 @SuppressWarnings({"squid:S2095", "squid:S3776"})
 public class ExternalMergeSort {
 
+  private ExternalMergeSort() {
+    // Prevent instantiation
+  }
+
   /**
    * Sorts an input list to an output list.
    *
@@ -44,7 +47,6 @@ public class ExternalMergeSort {
    * @param batchSize The batch size
    * @param distinct The flag indicating if duplicates should be discarded
    * @param parallel The flag indicating if parallelism should be used
-   * @throws IOException
    */
   public static <T> void sort(
       DataList<T> input,
@@ -53,7 +55,7 @@ public class ExternalMergeSort {
       Supplier<DataList<T>> tempLists,
       long batchSize,
       boolean distinct,
-      boolean parallel) throws IOException {
+      boolean parallel) {
     mergeSortedBatches(sortInBatch(input, comparator, tempLists, batchSize, distinct, parallel),
         output, comparator, distinct);
   }
@@ -78,10 +80,10 @@ public class ExternalMergeSort {
         new PriorityQueue<>(batches.size(), (i, j) -> comparator.compare(i.peek(), j.peek()));
 
     for (DataList<T> input : batches) {
-      if (input.size() == 0) {
+      if (input.isEmpty()) {
         continue;
       }
-      DataStack stack = new DataStack(input);
+      DataStack<T> stack = new DataStack<>(input);
       if (!stack.empty()) {
         queue.add(stack);
       }
@@ -89,7 +91,7 @@ public class ExternalMergeSort {
 
     long counter = 0;
     if (!distinct) {
-      while (queue.size() > 0) {
+      while (!queue.isEmpty()) {
         DataStack<T> stack = queue.poll();
         T value = stack.pop();
         output.addIndexed(value);
@@ -102,7 +104,7 @@ public class ExternalMergeSort {
       }
     } else {
       T last = null;
-      if (queue.size() > 0) {
+      if (!queue.isEmpty()) {
         DataStack<T> stack = queue.poll();
         last = stack.pop();
         output.addIndexed(last);
@@ -113,7 +115,7 @@ public class ExternalMergeSort {
           queue.add(stack);
         }
       }
-      while (queue.size() > 0) {
+      while (!queue.isEmpty()) {
         DataStack<T> stack = queue.poll();
         T value = stack.pop();
         // Skip duplicate lines

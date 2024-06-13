@@ -25,7 +25,9 @@ import java.util.function.Supplier;
 /** Utility methods for dealing with suppliers. */
 public class SupplierUtils {
 
-  private SupplierUtils() {}
+  private SupplierUtils() {
+    // Prevent instantiation
+  }
 
   /**
    * Returns a supplier that memoizes the result returned by another supplier.
@@ -49,12 +51,12 @@ public class SupplierUtils {
    * @return the memoized supplier
    */
   public static <T> Supplier<T> memoize(Supplier<T> supplier, int timeToLiveMillis) {
-    return new Supplier() {
+    return new Supplier<T>() {
       long t1 = System.currentTimeMillis();
       T value = supplier.get();
 
       @Override
-      public Object get() {
+      public T get() {
         long t2 = System.currentTimeMillis();
         if (t2 - t1 > timeToLiveMillis) {
           t1 = t2;

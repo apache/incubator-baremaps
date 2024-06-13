@@ -19,7 +19,6 @@ package org.apache.baremaps.data.util;
 
 
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -28,13 +27,17 @@ import java.nio.MappedByteBuffer;
 /** Utilities for working with memory-mapped files. */
 public class MappedByteBufferUtils {
 
+  private MappedByteBufferUtils() {
+    // Prevent instantiation
+  }
+
   /**
    * Attempt to force-unmap a list of memory-mapped file segments, so it can safely be deleted.
    *
    * @param buffer The buffer to unmap
-   * @throws IOException If any error occurs unmapping the segment
    */
-  public static void unmap(MappedByteBuffer buffer) throws IOException {
+  @SuppressWarnings("squid:S1141")
+  public static void unmap(MappedByteBuffer buffer) {
     try {
       // attempt to force-unmap the file, so we can delete it later
       // https://stackoverflow.com/questions/2972986/how-to-unmap-a-file-from-memory-mapped-using-filechannel-in-java

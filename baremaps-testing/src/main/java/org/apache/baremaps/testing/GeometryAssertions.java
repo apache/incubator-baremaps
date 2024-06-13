@@ -23,6 +23,10 @@ import org.locationtech.jts.precision.GeometryPrecisionReducer;
 
 public class GeometryAssertions {
 
+  private GeometryAssertions() {
+    // Prevent instantiation
+  }
+
   private static void throwAssertionError(Object expected, Object actual) {
     throw new AssertionError("Expected " + expected + " but was " + actual);
   }

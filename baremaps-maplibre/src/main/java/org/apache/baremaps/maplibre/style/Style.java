@@ -78,8 +78,16 @@ public class Style {
    *        rendering
    * @param zoom The zoom level of the map
    */
-  public Style(Integer version, String name, Map<String, StyleSource> sources, String sprite,
-      String glyphs, List<StyleLayer> layers, List<BigDecimal> center, Object metadata,
+  @SuppressWarnings("squid:S107")
+  public Style(
+      Integer version,
+      String name,
+      Map<String, StyleSource> sources,
+      String sprite,
+      String glyphs,
+      List<StyleLayer> layers,
+      List<BigDecimal> center,
+      Object metadata,
       BigDecimal zoom) {
     this.version = version;
     this.name = name;

@@ -33,7 +33,7 @@ class VectorTileDecoderTest {
    * (25,17)
    */
   @Test
-  public void decodePoint() {
+  void decodePoint() {
     var coordinate = new Coordinate(25, 17);
     var point = geometryFactory.createPoint(coordinate);
     var decoder = new VectorTileDecoder();
@@ -49,7 +49,7 @@ class VectorTileDecoderTest {
    * (5,7) (3,2)
    */
   @Test
-  public void decodeMultiPoint() {
+  void decodeMultiPoint() {
     var coordinates = new Coordinate[] {
         new Coordinate(5, 7),
         new Coordinate(3, 2)
@@ -68,7 +68,7 @@ class VectorTileDecoderTest {
    * (2,2) (2,10) (10,10)
    */
   @Test
-  public void decodeLineString() {
+  void decodeLineString() {
     var lineString = geometryFactory.createLineString(new Coordinate[] {
         new Coordinate(2, 2),
         new Coordinate(2, 10),
@@ -86,7 +86,7 @@ class VectorTileDecoderTest {
    * Line 1: - (2,2) - (2,10) - (10,10) Line 2: - (1,1) - (3,5)
    */
   @Test
-  public void decodeMultiLineString() {
+  void decodeMultiLineString() {
     var lineString1 = geometryFactory.createLineString(new Coordinate[] {
         new Coordinate(2, 2),
         new Coordinate(2, 10),
@@ -111,7 +111,7 @@ class VectorTileDecoderTest {
    * (3,6) (8,12) (20,34) (3,6) Path Closing as Last Point
    */
   @Test
-  public void decodePolygon() {
+  void decodePolygon() {
     var polygon = geometryFactory.createPolygon(new Coordinate[] {
         new Coordinate(3, 6),
         new Coordinate(8, 12),
@@ -134,7 +134,7 @@ class VectorTileDecoderTest {
    * Ring: (13,13) (13,17) (17,17) (17,13) (13,13) Path Closing as Last Point
    */
   @Test
-  public void decodeMultiPolygon() {
+  void decodeMultiPolygon() {
     var multiPolygon = geometryFactory.createMultiPolygon(
         new Polygon[] {
             geometryFactory.createPolygon(
@@ -169,7 +169,5 @@ class VectorTileDecoderTest {
     var encoding = List.of(9, 0, 0, 26, 20, 0, 0, 20, 19, 0, 15, 9, 22, 2, 26, 18, 0, 0, 18, 17, 0,
         15, 9, 4, 13, 26, 0, 8, 8, 0, 0, 7, 15);
     assertEquals(multiPolygon, decoder.decodePolygon(encoding));
-
-
   }
 }

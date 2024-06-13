@@ -67,7 +67,7 @@ public class FlatGeoBufTypeConversion {
   }
 
   public static DataRow asRow(HeaderMeta headerMeta, DataSchema dataType, Feature feature) {
-    var values = new ArrayList();
+    var values = new ArrayList<>();
 
     var geometryBuffer = feature.geometry();
     var geometry = GeometryConversions.deserialize(geometryBuffer, geometryBuffer.type());
@@ -161,6 +161,7 @@ public class FlatGeoBufTypeConversion {
       case ColumnType.DateTime -> writeDateTime(propertiesBuffer, value);
       case ColumnType.Binary -> writeBinary(propertiesBuffer, value);
       default -> {
+        // Do nothing
       }
     };
   }

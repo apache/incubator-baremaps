@@ -18,6 +18,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -111,7 +112,7 @@ public class UpdateOsmDatabase implements Task {
       Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository,
       Integer databaseSrid,
-      String replicationUrl) throws Exception {
+      String replicationUrl) throws IOException, RepositoryException {
 
     // Get the latest header from the database
     var header = headerRepository.selectLatest();

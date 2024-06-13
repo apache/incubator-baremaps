@@ -37,9 +37,9 @@ public class EntityToGeometryMapper implements Function<Entity, Optional<Geometr
         return Optional.ofNullable(way.getGeometry());
       } else if (entity instanceof Relation relation) {
         return Optional.ofNullable(relation.getGeometry());
-      } else if (entity instanceof Header header) {
+      } else if (entity instanceof Header) {
         return Optional.empty();
-      } else if (entity instanceof Bound bound) {
+      } else if (entity instanceof Bound) {
         return Optional.empty();
       } else {
         throw new StreamException("Unknown entity type.");

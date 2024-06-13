@@ -134,11 +134,12 @@ public final class TileCoord implements Comparable<TileCoord> {
    * @return the tile
    */
   public static TileCoord fromLonLat(double lon, double lat, int z) {
-    int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
-    int y = (int) ((1
-        - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI)
-        / 2.0 * (1 << z));
-    return new TileCoord(x, y, z);
+    return new TileCoord(
+        (int) ((lon + 180.0) / 360.0 * (1 << z)),
+        (int) ((1 - Math.log(
+            Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI) / 2.0
+            * (1 << z)),
+        z);
   }
 
   /**

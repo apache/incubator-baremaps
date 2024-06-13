@@ -35,7 +35,7 @@ public abstract class FixedSizeDataType<T> implements DataType<T> {
    *
    * @param size the size of the value
    */
-  public FixedSizeDataType(final int size) {
+  protected FixedSizeDataType(final int size) {
     this.size = size;
   }
 

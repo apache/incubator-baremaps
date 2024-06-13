@@ -35,6 +35,10 @@ import org.apache.baremaps.openstreetmap.stream.BufferedSpliterator.InSourceOrde
 /** Utility methods for creating parallel, buffered and batched streams of unknown size. */
 public class StreamUtils {
 
+  private StreamUtils() {
+    // Prevent instantiation
+  }
+
   /**
    * Create an ordered sequential stream from an iterator of unknown size.
    *

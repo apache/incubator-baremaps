@@ -38,42 +38,50 @@ import org.slf4j.LoggerFactory;
  */
 public final class IpLocRepository {
 
-  private static final String DROP_TABLE = """
-      DROP TABLE IF EXISTS inetnum_locations""";
+  private static final String DROP_TABLE =
+      """
+          DROP TABLE IF EXISTS inetnum_locations;
+          """;
 
-  private static final String CREATE_TABLE = """
-      CREATE TABLE IF NOT EXISTS inetnum_locations (
-          id integer PRIMARY KEY,
-          geocoder_input text,
-          ip_start blob,
-          ip_end blob,
-          longitude real,
-          latitude real,
-          network text,
-          country text,
-          source text,
-          precision text
-      )""";
+  private static final String CREATE_TABLE =
+      """
+          CREATE TABLE IF NOT EXISTS inetnum_locations (
+              id integer PRIMARY KEY,
+              geocoder_input text,
+              ip_start blob,
+              ip_end blob,
+              longitude real,
+              latitude real,
+              network text,
+              country text,
+              source text,
+              precision text
+          )""";
 
-  private static final String CREATE_INDEX = """
-      CREATE INDEX inetnum_locations_ips ON inetnum_locations (ip_start,ip_end);""";
+  private static final String CREATE_INDEX =
+      """
+          CREATE INDEX inetnum_locations_ips ON inetnum_locations (ip_start,ip_end);
+          """;
 
   private static final String INSERT_SQL =
       """
           INSERT INTO inetnum_locations(geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision)
-          VALUES(?,?,?,?,?,?,?,?,?)""";
+          VALUES(?,?,?,?,?,?,?,?,?);
+          """;
 
   private static final String SELECT_ALL_SQL =
       """
           SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision
-          FROM inetnum_locations;""";
+          FROM inetnum_locations;
+          """;
 
   private static final String SELECT_ALL_BY_IP_SQL =
       """
           SELECT id, geocoder_input, ip_start, ip_end, longitude, latitude, network, country, source, precision
           FROM inetnum_locations
           WHERE ip_start <= ? AND ip_end >= ?
-          ORDER BY ip_start DESC, ip_end ASC;""";
+          ORDER BY ip_start DESC, ip_end ASC;
+          """;
 
   private static final Logger logger = LoggerFactory.getLogger(IpLocRepository.class);
 

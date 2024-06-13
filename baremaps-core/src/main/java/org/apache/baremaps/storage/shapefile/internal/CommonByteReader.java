@@ -51,7 +51,7 @@ public abstract class CommonByteReader implements AutoCloseable {
    *
    * @param f File.
    */
-  public CommonByteReader(File f) throws IOException {
+  protected CommonByteReader(File f) throws IOException {
     Objects.requireNonNull(f, "The file cannot be null.");
     this.file = f;
     this.fis = new FileInputStream(this.file);

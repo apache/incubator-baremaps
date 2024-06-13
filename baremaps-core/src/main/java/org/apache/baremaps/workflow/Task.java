@@ -62,6 +62,7 @@ public interface Task {
    * @param context the context of the workflow
    * @throws Exception if an error occurs during the execution of the task
    */
+  @SuppressWarnings("java:S112")
   void execute(WorkflowContext context) throws Exception;
 
 }

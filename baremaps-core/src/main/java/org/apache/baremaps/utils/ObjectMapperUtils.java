@@ -26,6 +26,10 @@ import org.apache.baremaps.maplibre.expression.Expressions;
 
 public class ObjectMapperUtils {
 
+  private ObjectMapperUtils() {
+    // Prevent instantiation
+  }
+
   public static ObjectMapper objectMapper() {
     return new ObjectMapper()
         .registerModule(Expressions.createModule())

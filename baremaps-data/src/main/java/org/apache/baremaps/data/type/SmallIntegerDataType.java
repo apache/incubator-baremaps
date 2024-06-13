@@ -54,10 +54,10 @@ public class SmallIntegerDataType extends FixedSizeDataType<Integer> {
     byte s = (byte) (buffer.get(position + n - 1) >= 0 ? 0 : -1);
     int l = 0;
     for (int i = 3; i > n - 1; i--) {
-      l |= ((int) s & 0xff) << (i << 3);
+      l |= (s & 0xff) << (i << 3);
     }
     for (int i = n - 1; i >= 0; i--) {
-      l |= ((int) buffer.get(position + i) & 0xff) << (i << 3);
+      l |= (buffer.get(position + i) & 0xff) << (i << 3);
     }
     return l;
   }
