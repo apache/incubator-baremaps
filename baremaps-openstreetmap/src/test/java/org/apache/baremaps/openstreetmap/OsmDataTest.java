@@ -50,7 +50,7 @@ class OsmDataTest {
 
   @TestFactory
   Stream<DynamicTest> runTests() throws IOException {
-    var directory = resolve("osm-testdata");
+    var directory = resolve("baremaps-testing/data/osm-testdata");
     try (var files = Files.walk(directory)) {
       return files.filter(f -> f.endsWith("test.json"))
           .map(OsmTest::new)
