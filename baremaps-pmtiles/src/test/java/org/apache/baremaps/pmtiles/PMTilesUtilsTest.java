@@ -277,7 +277,7 @@ class PMTilesUtilsTest {
     }
     directories = PMTilesUtils.optimizeDirectories(entries, 1024, Compression.NONE);
     assertFalse(directories.getRoot().length > 1024);
-    assertEquals(0, directories.getNumLeaves());
+    assertNotEquals(0, directories.getNumLeaves());
     assertNotEquals(0, directories.getLeaves().length);
   }
 }
