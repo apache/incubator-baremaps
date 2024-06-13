@@ -19,7 +19,6 @@ package org.apache.baremaps.maplibre.expression;
 
 
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
@@ -452,7 +451,7 @@ public interface Expressions {
 
     @Override
     public Expression deserialize(JsonParser jsonParser,
-        DeserializationContext deserializationContext) throws IOException, JacksonException {
+        DeserializationContext deserializationContext) throws IOException {
       JsonNode node = jsonParser.getCodec().readTree(jsonParser);
       return deserializeJsonNode(node);
     }

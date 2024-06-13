@@ -111,7 +111,7 @@ public class StateReader implements Reader<State> {
    */
   @SuppressWarnings({"squid:S3776", "squid:S6541"})
   public Optional<State> getStateFromTimestamp(LocalDateTime timestamp) {
-    var upper = getState(Optional.empty());
+    var upper = getLatestState();
     if (upper.isEmpty()) {
       return Optional.empty();
     }
@@ -119,9 +119,9 @@ public class StateReader implements Reader<State> {
       return upper;
     }
     var lower = Optional.<State>empty();
-    var lowerId = Optional.of(0L);
+    var lowerId = 0L;
     while (lower.isEmpty()) {
-      lower = getState(lowerId);
+      lower = getLatestState(lowerId);
       if (lower.isPresent() && lower.get().timestamp().isAfter(timestamp)) {
         if (lower.get().sequenceNumber() == 0
             || lower.get().sequenceNumber() + 1 >= upper.get().sequenceNumber()) {
@@ -129,14 +129,14 @@ public class StateReader implements Reader<State> {
         }
         upper = lower;
         lower = Optional.empty();
-        lowerId = Optional.of(0L);
+        lowerId = 0L;
       }
       if (lower.isEmpty()) {
-        var newId = (lowerId.get() + upper.get().sequenceNumber()) / 2;
-        if (newId <= lowerId.get()) {
+        var newId = (lowerId + upper.get().sequenceNumber()) / 2;
+        if (newId <= lowerId) {
           return upper;
         }
-        lowerId = Optional.of(newId);
+        lowerId = newId;
       }
     }
     long baseSplitId;
@@ -154,18 +154,18 @@ public class StateReader implements Reader<State> {
           baseSplitId = upper.get().sequenceNumber() - 1;
         }
       }
-      var split = getState(Optional.of(baseSplitId));
+      var split = getLatestState(baseSplitId);
       if (split.isEmpty()) {
         var splitId = baseSplitId - 1;
         while (split.isEmpty() && splitId > lower.get().sequenceNumber()) {
-          split = getState(Optional.of(splitId));
+          split = getLatestState(splitId);
           splitId--;
         }
       }
       if (split.isEmpty()) {
         var splitId = baseSplitId + 1;
         while (split.isEmpty() && splitId < upper.get().sequenceNumber()) {
-          split = getState(Optional.of(splitId));
+          split = getLatestState(splitId);
           splitId++;
         }
       }
@@ -189,7 +189,7 @@ public class StateReader implements Reader<State> {
    * @param sequenceNumber the sequence number
    * @return the state
    */
-  public Optional<State> getState(Optional<Long> sequenceNumber) {
+  public Optional<State> getLatestState(long sequenceNumber) {
     for (int i = 0; i < retries + 1; i++) {
       try (var inputStream = getStateUrl(sequenceNumber).openStream()) {
         var state = new StateReader().read(inputStream);
@@ -202,23 +202,43 @@ public class StateReader implements Reader<State> {
   }
 
   /**
+   * Get the latest state.
+   *
+   * @return the state
+   */
+  public Optional<State> getLatestState() {
+    try (var inputStream = getStateUrl().openStream()) {
+      var state = new StateReader().read(inputStream);
+      return Optional.of(state);
+    } catch (Exception e) {
+      logger.error("Error while reading state file", e);
+    }
+    return Optional.empty();
+  }
+
+  /**
    * Get the URL of the state file corresponding to the given sequence number.
    *
    * @param sequenceNumber the sequence number
    * @return the URL
    * @throws MalformedURLException if the URL is malformed
    */
-  public URL getStateUrl(Optional<Long> sequenceNumber) throws MalformedURLException {
-    if (sequenceNumber.isPresent()) {
+  public URL getStateUrl(long sequenceNumber) throws MalformedURLException {
+    var s = String.format("%09d", sequenceNumber);
+    var uri =
+        String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+            s.substring(6, 9), "state.txt");
+    return URI.create(uri).toURL();
+  }
 
-      var s = String.format("%09d", sequenceNumber.get());
-      var uri =
-          String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
-              s.substring(6, 9), "state.txt");
-      return URI.create(uri).toURL();
-    } else {
-      return new URL(replicationUrl + "/state.txt");
-    }
+  /**
+   * Get the URL of the latest state file.
+   *
+   * @return the URL
+   * @throws MalformedURLException if the URL is malformed
+   */
+  public URL getStateUrl() throws MalformedURLException {
+    return new URL(replicationUrl + "/state.txt");
   }
 
   /**
