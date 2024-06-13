@@ -19,13 +19,11 @@ package org.apache.baremaps.database.function;
 
 
 
+import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.postgres.Repository;
 import org.apache.baremaps.database.postgres.RepositoryException;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,50 +59,45 @@ public class PutChangeImporter implements Consumer<Change> {
         .filter(entity -> entity instanceof Node)
         .map(entity -> (Node) entity)
         .toList();
-    var nodeIds = nodes.stream().map(Node::getId).toList();
     var ways = change.entities().stream()
         .filter(entity -> entity instanceof Way)
         .map(entity -> (Way) entity)
         .toList();
-    var wayIds = ways.stream().map(Way::getId).toList();
     var relations = change.entities().stream()
         .filter(entity -> entity instanceof Relation)
         .map(entity -> (Relation) entity)
         .toList();
-    var relationIds = relations.stream().map(Relation::getId).toList();
     try {
       switch (change.type()) {
         case CREATE, MODIFY -> {
-          if (!nodes.isEmpty()) {
-            logger.trace("Creating {} nodes", nodes.size());
-            nodeRepository.put(nodes);
-          }
-          if (!ways.isEmpty()) {
-            logger.trace("Creating {} ways", ways.size());
-            wayRepository.put(ways);
-          }
-          if (!relations.isEmpty()) {
-            logger.trace("Creating {} relations", relations.size());
-            relationRepository.put(relations);
-          }
+          put(nodeRepository, nodes);
+          put(wayRepository, ways);
+          put(relationRepository, relations);
         }
         case DELETE -> {
-          if (!nodes.isEmpty()) {
-            logger.trace("Deleting {} nodes", nodes.size());
-            nodeRepository.delete(nodeIds);
-          }
-          if (!ways.isEmpty()) {
-            logger.trace("Deleting {} ways", ways.size());
-            wayRepository.delete(wayIds);
-          }
-          if (!relations.isEmpty()) {
-            logger.trace("Deleting {} relations", relations.size());
-            relationRepository.delete(relationIds);
-          }
+          delete(nodeRepository, nodes);
+          delete(wayRepository, ways);
+          delete(relationRepository, relations);
         }
       }
     } catch (RepositoryException e) {
       logger.error("Error while saving changes", e);
     }
   }
+
+  private <T extends Element> void put(Repository<Long, T> repository, List<T> entities)
+      throws RepositoryException {
+    if (!entities.isEmpty()) {
+      repository.put(entities);
+    }
+  }
+
+  private <T extends Element> void delete(Repository<Long, T> repository, List<T> entities)
+      throws RepositoryException {
+    List<Long> ids = entities.stream().map(Element::getId).toList();
+    if (!ids.isEmpty()) {
+      repository.delete(ids);
+    }
+  }
+
 }
