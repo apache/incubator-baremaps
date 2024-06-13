@@ -24,6 +24,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.StringJoiner;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -154,22 +155,27 @@ public class DecompressFile implements Task {
     }
   }
 
-  private static void decompressTar(Path target, TarArchiveInputStream tarInputStream)
+  public static void decompressTar(Path target, TarArchiveInputStream tarInputStream)
       throws IOException {
     TarArchiveEntry entry;
     while ((entry = tarInputStream.getNextEntry()) != null) {
-      var path = target.resolve(entry.getName());
-      if (entry.isDirectory()) {
-        Files.createDirectories(path);
-      } else {
-        Files.createDirectories(path.getParent());
-        Files.write(path, new byte[] {},
-            StandardOpenOption.CREATE,
-            StandardOpenOption.TRUNCATE_EXISTING);
-        try (BufferedOutputStream outputStream =
-            new BufferedOutputStream(Files.newOutputStream(path))) {
-          tarInputStream.transferTo(outputStream);
+      File destination = target.resolve(entry.getName()).normalize().toFile();
+      String canonicalDestinationPath = destination.getCanonicalPath();
+      String canonicalTargetPath = target.toFile().getCanonicalPath();
+      if (canonicalDestinationPath.startsWith(canonicalTargetPath)) {
+        if (entry.isDirectory()) {
+          Files.createDirectories(destination.toPath());
+        } else {
+          Files.createDirectories(destination.toPath().getParent());
+          try (BufferedOutputStream outputStream =
+              new BufferedOutputStream(Files.newOutputStream(destination.toPath(),
+                  StandardOpenOption.CREATE,
+                  StandardOpenOption.TRUNCATE_EXISTING))) {
+            tarInputStream.transferTo(outputStream);
+          }
         }
+      } else {
+        throw new IOException("Entry is outside of the target directory");
       }
     }
   }
@@ -183,23 +189,29 @@ public class DecompressFile implements Task {
    */
   @SuppressWarnings("squid:S5042")
   protected static void decompressZip(Path source, Path target) throws IOException {
-    Files.createDirectories(target);
-    try (var zipFile = new ZipFile(source.toFile())) {
+    try (ZipFile zipFile = new ZipFile(source.toFile())) {
       var entries = zipFile.entries();
       while (entries.hasMoreElements()) {
-        var entry = entries.nextElement();
-        var path = target.resolve(entry.getName());
-        if (entry.isDirectory()) {
-          Files.createDirectories(path);
-        } else {
-          Files.createDirectories(path.getParent());
-          Files.write(path, new byte[] {},
-              StandardOpenOption.CREATE,
-              StandardOpenOption.TRUNCATE_EXISTING);
-          try (var input = new BufferedInputStream(zipFile.getInputStream(entry));
-              var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
-            input.transferTo(output);
+        ZipEntry entry = entries.nextElement();
+        File destination = target.resolve(entry.getName()).normalize().toFile();
+        String canonicalDestinationPath = destination.getCanonicalPath();
+        String canonicalTargetPath = target.toFile().getCanonicalPath();
+
+        if (canonicalDestinationPath.startsWith(canonicalTargetPath)) {
+          if (entry.isDirectory()) {
+            Files.createDirectories(destination.toPath());
+          } else {
+            Files.createDirectories(destination.toPath().getParent());
+            try (BufferedInputStream input = new BufferedInputStream(zipFile.getInputStream(entry));
+                BufferedOutputStream output =
+                    new BufferedOutputStream(Files.newOutputStream(destination.toPath(),
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING))) {
+              input.transferTo(output);
+            }
           }
+        } else {
+          throw new IOException("Entry is outside of the target directory");
         }
       }
     }
