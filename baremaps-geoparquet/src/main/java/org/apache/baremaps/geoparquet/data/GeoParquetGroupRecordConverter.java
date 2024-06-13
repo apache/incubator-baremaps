@@ -40,7 +40,7 @@ public class GeoParquetGroupRecordConverter extends RecordMaterializer<GeoParque
 
   private final GeoParquetGroupFactory groupFactory;
 
-  private GeoParquetGroupConverter root;
+  private final GeoParquetGroupConverter root;
 
   public GeoParquetGroupRecordConverter(MessageType schema, GeoParquetMetadata metadata) {
     this.groupFactory = new GeoParquetGroupFactory(schema, metadata);

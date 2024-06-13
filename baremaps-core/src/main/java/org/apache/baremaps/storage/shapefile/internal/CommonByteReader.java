@@ -32,16 +32,16 @@ import java.util.Objects;
 public abstract class CommonByteReader implements AutoCloseable {
 
   /** The File. */
-  private File file;
+  private final File file;
 
   /** Input Stream on the DBF. */
-  private FileInputStream fis;
+  private final FileInputStream fis;
 
   /** File channel on the file. */
-  private FileChannel fc;
+  private final FileChannel fc;
 
   /** Buffer reader. */
-  private MappedByteBuffer byteBuffer;
+  private final MappedByteBuffer byteBuffer;
 
   /** Indicates if the byte buffer is closed. */
   private boolean isClosed = false;
@@ -56,8 +56,7 @@ public abstract class CommonByteReader implements AutoCloseable {
     this.file = f;
     this.fis = new FileInputStream(this.file);
     this.fc = this.fis.getChannel();
-    int fsize = (int) this.fc.size();
-    this.byteBuffer = this.fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
+    this.byteBuffer = this.fc.map(FileChannel.MapMode.READ_ONLY, 0, this.fc.size());
   }
 
   /**

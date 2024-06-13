@@ -44,7 +44,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   private long offset;
   private long size;
 
-  private Lock lock = new ReentrantLock();
+  private final Lock lock = new ReentrantLock();
 
   /**
    * Constructs an {@link AppendOnlyLog}.

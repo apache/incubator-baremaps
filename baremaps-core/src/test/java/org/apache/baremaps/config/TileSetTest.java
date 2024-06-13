@@ -31,10 +31,10 @@ import org.junit.Test;
 
 public class TileSetTest {
 
-  private String tilesetFile = "/tilesets/tileset.json";
-  private String tilejsonFile = "/tilesets/tilejson.json";
-  private ObjectMapper objectMapper = ObjectMapperUtils.objectMapper();
-  ConfigReader configReader = new ConfigReader();
+  final String tilesetFile = "/tilesets/tileset.json";
+  final String tilejsonFile = "/tilesets/tilejson.json";
+  final ObjectMapper objectMapper = ObjectMapperUtils.objectMapper();
+  final ConfigReader configReader = new ConfigReader();
 
   private File resourceFile(String path) {
     return new File(TileSetTest.class.getResource(path).getFile());

@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.Polygon;
 
 class VectorTileFunctionsTest {
 

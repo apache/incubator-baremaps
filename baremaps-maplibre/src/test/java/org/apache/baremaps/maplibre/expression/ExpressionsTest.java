@@ -68,7 +68,7 @@ class ExpressionsTest {
   }
 
   @Test
-  void inString() throws IOException {
+  void inString() {
     var literal = new Literal("foobar");
     assertEquals(true, new In("foo", literal).evaluate(null));
     assertEquals(true, new In("bar", literal).evaluate(null));

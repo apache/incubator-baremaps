@@ -60,7 +60,7 @@ public class PostgresTileStore implements TileStore {
   /**
    * A cache of queries.
    */
-  private Map<Integer, Query> cache = new ConcurrentHashMap<>();
+  private final Map<Integer, Query> cache = new ConcurrentHashMap<>();
 
   /**
    * A record that holds the sql of a prepared statement and the number of parameters.

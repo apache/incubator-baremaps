@@ -31,6 +31,10 @@ class PMTilesUtils {
 
   private static final int HEADER_SIZE_BYTES = 127;
 
+  private PMTilesUtils() {
+    // Prevent instantiation
+  }
+
   static long toNum(long low, long high) {
     return high * 0x100000000L + low;
   }
@@ -138,7 +142,7 @@ class PMTilesUtils {
     return new long[] {z, xy[0], xy[1]};
   }
 
-  private static long[] tzValues = new long[] {
+  private static final long[] tzValues = new long[] {
       0, 1, 5, 21, 85, 341, 1365, 5461, 21845, 87381, 349525, 1398101, 5592405,
       22369621, 89478485, 357913941, 1431655765, 5726623061L, 22906492245L,
       91625968981L, 366503875925L, 1466015503701L, 5864062014805L, 23456248059221L,

@@ -209,7 +209,7 @@ public class ExternalMergeSort {
    */
   static final class DataStack<T> implements AutoCloseable {
 
-    private DataList<T> list;
+    private final DataList<T> list;
 
     private Long index = 0l;
 

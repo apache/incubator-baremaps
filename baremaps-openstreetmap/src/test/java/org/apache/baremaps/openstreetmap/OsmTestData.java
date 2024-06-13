@@ -266,7 +266,7 @@ class OsmTestData {
    */
   static class RoundingTransformer extends GeometryTransformer {
 
-    private int precision;
+    private final int precision;
 
     /**
      * Constructs a transformer that rounds the coordinates of a geometry to a given precision.
