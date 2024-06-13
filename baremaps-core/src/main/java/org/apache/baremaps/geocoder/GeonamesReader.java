@@ -37,7 +37,7 @@ import java.util.stream.StreamSupport;
  */
 public class GeonamesReader {
 
-  public Stream<GeonamesRecord> stream(InputStream inputStream) throws IOException {
+  public Stream<GeonamesEntry> stream(InputStream inputStream) throws IOException {
     CsvMapper mapper = new CsvMapper();
 
     CsvSchema schema = CsvSchema.builder()
@@ -65,11 +65,11 @@ public class GeonamesReader {
         .withoutQuoteChar();
 
     var reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-    MappingIterator<GeonamesRecord> recordIterator = mapper
-        .readerFor(GeonamesRecord.class)
+    MappingIterator<GeonamesEntry> recordIterator = mapper
+        .readerFor(GeonamesEntry.class)
         .with(schema)
         .readValues(reader);
-    Spliterator<GeonamesRecord> recordSpliterator =
+    Spliterator<GeonamesEntry> recordSpliterator =
         Spliterators.spliteratorUnknownSize(recordIterator, 0);
 
     return StreamSupport.stream(recordSpliterator, false);
