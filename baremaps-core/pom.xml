@@ -147,6 +147,10 @@ limitations under the License.
       <artifactId>flatgeobuf</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.wololo</groupId>
+      <artifactId>flatgeobuf</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.xerial</groupId>
       <artifactId>sqlite-jdbc</artifactId>
     </dependency>

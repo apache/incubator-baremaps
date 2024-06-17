@@ -52,6 +52,7 @@ limitations under the License.
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-data</module>
+    <module>baremaps-flatgeobuf</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
@@ -525,10 +526,6 @@ limitations under the License.
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.wololo</groupId>
-      <artifactId>flatgeobuf</artifactId>
     </dependency>
   </dependencies>
 
