@@ -69,9 +69,8 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
     this.valueShift = (int) (Math.log(dataType.size()) / Math.log(2));
     this.segmentShift = memory.segmentShift();
     this.segmentMask = memory.segmentMask();
-    this.upperBoundary = segmentShift > 32 ?
-        Long.MAX_VALUE >> valueShift :
-        Long.MAX_VALUE >> (32 - segmentShift + valueShift);
+    this.upperBoundary = segmentShift > 32 ? Long.MAX_VALUE >> valueShift
+        : Long.MAX_VALUE >> (32 - segmentShift + valueShift);
   }
 
   private void checkBoundary(Long key) {

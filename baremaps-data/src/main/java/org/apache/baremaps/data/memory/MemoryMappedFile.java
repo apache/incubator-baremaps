@@ -69,7 +69,7 @@ public class MemoryMappedFile extends Memory<MappedByteBuffer> {
   /** {@inheritDoc} */
   @Override
   public void close() throws IOException {
-    for (MappedByteBuffer buffer : segments.values()) {
+    for (MappedByteBuffer buffer : segments) {
       MappedByteBufferUtils.unmap(buffer);
     }
   }
