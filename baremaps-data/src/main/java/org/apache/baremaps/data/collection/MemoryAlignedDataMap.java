@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import org.apache.baremaps.data.memory.Memory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
@@ -44,6 +45,8 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
   private final long segmentShift;
 
   private final long segmentMask;
+
+  private final long upperBoundary;
 
   /**
    * Constructs a {@link MemoryAlignedDataMap}.
@@ -66,11 +69,25 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
     this.valueShift = (int) (Math.log(dataType.size()) / Math.log(2));
     this.segmentShift = memory.segmentShift();
     this.segmentMask = memory.segmentMask();
+    this.upperBoundary = segmentShift > 32 ?
+        Long.MAX_VALUE >> valueShift :
+        Long.MAX_VALUE >> (32 - segmentShift + valueShift);
+  }
+
+  private void checkBoundary(Long key) {
+    Objects.requireNonNull(key, "Key couldn't be null");
+    if (key < 0 || key > upperBoundary) {
+      String msg =
+          String.format("Key should between 0 and %d, but your key is %d", upperBoundary, key);
+      throw new IndexOutOfBoundsException(msg);
+    }
   }
 
   /** {@inheritDoc} */
   @Override
   public E put(Long key, E value) {
+    checkBoundary(key);
+    Objects.requireNonNull(value, "Value couldn't be null");
     long position = key << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
@@ -83,6 +100,7 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
   /** {@inheritDoc} */
   @Override
   public E get(Object key) {
+    checkBoundary((long) key);
     long position = (long) key << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);

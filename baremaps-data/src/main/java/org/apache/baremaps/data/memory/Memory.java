@@ -22,8 +22,8 @@ package org.apache.baremaps.data.memory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /** A base class to manage segments of on-heap, off-heap, or on-disk memory. */
 public abstract class Memory<T extends ByteBuffer> implements Closeable {
@@ -34,7 +34,9 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
 
   private final long segmentMask;
 
-  protected final List<T> segments = new ArrayList<>();
+  private int maxIndex;
+
+  protected final Map<Integer, T> segments = new HashMap<>();
 
   /**
    * Constructs a memory with a given segment size.
@@ -96,20 +98,19 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
 
   /** The allocation of segments is synchronized to enable access by multiple threads. */
   private synchronized ByteBuffer allocate(int index) {
-    while (segments.size() <= index) {
-      segments.add(null);
-    }
+    maxIndex = Math.max(maxIndex, index);
     T segment = segments.get(index);
     if (segment == null) {
       segment = allocate(index, segmentSize);
-      segments.set(index, segment);
+      segments.put(index, segment);
     }
     return segment;
   }
 
   /** Returns the size of the allocated memory. */
   public long size() {
-    return (long) segments.size() * (long) segmentSize;
+    if (segments.isEmpty()) return 0;
+    return (maxIndex + 1L) * (long) segmentSize;
   }
 
   /**
