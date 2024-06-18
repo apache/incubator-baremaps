@@ -18,20 +18,30 @@
 package org.apache.baremaps.flatgeobuf;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
-import org.apache.baremaps.flatgeobuf.FlatGeoBuf.Header.Feature;
 import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBuf {
 
-  private FlatGeoBuf() {
+    public static final byte[] MAGIC_BYTES =
+        new byte[] {0x66, 0x67, 0x62, 0x03, 0x66, 0x67, 0x62, 0x00};
+
+    private FlatGeoBuf() {
     // Prevent instantiation
   }
 
-  // Geometry type enumeration
+    public static boolean isFlatgeobuf(ByteBuffer bb) {
+      return bb.get() == MAGIC_BYTES[0] &&
+          bb.get() == MAGIC_BYTES[1] &&
+          bb.get() == MAGIC_BYTES[2] &&
+          bb.get() == MAGIC_BYTES[3] &&
+          bb.get() == MAGIC_BYTES[4] &&
+          bb.get() == MAGIC_BYTES[5] &&
+          bb.get() == MAGIC_BYTES[6] &&
+          bb.get() == MAGIC_BYTES[7];
+    }
+
+    // Geometry type enumeration
   public enum GeometryType {
     UNKNOWN(0),
     POINT(1),
@@ -122,110 +132,10 @@ public class FlatGeoBuf {
     public Header {
       indexNodeSize = indexNodeSize == 0 ? 16 : indexNodeSize;
     }
-
-    public record Feature(
-        Geometry geometry,
-        List<Object> properties) {
-    }
   }
 
-  public static Header asHeaderRecord(org.apache.baremaps.flatgeobuf.generated.Header header) {
-    return new Header(
-        header.name(),
-        new double[] {
-            header.envelope(0),
-            header.envelope(1),
-            header.envelope(2),
-            header.envelope(3)
-        },
-        GeometryType.values()[header.geometryType()],
-        header.hasZ(),
-        header.hasM(),
-        header.hasT(),
-        header.hasTm(),
-        IntStream.range(0, header.columnsLength())
-            .mapToObj(header::columns)
-            .map(column -> new Column(
-                column.name(),
-                ColumnType.values()[column.type()],
-                column.title(),
-                column.description(),
-                column.width(),
-                column.precision(),
-                column.scale(),
-                column.nullable(),
-                column.unique(),
-                column.primaryKey(),
-                column.metadata()))
-            .toList(),
-        header.featuresCount(),
-        header.indexNodeSize(),
-        new Crs(
-            header.crs().org(),
-            header.crs().code(),
-            header.crs().name(),
-            header.crs().description(),
-            header.crs().wkt(),
-            header.crs().codeString()),
-        header.title(),
-        header.description(),
-        header.metadata());
-  }
-
-  public static Feature asFeatureRecord(org.apache.baremaps.flatgeobuf.generated.Header header,
-      org.apache.baremaps.flatgeobuf.generated.Feature feature) {
-    var values = new ArrayList<>();
-    if (feature.propertiesLength() > 0) {
-      var propertiesBuffer = feature.propertiesAsByteBuffer();
-      while (propertiesBuffer.hasRemaining()) {
-        var columnPosition = propertiesBuffer.getShort();
-        var columnType = header.columns(columnPosition);
-        var columnValue = readValue(propertiesBuffer, columnType);
-        values.add(columnValue);
-      }
-    }
-    return new Feature(
-        GeometryConversions.readGeometry(feature.geometry(), header.geometryType()),
-        values);
-  }
-
-  private static Object readValue(ByteBuffer buffer,
-      org.apache.baremaps.flatgeobuf.generated.Column column) {
-    return switch (ColumnType.values()[column.type()]) {
-      case BYTE -> buffer.get();
-      case UBYTE -> buffer.get();
-      case BOOL -> buffer.get() == 1;
-      case SHORT -> buffer.getShort();
-      case USHORT -> buffer.getShort();
-      case INT -> buffer.getInt();
-      case UINT -> buffer.getInt();
-      case LONG -> buffer.getLong();
-      case ULONG -> buffer.getLong();
-      case FLOAT -> buffer.getFloat();
-      case DOUBLE -> buffer.getDouble();
-      case STRING -> readString(buffer);
-      case JSON -> readJson(buffer);
-      case DATETIME -> readDateTime(buffer);
-      case BINARY -> readBinary(buffer);
-    };
-  }
-
-  private static Object readString(ByteBuffer buffer) {
-    var length = buffer.getInt();
-    var bytes = new byte[length];
-    buffer.get(bytes);
-    return new String(bytes, StandardCharsets.UTF_8);
-  }
-
-  private static Object readJson(ByteBuffer buffer) {
-    throw new UnsupportedOperationException();
-  }
-
-  private static Object readDateTime(ByteBuffer buffer) {
-    throw new UnsupportedOperationException();
-  }
-
-  private static Object readBinary(ByteBuffer buffer) {
-    throw new UnsupportedOperationException();
+  public record Feature(
+      Geometry geometry,
+      List<Object> properties) {
   }
 }

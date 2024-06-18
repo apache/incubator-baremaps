@@ -19,6 +19,7 @@ package org.apache.baremaps.flatgeobuf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.Channels;
@@ -34,7 +35,7 @@ public class FlatGeoBufReader {
     // Check if the file is a flatgeobuf
     ByteBuffer buffer = BufferUtil.createByteBuffer(12, ByteOrder.LITTLE_ENDIAN);
     BufferUtil.readBytes(channel, buffer, 12);
-    if (!Constants.isFlatgeobuf(buffer)) {
+    if (!FlatGeoBuf.isFlatgeobuf(buffer)) {
       throw new IOException("This is not a flatgeobuf!");
     }
 
@@ -54,7 +55,6 @@ public class FlatGeoBufReader {
   public static ByteBuffer readIndexAsBuffer(ReadableByteChannel channel, Header header)
       throws IOException {
     long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
-
     if (indexSize > 1L << 31) {
       throw new IOException("Index size is greater than 2GB!");
     }
@@ -71,61 +71,68 @@ public class FlatGeoBufReader {
 
   public static Feature readFeature(ReadableByteChannel channel, ByteBuffer buffer)
       throws IOException {
-    ByteBuffer newBuffer = BufferUtil.readBytes(channel, buffer, 4);
-    int featureSize = newBuffer.getInt();
-    newBuffer = BufferUtil.readBytes(channel, buffer, featureSize);
-    Feature feature = Feature.getRootAsFeature(newBuffer);
-    buffer.position(buffer.position() + featureSize);
-    return feature;
+    try {
+      ByteBuffer newBuffer = BufferUtil.readBytes(channel, buffer, 4);
+      int featureSize = newBuffer.getInt();
+      newBuffer = BufferUtil.readBytes(channel, buffer, featureSize);
+      Feature feature = Feature.getRootAsFeature(newBuffer);
+      buffer.position(buffer.position() + featureSize);
+      return feature;
+    } catch (IOException | BufferUnderflowException e) {
+      throw new IOException("Error reading feature", e);
+    }
   }
 
-  // var geometryBuffer = feature.geometry();
-  // var geometry = GeometryConversions.readGeometry(geometryBuffer, geometryBuffer.type());
-  // var properties = new ArrayList<>();
-  // if (feature.propertiesLength() > 0) {
-  // var propertiesBuffer = feature.propertiesAsByteBuffer();
-  // while (propertiesBuffer.hasRemaining()) {
-  // var type = propertiesBuffer.getShort();
-  // var column = header.columns.get(type);
-  // var value = readColumnValue(propertiesBuffer, column);
-  // properties.add(value);
-  // }
-  // }
-  // }
-  //
-  // public static Object readColumnValue(ByteBuffer buffer, ColumnMeta column) {
-  // return switch (column.type()) {
-  // case ColumnType.Byte -> buffer.get();
-  // case ColumnType.Bool -> buffer.get() == 1;
-  // case ColumnType.Short -> buffer.getShort();
-  // case ColumnType.Int -> buffer.getInt();
-  // case ColumnType.Long -> buffer.getLong();
-  // case ColumnType.Float -> buffer.getFloat();
-  // case ColumnType.Double -> buffer.getDouble();
-  // case ColumnType.String -> readColumnString(buffer);
-  // case ColumnType.Json -> readColumnJson(buffer);
-  // case ColumnType.DateTime -> readColumnDateTime(buffer);
-  // case ColumnType.Binary -> readColumnBinary(buffer);
-  // default -> null;
-  // };
-  // }
-  //
-  // public static Object readColumnString(ByteBuffer buffer) {
-  // var length = buffer.getInt();
-  // var bytes = new byte[length];
-  // buffer.get(bytes);
-  // return new String(bytes, StandardCharsets.UTF_8);
-  // }
-  //
-  // public static Object readColumnJson(ByteBuffer buffer) {
-  // throw new UnsupportedOperationException();
-  // }
-  //
-  // public static Object readColumnDateTime(ByteBuffer buffer) {
-  // throw new UnsupportedOperationException();
-  // }
-  //
-  // public static Object readColumnBinary(ByteBuffer buffer) {
-  // throw new UnsupportedOperationException();
-  // }
+  private static class BoundedInputStream extends InputStream {
+    private final InputStream in;
+    private long remaining;
+
+    private BoundedInputStream(InputStream in, long size) {
+      this.in = in;
+      this.remaining = size;
+    }
+
+    @Override
+    public int read() throws IOException {
+      if (remaining == 0) {
+        return -1;
+      }
+      int result = in.read();
+      if (result != -1) {
+        remaining--;
+      }
+      return result;
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+      if (remaining == 0) {
+        return -1;
+      }
+      int toRead = (int) Math.min(len, remaining);
+      int result = in.read(b, off, toRead);
+      if (result != -1) {
+        remaining -= result;
+      }
+      return result;
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+      long toSkip = Math.min(n, remaining);
+      long skipped = in.skip(toSkip);
+      remaining -= skipped;
+      return skipped;
+    }
+
+    @Override
+    public int available() throws IOException {
+      return (int) Math.min(in.available(), remaining);
+    }
+
+    @Override
+    public void close() throws IOException {
+      in.close();
+    }
+  }
 }

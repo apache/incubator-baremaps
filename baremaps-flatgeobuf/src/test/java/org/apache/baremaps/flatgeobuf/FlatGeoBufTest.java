@@ -17,14 +17,15 @@
 
 package org.apache.baremaps.flatgeobuf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.baremaps.flatgeobuf.generated.Feature;
 import org.apache.baremaps.flatgeobuf.generated.Header;
 import org.apache.baremaps.testing.TestFiles;
@@ -52,25 +53,42 @@ public class FlatGeoBufTest {
       assertNotNull(header);
       assertEquals(179, header.featuresCount());
 
+      FlatGeoBuf.Header headerRecord = FlatGeoBufMapper.asHeaderRecord(header);
+      assertNotNull(headerRecord);
+      assertEquals(179, headerRecord.featuresCount());
+
       // Read the index
       FlatGeoBufReader.skipIndex(channel, header);
 
       // Read the first feature
       ByteBuffer buffer = BufferUtil.createByteBuffer(1 << 16, ByteOrder.LITTLE_ENDIAN);
+      List<FlatGeoBuf.Feature> featureList = new ArrayList<>();
       for (int i = 0; i < header.featuresCount(); i++) {
         Feature feature = FlatGeoBufReader.readFeature(channel, buffer);
-
-        System.out.println(FlatGeoBuf.asFeatureRecord(header, feature));
-
+        featureList.add(FlatGeoBufMapper.asFeatureRecord(header, feature));
         assertNotNull(feature);
       }
+
+      // Check the first feature
+      FlatGeoBuf.Feature firstFeature = featureList.get(0);
+      assertNotNull(firstFeature);
+      assertEquals(2, firstFeature.properties().size());
+      assertEquals("ATA", firstFeature.properties().get(0));
+      assertEquals("Antarctica", firstFeature.properties().get(1));
+      assertNotNull(firstFeature.geometry());
+      assertEquals(658, firstFeature.geometry().getNumPoints());
+
+      // Check the last feature
+      FlatGeoBuf.Feature lastFeature = featureList.get(178);
+      assertNotNull(lastFeature);
+      assertEquals(2, lastFeature.properties().size());
+      assertEquals("FLK", lastFeature.properties().get(0));
+      assertEquals("Falkland Islands", lastFeature.properties().get(1));
+      assertNotNull(lastFeature.geometry());
+      assertEquals(10, lastFeature.geometry().getNumPoints());
+
+      assertThrows(IOException.class, () -> FlatGeoBufReader.readFeature(channel, buffer));
     }
-  }
-
-
-  public static void main(String... args) {
-    System.out.println(Long.MAX_VALUE);
-    System.out.println(Long.MAX_VALUE >> 32);
   }
 
 }

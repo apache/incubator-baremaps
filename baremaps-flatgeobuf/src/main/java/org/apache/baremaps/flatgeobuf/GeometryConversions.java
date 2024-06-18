@@ -31,7 +31,7 @@ public class GeometryConversions {
   public static GeometryOffsets writeGeometryPart(
       FlatBufferBuilder builder,
       org.locationtech.jts.geom.Geometry geometry,
-      int geometryType) throws IOException {
+      int geometryType) {
 
     GeometryOffsets go = new GeometryOffsets();
 
