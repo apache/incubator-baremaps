@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +91,64 @@ public class FlatGeoBufTest {
       assertEquals(10, lastFeature.geometry().getNumPoints());
 
       assertThrows(IOException.class, () -> FlatGeoBufReader.readFeature(channel, buffer));
+    }
+  }
+
+
+  @Test
+  void readWrite() throws IOException {
+    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    var tempFile = Files.createTempFile("countries", ".fgb");
+
+    FlatGeoBuf.Header headerRecord = null;
+    List<FlatGeoBuf.Feature> featureRecords = new ArrayList<>();
+
+    try (ReadableByteChannel channel = FileChannel.open(file, StandardOpenOption.READ);
+         WritableByteChannel tempChannel = FileChannel.open(tempFile, StandardOpenOption.WRITE)) {
+
+      // Read the header
+      Header header = FlatGeoBufReader.readHeader(channel);
+      headerRecord = FlatGeoBufMapper.asHeaderRecord(header);
+      FlatGeoBufWriter.writeHeader(tempChannel, header);
+
+      // Read the index
+      ByteBuffer indexBuffer = FlatGeoBufReader.readIndexBuffer(channel, header);
+      FlatGeoBufWriter.writeIndexBuffer(tempChannel, indexBuffer);
+
+      var buffer = BufferUtil.createByteBuffer(1 << 16, ByteOrder.LITTLE_ENDIAN);
+      for (int i = 0; i < header.featuresCount(); i++) {
+        Feature feature = FlatGeoBufReader.readFeature(channel, buffer);
+        FlatGeoBuf.Feature featureRecord = FlatGeoBufMapper.asFeatureRecord(header, feature);
+        featureRecords.add(featureRecord);
+        FlatGeoBufWriter.writeFeature(tempChannel, feature);
+      }
+    }
+
+
+    try (var channel = FileChannel.open(tempFile, StandardOpenOption.READ)) {
+
+      // Read the header
+      Header header = FlatGeoBufReader.readHeader(channel);
+      assertNotNull(header);
+      assertEquals(headerRecord, FlatGeoBufMapper.asHeaderRecord(header));
+
+      // Read the index
+      FlatGeoBufReader.skipIndex(channel, header);
+
+      // Read the first feature
+      ByteBuffer buffer = BufferUtil.createByteBuffer(1 << 16, ByteOrder.LITTLE_ENDIAN);
+
+      for (int i = 0; i < header.featuresCount(); i++) {
+        Feature feature = FlatGeoBufReader.readFeature(channel, buffer);
+        FlatGeoBuf.Feature featureRecord = FlatGeoBufMapper.asFeatureRecord(header, feature);
+
+        System.out.println(featureRecord);
+
+        assertNotNull(feature);
+        assertNotNull(featureRecord);
+        assertEquals(featureRecords.get(i), featureRecord);
+      }
+
     }
   }
 

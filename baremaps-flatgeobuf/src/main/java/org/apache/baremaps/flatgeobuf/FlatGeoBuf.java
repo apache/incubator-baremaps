@@ -116,7 +116,7 @@ public class FlatGeoBuf {
 
   public record Header(
       String name,
-      double[] envelope,
+      List<Double> envelope,
       GeometryType geometryType,
       boolean hasZ,
       boolean hasM,
@@ -134,8 +134,6 @@ public class FlatGeoBuf {
     }
   }
 
-  public record Feature(
-      Geometry geometry,
-      List<Object> properties) {
+  public record Feature(List<Object> properties, Geometry geometry) {
   }
 }

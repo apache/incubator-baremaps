@@ -20,6 +20,7 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 import org.apache.baremaps.flatgeobuf.generated.Column;
 import org.apache.baremaps.flatgeobuf.generated.Feature;
@@ -56,7 +57,7 @@ public class FlatGeoBufMapper {
     }
     int envelopeOffset = 0;
     if (header.envelope() != null) {
-      envelopeOffset = Header.createEnvelopeVector(builder, header.envelope());
+      envelopeOffset = Header.createEnvelopeVector(builder, header.envelope().stream().mapToDouble(d -> d).toArray());
     }
     Header.startHeader(builder);
     Header.addGeometryType(builder, header.geometryType().getValue());
@@ -76,12 +77,11 @@ public class FlatGeoBufMapper {
   public static FlatGeoBuf.Header asHeaderRecord(Header header) {
     return new FlatGeoBuf.Header(
         header.name(),
-        new double[] {
+            List.of(
             header.envelope(0),
             header.envelope(1),
             header.envelope(2),
-            header.envelope(3)
-        },
+            header.envelope(3)),
         FlatGeoBuf.GeometryType.values()[header.geometryType()],
         header.hasZ(),
         header.hasM(),
@@ -128,12 +128,11 @@ public class FlatGeoBufMapper {
       }
     }
     return new FlatGeoBuf.Feature(
-        GeometryConversions.readGeometry(feature.geometry(), header.geometryType()),
-        values);
+            values, GeometryConversions.readGeometry(feature.geometry(), header.geometryType())
+    );
   }
 
-  private static Object readValue(ByteBuffer buffer,
-      Column column) {
+  private static Object readValue(ByteBuffer buffer, Column column) {
     return switch (FlatGeoBuf.ColumnType.values()[column.type()]) {
       case BYTE -> buffer.get();
       case UBYTE -> buffer.get();

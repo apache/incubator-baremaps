@@ -49,10 +49,10 @@ public class FlatGeoBufReader {
 
   public static void skipIndex(ReadableByteChannel channel, Header header)
       throws IOException {
-    readIndexAsBuffer(channel, header);
+    readIndexBuffer(channel, header);
   }
 
-  public static ByteBuffer readIndexAsBuffer(ReadableByteChannel channel, Header header)
+  public static ByteBuffer readIndexBuffer(ReadableByteChannel channel, Header header)
       throws IOException {
     long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
     if (indexSize > 1L << 31) {
@@ -60,11 +60,10 @@ public class FlatGeoBufReader {
     }
     ByteBuffer buffer = BufferUtil.createByteBuffer((int) indexSize, ByteOrder.LITTLE_ENDIAN);
     BufferUtil.readBytes(channel, buffer, (int) indexSize);
-
     return buffer;
   }
 
-  public static InputStream readIndexAsStream(ReadableByteChannel channel, Header header) {
+  public static InputStream readIndexStream(ReadableByteChannel channel, Header header) {
     long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
     return new BoundedInputStream(Channels.newInputStream(channel), indexSize);
   }
@@ -72,9 +71,9 @@ public class FlatGeoBufReader {
   public static Feature readFeature(ReadableByteChannel channel, ByteBuffer buffer)
       throws IOException {
     try {
-      ByteBuffer newBuffer = BufferUtil.readBytes(channel, buffer, 4);
+      ByteBuffer newBuffer = BufferUtil.readBytes(channel, buffer, 1<<16);
       int featureSize = newBuffer.getInt();
-      newBuffer = BufferUtil.readBytes(channel, buffer, featureSize);
+      newBuffer = BufferUtil.readBytes(channel, newBuffer, featureSize);
       Feature feature = Feature.getRootAsFeature(newBuffer);
       buffer.position(buffer.position() + featureSize);
       return feature;
