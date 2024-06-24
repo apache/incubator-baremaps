@@ -23,25 +23,25 @@ import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBuf {
 
-    public static final byte[] MAGIC_BYTES =
-        new byte[] {0x66, 0x67, 0x62, 0x03, 0x66, 0x67, 0x62, 0x00};
+  public static final byte[] MAGIC_BYTES =
+      new byte[] {0x66, 0x67, 0x62, 0x03, 0x66, 0x67, 0x62, 0x00};
 
-    private FlatGeoBuf() {
+  private FlatGeoBuf() {
     // Prevent instantiation
   }
 
-    public static boolean isFlatgeobuf(ByteBuffer bb) {
-      return bb.get() == MAGIC_BYTES[0] &&
-          bb.get() == MAGIC_BYTES[1] &&
-          bb.get() == MAGIC_BYTES[2] &&
-          bb.get() == MAGIC_BYTES[3] &&
-          bb.get() == MAGIC_BYTES[4] &&
-          bb.get() == MAGIC_BYTES[5] &&
-          bb.get() == MAGIC_BYTES[6] &&
-          bb.get() == MAGIC_BYTES[7];
-    }
+  public static boolean isFlatgeobuf(ByteBuffer bb) {
+    return bb.get() == MAGIC_BYTES[0] &&
+        bb.get() == MAGIC_BYTES[1] &&
+        bb.get() == MAGIC_BYTES[2] &&
+        bb.get() == MAGIC_BYTES[3] &&
+        bb.get() == MAGIC_BYTES[4] &&
+        bb.get() == MAGIC_BYTES[5] &&
+        bb.get() == MAGIC_BYTES[6] &&
+        bb.get() == MAGIC_BYTES[7];
+  }
 
-    // Geometry type enumeration
+  // Geometry type enumeration
   public enum GeometryType {
     UNKNOWN(0),
     POINT(1),
@@ -129,9 +129,6 @@ public class FlatGeoBuf {
       String title,
       String description,
       String metadata) {
-    public Header {
-      indexNodeSize = indexNodeSize == 0 ? 16 : indexNodeSize;
-    }
   }
 
   public record Feature(List<Object> properties, Geometry geometry) {

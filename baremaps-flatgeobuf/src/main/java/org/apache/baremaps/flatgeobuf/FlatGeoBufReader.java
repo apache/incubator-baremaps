@@ -24,25 +24,51 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+import org.apache.baremaps.flatgeobuf.generated.Column;
 import org.apache.baremaps.flatgeobuf.generated.Feature;
 import org.apache.baremaps.flatgeobuf.generated.Header;
+import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufReader {
 
-  public static Header readHeader(ReadableByteChannel channel)
+  public static FlatGeoBuf.Header readHeaderRecord(ReadableByteChannel channel)
+      throws IOException {
+    Header header = readHeaderFlatGeoBuf(channel);
+    return asRecord(header);
+  }
+
+  public static Header readHeaderFlatGeoBuf(ReadableByteChannel channel)
       throws IOException {
 
     // Check if the file is a flatgeobuf
-    ByteBuffer buffer = BufferUtil.createByteBuffer(12, ByteOrder.LITTLE_ENDIAN);
-    BufferUtil.readBytes(channel, buffer, 12);
-    if (!FlatGeoBuf.isFlatgeobuf(buffer)) {
+    ByteBuffer prefixBuffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
+    while (prefixBuffer.hasRemaining()) {
+      if (channel.read(prefixBuffer) == -1) {
+        break; // End of channel reached
+      }
+    }
+    prefixBuffer.flip();
+    if (!FlatGeoBuf.isFlatgeobuf(prefixBuffer)) {
       throw new IOException("This is not a flatgeobuf!");
     }
 
     // Read the header size
-    int headerSize = buffer.getInt();
-    ByteBuffer headerBuffer = BufferUtil.createByteBuffer(headerSize, ByteOrder.LITTLE_ENDIAN);
-    BufferUtil.readBytes(channel, headerBuffer, headerSize);
+    int headerSize = prefixBuffer.getInt();
+    ByteBuffer headerBuffer = ByteBuffer.allocate(headerSize).order(ByteOrder.LITTLE_ENDIAN);
+
+    // Read the header
+    while (headerBuffer.hasRemaining()) {
+      if (channel.read(headerBuffer) == -1) {
+        break; // End of channel reached
+      }
+    }
+
+    // Prepare the buffer for reading
+    headerBuffer.flip();
 
     return Header.getRootAsHeader(headerBuffer);
   }
@@ -54,12 +80,24 @@ public class FlatGeoBufReader {
 
   public static ByteBuffer readIndexBuffer(ReadableByteChannel channel, Header header)
       throws IOException {
+
+    // Calculate the size of the index
     long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
     if (indexSize > 1L << 31) {
       throw new IOException("Index size is greater than 2GB!");
     }
-    ByteBuffer buffer = BufferUtil.createByteBuffer((int) indexSize, ByteOrder.LITTLE_ENDIAN);
-    BufferUtil.readBytes(channel, buffer, (int) indexSize);
+
+    // Read the index
+    ByteBuffer buffer = ByteBuffer.allocate((int) indexSize).order(ByteOrder.LITTLE_ENDIAN);
+    while (buffer.hasRemaining()) {
+      if (channel.read(buffer) == -1) {
+        break; // End of channel reached
+      }
+    }
+
+    // Prepare the buffer for reading
+    buffer.flip();
+
     return buffer;
   }
 
@@ -68,18 +106,176 @@ public class FlatGeoBufReader {
     return new BoundedInputStream(Channels.newInputStream(channel), indexSize);
   }
 
-  public static Feature readFeature(ReadableByteChannel channel, ByteBuffer buffer)
+  public static FlatGeoBuf.Feature readFeatureRecord(ReadableByteChannel channel,
+      Header header, ByteBuffer buffer)
       throws IOException {
-    try {
-      ByteBuffer newBuffer = BufferUtil.readBytes(channel, buffer, 1<<16);
-      int featureSize = newBuffer.getInt();
-      newBuffer = BufferUtil.readBytes(channel, newBuffer, featureSize);
-      Feature feature = Feature.getRootAsFeature(newBuffer);
-      buffer.position(buffer.position() + featureSize);
-      return feature;
-    } catch (IOException | BufferUnderflowException e) {
-      throw new IOException("Error reading feature", e);
+    Feature feature = readFeatureFlatGeoBuf(channel, buffer);
+    List<Object> properties = new ArrayList<>();
+
+    if (feature.propertiesLength() > 0) {
+      var propertiesBuffer = feature.propertiesAsByteBuffer();
+      while (propertiesBuffer.hasRemaining()) {
+        var type = propertiesBuffer.getShort();
+        var column = header.columns(type);
+        var value = readValue(propertiesBuffer, column);
+        properties.add(value);
+      }
     }
+
+
+    Geometry geometry =
+        GeometryConversions.readGeometry(feature.geometry(), header.geometryType());
+    return new FlatGeoBuf.Feature(properties, geometry);
+  }
+
+  /**
+   * Reads a feature from the specified channel.
+   * <p>
+   * The provided buffer is reused from call to call to avoid unnecessary allocations, so the caller
+   * should not modify the buffer after calling this method. It may be freshly allocated or may
+   * contain data from a previous call.
+   *
+   * @param channel the channel to read from
+   * @param buffer the buffer to use
+   * @return
+   * @throws IOException
+   */
+  public static Feature readFeatureFlatGeoBuf(ReadableByteChannel channel, ByteBuffer buffer)
+      throws IOException {
+
+    try {
+      // Compact the buffer if it has been used before
+      if (buffer.position() > 0) {
+        buffer.compact();
+      }
+
+      // Fill the buffer
+      while (buffer.hasRemaining()) {
+        if (channel.read(buffer) == -1) {
+          break; // End of channel reached
+        }
+      }
+
+      // Read the feature size
+      buffer.flip();
+      int featureSize = buffer.getInt();
+
+      // Allocate a new buffer if the feature size is greater than the current buffer capacity
+      if (featureSize > buffer.remaining()) {
+        ByteBuffer newBuffer = ByteBuffer.allocate(featureSize).order(ByteOrder.LITTLE_ENDIAN);
+
+        // Copy the remaining bytes from the current buffer to the new buffer
+        newBuffer.put(buffer);
+
+        // Fill the new buffer with the remaining bytes
+        while (newBuffer.hasRemaining()) {
+          if (channel.read(newBuffer) == -1) {
+            break; // End of channel reached
+          }
+        }
+
+        // Prepare the new buffer for reading
+        newBuffer.flip();
+
+        // Read the feature from the new buffer
+        Feature feature = Feature.getRootAsFeature(newBuffer.duplicate());
+
+        // Clear the old buffer to prepare for the next read
+        buffer.clear();
+
+        return feature;
+
+      } else {
+        Feature feature = Feature.getRootAsFeature(buffer.slice(buffer.position(), featureSize));
+        buffer.position(buffer.position() + featureSize);
+
+        return feature;
+      }
+    } catch (BufferUnderflowException e) {
+      throw new IOException("Failed to read feature", e);
+    }
+  }
+
+
+  public static FlatGeoBuf.Header asRecord(Header header) {
+    return new FlatGeoBuf.Header(
+        header.name(),
+        List.of(
+            header.envelope(0),
+            header.envelope(1),
+            header.envelope(2),
+            header.envelope(3)),
+        FlatGeoBuf.GeometryType.values()[header.geometryType()],
+        header.hasZ(),
+        header.hasM(),
+        header.hasT(),
+        header.hasTm(),
+        IntStream.range(0, header.columnsLength())
+            .mapToObj(header::columns)
+            .map(column -> new FlatGeoBuf.Column(
+                column.name(),
+                FlatGeoBuf.ColumnType.values()[column.type()],
+                column.title(),
+                column.description(),
+                column.width(),
+                column.precision(),
+                column.scale(),
+                column.nullable(),
+                column.unique(),
+                column.primaryKey(),
+                column.metadata()))
+            .toList(),
+        header.featuresCount(),
+        header.indexNodeSize(),
+        new FlatGeoBuf.Crs(
+            header.crs().org(),
+            header.crs().code(),
+            header.crs().name(),
+            header.crs().description(),
+            header.crs().wkt(),
+            header.crs().codeString()),
+        header.title(),
+        header.description(),
+        header.metadata());
+  }
+
+  static Object readValue(ByteBuffer buffer, Column column) {
+    return switch (FlatGeoBuf.ColumnType.values()[column.type()]) {
+      case BYTE -> buffer.get();
+      case UBYTE -> buffer.get();
+      case BOOL -> buffer.get() == 1;
+      case SHORT -> buffer.getShort();
+      case USHORT -> buffer.getShort();
+      case INT -> buffer.getInt();
+      case UINT -> buffer.getInt();
+      case LONG -> buffer.getLong();
+      case ULONG -> buffer.getLong();
+      case FLOAT -> buffer.getFloat();
+      case DOUBLE -> buffer.getDouble();
+      case STRING -> readString(buffer);
+      case JSON -> readJson(buffer);
+      case DATETIME -> readDateTime(buffer);
+      case BINARY -> readBinary(buffer);
+    };
+  }
+
+  private static Object readString(ByteBuffer buffer) {
+    var length = buffer.getInt();
+    var bytes = new byte[length];
+    buffer.get(bytes);
+    return new String(bytes, StandardCharsets.UTF_8);
+  }
+
+  private static Object readJson(ByteBuffer buffer) {
+    throw new UnsupportedOperationException();
+  }
+
+  private static Object readDateTime(ByteBuffer buffer) {
+    throw new UnsupportedOperationException();
+  }
+
+  private static Object readBinary(ByteBuffer buffer) {
+    throw new UnsupportedOperationException();
   }
 
   private static class BoundedInputStream extends InputStream {
