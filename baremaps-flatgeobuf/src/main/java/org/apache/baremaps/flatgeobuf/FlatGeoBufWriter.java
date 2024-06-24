@@ -42,7 +42,8 @@ public class FlatGeoBufWriter {
     writeHeaderFlatGeoBuf(channel, headerFlatGeoBuf);
   }
 
-  public static void writeHeaderFlatGeoBuf(WritableByteChannel channel, Header header) throws IOException {
+  public static void writeHeaderFlatGeoBuf(WritableByteChannel channel, Header header)
+      throws IOException {
     ByteBuffer headerBuffer = header.getByteBuffer();
     ByteBuffer startBuffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
     startBuffer.put(FlatGeoBuf.MAGIC_BYTES);
@@ -70,7 +71,8 @@ public class FlatGeoBufWriter {
     }
   }
 
-  public static void writeFeatureFlatGeoBuf(WritableByteChannel channel, Feature feature) throws IOException {
+  public static void asFeatureRecord(WritableByteChannel channel, Feature feature)
+      throws IOException {
     ByteBuffer sizeBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
     sizeBuffer.putInt(feature.getByteBuffer().remaining());
     sizeBuffer.flip();
@@ -88,7 +90,7 @@ public class FlatGeoBufWriter {
       Header header,
       FlatGeoBuf.Feature feature) throws IOException {
     Feature featureRecord = writeFeature(header, feature);
-    writeFeatureFlatGeoBuf(channel, featureRecord);
+    asFeatureRecord(channel, featureRecord);
   }
 
   public static Header asHeaderRecord(FlatGeoBuf.Header header) {
@@ -244,18 +246,19 @@ public class FlatGeoBufWriter {
     return Feature.getRootAsFeature(buffer);
   }
 
-  public static FlatGeoBuf.Feature writeFeatureFlatGeoBuf(Header header, Feature feature) {
-    var values = new ArrayList<>();
+  public static FlatGeoBuf.Feature asFeatureRecord(Header header, Feature feature) {
+    var properties = new ArrayList<>();
     if (feature.propertiesLength() > 0) {
       var propertiesBuffer = feature.propertiesAsByteBuffer();
       while (propertiesBuffer.hasRemaining()) {
         var columnPosition = propertiesBuffer.getShort();
         var columnType = header.columns(columnPosition);
         var columnValue = readValue(propertiesBuffer, columnType);
-        values.add(columnValue);
+        properties.add(columnValue);
       }
     }
-    return new FlatGeoBuf.Feature(
-        values, GeometryConversions.readGeometry(feature.geometry(), header.geometryType()));
+    Geometry geometry =
+        GeometryConversions.readGeometry(feature.geometry(), header.geometryType());
+    return new FlatGeoBuf.Feature(properties, geometry);
   }
 }

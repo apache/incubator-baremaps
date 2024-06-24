@@ -25,13 +25,11 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.apache.baremaps.flatgeobuf.generated.Column;
 import org.apache.baremaps.flatgeobuf.generated.Feature;
 import org.apache.baremaps.flatgeobuf.generated.Header;
-import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufReader {
 
@@ -110,22 +108,7 @@ public class FlatGeoBufReader {
       Header header, ByteBuffer buffer)
       throws IOException {
     Feature feature = readFeatureFlatGeoBuf(channel, buffer);
-    List<Object> properties = new ArrayList<>();
-
-    if (feature.propertiesLength() > 0) {
-      var propertiesBuffer = feature.propertiesAsByteBuffer();
-      while (propertiesBuffer.hasRemaining()) {
-        var type = propertiesBuffer.getShort();
-        var column = header.columns(type);
-        var value = readValue(propertiesBuffer, column);
-        properties.add(value);
-      }
-    }
-
-
-    Geometry geometry =
-        GeometryConversions.readGeometry(feature.geometry(), header.geometryType());
-    return new FlatGeoBuf.Feature(properties, geometry);
+    return FlatGeoBufWriter.asFeatureRecord(header, feature);
   }
 
   /**
