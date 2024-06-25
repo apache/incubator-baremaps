@@ -25,21 +25,17 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.apache.baremaps.flatgeobuf.generated.Column;
 import org.apache.baremaps.flatgeobuf.generated.Feature;
 import org.apache.baremaps.flatgeobuf.generated.Header;
+import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufReader {
 
-  public static FlatGeoBuf.Header readHeaderRecord(ReadableByteChannel channel)
-      throws IOException {
-    Header header = readHeaderFlatGeoBuf(channel);
-    return asRecord(header);
-  }
-
-  public static Header readHeaderFlatGeoBuf(ReadableByteChannel channel)
+  public static Header readHeaderBuffer(ReadableByteChannel channel)
       throws IOException {
 
     // Check if the file is a flatgeobuf
@@ -50,7 +46,7 @@ public class FlatGeoBufReader {
       }
     }
     prefixBuffer.flip();
-    if (!FlatGeoBuf.isFlatgeobuf(prefixBuffer)) {
+    if (!FlatGeoBuf.isFlatGeoBuf(prefixBuffer)) {
       throw new IOException("This is not a flatgeobuf!");
     }
 
@@ -71,59 +67,55 @@ public class FlatGeoBufReader {
     return Header.getRootAsHeader(headerBuffer);
   }
 
-  public static void skipIndex(ReadableByteChannel channel, Header header)
+  public static FlatGeoBuf.Header readHeader(ReadableByteChannel channel)
       throws IOException {
-    readIndexBuffer(channel, header);
+    Header header = readHeaderBuffer(channel);
+    return asFlatGeoBuf(header);
   }
 
-  public static ByteBuffer readIndexBuffer(ReadableByteChannel channel, Header header)
-      throws IOException {
-
-    // Calculate the size of the index
-    long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
-    if (indexSize > 1L << 31) {
-      throw new IOException("Index size is greater than 2GB!");
-    }
-
-    // Read the index
-    ByteBuffer buffer = ByteBuffer.allocate((int) indexSize).order(ByteOrder.LITTLE_ENDIAN);
-    while (buffer.hasRemaining()) {
-      if (channel.read(buffer) == -1) {
-        break; // End of channel reached
-      }
-    }
-
-    // Prepare the buffer for reading
-    buffer.flip();
-
-    return buffer;
+  public static FlatGeoBuf.Header asFlatGeoBuf(Header header) {
+    return new FlatGeoBuf.Header(
+        header.name(),
+        List.of(
+            header.envelope(0),
+            header.envelope(1),
+            header.envelope(2),
+            header.envelope(3)),
+        FlatGeoBuf.GeometryType.values()[header.geometryType()],
+        header.hasZ(),
+        header.hasM(),
+        header.hasT(),
+        header.hasTm(),
+        IntStream.range(0, header.columnsLength())
+            .mapToObj(header::columns)
+            .map(column -> new FlatGeoBuf.Column(
+                column.name(),
+                FlatGeoBuf.ColumnType.values()[column.type()],
+                column.title(),
+                column.description(),
+                column.width(),
+                column.precision(),
+                column.scale(),
+                column.nullable(),
+                column.unique(),
+                column.primaryKey(),
+                column.metadata()))
+            .toList(),
+        header.featuresCount(),
+        header.indexNodeSize(),
+        new FlatGeoBuf.Crs(
+            header.crs().org(),
+            header.crs().code(),
+            header.crs().name(),
+            header.crs().description(),
+            header.crs().wkt(),
+            header.crs().codeString()),
+        header.title(),
+        header.description(),
+        header.metadata());
   }
 
-  public static InputStream readIndexStream(ReadableByteChannel channel, Header header) {
-    long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
-    return new BoundedInputStream(Channels.newInputStream(channel), indexSize);
-  }
-
-  public static FlatGeoBuf.Feature readFeatureRecord(ReadableByteChannel channel,
-      Header header, ByteBuffer buffer)
-      throws IOException {
-    Feature feature = readFeatureFlatGeoBuf(channel, buffer);
-    return FlatGeoBufWriter.asFeatureRecord(header, feature);
-  }
-
-  /**
-   * Reads a feature from the specified channel.
-   * <p>
-   * The provided buffer is reused from call to call to avoid unnecessary allocations, so the caller
-   * should not modify the buffer after calling this method. It may be freshly allocated or may
-   * contain data from a previous call.
-   *
-   * @param channel the channel to read from
-   * @param buffer the buffer to use
-   * @return
-   * @throws IOException
-   */
-  public static Feature readFeatureFlatGeoBuf(ReadableByteChannel channel, ByteBuffer buffer)
+  public static Feature readFeatureBuffer(ReadableByteChannel channel, ByteBuffer buffer)
       throws IOException {
 
     try {
@@ -179,50 +171,31 @@ public class FlatGeoBufReader {
     }
   }
 
-
-  public static FlatGeoBuf.Header asRecord(Header header) {
-    return new FlatGeoBuf.Header(
-        header.name(),
-        List.of(
-            header.envelope(0),
-            header.envelope(1),
-            header.envelope(2),
-            header.envelope(3)),
-        FlatGeoBuf.GeometryType.values()[header.geometryType()],
-        header.hasZ(),
-        header.hasM(),
-        header.hasT(),
-        header.hasTm(),
-        IntStream.range(0, header.columnsLength())
-            .mapToObj(header::columns)
-            .map(column -> new FlatGeoBuf.Column(
-                column.name(),
-                FlatGeoBuf.ColumnType.values()[column.type()],
-                column.title(),
-                column.description(),
-                column.width(),
-                column.precision(),
-                column.scale(),
-                column.nullable(),
-                column.unique(),
-                column.primaryKey(),
-                column.metadata()))
-            .toList(),
-        header.featuresCount(),
-        header.indexNodeSize(),
-        new FlatGeoBuf.Crs(
-            header.crs().org(),
-            header.crs().code(),
-            header.crs().name(),
-            header.crs().description(),
-            header.crs().wkt(),
-            header.crs().codeString()),
-        header.title(),
-        header.description(),
-        header.metadata());
+  public static FlatGeoBuf.Feature readFeature(
+      ReadableByteChannel channel,
+      Header header, ByteBuffer buffer)
+      throws IOException {
+    Feature feature = readFeatureBuffer(channel, buffer);
+    return asFlatGeoBuf(header, feature);
   }
 
-  static Object readValue(ByteBuffer buffer, Column column) {
+  public static FlatGeoBuf.Feature asFlatGeoBuf(Header header, Feature feature) {
+    var properties = new ArrayList<>();
+    if (feature.propertiesLength() > 0) {
+      var propertiesBuffer = feature.propertiesAsByteBuffer();
+      while (propertiesBuffer.hasRemaining()) {
+        var columnPosition = propertiesBuffer.getShort();
+        var columnType = header.columns(columnPosition);
+        var columnValue = readValue(propertiesBuffer, columnType);
+        properties.add(columnValue);
+      }
+    }
+    Geometry geometry =
+        GeometryConversions.readGeometry(feature.geometry(), header.geometryType());
+    return new FlatGeoBuf.Feature(properties, geometry);
+  }
+
+  private static Object readValue(ByteBuffer buffer, Column column) {
     return switch (FlatGeoBuf.ColumnType.values()[column.type()]) {
       case BYTE -> buffer.get();
       case UBYTE -> buffer.get();
@@ -312,5 +285,37 @@ public class FlatGeoBufReader {
     public void close() throws IOException {
       in.close();
     }
+  }
+
+  public static void skipIndex(ReadableByteChannel channel, Header header)
+      throws IOException {
+    readIndexBuffer(channel, header);
+  }
+
+  public static ByteBuffer readIndexBuffer(ReadableByteChannel channel, Header header)
+      throws IOException {
+
+    // Calculate the size of the index
+    long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
+    if (indexSize > 1L << 31) {
+      throw new IOException("Index size is greater than 2GB!");
+    }
+
+    // Read the index
+    ByteBuffer buffer = ByteBuffer.allocate((int) indexSize).order(ByteOrder.LITTLE_ENDIAN);
+    while (buffer.hasRemaining()) {
+      if (channel.read(buffer) == -1) {
+        break; // End of channel reached
+      }
+    }
+
+    // Prepare the buffer for reading
+    buffer.flip();
+    return buffer;
+  }
+
+  public static InputStream readIndexStream(ReadableByteChannel channel, Header header) {
+    long indexSize = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
+    return new BoundedInputStream(Channels.newInputStream(channel), indexSize);
   }
 }

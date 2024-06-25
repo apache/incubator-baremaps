@@ -30,7 +30,7 @@ public class FlatGeoBuf {
     // Prevent instantiation
   }
 
-  public static boolean isFlatgeobuf(ByteBuffer bb) {
+  public static boolean isFlatGeoBuf(ByteBuffer bb) {
     return bb.get() == MAGIC_BYTES[0] &&
         bb.get() == MAGIC_BYTES[1] &&
         bb.get() == MAGIC_BYTES[2] &&

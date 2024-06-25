@@ -29,8 +29,8 @@ import org.locationtech.jts.geom.Envelope;
 
 public class PackedRTree {
 
-  private static int NODE_ITEM_LEN = 8 * 4 + 8;
-  final static int HILBERT_MAX = (1 << 16) - 1;
+  public final static int HILBERT_MAX = (1 << 16) - 1;
+  private static final int NODE_ITEM_LEN = 8 * 4 + 8;
   private int numItems;
   private int nodeSize;
   public NodeItem[] nodeItems;
@@ -49,11 +49,13 @@ public class PackedRTree {
   }
 
   public void init(int nodeSize) {
-    if (nodeSize < 2)
+    if (nodeSize < 2) {
       throw new IllegalArgumentException("Node size must be at least 2");
-    if (numItems == 0)
+    }
+    if (numItems == 0) {
       throw new IllegalArgumentException("Number of items must be greater than 0");
-    this.nodeSize = Math.min(Math.max(2, nodeSize), HILBERT_MAX);
+    }
+    this.nodeSize = Math.min(nodeSize, HILBERT_MAX);
     this.levelBounds = generateLevelBounds(numItems, this.nodeSize);
     this.numNodes = levelBounds.get(0).second;
     this.nodeItems = new NodeItem[Math.toIntExact(numNodes)];
@@ -68,8 +70,9 @@ public class PackedRTree {
       long newpos = levelBounds.get(i + 1).first;
       while (pos < end) {
         NodeItem node = new NodeItem(pos);
-        for (short j = 0; j < this.nodeSize && pos < end; j++)
+        for (short j = 0; j < this.nodeSize && pos < end; j++) {
           node.expand(nodeItems[(int) pos++]);
+        }
         nodeItems[(int) newpos++] = node;
       }
     }
@@ -80,7 +83,7 @@ public class PackedRTree {
     double minY = extent.minY();
     double width = extent.width();
     double height = extent.height();
-    Collections.sort(items, (a, b) -> {
+    items.sort((a, b) -> {
       long ha = hibert(a.nodeItem, HILBERT_MAX, minX, minY, width, height);
       long hb = hibert(b.nodeItem, HILBERT_MAX, minX, minY, width, height);
       return (ha - hb) > 0 ? 1 : (ha - hb) == 0 ? 0 : -1;
@@ -92,10 +95,12 @@ public class PackedRTree {
       double width, double height) {
     long x = 0;
     long y = 0;
-    if (width != 0.0)
+    if (width != 0.0) {
       x = (long) Math.floor(hilbertMax * ((nodeItem.minX() + nodeItem.maxX()) / 2 - minX) / width);
-    if (height != 0.0)
+    }
+    if (height != 0.0) {
       y = (long) Math.floor(hilbertMax * ((nodeItem.minY() + nodeItem.maxY()) / 2 - minY) / height);
+    }
     return hibert(x, y);
   }
 
@@ -151,14 +156,13 @@ public class PackedRTree {
     i1 = (i1 | (i1 << 2)) & 0x33333333;
     i1 = (i1 | (i1 << 1)) & 0x55555555;
 
-    long value = ((i1 << 1) | i0);
-
-    return value;
+    return ((i1 << 1) | i0);
   }
 
   public static NodeItem calcExtent(List<? extends Item> items) {
-    return items.stream().map(item -> item.nodeItem).reduce(new NodeItem(0),
-        (nodeItem, nodeItem2) -> nodeItem.expand(nodeItem2));
+    return items.stream()
+        .map(item -> item.nodeItem)
+        .reduce(new NodeItem(0), NodeItem::expand);
   }
 
   public void write(OutputStream outputStream) throws IOException {
@@ -187,14 +191,17 @@ public class PackedRTree {
   }
 
   public static long calcSize(long numItems, int nodeSize) {
-    if (nodeSize < 2)
+    if (nodeSize < 2) {
       throw new IllegalArgumentException("Node size must be at least 2");
-    if (numItems == 0)
+    }
+    if (numItems == 0) {
       throw new IllegalArgumentException("Number of items must be greater than 0");
-    int nodeSizeMin = Math.min(Math.max(nodeSize, 2), 65535);
+    }
+    int nodeSizeMin = Math.min(nodeSize, 65535);
     // limit so that resulting size in bytes can be represented by ulong
-    if (numItems > 1 << 56)
+    if (numItems > 1 << 56) {
       throw new IndexOutOfBoundsException("Number of items must be less than 2^56");
+    }
     long n = numItems;
     long numNodes = n;
     do {
@@ -205,10 +212,12 @@ public class PackedRTree {
   }
 
   static List<Pair<Integer, Integer>> generateLevelBounds(int numItems, int nodeSize) {
-    if (nodeSize < 2)
+    if (nodeSize < 2) {
       throw new IllegalArgumentException("Node size must be at least 2");
-    if (numItems == 0)
+    }
+    if (numItems == 0) {
       throw new IllegalArgumentException("Number of items must be greater than 0");
+    }
 
     // number of nodes per level in bottom-up order
     int n = numItems;
@@ -224,12 +233,14 @@ public class PackedRTree {
     // offsets per level in reversed storage order (top-down)
     ArrayList<Integer> levelOffsets = new ArrayList<Integer>();
     n = numNodes;
-    for (int size : levelNumNodes)
+    for (int size : levelNumNodes) {
       levelOffsets.add(n -= size);
+    }
     List<Pair<Integer, Integer>> levelBounds = new LinkedList<>();
     // bounds per level in reversed storage order (top-down)
-    for (int i = 0; i < levelNumNodes.size(); i++)
+    for (int i = 0; i < levelNumNodes.size(); i++) {
       levelBounds.add(new Pair<>(levelOffsets.get(i), levelOffsets.get(i) + levelNumNodes.get(i)));
+    }
     return levelBounds;
   }
 
@@ -253,7 +264,11 @@ public class PackedRTree {
     public long index;
   }
 
-  public static ArrayList<SearchHit> search(ByteBuffer bb, int start, int numItems, int nodeSize,
+  public static ArrayList<SearchHit> search(
+      ByteBuffer bb,
+      int start,
+      int numItems,
+      int nodeSize,
       Envelope rect) {
     ArrayList<SearchHit> searchHits = new ArrayList<SearchHit>();
     double minX = rect.getMinX();
@@ -265,7 +280,7 @@ public class PackedRTree {
     int numNodes = levelBounds.get(0).second;
     Deque<QueueItem> queue = new LinkedList<QueueItem>();
     queue.add(new QueueItem(0, levelBounds.size() - 1));
-    while (queue.size() != 0) {
+    while (!queue.isEmpty()) {
       QueueItem stackItem = queue.pop();
       int nodeIndex = (int) stackItem.nodeIndex;
       int level = stackItem.level;
@@ -282,19 +297,24 @@ public class PackedRTree {
         double nodeMinY = bb.getDouble(offset + 8);
         double nodeMaxX = bb.getDouble(offset + 16);
         double nodeMaxY = bb.getDouble(offset + 24);
-        if (maxX < nodeMinX)
+        if (maxX < nodeMinX) {
           continue;
-        if (maxY < nodeMinY)
+        }
+        if (maxY < nodeMinY) {
           continue;
-        if (minX > nodeMaxX)
+        }
+        if (minX > nodeMaxX) {
           continue;
-        if (minY > nodeMaxY)
+        }
+        if (minY > nodeMaxY) {
           continue;
+        }
         long indexOffset = bb.getLong(offset + 32);
-        if (isLeafNode)
+        if (isLeafNode) {
           searchHits.add(new SearchHit(indexOffset, pos - leafNodesOffset));
-        else
+        } else {
           queue.add(new QueueItem(indexOffset, level - 1));
+        }
       }
     }
     return searchHits;
@@ -305,7 +325,11 @@ public class PackedRTree {
     public int pos;
   }
 
-  public static SearchResult search(InputStream stream, int start, int numItems, int nodeSize,
+  public static SearchResult search(
+      InputStream stream,
+      int start,
+      int numItems,
+      int nodeSize,
       Envelope rect) throws IOException {
     LittleEndianDataInputStream data = new LittleEndianDataInputStream(stream);
     int dataPos = 0;
@@ -320,7 +344,7 @@ public class PackedRTree {
     int numNodes = levelBounds.get(0).second;
     Deque<QueueItem> queue = new LinkedList<QueueItem>();
     queue.add(new QueueItem(0, levelBounds.size() - 1));
-    while (queue.size() != 0) {
+    while (!queue.isEmpty()) {
       QueueItem stackItem = queue.pop();
       int nodeIndex = (int) stackItem.nodeIndex;
       int level = stackItem.level;
@@ -345,26 +369,31 @@ public class PackedRTree {
         }
         double nodeMinX = data.readDouble();
         dataPos += 8;
-        if (maxX < nodeMinX)
+        if (maxX < nodeMinX) {
           continue;
+        }
         double nodeMinY = data.readDouble();
         dataPos += 8;
-        if (maxY < nodeMinY)
+        if (maxY < nodeMinY) {
           continue;
+        }
         double nodeMaxX = data.readDouble();
         dataPos += 8;
-        if (minX > nodeMaxX)
+        if (minX > nodeMaxX) {
           continue;
+        }
         double nodeMaxY = data.readDouble();
         dataPos += 8;
-        if (minY > nodeMaxY)
+        if (minY > nodeMaxY) {
           continue;
+        }
         long indexOffset = data.readLong();
         dataPos += 8;
-        if (isLeafNode)
+        if (isLeafNode) {
           searchResult.hits.add(new SearchHit(indexOffset, pos - leafNodesOffset));
-        else
+        } else {
           queue.add(new QueueItem(indexOffset, level - 1));
+        }
       }
     }
     searchResult.pos = dataPos;
@@ -372,8 +401,9 @@ public class PackedRTree {
   }
 
   public static long[] readFeatureOffsets(
-      LittleEndianDataInputStream data, long[] fids, Header header)
-      throws IOException {
+      LittleEndianDataInputStream data,
+      long[] fids,
+      Header header) throws IOException {
 
     long treeSize = calcSize((int) header.featuresCount(), header.indexNodeSize());
     List<Pair<Integer, Integer>> levelBounds =
@@ -383,8 +413,9 @@ public class PackedRTree {
     long pos = 0;
     long[] featureOffsets = new long[fids.length];
     for (int i = 0; i < fids.length; i++) {
-      if (fids[i] > header.featuresCount() - 1)
+      if (fids[i] > header.featuresCount() - 1) {
         throw new NoSuchElementException();
+      }
       long nodeItemOffset = bottomLevelOffset + (fids[i] * 40);
       long delta = nodeItemOffset + (8 * 4) - pos;
       skipNBytes(data, delta);
@@ -425,10 +456,12 @@ public class PackedRTree {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o)
+      if (this == o) {
         return true;
-      if (o == null || getClass() != o.getClass())
+      }
+      if (o == null || getClass() != o.getClass()) {
         return false;
+      }
       Pair<?, ?> pair = (Pair<?, ?>) o;
       return Objects.equals(first, pair.first) && Objects.equals(second, pair.second);
     }

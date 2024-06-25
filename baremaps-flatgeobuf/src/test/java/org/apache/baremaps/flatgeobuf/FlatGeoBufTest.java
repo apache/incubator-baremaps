@@ -51,9 +51,9 @@ public class FlatGeoBufTest {
         WritableByteChannel tempChannel = FileChannel.open(tempFile, StandardOpenOption.WRITE)) {
 
       // Copy the header
-      headerFlatGeoBuf1 = FlatGeoBufReader.readHeaderFlatGeoBuf(channel);
-      headerRecord1 = FlatGeoBufReader.asRecord(headerFlatGeoBuf1);
-      FlatGeoBufWriter.writeHeaderFlatGeoBuf(tempChannel, headerFlatGeoBuf1);
+      headerFlatGeoBuf1 = FlatGeoBufReader.readHeaderBuffer(channel);
+      headerRecord1 = FlatGeoBufReader.asFlatGeoBuf(headerFlatGeoBuf1);
+      FlatGeoBufWriter.writeHeaderBuffer(tempChannel, headerFlatGeoBuf1);
 
       // Copy the index
       ByteBuffer indexBuffer = FlatGeoBufReader.readIndexBuffer(channel, headerFlatGeoBuf1);
@@ -62,10 +62,10 @@ public class FlatGeoBufTest {
       // Copy the features
       var buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
       for (int i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
-        Feature feature = FlatGeoBufReader.readFeatureFlatGeoBuf(channel, buffer);
-        FlatGeoBufWriter.asFeatureRecord(tempChannel, feature);
+        Feature feature = FlatGeoBufReader.readFeatureBuffer(channel, buffer);
+        FlatGeoBufWriter.writeFeatureBuffer(tempChannel, feature);
         FlatGeoBuf.Feature featureRecord =
-            FlatGeoBufWriter.asFeatureRecord(headerFlatGeoBuf1, feature);
+            FlatGeoBufReader.asFlatGeoBuf(headerFlatGeoBuf1, feature);
         featureRecords.add(featureRecord);
       }
     }
@@ -74,8 +74,8 @@ public class FlatGeoBufTest {
     try (var channel = FileChannel.open(tempFile, StandardOpenOption.READ)) {
 
       // Read the header
-      Header headerFlatGeoBuf2 = FlatGeoBufReader.readHeaderFlatGeoBuf(channel);
-      FlatGeoBuf.Header headerRecord2 = FlatGeoBufReader.asRecord(headerFlatGeoBuf2);
+      Header headerFlatGeoBuf2 = FlatGeoBufReader.readHeaderBuffer(channel);
+      FlatGeoBuf.Header headerRecord2 = FlatGeoBufReader.asFlatGeoBuf(headerFlatGeoBuf2);
       assertNotNull(headerFlatGeoBuf2);
       assertEquals(headerRecord1, headerRecord2);
 
@@ -85,9 +85,9 @@ public class FlatGeoBufTest {
       // Read the features
       ByteBuffer buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
       for (int i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
-        Feature featureFlatGeoBuf = FlatGeoBufReader.readFeatureFlatGeoBuf(channel, buffer);
+        Feature featureFlatGeoBuf = FlatGeoBufReader.readFeatureBuffer(channel, buffer);
         FlatGeoBuf.Feature featureRecord =
-            FlatGeoBufWriter.asFeatureRecord(headerFlatGeoBuf2, featureFlatGeoBuf);
+            FlatGeoBufReader.asFlatGeoBuf(headerFlatGeoBuf2, featureFlatGeoBuf);
         assertNotNull(featureRecord);
         assertEquals(featureRecords.get(i), featureRecord);
       }
@@ -108,9 +108,9 @@ public class FlatGeoBufTest {
         WritableByteChannel tempChannel = FileChannel.open(tempFile, StandardOpenOption.WRITE)) {
 
       // Copy the header
-      headerRecord1 = FlatGeoBufReader.readHeaderRecord(channel);
-      headerFlatGeoBuf1 = FlatGeoBufWriter.asHeaderRecord(headerRecord1);
-      FlatGeoBufWriter.writeHeaderRecord(tempChannel, headerRecord1);
+      headerRecord1 = FlatGeoBufReader.readHeader(channel);
+      headerFlatGeoBuf1 = FlatGeoBufWriter.asFlatBuffer(headerRecord1);
+      FlatGeoBufWriter.writeHeader(tempChannel, headerRecord1);
 
       // Copy the index
       ByteBuffer indexBuffer = FlatGeoBufReader.readIndexBuffer(channel, headerFlatGeoBuf1);
@@ -120,8 +120,8 @@ public class FlatGeoBufTest {
       var buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
       for (int i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
         FlatGeoBuf.Feature feature =
-            FlatGeoBufReader.readFeatureRecord(channel, headerFlatGeoBuf1, buffer);
-        FlatGeoBufWriter.writeFeatureRecord(tempChannel, headerFlatGeoBuf1, feature);
+            FlatGeoBufReader.readFeature(channel, headerFlatGeoBuf1, buffer);
+        FlatGeoBufWriter.writeFeature(tempChannel, headerFlatGeoBuf1, feature);
         featureRecords.add(feature);
       }
     }
@@ -130,8 +130,8 @@ public class FlatGeoBufTest {
     try (var channel = FileChannel.open(tempFile, StandardOpenOption.READ)) {
 
       // Read the header
-      FlatGeoBuf.Header headerRecord2 = FlatGeoBufReader.readHeaderRecord(channel);
-      Header headerFlatGeoBuf2 = FlatGeoBufWriter.asHeaderRecord(headerRecord2);
+      FlatGeoBuf.Header headerRecord2 = FlatGeoBufReader.readHeader(channel);
+      Header headerFlatGeoBuf2 = FlatGeoBufWriter.asFlatBuffer(headerRecord2);
       assertNotNull(headerFlatGeoBuf2);
       assertEquals(headerRecord1, headerRecord2);
 
@@ -142,7 +142,7 @@ public class FlatGeoBufTest {
       ByteBuffer buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
       for (int i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
         FlatGeoBuf.Feature featureRecord =
-            FlatGeoBufReader.readFeatureRecord(channel, headerFlatGeoBuf2, buffer);
+            FlatGeoBufReader.readFeature(channel, headerFlatGeoBuf2, buffer);
         assertNotNull(featureRecord);
         assertEquals(featureRecords.get(i), featureRecord);
       }

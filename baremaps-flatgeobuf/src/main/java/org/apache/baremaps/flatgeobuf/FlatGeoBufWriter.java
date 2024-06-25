@@ -18,8 +18,6 @@
 package org.apache.baremaps.flatgeobuf;
 
 
-import static org.apache.baremaps.flatgeobuf.FlatGeoBufReader.readValue;
-
 import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,20 +27,13 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.baremaps.flatgeobuf.generated.*;
 import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufWriter {
 
-  public static void writeHeaderRecord(WritableByteChannel channel, FlatGeoBuf.Header header)
-      throws IOException {
-    Header headerFlatGeoBuf = asHeaderRecord(header);
-    writeHeaderFlatGeoBuf(channel, headerFlatGeoBuf);
-  }
-
-  public static void writeHeaderFlatGeoBuf(WritableByteChannel channel, Header header)
+  public static void writeHeaderBuffer(WritableByteChannel channel, Header header)
       throws IOException {
     ByteBuffer headerBuffer = header.getByteBuffer();
     ByteBuffer startBuffer = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN);
@@ -57,43 +48,13 @@ public class FlatGeoBufWriter {
     }
   }
 
-  public static void writeIndexStream(WritableByteChannel channel, InputStream inputStream)
+  public static void writeHeader(WritableByteChannel channel, FlatGeoBuf.Header header)
       throws IOException {
-    try (OutputStream outputStream = Channels.newOutputStream(channel)) {
-      outputStream.write(inputStream.readAllBytes());
-    }
+    Header headerFlatGeoBuf = asFlatBuffer(header);
+    writeHeaderBuffer(channel, headerFlatGeoBuf);
   }
 
-  public static void writeIndexBuffer(WritableByteChannel channel, ByteBuffer buffer)
-      throws IOException {
-    while (buffer.hasRemaining()) {
-      channel.write(buffer);
-    }
-  }
-
-  public static void asFeatureRecord(WritableByteChannel channel, Feature feature)
-      throws IOException {
-    ByteBuffer sizeBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
-    sizeBuffer.putInt(feature.getByteBuffer().remaining());
-    sizeBuffer.flip();
-    while (sizeBuffer.hasRemaining()) {
-      channel.write(sizeBuffer);
-    }
-    ByteBuffer featureBuffer = feature.getByteBuffer().duplicate();
-    while (featureBuffer.hasRemaining()) {
-      channel.write(featureBuffer);
-    }
-  }
-
-  public static void writeFeatureRecord(
-      WritableByteChannel channel,
-      Header header,
-      FlatGeoBuf.Feature feature) throws IOException {
-    Feature featureRecord = writeFeature(header, feature);
-    asFeatureRecord(channel, featureRecord);
-  }
-
-  public static Header asHeaderRecord(FlatGeoBuf.Header header) {
+  public static Header asFlatBuffer(FlatGeoBuf.Header header) {
     FlatBufferBuilder builder = new FlatBufferBuilder(4096);
 
     int[] columnsArray = header.columns().stream().mapToInt(c -> {
@@ -152,8 +113,6 @@ public class FlatGeoBufWriter {
     Crs.addCodeString(builder, crsCodeStringOffset);
     int crsOffset = Crs.endCrs(builder);
 
-
-
     Header.startHeader(builder);
     Header.addGeometryType(builder, header.geometryType().getValue());
     Header.addFeaturesCount(builder, header.featuresCount());
@@ -170,43 +129,30 @@ public class FlatGeoBufWriter {
     return Header.getRootAsHeader(buffer);
   }
 
-  public static void writeValue(ByteBuffer buffer, Column column, Object value) {
-    switch (column.type()) {
-      case ColumnType.Bool -> buffer.put((byte) ((boolean) value ? 1 : 0));
-      case ColumnType.Short -> buffer.putShort((short) value);
-      case ColumnType.UShort -> buffer.putShort((short) value);
-      case ColumnType.Int -> buffer.putInt((int) value);
-      case ColumnType.UInt -> buffer.putInt((int) value);
-      case ColumnType.Long -> buffer.putLong((long) value);
-      case ColumnType.ULong -> buffer.putLong((long) value);
-      case ColumnType.Float -> buffer.putFloat((float) value);
-      case ColumnType.Double -> buffer.putDouble((double) value);
-      case ColumnType.String -> writeColumnString(buffer, value);
-      case ColumnType.Json -> writeColumnJson(buffer, value);
-      case ColumnType.DateTime -> writeColumnDateTime(buffer, value);
-      case ColumnType.Binary -> writeColumnBinary(buffer, value);
+
+  public static void writeFeatureBuffer(WritableByteChannel channel, Feature feature)
+      throws IOException {
+    ByteBuffer sizeBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+    sizeBuffer.putInt(feature.getByteBuffer().remaining());
+    sizeBuffer.flip();
+    while (sizeBuffer.hasRemaining()) {
+      channel.write(sizeBuffer);
+    }
+    ByteBuffer featureBuffer = feature.getByteBuffer().duplicate();
+    while (featureBuffer.hasRemaining()) {
+      channel.write(featureBuffer);
     }
   }
 
-  public static void writeColumnString(ByteBuffer propertiesBuffer, Object value) {
-    var bytes = ((String) value).getBytes(StandardCharsets.UTF_8);
-    propertiesBuffer.putInt(bytes.length);
-    propertiesBuffer.put(bytes);
+  public static void writeFeature(
+      WritableByteChannel channel,
+      Header header,
+      FlatGeoBuf.Feature feature) throws IOException {
+    Feature flatBuffer = asFlatBuffer(header, feature);
+    writeFeatureBuffer(channel, flatBuffer);
   }
 
-  public static void writeColumnJson(ByteBuffer propertiesBuffer, Object value) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static void writeColumnDateTime(ByteBuffer propertiesBuffer, Object value) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static void writeColumnBinary(ByteBuffer propertiesBuffer, Object value) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static Feature writeFeature(Header header, FlatGeoBuf.Feature feature)
+  public static Feature asFlatBuffer(Header header, FlatGeoBuf.Feature feature)
       throws IOException {
     FlatBufferBuilder builder = new FlatBufferBuilder(4096);
 
@@ -246,19 +192,53 @@ public class FlatGeoBufWriter {
     return Feature.getRootAsFeature(buffer);
   }
 
-  public static FlatGeoBuf.Feature asFeatureRecord(Header header, Feature feature) {
-    var properties = new ArrayList<>();
-    if (feature.propertiesLength() > 0) {
-      var propertiesBuffer = feature.propertiesAsByteBuffer();
-      while (propertiesBuffer.hasRemaining()) {
-        var columnPosition = propertiesBuffer.getShort();
-        var columnType = header.columns(columnPosition);
-        var columnValue = readValue(propertiesBuffer, columnType);
-        properties.add(columnValue);
-      }
+  private static void writeValue(ByteBuffer buffer, Column column, Object value) {
+    switch (column.type()) {
+      case ColumnType.Bool -> buffer.put((byte) ((boolean) value ? 1 : 0));
+      case ColumnType.Short -> buffer.putShort((short) value);
+      case ColumnType.UShort -> buffer.putShort((short) value);
+      case ColumnType.Int -> buffer.putInt((int) value);
+      case ColumnType.UInt -> buffer.putInt((int) value);
+      case ColumnType.Long -> buffer.putLong((long) value);
+      case ColumnType.ULong -> buffer.putLong((long) value);
+      case ColumnType.Float -> buffer.putFloat((float) value);
+      case ColumnType.Double -> buffer.putDouble((double) value);
+      case ColumnType.String -> writeString(buffer, value);
+      case ColumnType.Json -> writeJson(buffer, value);
+      case ColumnType.DateTime -> writeDateTime(buffer, value);
+      case ColumnType.Binary -> writeBinary(buffer, value);
     }
-    Geometry geometry =
-        GeometryConversions.readGeometry(feature.geometry(), header.geometryType());
-    return new FlatGeoBuf.Feature(properties, geometry);
+  }
+
+  private static void writeString(ByteBuffer propertiesBuffer, Object value) {
+    var bytes = ((String) value).getBytes(StandardCharsets.UTF_8);
+    propertiesBuffer.putInt(bytes.length);
+    propertiesBuffer.put(bytes);
+  }
+
+  private static void writeJson(ByteBuffer propertiesBuffer, Object value) {
+    throw new UnsupportedOperationException();
+  }
+
+  private static void writeDateTime(ByteBuffer propertiesBuffer, Object value) {
+    throw new UnsupportedOperationException();
+  }
+
+  private static void writeBinary(ByteBuffer propertiesBuffer, Object value) {
+    throw new UnsupportedOperationException();
+  }
+
+  public static void writeIndexStream(WritableByteChannel channel, InputStream inputStream)
+      throws IOException {
+    try (OutputStream outputStream = Channels.newOutputStream(channel)) {
+      outputStream.write(inputStream.readAllBytes());
+    }
+  }
+
+  public static void writeIndexBuffer(WritableByteChannel channel, ByteBuffer buffer)
+      throws IOException {
+    while (buffer.hasRemaining()) {
+      channel.write(buffer);
+    }
   }
 }
