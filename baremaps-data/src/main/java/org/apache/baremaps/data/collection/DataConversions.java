@@ -269,6 +269,17 @@ public class DataConversions {
     }
 
     @Override
+    public V get(Object key) {
+      if (map instanceof MemoryAlignedDataMap) {
+        return map.get(key);
+      } else if (map instanceof IndexedDataMap) {
+        return map.get(key);
+      } else {
+        return super.get(key);
+      }
+    }
+
+    @Override
     public Set<Entry<K, V>> entrySet() {
       return new AbstractSet<>() {
         @Override
