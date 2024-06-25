@@ -50,9 +50,9 @@ public class PackedRTree {
 
   public void init(int nodeSize) {
     if (nodeSize < 2)
-      throw new RuntimeException("Node size must be at least 2");
+      throw new IllegalArgumentException("Node size must be at least 2");
     if (numItems == 0)
-      throw new RuntimeException("Number of items must be greater than 0");
+      throw new IllegalArgumentException("Number of items must be greater than 0");
     this.nodeSize = Math.min(Math.max(2, nodeSize), HILBERT_MAX);
     this.levelBounds = generateLevelBounds(numItems, this.nodeSize);
     this.numNodes = levelBounds.get(0).second;
@@ -161,7 +161,7 @@ public class PackedRTree {
         (nodeItem, nodeItem2) -> nodeItem.expand(nodeItem2));
   }
 
-  public void write(OutputStream outputStream) {
+  public void write(OutputStream outputStream) throws IOException {
     // nodeItem 40 Byte
     ByteBuffer buffer = ByteBuffer.allocate((int) (NODE_ITEM_LEN * numNodes));
     buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -180,8 +180,6 @@ public class PackedRTree {
         outputStream.write(arr);
         outputStream.flush();
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     } finally {
       buffer.clear();
       buffer = null;
@@ -190,9 +188,9 @@ public class PackedRTree {
 
   public static long calcSize(long numItems, int nodeSize) {
     if (nodeSize < 2)
-      throw new RuntimeException("Node size must be at least 2");
+      throw new IllegalArgumentException("Node size must be at least 2");
     if (numItems == 0)
-      throw new RuntimeException("Number of items must be greater than 0");
+      throw new IllegalArgumentException("Number of items must be greater than 0");
     int nodeSizeMin = Math.min(Math.max(nodeSize, 2), 65535);
     // limit so that resulting size in bytes can be represented by ulong
     if (numItems > 1 << 56)
@@ -208,9 +206,9 @@ public class PackedRTree {
 
   static List<Pair<Integer, Integer>> generateLevelBounds(int numItems, int nodeSize) {
     if (nodeSize < 2)
-      throw new RuntimeException("Node size must be at least 2");
+      throw new IllegalArgumentException("Node size must be at least 2");
     if (numItems == 0)
-      throw new RuntimeException("Number of items must be greater than 0");
+      throw new IllegalArgumentException("Number of items must be greater than 0");
 
     // number of nodes per level in bottom-up order
     int n = numItems;

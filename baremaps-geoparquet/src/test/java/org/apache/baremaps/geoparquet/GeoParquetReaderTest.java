@@ -39,17 +39,6 @@ class GeoParquetReaderTest {
     readGroups(geoParquet, isParallel, expectedGroupCount);
   }
 
-  @Disabled("Takes too long. Around 4 minutes.")
-  @Test
-  void readExternal() throws URISyntaxException {
-    URI geoParquet = new URI(
-        "s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=admins/type=locality_area/*.parquet");
-    final boolean isParallel = true;
-    final int expectedGroupCount = 974708;
-
-    readGroups(geoParquet, isParallel, expectedGroupCount);
-  }
-
   private static void readGroups(URI geoParquet, boolean parallel,
       int expectedGroupCount) {
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
@@ -65,6 +54,18 @@ class GeoParquetReaderTest {
     assertEquals(expectedGroupCount, groupCount.get());
   }
 
+  @Disabled("Requires access to the Internet")
+  @Test
+  void readExternal() throws URISyntaxException {
+    URI geoParquet = new URI(
+        "s3a://overturemaps-us-west-2/release/2024-03-12-alpha.0/theme=admins/type=locality_area/*.parquet");
+    final boolean isParallel = true;
+    final int expectedGroupCount = 974708;
+
+    readGroups(geoParquet, isParallel, expectedGroupCount);
+  }
+
+  @Disabled("Requires access to the Internet")
   @Test
   void validateSchemas() throws URISyntaxException {
     URI geoParquet = new URI(
@@ -74,6 +75,7 @@ class GeoParquetReaderTest {
     assertTrue(geoParquetReader.validateSchemasAreIdentical(), "Schemas are identical");
   }
 
+  @Disabled("Requires access to the Internet")
   @Test
   void sizeForLocalities() throws URISyntaxException {
     URI geoParquet = new URI(
@@ -82,6 +84,7 @@ class GeoParquetReaderTest {
     assertEquals(974708L, geoParquetReader.size());
   }
 
+  @Disabled("Requires access to the Internet")
   @Test
   void sizeForBuildings() throws URISyntaxException {
     URI geoParquet = new URI(
