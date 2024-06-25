@@ -31,7 +31,44 @@ import java.util.List;
 import org.apache.baremaps.flatgeobuf.generated.*;
 import org.locationtech.jts.geom.Geometry;
 
-public class FlatGeoBufWriter {
+public class FlatGeoBufWriter implements AutoCloseable {
+
+  private final WritableByteChannel channel;
+
+  private Header header;
+
+  public FlatGeoBufWriter(WritableByteChannel channel) {
+    this.channel = channel;
+  }
+
+  public void writeHeaderBuffer(Header header) throws IOException {
+    writeHeaderBuffer(channel, header);
+  }
+
+  public void writeHeader(FlatGeoBuf.Header header) throws IOException {
+    this.header = asFlatBuffer(header);
+    writeHeader(channel, header);
+  }
+
+  public void writeIndexStream(InputStream inputStream) throws IOException {
+    writeIndexStream(channel, inputStream);
+  }
+
+  public void writeIndexBuffer(ByteBuffer buffer) throws IOException {
+    writeIndexBuffer(channel, buffer);
+  }
+
+  public void writeFeatureBuffer(Feature feature) throws IOException {
+    writeFeatureBuffer(channel, feature);
+  }
+
+  public void writeFeature(FlatGeoBuf.Feature feature) throws IOException {
+    writeFeature(channel, header, feature);
+  }
+
+  public void close() throws IOException {
+    channel.close();
+  }
 
   public static void writeHeaderBuffer(WritableByteChannel channel, Header header)
       throws IOException {

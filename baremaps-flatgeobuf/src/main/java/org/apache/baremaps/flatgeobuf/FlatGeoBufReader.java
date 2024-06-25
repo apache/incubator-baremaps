@@ -33,7 +33,46 @@ import org.apache.baremaps.flatgeobuf.generated.Feature;
 import org.apache.baremaps.flatgeobuf.generated.Header;
 import org.locationtech.jts.geom.Geometry;
 
-public class FlatGeoBufReader {
+public class FlatGeoBufReader implements AutoCloseable {
+
+  private final ReadableByteChannel channel;
+
+  public FlatGeoBufReader(ReadableByteChannel channel) {
+    this.channel = channel;
+  }
+
+  public Header readHeaderBuffer() throws IOException {
+    return readHeaderBuffer(channel);
+  }
+
+  public FlatGeoBuf.Header readHeader() throws IOException {
+    return readHeader(channel);
+  }
+
+  public Feature readFeatureBuffer(ByteBuffer buffer) throws IOException {
+    return readFeatureBuffer(channel, buffer);
+  }
+
+  public FlatGeoBuf.Feature readFeature(Header header, ByteBuffer buffer) throws IOException {
+    return readFeature(channel, header, buffer);
+  }
+
+  public void skipIndex(Header header) throws IOException {
+    skipIndex(channel, header);
+  }
+
+  public ByteBuffer readIndexBuffer(Header header) throws IOException {
+    return readIndexBuffer(channel, header);
+  }
+
+  public InputStream readIndexStream(Header header) {
+    return readIndexStream(channel, header);
+  }
+
+  @Override
+  public void close() throws Exception {
+    channel.close();
+  }
 
   public static Header readHeaderBuffer(ReadableByteChannel channel)
       throws IOException {
