@@ -35,42 +35,46 @@ import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufReader implements AutoCloseable {
 
+  private final ByteBuffer buffer = ByteBuffer.allocate(1 << 16).order(ByteOrder.LITTLE_ENDIAN);
+
   private final ReadableByteChannel channel;
+
+  private Header header;
 
   public FlatGeoBufReader(ReadableByteChannel channel) {
     this.channel = channel;
   }
 
   public Header readHeaderBuffer() throws IOException {
-    return readHeaderBuffer(channel);
+    return (header = readHeaderBuffer(channel));
   }
 
   public FlatGeoBuf.Header readHeader() throws IOException {
-    return readHeader(channel);
+    return asFlatGeoBuf(readHeaderBuffer());
   }
 
-  public Feature readFeatureBuffer(ByteBuffer buffer) throws IOException {
+  public Feature readFeatureBuffer() throws IOException {
     return readFeatureBuffer(channel, buffer);
   }
 
-  public FlatGeoBuf.Feature readFeature(Header header, ByteBuffer buffer) throws IOException {
+  public FlatGeoBuf.Feature readFeature() throws IOException {
     return readFeature(channel, header, buffer);
   }
 
-  public void skipIndex(Header header) throws IOException {
+  public void skipIndex() throws IOException {
     skipIndex(channel, header);
   }
 
-  public ByteBuffer readIndexBuffer(Header header) throws IOException {
+  public ByteBuffer readIndexBuffer() throws IOException {
     return readIndexBuffer(channel, header);
   }
 
-  public InputStream readIndexStream(Header header) {
+  public InputStream readIndexStream() {
     return readIndexStream(channel, header);
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     channel.close();
   }
 

@@ -38,7 +38,58 @@ import org.junit.jupiter.api.Test;
 public class FlatGeoBufTest {
 
   @Test
-  void readWriteFlatGeoBuf() throws IOException {
+  void readWrite() throws IOException {
+    Path file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    Path tempFile = Files.createTempFile("countries", ".fgb");
+
+    Header headerFlatGeoBuf1 = null;
+    FlatGeoBuf.Header headerRecord1 = null;
+    List<FlatGeoBuf.Feature> featureRecords = new ArrayList<>();
+
+    // Copy the file
+    try (FlatGeoBufReader reader = new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ));
+         FlatGeoBufWriter writer = new FlatGeoBufWriter(FileChannel.open(tempFile, StandardOpenOption.WRITE))) {
+
+      // Copy the header
+      headerRecord1 = reader.readHeader();
+      headerFlatGeoBuf1 = FlatGeoBufWriter.asFlatBuffer(headerRecord1);
+      writer.writeHeader(headerRecord1);
+
+      // Copy the index
+      ByteBuffer indexBuffer = reader.readIndexBuffer();
+      writer.writeIndexBuffer(indexBuffer);
+
+      // Copy the features
+      for (int i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
+        FlatGeoBuf.Feature feature = reader.readFeature();
+        writer.writeFeature(feature);
+        featureRecords.add(feature);
+      }
+    }
+
+    // Read the copied file
+    try (FlatGeoBufReader reader = new FlatGeoBufReader(FileChannel.open(tempFile, StandardOpenOption.READ))) {
+
+      // Read the header
+      FlatGeoBuf.Header headerRecord2 = reader.readHeader();
+      Header headerFlatGeoBuf2 = FlatGeoBufWriter.asFlatBuffer(headerRecord2);
+      assertNotNull(headerFlatGeoBuf2);
+      assertEquals(headerRecord1, headerRecord2);
+
+      // Read the index
+      reader.skipIndex();
+
+      // Read the features
+      for (int i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
+        FlatGeoBuf.Feature featureRecord = reader.readFeature();
+        assertNotNull(featureRecord);
+        assertEquals(featureRecords.get(i), featureRecord);
+      }
+    }
+  }
+
+  @Test
+  void readWriteBuffer() throws IOException {
     Path file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
     Path tempFile = Files.createTempFile("countries", ".fgb");
 
