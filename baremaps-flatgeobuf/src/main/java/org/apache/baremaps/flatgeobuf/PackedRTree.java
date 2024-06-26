@@ -248,7 +248,8 @@ public class PackedRTree {
     ArrayList<Integer> levelOffsets = new ArrayList<Integer>();
     n = numNodes;
     for (int size : levelNumNodes) {
-      levelOffsets.add(n -= size);
+      n -= size;
+      levelOffsets.add(n);
     }
     List<Pair<Integer, Integer>> levelBounds = new LinkedList<>();
     // bounds per level in reversed storage order (top-down)
@@ -322,7 +323,6 @@ public class PackedRTree {
       int levelEnd = levelBounds.get(level).second;
       int end = Math.min(nodeIndex + nodeSize, levelEnd);
       int nodeStart = start + (nodeIndex * NODE_ITEM_LEN);
-      // int length = end - nodeIndex;
       // search through child nodes
       for (int pos = nodeIndex; pos < end; pos++) {
         int offset = nodeStart + ((pos - nodeIndex) * NODE_ITEM_LEN);
@@ -405,7 +405,6 @@ public class PackedRTree {
         skipNBytes(data, skip);
         dataPos += skip;
       }
-      // int length = end - nodeIndex;
       // search through child nodes
       for (int pos = nodeIndex; pos < end; pos++) {
         int offset = nodeStart + ((pos - nodeIndex) * NODE_ITEM_LEN);
