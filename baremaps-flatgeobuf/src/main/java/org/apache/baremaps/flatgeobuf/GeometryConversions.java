@@ -32,7 +32,7 @@ import org.locationtech.jts.geom.*;
  */
 public class GeometryConversions {
 
-  public static final String UNKNOWN_GEOMETRY_TYPE = "Unknown geometry type";
+  private static final String UNKNOWN_GEOMETRY_TYPE = "Unknown geometry type";
 
   private GeometryConversions() {
     // Prevent instantiation
@@ -271,7 +271,7 @@ public class GeometryConversions {
         s = e;
       }
       LinearRing shell = lrs[0];
-      LinearRing holes[] = Arrays.copyOfRange(lrs, 1, endsLength);
+      LinearRing[] holes = Arrays.copyOfRange(lrs, 1, endsLength);
       return factory.createPolygon(shell, holes);
     };
 

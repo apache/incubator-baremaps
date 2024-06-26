@@ -34,13 +34,13 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class PackedRTree {
 
-  public static final int HILBERT_MAX = (1 << 16) - 1;
+  private static final int HILBERT_MAX = (1 << 16) - 1;
   private static final int NODE_ITEM_LEN = 8 * 4 + 8;
-  public static final String ILLEGAL_NODE_SIZE = "Node size must be at least 2";
-  public static final String ILLEGAL_NUMBER_OF_ITEMS = "Number of items must be greater than 0";
+  private static final String ILLEGAL_NODE_SIZE = "Node size must be at least 2";
+  private static final String ILLEGAL_NUMBER_OF_ITEMS = "Number of items must be greater than 0";
   private int numItems;
   private int nodeSize;
-  public NodeItem[] nodeItems;
+  private NodeItem[] nodeItems;
   private long numNodes;
   private List<Pair<Integer, Integer>> levelBounds;
 
@@ -259,23 +259,41 @@ public class PackedRTree {
   }
 
   private static class QueueItem {
+
+    private long nodeIndex;
+    private int level;
+
     public QueueItem(long nodeIndex, int level) {
       this.nodeIndex = nodeIndex;
       this.level = level;
     }
 
-    long nodeIndex;
-    int level;
+    public long getNodeIndex() {
+      return nodeIndex;
+    }
+
+    public int getLevel() {
+      return level;
+    }
   }
 
   public static class SearchHit {
+
+    private long offset;
+    private long index;
+
     public SearchHit(long offset, long index) {
       this.offset = offset;
       this.index = index;
     }
 
-    public long offset;
-    public long index;
+    public long getOffset() {
+      return offset;
+    }
+
+    public long getIndex() {
+      return index;
+    }
   }
 
   @SuppressWarnings("squid:S3776")
@@ -336,8 +354,21 @@ public class PackedRTree {
   }
 
   public static class SearchResult {
-    public ArrayList<SearchHit> hits = new ArrayList<SearchHit>();
-    public int pos;
+    private ArrayList<SearchHit> hits = new ArrayList<SearchHit>();
+    private int pos;
+
+    public SearchResult() {
+      // Default constructor
+    }
+
+    public ArrayList<SearchHit> getHits() {
+      return hits;
+    }
+
+    public int getPos() {
+      return pos;
+    }
+
   }
 
   @SuppressWarnings("squid:S3776")
