@@ -32,6 +32,7 @@ import org.locationtech.jts.geom.Envelope;
  * <p>
  * Copyright (c) 2018, Björn Harrtell
  */
+@SuppressWarnings("squid:S117")
 public class PackedRTree {
 
   private static final int HILBERT_MAX = (1 << 16) - 1;
@@ -298,7 +299,7 @@ public class PackedRTree {
   }
 
   @SuppressWarnings("squid:S3776")
-  public static ArrayList<SearchHit> search(
+  public static List<SearchHit> search(
       ByteBuffer bb,
       int start,
       int numItems,
@@ -361,7 +362,7 @@ public class PackedRTree {
       // Default constructor
     }
 
-    public ArrayList<SearchHit> getHits() {
+    public List<SearchHit> getHits() {
       return hits;
     }
 
@@ -483,12 +484,18 @@ public class PackedRTree {
   }
 
   public static class Item {
-    public NodeItem nodeItem;
+
+    private final NodeItem nodeItem;
+
+    public Item(NodeItem nodeItem) {
+      this.nodeItem = nodeItem;
+    }
   }
 
   static class Pair<T, U> {
-    public T first;
-    public U second;
+
+    private final T first;
+    private final U second;
 
     public Pair(T first, U second) {
       this.first = first;

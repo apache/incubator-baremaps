@@ -196,8 +196,7 @@ public class FlatGeoBufWriter implements AutoCloseable {
     writeFeatureBuffer(channel, flatBuffer);
   }
 
-  public static Feature asFlatBuffer(Header header, FlatGeoBuf.Feature feature)
-      throws IOException {
+  public static Feature asFlatBuffer(Header header, FlatGeoBuf.Feature feature) {
     FlatBufferBuilder builder = new FlatBufferBuilder(4096);
 
     // Write the properties
