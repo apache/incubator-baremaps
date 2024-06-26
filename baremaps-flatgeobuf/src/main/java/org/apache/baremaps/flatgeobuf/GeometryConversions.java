@@ -56,7 +56,8 @@ public class GeometryConversions {
       if (mls.getNumGeometries() > 1) {
         go.ends = new long[mls.getNumGeometries()];
         for (int i = 0; i < mls.getNumGeometries(); i++) {
-          go.ends[i] = end += mls.getGeometryN(i).getNumPoints();
+          end += mls.getGeometryN(i).getNumPoints();
+          go.ends[i] = end;
         }
       }
     } else if (geometryType == GeometryType.Polygon) {
@@ -65,7 +66,8 @@ public class GeometryConversions {
       int end = p.getExteriorRing().getNumPoints();
       go.ends[0] = end;
       for (int i = 0; i < p.getNumInteriorRing(); i++) {
-        go.ends[i + 1] = end += p.getInteriorRingN(i).getNumPoints();
+        end += p.getInteriorRingN(i).getNumPoints();
+        go.ends[i + 1] = end;
       }
     } else if (geometryType == GeometryType.MultiPolygon) {
       MultiPolygon mp = (MultiPolygon) geometry;
