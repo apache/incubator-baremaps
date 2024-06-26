@@ -255,21 +255,21 @@ public class FlatGeoBufWriter implements AutoCloseable {
     }
   }
 
-  private static void writeString(ByteBuffer propertiesBuffer, Object value) {
+  private static void writeString(ByteBuffer buffer, Object value) {
     var bytes = ((String) value).getBytes(StandardCharsets.UTF_8);
-    propertiesBuffer.putInt(bytes.length);
-    propertiesBuffer.put(bytes);
+    buffer.putInt(bytes.length);
+    buffer.put(bytes);
   }
 
-  private static void writeJson(ByteBuffer propertiesBuffer, Object value) {
+  private static void writeJson(ByteBuffer buffer, Object value) {
     throw new UnsupportedOperationException();
   }
 
-  private static void writeDateTime(ByteBuffer propertiesBuffer, Object value) {
+  private static void writeDateTime(ByteBuffer buffer, Object value) {
     throw new UnsupportedOperationException();
   }
 
-  private static void writeBinary(ByteBuffer propertiesBuffer, Object value) {
+  private static void writeBinary(ByteBuffer buffer, Object value) {
     throw new UnsupportedOperationException();
   }
 

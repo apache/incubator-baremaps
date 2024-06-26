@@ -51,7 +51,8 @@ public class FlatGeoBufReader implements AutoCloseable {
   }
 
   public Header readHeaderBuffer() throws IOException {
-    return (header = readHeaderBuffer(channel));
+    header = readHeaderBuffer(channel);
+    return header;
   }
 
   public FlatGeoBuf.Header readHeader() throws IOException {

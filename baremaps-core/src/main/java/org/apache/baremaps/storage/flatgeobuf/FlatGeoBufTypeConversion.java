@@ -23,6 +23,7 @@ import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
+import org.apache.baremaps.flatgeobuf.FlatGeoBuf.Feature;
 import org.apache.baremaps.flatgeobuf.generated.ColumnType;
 import org.locationtech.jts.geom.Geometry;
 
@@ -77,8 +78,7 @@ public class FlatGeoBufTypeConversion {
     };
   }
 
-  public static DataRow asRow(FlatGeoBuf.Header header, DataSchema dataType,
-      FlatGeoBuf.Feature feature) {
+  public static DataRow asRow(DataSchema dataType, Feature feature) {
     var values = new ArrayList<>();
 
     var geometry = feature.geometry();
@@ -117,7 +117,7 @@ public class FlatGeoBufTypeConversion {
         null);
   }
 
-  public static FlatGeoBuf.Feature asFeature(FlatGeoBuf.Header header, DataRow row) {
+  public static FlatGeoBuf.Feature asFeature(DataRow row) {
     var geometry = row.values().stream()
         .filter(v -> v instanceof Geometry)
         .map(Geometry.class::cast)

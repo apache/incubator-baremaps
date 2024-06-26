@@ -171,7 +171,7 @@ public class FlatGeoBufDataTable implements DataTable {
       var iterator = features.iterator();
       while (iterator.hasNext()) {
         var row = iterator.next();
-        var feature = FlatGeoBufTypeConversion.asFeature(header, row);
+        var feature = FlatGeoBufTypeConversion.asFeature(row);
         writer.writeFeature(feature);
       }
     }
@@ -222,7 +222,7 @@ public class FlatGeoBufDataTable implements DataTable {
       try {
         var feature = reader.readFeature();
         cursor++;
-        return FlatGeoBufTypeConversion.asRow(header, schema, feature);
+        return FlatGeoBufTypeConversion.asRow(schema, feature);
       } catch (IOException e) {
         throw new NoSuchElementException(e);
       }

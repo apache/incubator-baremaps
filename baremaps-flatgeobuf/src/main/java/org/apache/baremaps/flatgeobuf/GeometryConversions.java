@@ -18,7 +18,7 @@
 package org.apache.baremaps.flatgeobuf;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import java.io.IOException;
+
 import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -32,6 +32,12 @@ import org.locationtech.jts.geom.*;
  * Copyright (c) 2018, Björn Harrtell
  */
 public class GeometryConversions {
+
+  public static final String UNKNOWN_GEOMETRY_TYPE = "Unknown geometry type";
+
+  private GeometryConversions() {
+    // Prevent instantiation
+  }
 
   @SuppressWarnings("squid:S3776")
   public static GeometryOffsets writeGeometryPart(
@@ -109,7 +115,7 @@ public class GeometryConversions {
   }
 
   public static int writeGeometry(FlatBufferBuilder builder,
-      org.locationtech.jts.geom.Geometry geometry, byte geometryType) throws IOException {
+      org.locationtech.jts.geom.Geometry geometry, byte geometryType) {
     byte knownGeometryType = geometryType;
     if (geometryType == GeometryType.Unknown) {
       knownGeometryType = GeometryConversions.toGeometryType(geometry.getClass());
@@ -152,13 +158,12 @@ public class GeometryConversions {
         org.locationtech.jts.geom.Geometry sub = geometry.getGeometryN(i);
         applyInReverseOrder(sub, filter);
       }
-    } else if (geometry instanceof Polygon) {
-      Polygon p = (Polygon) geometry;
-      for (int i = p.getNumInteriorRing() - 1; i >= 0; i--) {
-        org.locationtech.jts.geom.Geometry hole = p.getInteriorRingN(i);
+    } else if (geometry instanceof Polygon polygon) {
+      for (int i = polygon.getNumInteriorRing() - 1; i >= 0; i--) {
+        org.locationtech.jts.geom.Geometry hole = polygon.getInteriorRingN(i);
         applyInReverseOrder(hole, filter);
       }
-      applyInReverseOrder(p.getExteriorRing(), filter);
+      applyInReverseOrder(polygon.getExteriorRing(), filter);
     } else {
       geometry.apply(filter);
     }
@@ -313,7 +318,7 @@ public class GeometryConversions {
       case GeometryType.Polygon:
         return makePolygon.get();
       default:
-        throw new IllegalArgumentException("Unknown geometry type");
+        throw new IllegalArgumentException(UNKNOWN_GEOMETRY_TYPE);
     }
   }
 
@@ -334,7 +339,7 @@ public class GeometryConversions {
       case GeometryType.MultiPolygon:
         return MultiPolygon.class;
       default:
-        throw new IllegalArgumentException("Unknown geometry type");
+        throw new IllegalArgumentException(UNKNOWN_GEOMETRY_TYPE);
     }
   }
 
@@ -354,7 +359,24 @@ public class GeometryConversions {
     } else if (Polygon.class.isAssignableFrom(geometryClass)) {
       return GeometryType.Polygon;
     } else {
-      throw new IllegalArgumentException("Unknown geometry type");
+      throw new IllegalArgumentException(UNKNOWN_GEOMETRY_TYPE);
     }
+  }
+
+  /**
+   * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
+   * <p>
+   * Copyright (c) 2018, Björn Harrtell
+   */
+  public static class GeometryOffsets {
+    public int coordsOffset;
+    public int zOffset;
+    public int mOffset;
+    public long[] ends = null;
+    public int[] lengths = null;
+    public int endsOffset = 0;
+    public int lengthsOffset = 0;
+    public int type = 0;
+    public GeometryOffsets[] gos = null;
   }
 }

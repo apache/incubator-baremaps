@@ -28,7 +28,7 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class FlatGeoBuf {
 
-  public static final byte[] MAGIC_BYTES =
+  protected static final byte[] MAGIC_BYTES =
       new byte[] {0x66, 0x67, 0x62, 0x03, 0x66, 0x67, 0x62, 0x00};
 
   private FlatGeoBuf() {

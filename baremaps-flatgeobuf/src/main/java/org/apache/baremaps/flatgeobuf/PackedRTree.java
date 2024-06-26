@@ -34,7 +34,7 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class PackedRTree {
 
-  public final static int HILBERT_MAX = (1 << 16) - 1;
+  public static final int HILBERT_MAX = (1 << 16) - 1;
   private static final int NODE_ITEM_LEN = 8 * 4 + 8;
   public static final String ILLEGAL_NODE_SIZE = "Node size must be at least 2";
   public static final String ILLEGAL_NUMBER_OF_ITEMS = "Number of items must be greater than 0";
@@ -47,7 +47,7 @@ public class PackedRTree {
   public PackedRTree(final List<? extends Item> items, final short nodeSize) {
     this.numItems = items.size();
     init(nodeSize);
-    int k = (int) (this.numNodes - (long) this.numItems);
+    int k = (int) (this.numNodes - this.numItems);
     Iterator<? extends Item> it = items.iterator();
     for (int i = 0; i < this.numItems; ++i) {
       this.nodeItems[k++] = it.next().nodeItem;

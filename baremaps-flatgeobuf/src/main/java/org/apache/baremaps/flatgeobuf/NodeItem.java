@@ -68,17 +68,15 @@ public record NodeItem(
   public boolean intersects(NodeItem nodeItem) {
     if (nodeItem.minX > maxX) {
       return false;
-    }
-    if (nodeItem.minY > maxY) {
+    } else if (nodeItem.minY > maxY) {
       return false;
-    }
-    if (nodeItem.maxX < minX) {
+    } else if (nodeItem.maxX < minX) {
       return false;
-    }
-    if (nodeItem.maxY < minY) {
+    } else if (nodeItem.maxY < minY) {
       return false;
+    } else {
+      return true;
     }
-    return true;
   }
 
   public Envelope toEnvelope() {
