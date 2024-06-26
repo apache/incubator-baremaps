@@ -24,7 +24,7 @@ import com.google.flatbuffers.Table;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public final class Crs extends Table {
   public static void ValidateVersion() {
     Constants.FLATBUFFERS_24_3_25();

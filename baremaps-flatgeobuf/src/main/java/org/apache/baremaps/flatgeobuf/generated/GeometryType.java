@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.flatgeobuf.generated;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public final class GeometryType {
   private GeometryType() {}
 
