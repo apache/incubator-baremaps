@@ -71,6 +71,7 @@ public class FlatGeoBufWriter implements AutoCloseable {
     writeFeature(channel, header, feature);
   }
 
+  @Override
   public void close() throws IOException {
     channel.close();
   }

@@ -72,13 +72,13 @@ public class PackedRTree {
   void generateNodes() {
     long pos;
     long end;
-    for (short i = 0; i < levelBounds.size() - 1; i++) {
+    for (int i = 0; i < levelBounds.size() - 1; i++) {
       pos = levelBounds.get(i).first;
       end = levelBounds.get(i).second;
       long newpos = levelBounds.get(i + 1).first;
       while (pos < end) {
         NodeItem node = new NodeItem(pos);
-        for (short j = 0; j < this.nodeSize && pos < end; j++) {
+        for (long j = 0; j < this.nodeSize && pos < end; j++) {
           node.expand(nodeItems[(int) pos++]);
         }
         nodeItems[(int) newpos++] = node;

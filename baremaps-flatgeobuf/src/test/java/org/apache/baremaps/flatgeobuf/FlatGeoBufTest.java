@@ -63,7 +63,7 @@ class FlatGeoBufTest {
       writer.writeIndexBuffer(indexBuffer);
 
       // Copy the features
-      for (int i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
+      for (long i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
         FlatGeoBuf.Feature feature = reader.readFeature();
         writer.writeFeature(feature);
         featureRecords.add(feature);
@@ -116,7 +116,7 @@ class FlatGeoBufTest {
 
       // Copy the features
       var buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
-      for (int i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
+      for (long i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
         Feature feature = FlatGeoBufReader.readFeatureBuffer(channel, buffer);
         FlatGeoBufWriter.writeFeatureBuffer(tempChannel, feature);
         FlatGeoBuf.Feature featureRecord =
@@ -139,12 +139,12 @@ class FlatGeoBufTest {
 
       // Read the features
       ByteBuffer buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
-      for (int i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
+      for (long i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
         Feature featureFlatGeoBuf = FlatGeoBufReader.readFeatureBuffer(channel, buffer);
         FlatGeoBuf.Feature featureRecord =
             FlatGeoBufReader.asFlatGeoBuf(headerFlatGeoBuf2, featureFlatGeoBuf);
         assertNotNull(featureRecord);
-        assertEquals(featureRecords.get(i), featureRecord);
+        assertEquals(featureRecords.get((int) i), featureRecord);
       }
     }
   }
@@ -173,7 +173,7 @@ class FlatGeoBufTest {
 
       // Copy the features
       var buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
-      for (int i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
+      for (long i = 0; i < headerFlatGeoBuf1.featuresCount(); i++) {
         FlatGeoBuf.Feature feature =
             FlatGeoBufReader.readFeature(channel, headerFlatGeoBuf1, buffer);
         FlatGeoBufWriter.writeFeature(tempChannel, headerFlatGeoBuf1, feature);
@@ -195,11 +195,11 @@ class FlatGeoBufTest {
 
       // Read the features
       ByteBuffer buffer = ByteBuffer.allocate(1 << 10).order(ByteOrder.LITTLE_ENDIAN);
-      for (int i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
+      for (long i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
         FlatGeoBuf.Feature featureRecord =
             FlatGeoBufReader.readFeature(channel, headerFlatGeoBuf2, buffer);
         assertNotNull(featureRecord);
-        assertEquals(featureRecords.get(i), featureRecord);
+        assertEquals(featureRecords.get((int) i), featureRecord);
       }
     }
   }
