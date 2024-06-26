@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.storage.flatgeobuf;
 
-import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -26,8 +25,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
 import org.apache.baremaps.flatgeobuf.FlatGeoBufReader;
 import org.apache.baremaps.flatgeobuf.FlatGeoBufWriter;
@@ -136,15 +137,13 @@ public class FlatGeoBufDataTable implements DataTable {
         var writer = new FlatGeoBufWriter(
             FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
 
-      var bufferBuilder = new FlatBufferBuilder();
-
-      schema.columns().stream().filter(c -> c.cardinality() == DataColumn.Cardinality.REQUIRED)
+      schema.columns().stream()
+          .filter(c -> c.cardinality() == DataColumn.Cardinality.REQUIRED)
           .forEach(c -> {
-            switch (c.type()) {
-              case BINARY -> throw new UnsupportedOperationException();
+            if (Objects.requireNonNull(c.type()) == Type.BINARY) {
+              throw new UnsupportedOperationException();
             }
           });
-
 
       var header = new FlatGeoBuf.Header(
           schema.name(),

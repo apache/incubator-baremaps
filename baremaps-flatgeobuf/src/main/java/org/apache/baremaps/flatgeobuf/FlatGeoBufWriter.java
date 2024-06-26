@@ -251,6 +251,7 @@ public class FlatGeoBufWriter implements AutoCloseable {
       case ColumnType.Json -> writeJson(buffer, value);
       case ColumnType.DateTime -> writeDateTime(buffer, value);
       case ColumnType.Binary -> writeBinary(buffer, value);
+      default -> throw new UnsupportedOperationException();
     }
   }
 

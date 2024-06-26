@@ -36,6 +36,8 @@ public class PackedRTree {
 
   public final static int HILBERT_MAX = (1 << 16) - 1;
   private static final int NODE_ITEM_LEN = 8 * 4 + 8;
+  public static final String ILLEGAL_NODE_SIZE = "Node size must be at least 2";
+  public static final String ILLEGAL_NUMBER_OF_ITEMS = "Number of items must be greater than 0";
   private int numItems;
   private int nodeSize;
   public NodeItem[] nodeItems;
@@ -55,10 +57,10 @@ public class PackedRTree {
 
   public void init(int nodeSize) {
     if (nodeSize < 2) {
-      throw new IllegalArgumentException("Node size must be at least 2");
+      throw new IllegalArgumentException(ILLEGAL_NODE_SIZE);
     }
     if (numItems == 0) {
-      throw new IllegalArgumentException("Number of items must be greater than 0");
+      throw new IllegalArgumentException(ILLEGAL_NUMBER_OF_ITEMS);
     }
     this.nodeSize = Math.min(nodeSize, HILBERT_MAX);
     this.levelBounds = generateLevelBounds(numItems, this.nodeSize);
@@ -197,14 +199,14 @@ public class PackedRTree {
 
   public static long calcSize(long numItems, int nodeSize) {
     if (nodeSize < 2) {
-      throw new IllegalArgumentException("Node size must be at least 2");
+      throw new IllegalArgumentException(ILLEGAL_NODE_SIZE);
     }
     if (numItems == 0) {
-      throw new IllegalArgumentException("Number of items must be greater than 0");
+      throw new IllegalArgumentException(ILLEGAL_NUMBER_OF_ITEMS);
     }
     int nodeSizeMin = Math.min(nodeSize, 65535);
     // limit so that resulting size in bytes can be represented by ulong
-    if (numItems > 1 << 56) {
+    if (numItems > 1L << 56) {
       throw new IndexOutOfBoundsException("Number of items must be less than 2^56");
     }
     long n = numItems;
@@ -218,10 +220,10 @@ public class PackedRTree {
 
   static List<Pair<Integer, Integer>> generateLevelBounds(int numItems, int nodeSize) {
     if (nodeSize < 2) {
-      throw new IllegalArgumentException("Node size must be at least 2");
+      throw new IllegalArgumentException(ILLEGAL_NODE_SIZE);
     }
     if (numItems == 0) {
-      throw new IllegalArgumentException("Number of items must be greater than 0");
+      throw new IllegalArgumentException(ILLEGAL_NUMBER_OF_ITEMS);
     }
 
     // number of nodes per level in bottom-up order
@@ -269,6 +271,7 @@ public class PackedRTree {
     public long index;
   }
 
+  @SuppressWarnings("squid:S3776")
   public static ArrayList<SearchHit> search(
       ByteBuffer bb,
       int start,
@@ -316,7 +319,7 @@ public class PackedRTree {
         }
         long indexOffset = bb.getLong(offset + 32);
         if (isLeafNode) {
-          searchHits.add(new SearchHit(indexOffset, pos - leafNodesOffset));
+          searchHits.add(new SearchHit(indexOffset, (long) pos - leafNodesOffset));
         } else {
           queue.add(new QueueItem(indexOffset, level - 1));
         }
@@ -330,6 +333,7 @@ public class PackedRTree {
     public int pos;
   }
 
+  @SuppressWarnings("squid:S3776")
   public static SearchResult search(
       InputStream stream,
       int start,
@@ -395,7 +399,7 @@ public class PackedRTree {
         long indexOffset = data.readLong();
         dataPos += 8;
         if (isLeafNode) {
-          searchResult.hits.add(new SearchHit(indexOffset, pos - leafNodesOffset));
+          searchResult.hits.add(new SearchHit(indexOffset, (long) pos - leafNodesOffset));
         } else {
           queue.add(new QueueItem(indexOffset, level - 1));
         }
@@ -413,7 +417,7 @@ public class PackedRTree {
     long treeSize = calcSize((int) header.featuresCount(), header.indexNodeSize());
     List<Pair<Integer, Integer>> levelBounds =
         generateLevelBounds((int) header.featuresCount(), header.indexNodeSize());
-    long bottomLevelOffset = levelBounds.get(0).first * 40;
+    long bottomLevelOffset = levelBounds.get(0).first * 40L;
 
     long pos = 0;
     long[] featureOffsets = new long[fids.length];

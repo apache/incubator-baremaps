@@ -33,6 +33,7 @@ import org.locationtech.jts.geom.*;
  */
 public class GeometryConversions {
 
+  @SuppressWarnings("squid:S3776")
   public static GeometryOffsets writeGeometryPart(
       FlatBufferBuilder builder,
       org.locationtech.jts.geom.Geometry geometry,
@@ -227,6 +228,7 @@ public class GeometryConversions {
     }
   }
 
+  @SuppressWarnings("squid:S3776")
   public static org.locationtech.jts.geom.Geometry readGeometry(Geometry geometry,
       int geometryType) {
     GeometryFactory factory = new GeometryFactory();
@@ -311,7 +313,7 @@ public class GeometryConversions {
       case GeometryType.Polygon:
         return makePolygon.get();
       default:
-        throw new RuntimeException("Unknown geometry type");
+        throw new IllegalArgumentException("Unknown geometry type");
     }
   }
 
@@ -332,7 +334,7 @@ public class GeometryConversions {
       case GeometryType.MultiPolygon:
         return MultiPolygon.class;
       default:
-        throw new RuntimeException("Unknown geometry type");
+        throw new IllegalArgumentException("Unknown geometry type");
     }
   }
 
@@ -352,7 +354,7 @@ public class GeometryConversions {
     } else if (Polygon.class.isAssignableFrom(geometryClass)) {
       return GeometryType.Polygon;
     } else {
-      throw new RuntimeException("Unknown geometry type");
+      throw new IllegalArgumentException("Unknown geometry type");
     }
   }
 }
