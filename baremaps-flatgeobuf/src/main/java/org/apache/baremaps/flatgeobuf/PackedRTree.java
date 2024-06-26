@@ -449,11 +449,6 @@ public class PackedRTree {
     public NodeItem nodeItem;
   }
 
-  public static class FeatureItem extends Item {
-    public long size;
-    public long offset;
-  }
-
   static class Pair<T, U> {
     public T first;
     public U second;
@@ -478,6 +473,66 @@ public class PackedRTree {
     @Override
     public int hashCode() {
       return Objects.hash(first, second);
+    }
+  }
+
+  public record NodeItem(
+      double minX,
+      double minY,
+      double maxX,
+      double maxY,
+      long offset) {
+
+    public NodeItem(double minX, double minY, double maxX, double maxY) {
+      this(minX, minY, maxX, maxY, 0);
+    }
+
+    public NodeItem(long offset) {
+      this(
+          Double.POSITIVE_INFINITY,
+          Double.POSITIVE_INFINITY,
+          Double.NEGATIVE_INFINITY,
+          Double.NEGATIVE_INFINITY,
+          offset);
+    }
+
+    public double width() {
+      return maxX - minX;
+    }
+
+    public double height() {
+      return maxY - minY;
+    }
+
+    public static NodeItem sum(NodeItem a, final NodeItem b) {
+      return a.expand(b);
+    }
+
+    public NodeItem expand(final NodeItem nodeItem) {
+      return new NodeItem(
+          Math.min(nodeItem.minX, minX),
+          Math.min(nodeItem.minY, minY),
+          Math.max(nodeItem.maxX, maxX),
+          Math.max(nodeItem.maxY, maxY),
+          offset);
+    }
+
+    public boolean intersects(NodeItem nodeItem) {
+      if (nodeItem.minX > maxX) {
+        return false;
+      } else if (nodeItem.minY > maxY) {
+        return false;
+      } else if (nodeItem.maxX < minX) {
+        return false;
+      } else if (nodeItem.maxY < minY) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    public Envelope toEnvelope() {
+      return new Envelope(minX, maxX, minY, maxY);
     }
   }
 }

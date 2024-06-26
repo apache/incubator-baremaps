@@ -362,20 +362,90 @@ public class GeometryConversions {
     }
   }
 
-  /**
-   * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
-   * <p>
-   * Copyright (c) 2018, Björn Harrtell
-   */
   public static class GeometryOffsets {
-    public int coordsOffset;
-    public int zOffset;
-    public int mOffset;
-    public long[] ends = null;
-    public int[] lengths = null;
-    public int endsOffset = 0;
-    public int lengthsOffset = 0;
-    public int type = 0;
-    public GeometryOffsets[] gos = null;
+
+    private int coordsOffset;
+    private int zOffset;
+    private int mOffset;
+    private long[] ends = null;
+    private int[] lengths = null;
+    private int endsOffset = 0;
+    private int lengthsOffset = 0;
+    private int type = 0;
+    private GeometryOffsets[] gos = null;
+
+    public GeometryOffsets() {}
+
+    public int getCoordsOffset() {
+      return coordsOffset;
+    }
+
+    public int getzOffset() {
+      return zOffset;
+    }
+
+    public int getmOffset() {
+      return mOffset;
+    }
+
+    public long[] getEnds() {
+      return ends;
+    }
+
+    public int[] getLengths() {
+      return lengths;
+    }
+
+    public int getEndsOffset() {
+      return endsOffset;
+    }
+
+    public int getLengthsOffset() {
+      return lengthsOffset;
+    }
+
+    public int getType() {
+      return type;
+    }
+
+    public GeometryOffsets[] getGos() {
+      return gos;
+    }
+
+    public void setCoordsOffset(int coordsOffset) {
+      this.coordsOffset = coordsOffset;
+    }
+
+    public void setzOffset(int zOffset) {
+      this.zOffset = zOffset;
+    }
+
+    public void setmOffset(int mOffset) {
+      this.mOffset = mOffset;
+    }
+
+    public void setEnds(long[] ends) {
+      this.ends = ends;
+    }
+
+    public void setLengths(int[] lengths) {
+      this.lengths = lengths;
+    }
+
+    public void setEndsOffset(int endsOffset) {
+      this.endsOffset = endsOffset;
+    }
+
+    public void setLengthsOffset(int lengthsOffset) {
+      this.lengthsOffset = lengthsOffset;
+    }
+
+    public void setType(int type) {
+      this.type = type;
+    }
+
+    public void setGos(GeometryOffsets[] gos) {
+      this.gos = gos;
+    }
   }
 }
