@@ -45,11 +45,11 @@ public class PackedRTree {
   private long numNodes;
   private List<Pair<Integer, Integer>> levelBounds;
 
-  public PackedRTree(final List<? extends Item> items, final short nodeSize) {
+  public PackedRTree(final List<Item> items, final short nodeSize) {
     this.numItems = items.size();
     init(nodeSize);
     int k = (int) (this.numNodes - this.numItems);
-    Iterator<? extends Item> it = items.iterator();
+    Iterator<Item> it = items.iterator();
     for (int i = 0; i < this.numItems; ++i) {
       this.nodeItems[k++] = it.next().nodeItem();
     }
@@ -174,7 +174,7 @@ public class PackedRTree {
     return ((i1 << 1) | i0);
   }
 
-  public static NodeItem calcExtent(List<? extends Item> items) {
+  public static NodeItem calcExtent(List<Item> items) {
     return items.stream()
         .map(Item::nodeItem)
         .reduce(new NodeItem(0), NodeItem::expand);

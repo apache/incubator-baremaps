@@ -35,7 +35,7 @@ import org.apache.baremaps.flatgeobuf.generated.Header;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-public class FlatGeoBufTest {
+class FlatGeoBufTest {
 
   @Test
   void readWrite() throws IOException {
