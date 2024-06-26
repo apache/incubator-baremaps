@@ -17,6 +17,11 @@
 
 package org.apache.baremaps.flatgeobuf;
 
+/**
+ * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
+ * <p>
+ * Copyright (c) 2018, Björn Harrtell
+ */
 public class GeometryOffsets {
   public int coordsOffset;
   public int zOffset;

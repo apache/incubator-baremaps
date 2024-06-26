@@ -33,6 +33,11 @@ import org.apache.baremaps.flatgeobuf.generated.Feature;
 import org.apache.baremaps.flatgeobuf.generated.Header;
 import org.locationtech.jts.geom.Geometry;
 
+/**
+ * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
+ * <p>
+ * Copyright (c) 2018, Björn Harrtell
+ */
 public class FlatGeoBufReader implements AutoCloseable {
 
   private final ByteBuffer buffer = ByteBuffer.allocate(1 << 16).order(ByteOrder.LITTLE_ENDIAN);

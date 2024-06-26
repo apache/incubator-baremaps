@@ -19,6 +19,11 @@ package org.apache.baremaps.flatgeobuf;
 
 import org.locationtech.jts.geom.Envelope;
 
+/**
+ * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
+ * <p>
+ * Copyright (c) 2018, Björn Harrtell
+ */
 public record NodeItem(
     double minX,
     double minY,

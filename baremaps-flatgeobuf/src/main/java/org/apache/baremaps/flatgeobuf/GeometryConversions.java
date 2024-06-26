@@ -26,6 +26,11 @@ import org.apache.baremaps.flatgeobuf.generated.Geometry;
 import org.apache.baremaps.flatgeobuf.generated.GeometryType;
 import org.locationtech.jts.geom.*;
 
+/**
+ * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
+ * <p>
+ * Copyright (c) 2018, Björn Harrtell
+ */
 public class GeometryConversions {
 
   public static GeometryOffsets writeGeometryPart(

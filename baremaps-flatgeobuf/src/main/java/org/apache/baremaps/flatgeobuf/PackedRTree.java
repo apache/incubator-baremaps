@@ -27,6 +27,11 @@ import java.util.*;
 import org.apache.baremaps.flatgeobuf.generated.Header;
 import org.locationtech.jts.geom.Envelope;
 
+/**
+ * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
+ * <p>
+ * Copyright (c) 2018, Björn Harrtell
+ */
 public class PackedRTree {
 
   public final static int HILBERT_MAX = (1 << 16) - 1;
