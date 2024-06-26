@@ -70,7 +70,7 @@ public class PackedRTree {
 
   void generateNodes() {
     long pos;
-    long end = 0;
+    long end;
     for (short i = 0; i < levelBounds.size() - 1; i++) {
       pos = levelBounds.get(i).first;
       end = levelBounds.get(i).second;
@@ -85,7 +85,7 @@ public class PackedRTree {
     }
   }
 
-  public static List<? extends Item> hilbertSort(List<? extends Item> items, NodeItem extent) {
+  public static List<Item> hilbertSort(List<Item> items, NodeItem extent) {
     double minX = extent.minX();
     double minY = extent.minY();
     double width = extent.width();
@@ -93,7 +93,14 @@ public class PackedRTree {
     items.sort((a, b) -> {
       long ha = hibert(a.nodeItem, HILBERT_MAX, minX, minY, width, height);
       long hb = hibert(b.nodeItem, HILBERT_MAX, minX, minY, width, height);
-      return (ha - hb) > 0 ? 1 : (ha - hb) == 0 ? 0 : -1;
+      long delta = ha - hb;
+      if (delta > 0) {
+        return 1;
+      } else if (delta == 0) {
+        return 0;
+      } else {
+        return -1;
+      }
     });
     return items;
   }

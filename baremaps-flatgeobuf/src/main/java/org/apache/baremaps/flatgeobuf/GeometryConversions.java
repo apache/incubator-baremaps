@@ -168,7 +168,6 @@ public class GeometryConversions {
     }
   }
 
-
   private static class OrdinateCoordinateSequenceFilter implements CoordinateSequenceFilter {
     private FlatBufferBuilder builder;
     private final int ordinateIndex;
@@ -374,7 +373,9 @@ public class GeometryConversions {
     private int type = 0;
     private GeometryOffsets[] gos = null;
 
-    public GeometryOffsets() {}
+    public GeometryOffsets() {
+      // Default constructor
+    }
 
     public int getCoordsOffset() {
       return coordsOffset;
