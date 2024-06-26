@@ -68,11 +68,12 @@ public class Baremaps implements Callable<Integer> {
     }
 
     // Execute the command
-    new CommandLine(new Baremaps())
+    CommandLine commandLine = new CommandLine(new Baremaps())
         .setCaseInsensitiveEnumValuesAllowed(true)
         .setUsageHelpLongOptionsMaxWidth(30)
-        .addMixin("options", new Options())
-        .parseWithHandlers(new CommandLine.RunLast(), CommandLine.defaultExceptionHandler(), args);
+        .addMixin("options", new Options());
+
+    commandLine.execute(args);
   }
 
   @Override

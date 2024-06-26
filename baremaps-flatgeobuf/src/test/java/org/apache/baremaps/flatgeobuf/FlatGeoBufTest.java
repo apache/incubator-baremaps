@@ -84,10 +84,10 @@ class FlatGeoBufTest {
       reader.skipIndex();
 
       // Read the features
-      for (int i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
+      for (long i = 0; i < headerFlatGeoBuf2.featuresCount(); i++) {
         FlatGeoBuf.Feature featureRecord = reader.readFeature();
         assertNotNull(featureRecord);
-        assertEquals(featureRecords.get(i), featureRecord);
+        assertEquals(featureRecords.get((int) i), featureRecord);
       }
     }
   }
