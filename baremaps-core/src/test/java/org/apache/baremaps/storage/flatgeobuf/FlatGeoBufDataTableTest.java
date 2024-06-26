@@ -31,7 +31,7 @@ class FlatGeoBufDataTableTest {
     var file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
     var table = new FlatGeoBufDataTable(file);
     var rowType = table.schema();
-    assertEquals(null, rowType.name());
+    assertEquals("countries", rowType.name());
     assertEquals(2, rowType.columns().size());
   }
 

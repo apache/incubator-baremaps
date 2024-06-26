@@ -117,33 +117,35 @@ public class FlatGeoBufWriter implements AutoCloseable {
     }
 
     int crsOrgOffset = 0;
-    if (header.crs().org() != null) {
+    if (header.crs() != null && header.crs().org() != null) {
       crsOrgOffset = builder.createString(header.crs().org());
     }
 
     int crsNameOffset = 0;
-    if (header.crs().name() != null) {
+    if (header.crs() != null && header.crs().name() != null) {
       crsNameOffset = builder.createString(header.crs().name());
     }
 
     int crsDescriptionOffset = 0;
-    if (header.crs().description() != null) {
+    if (header.crs() != null && header.crs().description() != null) {
       crsDescriptionOffset = builder.createString(header.crs().description());
     }
 
     int crsWktOffset = 0;
-    if (header.crs().wkt() != null) {
+    if (header.crs() != null && header.crs().wkt() != null) {
       crsWktOffset = builder.createString(header.crs().wkt());
     }
 
     int crsCodeStringOffset = 0;
-    if (header.crs().codeString() != null) {
+    if (header.crs() != null && header.crs().codeString() != null) {
       crsCodeStringOffset = builder.createString(header.crs().codeString());
     }
 
     Crs.startCrs(builder);
     Crs.addOrg(builder, crsOrgOffset);
-    Crs.addCode(builder, header.crs().code());
+    if (header.crs() != null) {
+      Crs.addCode(builder, header.crs().code());
+    }
     Crs.addName(builder, crsNameOffset);
     Crs.addDescription(builder, crsDescriptionOffset);
     Crs.addWkt(builder, crsWktOffset);

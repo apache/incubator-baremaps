@@ -47,8 +47,11 @@ public class FlatGeoBufTest {
     List<FlatGeoBuf.Feature> featureRecords = new ArrayList<>();
 
     // Copy the file
-    try (FlatGeoBufReader reader = new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ));
-         FlatGeoBufWriter writer = new FlatGeoBufWriter(FileChannel.open(tempFile, StandardOpenOption.WRITE))) {
+    try (
+        FlatGeoBufReader reader =
+            new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ));
+        FlatGeoBufWriter writer =
+            new FlatGeoBufWriter(FileChannel.open(tempFile, StandardOpenOption.WRITE))) {
 
       // Copy the header
       headerRecord1 = reader.readHeader();
@@ -68,7 +71,8 @@ public class FlatGeoBufTest {
     }
 
     // Read the copied file
-    try (FlatGeoBufReader reader = new FlatGeoBufReader(FileChannel.open(tempFile, StandardOpenOption.READ))) {
+    try (FlatGeoBufReader reader =
+        new FlatGeoBufReader(FileChannel.open(tempFile, StandardOpenOption.READ))) {
 
       // Read the header
       FlatGeoBuf.Header headerRecord2 = reader.readHeader();
