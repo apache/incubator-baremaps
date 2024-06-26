@@ -18,7 +18,6 @@
 package org.apache.baremaps.flatgeobuf;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-
 import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
