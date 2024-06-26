@@ -51,7 +51,7 @@ public class PackedRTree {
     int k = (int) (this.numNodes - this.numItems);
     Iterator<? extends Item> it = items.iterator();
     for (int i = 0; i < this.numItems; ++i) {
-      this.nodeItems[k++] = it.next().nodeItem;
+      this.nodeItems[k++] = it.next().nodeItem();
     }
     generateNodes();
   }
@@ -176,7 +176,7 @@ public class PackedRTree {
 
   public static NodeItem calcExtent(List<? extends Item> items) {
     return items.stream()
-        .map(item -> item.nodeItem)
+        .map(Item::nodeItem)
         .reduce(new NodeItem(0), NodeItem::expand);
   }
 
@@ -260,42 +260,12 @@ public class PackedRTree {
     return levelBounds;
   }
 
-  private static class QueueItem {
+  public record QueueItem(long nodeIndex, int level) {
 
-    private long nodeIndex;
-    private int level;
-
-    public QueueItem(long nodeIndex, int level) {
-      this.nodeIndex = nodeIndex;
-      this.level = level;
-    }
-
-    public long getNodeIndex() {
-      return nodeIndex;
-    }
-
-    public int getLevel() {
-      return level;
-    }
   }
 
-  public static class SearchHit {
+  public record SearchHit(long offset, long index) {
 
-    private long offset;
-    private long index;
-
-    public SearchHit(long offset, long index) {
-      this.offset = offset;
-      this.index = index;
-    }
-
-    public long getOffset() {
-      return offset;
-    }
-
-    public long getIndex() {
-      return index;
-    }
   }
 
   @SuppressWarnings("squid:S3776")
@@ -354,21 +324,7 @@ public class PackedRTree {
     return searchHits;
   }
 
-  public static class SearchResult {
-    private ArrayList<SearchHit> hits = new ArrayList<SearchHit>();
-    private int pos;
-
-    public SearchResult() {
-      // Default constructor
-    }
-
-    public List<SearchHit> getHits() {
-      return hits;
-    }
-
-    public int getPos() {
-      return pos;
-    }
+  public record SearchResult(List<SearchHit> hits, int pos) {
 
   }
 
@@ -382,7 +338,7 @@ public class PackedRTree {
     LittleEndianDataInputStream data = new LittleEndianDataInputStream(stream);
     int dataPos = 0;
     int skip;
-    SearchResult searchResult = new SearchResult();
+    List<SearchHit> hits = new ArrayList<>();
     double minX = rect.getMinX();
     double minY = rect.getMinY();
     double maxX = rect.getMaxX();
@@ -437,14 +393,13 @@ public class PackedRTree {
         long indexOffset = data.readLong();
         dataPos += 8;
         if (isLeafNode) {
-          searchResult.hits.add(new SearchHit(indexOffset, (long) pos - leafNodesOffset));
+          hits.add(new SearchHit(indexOffset, (long) pos - leafNodesOffset));
         } else {
           queue.add(new QueueItem(indexOffset, level - 1));
         }
       }
     }
-    searchResult.pos = dataPos;
-    return searchResult;
+    return new SearchResult(hits, dataPos);
   }
 
   public static long[] readFeatureOffsets(
@@ -483,41 +438,12 @@ public class PackedRTree {
     }
   }
 
-  public static class Item {
+  public record Item(NodeItem nodeItem) {
 
-    private final NodeItem nodeItem;
-
-    public Item(NodeItem nodeItem) {
-      this.nodeItem = nodeItem;
-    }
   }
 
-  static class Pair<T, U> {
+  public record Pair<T, U> (T first, U second) {
 
-    private final T first;
-    private final U second;
-
-    public Pair(T first, U second) {
-      this.first = first;
-      this.second = second;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      Pair<?, ?> pair = (Pair<?, ?>) o;
-      return Objects.equals(first, pair.first) && Objects.equals(second, pair.second);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(first, second);
-    }
   }
 
   public record NodeItem(
