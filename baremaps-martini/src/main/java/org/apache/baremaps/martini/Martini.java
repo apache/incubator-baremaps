@@ -88,7 +88,7 @@ public class Martini {
    * @param terrain the terrain data
    * @return the tile
    */
-  public Tile createTile(float[] terrain) {
+  public Tile createTile(double[] terrain) {
     return new Tile(terrain, gridSize, numTriangles, numParentTriangles, baseCoords);
   }
 
@@ -99,7 +99,7 @@ public class Martini {
 
     private final int gridSize;
     private final int[] indices;
-    private final float[] errors;
+    private final double[] errors;
 
     private int numVertices;
     private int numTriangles;
@@ -108,7 +108,7 @@ public class Martini {
     private int[] triangles;
     private int triIndex = 0;
 
-    private Tile(float[] terrain, int gridSize, int numTriangles, int numParentTriangles,
+    private Tile(double[] terrain, int gridSize, int numTriangles, int numParentTriangles,
         int[] coords) {
       if (terrain.length != gridSize * gridSize) {
         throw new IllegalArgumentException(
@@ -119,7 +119,7 @@ public class Martini {
       this.gridSize = gridSize;
       this.indices = new int[this.gridSize * this.gridSize];
 
-      this.errors = new float[terrain.length];
+      this.errors = new double[terrain.length];
       for (int i = numTriangles - 1; i >= 0; i--) {
         int k = i * 4;
         int ax = coords[k];
@@ -131,9 +131,9 @@ public class Martini {
         int cx = mx + my - ay;
         int cy = my + ax - mx;
 
-        float interpolatedHeight = (terrain[ay * gridSize + ax] + terrain[by * gridSize + bx]) / 2;
+        double interpolatedHeight = (terrain[ay * gridSize + ax] + terrain[by * gridSize + bx]) / 2;
         int middleIndex = my * gridSize + mx;
-        float middleError = Math.abs(interpolatedHeight - terrain[middleIndex]);
+        double middleError = Math.abs(interpolatedHeight - terrain[middleIndex]);
 
         errors[middleIndex] = Math.max(errors[middleIndex], middleError);
 
@@ -152,7 +152,7 @@ public class Martini {
      * @param maxError the maximum error
      * @return the mesh
      */
-    public Mesh getMesh(float maxError) {
+    public Mesh getMesh(double maxError) {
       int max = gridSize - 1;
 
       numVertices = 0;
@@ -169,7 +169,7 @@ public class Martini {
       return new Mesh(vertices, triangles);
     }
 
-    private void countElements(int ax, int ay, int bx, int by, int cx, int cy, float maxError) {
+    private void countElements(int ax, int ay, int bx, int by, int cx, int cy, double maxError) {
       int mx = (ax + bx) >> 1;
       int my = (ay + by) >> 1;
 
@@ -187,7 +187,7 @@ public class Martini {
       }
     }
 
-    private void processTriangle(int ax, int ay, int bx, int by, int cx, int cy, float maxError) {
+    private void processTriangle(int ax, int ay, int bx, int by, int cx, int cy, double maxError) {
       int mx = (ax + bx) >> 1;
       int my = (ay + by) >> 1;
 
