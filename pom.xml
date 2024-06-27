@@ -52,6 +52,7 @@ limitations under the License.
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-data</module>
+    <module>baremaps-flatgeobuf</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
@@ -235,6 +236,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-data</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-flatgeobuf</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -444,11 +450,6 @@ limitations under the License.
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.wololo</groupId>
-        <artifactId>flatgeobuf</artifactId>
-        <version>${version.lib.flatgeobuf}</version>
-      </dependency>
-      <dependency>
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
         <version>${version.lib.sqlite}</version>
@@ -474,7 +475,10 @@ limitations under the License.
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
-    <!-- Provide logging for any child module during test -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
@@ -525,10 +529,6 @@ limitations under the License.
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.wololo</groupId>
-      <artifactId>flatgeobuf</artifactId>
     </dependency>
   </dependencies>
 

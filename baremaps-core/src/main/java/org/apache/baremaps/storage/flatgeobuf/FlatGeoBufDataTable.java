@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.storage.flatgeobuf;
 
-import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -26,18 +25,14 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import org.apache.baremaps.data.collection.DataCollection;
-import org.apache.baremaps.data.storage.DataRow;
-import org.apache.baremaps.data.storage.DataSchema;
-import org.apache.baremaps.data.storage.DataStoreException;
-import org.apache.baremaps.data.storage.DataTable;
-import org.locationtech.jts.geom.*;
-import org.wololo.flatgeobuf.Constants;
-import org.wololo.flatgeobuf.GeometryConversions;
-import org.wololo.flatgeobuf.HeaderMeta;
-import org.wololo.flatgeobuf.PackedRTree;
-import org.wololo.flatgeobuf.generated.Feature;
-import org.wololo.flatgeobuf.generated.GeometryType;
+import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.data.storage.DataColumn.Type;
+import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
+import org.apache.baremaps.flatgeobuf.FlatGeoBufReader;
+import org.apache.baremaps.flatgeobuf.FlatGeoBufWriter;
+import org.apache.baremaps.flatgeobuf.PackedRTree;
 
 /**
  * A {@link DataTable} that stores rows in a flatgeobuf file.
@@ -54,25 +49,7 @@ public class FlatGeoBufDataTable implements DataTable {
    * @param file the path to the flatgeobuf file
    */
   public FlatGeoBufDataTable(Path file) {
-    this.file = file;
-    this.schema = readSchema(file);
-  }
-
-  /**
-   * Reads the schema from a flatgeobuf file.
-   *
-   * @param file the path to the flatgeobuf file
-   * @return the schema of the table
-   */
-  private static DataSchema readSchema(Path file) {
-    try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
-      // try to read the schema from the file
-      var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-      HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
-      return FlatGeoBufTypeConversion.asSchema(headerMeta);
-    } catch (IOException e) {
-      return null;
-    }
+    this(file, readSchema(file));
   }
 
   /**
@@ -84,6 +61,22 @@ public class FlatGeoBufDataTable implements DataTable {
   public FlatGeoBufDataTable(Path file, DataSchema schema) {
     this.file = file;
     this.schema = schema;
+  }
+
+  /**
+   * Reads the schema from a flatgeobuf file.
+   *
+   * @param file the path to the flatgeobuf file
+   * @return the schema of the table
+   */
+  private static DataSchema readSchema(Path file) {
+    try (var reader = new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ))) {
+      // try to read the schema from the file
+      var header = reader.readHeader();
+      return FlatGeoBufTypeConversion.asSchema(header);
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   /**
@@ -100,22 +93,13 @@ public class FlatGeoBufDataTable implements DataTable {
   @Override
   public Iterator<DataRow> iterator() {
     try {
-      var channel = FileChannel.open(file, StandardOpenOption.READ);
+      var reader = new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ));
 
-      var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-      HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
-      channel.position(headerMeta.offset);
-
-      // skip the index
-      long indexOffset = headerMeta.offset;
-      long indexSize =
-          PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
-      channel.position(indexOffset + indexSize);
-
-      buffer.clear();
+      var header = reader.readHeader();
+      reader.skipIndex();
 
       // create the feature stream
-      return new RowIterator(channel, headerMeta, schema, buffer);
+      return new RowIterator(reader, header, schema);
     } catch (IOException e) {
       throw new DataStoreException(e);
     }
@@ -134,28 +118,12 @@ public class FlatGeoBufDataTable implements DataTable {
    */
   @Override
   public long size() {
-    try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
-      var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-      HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
-      return headerMeta.featuresCount;
+    try (var reader = new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ))) {
+      FlatGeoBuf.Header header = reader.readHeader();
+      return header.featuresCount();
     } catch (IOException e) {
       throw new DataStoreException(e);
     }
-  }
-
-  /**
-   * Reads the header meta from a channel.
-   *
-   * @param channel the channel to read from
-   * @param buffer the buffer to use
-   * @return the header meta
-   * @throws IOException if an error occurs while reading the header meta
-   */
-  private static HeaderMeta readHeaderMeta(SeekableByteChannel channel, ByteBuffer buffer)
-      throws IOException {
-    channel.read(buffer);
-    buffer.flip();
-    return HeaderMeta.read(buffer);
   }
 
   /**
@@ -166,68 +134,45 @@ public class FlatGeoBufDataTable implements DataTable {
    */
   public void write(DataCollection<DataRow> features) throws IOException {
     try (
-        var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-        var outputStream = Channels.newOutputStream(channel)) {
-      outputStream.write(Constants.MAGIC_BYTES);
+        var writer = new FlatGeoBufWriter(
+            FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
 
-      var bufferBuilder = new FlatBufferBuilder();
+      schema.columns().stream()
+          .filter(c -> c.cardinality() == DataColumn.Cardinality.REQUIRED)
+          .forEach(c -> {
+            if (Objects.requireNonNull(c.type()) == Type.BINARY) {
+              throw new UnsupportedOperationException();
+            }
+          });
 
-      var headerMeta = new HeaderMeta();
-      headerMeta.geometryType = GeometryType.Unknown;
-      headerMeta.indexNodeSize = 16;
-      headerMeta.srid = 3857;
-      headerMeta.featuresCount = features.size();
-      headerMeta.name = schema.name();
-      headerMeta.columns = FlatGeoBufTypeConversion.asColumns(schema.columns());
-      HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
+      var header = new FlatGeoBuf.Header(
+          schema.name(),
+          null,
+          FlatGeoBuf.GeometryType.UNKNOWN,
+          false,
+          false,
+          false,
+          false,
+          FlatGeoBufTypeConversion.asColumns(schema.columns()),
+          features.size(),
+          2,
+          null,
+          null,
+          null,
+          null);
+
+      writer.writeHeader(header);
 
       var indexSize =
-          (int) PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
+          (int) PackedRTree.calcSize((int) header.featuresCount(), header.indexNodeSize());
 
-      for (int i = 0; i < indexSize; i++) {
-        outputStream.write(0);
-      }
+      writer.writeIndexBuffer(ByteBuffer.allocate(indexSize).order(ByteOrder.LITTLE_ENDIAN));
 
       var iterator = features.iterator();
       while (iterator.hasNext()) {
-        var featureBuilder = new FlatBufferBuilder(4096);
-
         var row = iterator.next();
-
-        var propertiesBuffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-        var properties = row.values().stream()
-            .filter(v -> !(v instanceof Geometry))
-            .toList();
-        for (int i = 0; i < properties.size(); i++) {
-          var column = headerMeta.columns.get(i);
-          var value = properties.get(i);
-          propertiesBuffer.putShort((short) i);
-          FlatGeoBufTypeConversion.writeValue(propertiesBuffer, column, value);
-        }
-        if (propertiesBuffer.position() > 0) {
-          propertiesBuffer.flip();
-        }
-        var propertiesOffset = org.wololo.flatgeobuf.generated.Feature
-            .createPropertiesVector(featureBuilder, propertiesBuffer);
-
-        var geometry = row.values().stream()
-            .filter(v -> v instanceof Geometry)
-            .map(Geometry.class::cast)
-            .findFirst();
-
-        var geometryOffset = geometry.isPresent()
-            ? GeometryConversions.serialize(featureBuilder, geometry.get(), headerMeta.geometryType)
-            : 0;
-
-        var featureOffset =
-            org.wololo.flatgeobuf.generated.Feature.createFeature(featureBuilder, geometryOffset,
-                propertiesOffset, 0);
-        featureBuilder.finishSizePrefixed(featureOffset);
-
-        ByteBuffer data = featureBuilder.dataBuffer();
-        while (data.hasRemaining()) {
-          channel.write(data);
-        }
+        var feature = FlatGeoBufTypeConversion.asFeature(row);
+        writer.writeFeature(feature);
       }
     }
   }
@@ -237,30 +182,28 @@ public class FlatGeoBufDataTable implements DataTable {
    */
   public static class RowIterator implements Iterator<DataRow> {
 
-    private final HeaderMeta headerMeta;
+    private final FlatGeoBuf.Header header;
 
     private final DataSchema schema;
 
-    private final SeekableByteChannel channel;
-
-    private final ByteBuffer buffer;
+    private final FlatGeoBufReader reader;
 
     private long cursor = 0;
 
     /**
      * Constructs a row iterator.
      *
-     * @param channel the channel to read from
-     * @param headerMeta the header meta
+     * @param reader the channel to read from
+     * @param header the header of the file
      * @param schema the schema of the table
-     * @param buffer the buffer to use
      */
-    public RowIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
-        DataSchema schema, ByteBuffer buffer) {
-      this.channel = channel;
-      this.headerMeta = headerMeta;
+    public RowIterator(
+        FlatGeoBufReader reader,
+        FlatGeoBuf.Header header,
+        DataSchema schema) {
+      this.reader = reader;
+      this.header = header;
       this.schema = schema;
-      this.buffer = buffer;
     }
 
     /**
@@ -268,7 +211,7 @@ public class FlatGeoBufDataTable implements DataTable {
      */
     @Override
     public boolean hasNext() {
-      return cursor < headerMeta.featuresCount;
+      return cursor < header.featuresCount();
     }
 
     /**
@@ -277,19 +220,9 @@ public class FlatGeoBufDataTable implements DataTable {
     @Override
     public DataRow next() {
       try {
-        channel.read(buffer);
-        buffer.flip();
-
-        var featureSize = buffer.getInt();
-        var row =
-            FlatGeoBufTypeConversion.asRow(headerMeta, schema, Feature.getRootAsFeature(buffer));
-
-        buffer.position(Integer.BYTES + featureSize);
-        buffer.compact();
-
+        var feature = reader.readFeature();
         cursor++;
-
-        return row;
+        return FlatGeoBufTypeConversion.asRow(schema, feature);
       } catch (IOException e) {
         throw new NoSuchElementException(e);
       }

@@ -6,11 +6,21 @@
     <artifactId>baremaps</artifactId>
     <version>0.7.4-SNAPSHOT</version>
   </parent>
-  <artifactId>baremaps-testing</artifactId>
-  <properties>
-    <maven.deploy.skip>true</maven.deploy.skip>
-  </properties>
+  <artifactId>baremaps-flatgeobuf</artifactId>
   <dependencies>
+    <dependency>
+      <groupId>com.google.flatbuffers</groupId>
+      <artifactId>flatbuffers-java</artifactId>
+      <version>24.3.25</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>
       <artifactId>jts-core</artifactId>

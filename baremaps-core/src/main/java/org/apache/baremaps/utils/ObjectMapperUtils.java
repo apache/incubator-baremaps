@@ -21,7 +21,9 @@ package org.apache.baremaps.utils;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.apache.baremaps.maplibre.expression.Expressions;
 
 public class ObjectMapperUtils {
@@ -31,11 +33,13 @@ public class ObjectMapperUtils {
   }
 
   public static ObjectMapper objectMapper() {
-    return new ObjectMapper()
-        .registerModule(Expressions.createModule())
+    return JsonMapper.builder()
+        .addModule(Expressions.createModule())
         .configure(Feature.IGNORE_UNKNOWN, true)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true)
-        .setSerializationInclusion(Include.NON_NULL).setSerializationInclusion(Include.NON_EMPTY);
+        .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
+        .serializationInclusion(Include.NON_NULL).serializationInclusion(Include.NON_EMPTY)
+        .build();
   }
 }

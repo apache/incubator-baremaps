@@ -84,6 +84,10 @@ limitations under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-flatgeobuf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-geoparquet</artifactId>
     </dependency>
     <dependency>
@@ -141,10 +145,6 @@ limitations under the License.
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.wololo</groupId>
-      <artifactId>flatgeobuf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.xerial</groupId>

@@ -1,0 +1,32 @@
+// Copyright (c) 2018, Björn Harrtell
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+include "header.fbs";
+
+namespace FlatGeobuf;
+
+table Geometry {
+  ends: [uint];          // Array of end index in flat coordinates per geometry part with exterior ring first (NOTE: allowed and recommended to be null if 1 part)
+  xy: [double];          // Flat x and y coordinate array (flat pairs) (should not be null or empty)
+  z: [double];           // Flat z height array (should not be null or empty if header hasZ)
+  m: [double];           // Flat m measurement array (should not be null or empty if header hasM)
+  t: [double];           // Flat t geodetic decimal year time array (should not be null or empty if header hasT)
+  tm: [ulong];           // Flat tm time nanosecond measurement array (should not be null or empty if header hasTM)
+  type: GeometryType;    // Type of geometry (only for elements in heterogeneous collection types or if unknown in header)
+  parts: [Geometry];     // Array of parts (for heterogeneous collection types)
+}
+
+table Feature {
+  geometry: Geometry;  // Geometry
+  properties: [ubyte]; // Custom buffer, variable length collection of key/value pairs (key=ushort)
+  columns: [Column];   // Attribute columns schema (optional)
+}
+
+root_type Feature;

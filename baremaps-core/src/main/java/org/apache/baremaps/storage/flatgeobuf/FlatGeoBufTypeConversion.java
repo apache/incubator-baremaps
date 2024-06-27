@@ -18,22 +18,14 @@
 package org.apache.baremaps.storage.flatgeobuf;
 
 
-import com.google.flatbuffers.FlatBufferBuilder;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
-import org.wololo.flatgeobuf.ColumnMeta;
-import org.wololo.flatgeobuf.GeometryConversions;
-import org.wololo.flatgeobuf.HeaderMeta;
-import org.wololo.flatgeobuf.generated.ColumnType;
-import org.wololo.flatgeobuf.generated.Crs;
-import org.wololo.flatgeobuf.generated.Feature;
-import org.wololo.flatgeobuf.generated.Header;
+import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
+import org.apache.baremaps.flatgeobuf.FlatGeoBuf.Feature;
+import org.apache.baremaps.flatgeobuf.generated.ColumnType;
+import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufTypeConversion {
 
@@ -54,170 +46,86 @@ public class FlatGeoBufTypeConversion {
     // Prevent instantiation
   }
 
-  public static DataSchema asSchema(HeaderMeta headerMeta) {
-    var name = headerMeta.name;
-    var columns = headerMeta.columns.stream()
+  public static DataSchema asSchema(FlatGeoBuf.Header header) {
+    var name = header.name();
+    var columns = header.columns().stream()
         .map(column -> new DataColumnFixed(
-            column.name,
-            column.nullable ? Cardinality.OPTIONAL : Cardinality.REQUIRED,
-            Type.fromBinding(column.getBinding())))
+            column.name(),
+            column.nullable() ? Cardinality.OPTIONAL : Cardinality.REQUIRED,
+            Type.fromBinding(fromColumnType(column.type()))))
         .map(DataColumn.class::cast)
         .toList();
     return new DataSchemaImpl(name, columns);
   }
 
-  public static DataRow asRow(HeaderMeta headerMeta, DataSchema dataType, Feature feature) {
+  private static Class<?> fromColumnType(FlatGeoBuf.ColumnType columnType) {
+    return switch (columnType) {
+      case BYTE -> Byte.class;
+      case UBYTE -> Byte.class;
+      case BOOL -> Boolean.class;
+      case SHORT -> Short.class;
+      case USHORT -> Short.class;
+      case INT -> Integer.class;
+      case UINT -> Integer.class;
+      case LONG -> Long.class;
+      case ULONG -> Long.class;
+      case FLOAT -> Float.class;
+      case DOUBLE -> Double.class;
+      case STRING -> String.class;
+      case JSON -> throw new UnsupportedOperationException();
+      case DATETIME -> throw new UnsupportedOperationException();
+      case BINARY -> throw new UnsupportedOperationException();
+    };
+  }
+
+  public static DataRow asRow(DataSchema dataType, Feature feature) {
     var values = new ArrayList<>();
 
-    var geometryBuffer = feature.geometry();
-    var geometry = GeometryConversions.deserialize(geometryBuffer, geometryBuffer.type());
+    var geometry = feature.geometry();
     values.add(geometry);
 
-    if (feature.propertiesLength() > 0) {
-      var propertiesBuffer = feature.propertiesAsByteBuffer();
-      while (propertiesBuffer.hasRemaining()) {
-        var type = propertiesBuffer.getShort();
-        var column = headerMeta.columns.get(type);
-        var value = readValue(propertiesBuffer, column);
-        values.add(value);
-      }
+    if (!feature.properties().isEmpty()) {
+      values.addAll(feature.properties());
     }
 
     return new DataRowImpl(dataType, values);
   }
 
-  public static void writeHeaderMeta(HeaderMeta headerMeta, WritableByteChannel channel,
-      FlatBufferBuilder builder) throws IOException {
-    int[] columnsArray = headerMeta.columns.stream().mapToInt(c -> {
-      int nameOffset = builder.createString(c.name);
-      int type = c.type;
-      return org.wololo.flatgeobuf.generated.Column.createColumn(builder, nameOffset, type, 0, 0,
-          c.width, c.precision, c.scale, c.nullable, c.unique,
-          c.primary_key, 0);
-    }).toArray();
-    int columnsOffset = Header.createColumnsVector(builder, columnsArray);
-
-    int nameOffset = 0;
-    if (headerMeta.name != null) {
-      nameOffset = builder.createString(headerMeta.name);
-    }
-    int crsOffset = 0;
-    if (headerMeta.srid != 0) {
-      Crs.startCrs(builder);
-      Crs.addCode(builder, headerMeta.srid);
-      crsOffset = Crs.endCrs(builder);
-    }
-    int envelopeOffset = 0;
-    if (headerMeta.envelope != null) {
-      envelopeOffset = Header.createEnvelopeVector(builder,
-          new double[] {headerMeta.envelope.getMinX(), headerMeta.envelope.getMinY(),
-              headerMeta.envelope.getMaxX(), headerMeta.envelope.getMaxY()});
-    }
-    Header.startHeader(builder);
-    Header.addGeometryType(builder, headerMeta.geometryType);
-    Header.addIndexNodeSize(builder, headerMeta.indexNodeSize);
-    Header.addColumns(builder, columnsOffset);
-    Header.addEnvelope(builder, envelopeOffset);
-    Header.addName(builder, nameOffset);
-    Header.addCrs(builder, crsOffset);
-    Header.addFeaturesCount(builder, headerMeta.featuresCount);
-    int offset = Header.endHeader(builder);
-
-    builder.finishSizePrefixed(offset);
-
-    ByteBuffer dataBuffer = builder.dataBuffer();
-    while (dataBuffer.hasRemaining())
-      channel.write(dataBuffer);
-  }
-
-  public static Object readValue(ByteBuffer propertiesBuffer, ColumnMeta column) {
-    return switch (column.type) {
-      case ColumnType.Byte -> propertiesBuffer.get();
-      case ColumnType.Bool -> propertiesBuffer.get() == 1;
-      case ColumnType.Short -> propertiesBuffer.getShort();
-      case ColumnType.Int -> propertiesBuffer.getInt();
-      case ColumnType.Long -> propertiesBuffer.getLong();
-      case ColumnType.Float -> propertiesBuffer.getFloat();
-      case ColumnType.Double -> propertiesBuffer.getDouble();
-      case ColumnType.String -> readString(propertiesBuffer);
-      case ColumnType.Json -> readJson(propertiesBuffer);
-      case ColumnType.DateTime -> readDateTime(propertiesBuffer);
-      case ColumnType.Binary -> readBinary(propertiesBuffer);
-      default -> null;
-    };
-  }
-
-  public static void writeValue(ByteBuffer propertiesBuffer, ColumnMeta column, Object value) {
-    switch (column.type) {
-      case ColumnType.Byte -> propertiesBuffer.put((byte) value);
-      case ColumnType.Bool -> propertiesBuffer.put((byte) ((boolean) value ? 1 : 0));
-      case ColumnType.Short -> propertiesBuffer.putShort((short) value);
-      case ColumnType.Int -> propertiesBuffer.putInt((int) value);
-      case ColumnType.Long -> propertiesBuffer.putLong((long) value);
-      case ColumnType.Float -> propertiesBuffer.putFloat((float) value);
-      case ColumnType.Double -> propertiesBuffer.putDouble((double) value);
-      case ColumnType.String -> writeString(propertiesBuffer, value);
-      case ColumnType.Json -> writeJson(propertiesBuffer, value);
-      case ColumnType.DateTime -> writeDateTime(propertiesBuffer, value);
-      case ColumnType.Binary -> writeBinary(propertiesBuffer, value);
-      default -> {
-        // Do nothing
-      }
-    };
-  }
-
-  public static void writeString(ByteBuffer propertiesBuffer, Object value) {
-    var bytes = ((String) value).getBytes(StandardCharsets.UTF_8);
-    propertiesBuffer.putInt(bytes.length);
-    propertiesBuffer.put(bytes);
-  }
-
-  public static void writeJson(ByteBuffer propertiesBuffer, Object value) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static void writeDateTime(ByteBuffer propertiesBuffer, Object value) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static void writeBinary(ByteBuffer propertiesBuffer, Object value) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static Object readString(ByteBuffer buffer) {
-    var length = buffer.getInt();
-    var bytes = new byte[length];
-    buffer.get(bytes);
-    return new String(bytes, StandardCharsets.UTF_8);
-  }
-
-  public static Object readJson(ByteBuffer buffer) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static Object readDateTime(ByteBuffer buffer) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static Object readBinary(ByteBuffer buffer) {
-    throw new UnsupportedOperationException();
-  }
-
-  public static List<ColumnMeta> asColumns(List<DataColumn> columns) {
+  public static List<FlatGeoBuf.Column> asColumns(List<DataColumn> columns) {
     return columns.stream()
         .map(FlatGeoBufTypeConversion::asColumn)
         .filter(Objects::nonNull)
         .toList();
   }
 
-  public static ColumnMeta asColumn(DataColumn column) {
+  public static FlatGeoBuf.Column asColumn(DataColumn column) {
     var type = types.get(column.type());
     if (type == null) {
       return null;
     }
-    var columnMeta = new ColumnMeta();
-    columnMeta.name = column.name();
-    columnMeta.type = type.byteValue();
-    return columnMeta;
+    return new FlatGeoBuf.Column(
+        column.name(),
+        FlatGeoBuf.ColumnType.values()[type],
+        null,
+        null,
+        0,
+        0,
+        0,
+        column.cardinality() == Cardinality.OPTIONAL,
+        false,
+        false,
+        null);
+  }
+
+  public static FlatGeoBuf.Feature asFeature(DataRow row) {
+    var geometry = row.values().stream()
+        .filter(v -> v instanceof Geometry)
+        .map(Geometry.class::cast)
+        .findFirst()
+        .orElse(null);
+    var properties = row.values().stream()
+        .filter(v -> !(v instanceof Geometry))
+        .toList();
+    return new FlatGeoBuf.Feature(properties, geometry);
   }
 }
