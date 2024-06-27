@@ -108,7 +108,11 @@ public class Martini {
     private int[] triangles;
     private int triIndex = 0;
 
-    private Tile(double[] terrain, int gridSize, int numTriangles, int numParentTriangles,
+    private Tile(
+        double[] terrain,
+        int gridSize,
+        int numTriangles,
+        int numParentTriangles,
         int[] coords) {
       if (terrain.length != gridSize * gridSize) {
         throw new IllegalArgumentException(
