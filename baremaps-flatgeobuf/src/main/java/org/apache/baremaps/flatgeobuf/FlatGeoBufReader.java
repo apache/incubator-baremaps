@@ -40,7 +40,8 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class FlatGeoBufReader implements AutoCloseable {
 
-  private final ByteBuffer buffer = ByteBuffer.allocate(1 << 16).order(ByteOrder.LITTLE_ENDIAN);
+  private final ByteBuffer featureBuffer =
+      ByteBuffer.allocate(1 << 16).order(ByteOrder.LITTLE_ENDIAN);
 
   private final ReadableByteChannel channel;
 
@@ -60,11 +61,11 @@ public class FlatGeoBufReader implements AutoCloseable {
   }
 
   public Feature readFeatureBuffer() throws IOException {
-    return readFeatureBuffer(channel, buffer);
+    return readFeatureBuffer(channel, featureBuffer);
   }
 
   public FlatGeoBuf.Feature readFeature() throws IOException {
-    return readFeature(channel, header, buffer);
+    return readFeature(channel, header, featureBuffer);
   }
 
   public void skipIndex() throws IOException {
@@ -338,7 +339,36 @@ public class FlatGeoBufReader implements AutoCloseable {
 
   public static void skipIndex(ReadableByteChannel channel, Header header)
       throws IOException {
-    readIndexBuffer(channel, header);
+    long n = PackedRTree.calcSize(header.featuresCount(), header.indexNodeSize());
+
+    // Define a buffer size for skipping bytes
+    int bufferSize = 1 << 10;
+    ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+
+    // Number of bytes left to skip
+    long remaining = n;
+
+    while (remaining > 0) {
+      // Calculate how many bytes to read in this iteration
+      int bytesToRead = (int) Math.min(bufferSize, remaining);
+
+      // Set the buffer limit to the number of bytes to read
+      buffer.limit(bytesToRead);
+
+      // Read bytes into the buffer
+      int bytesRead = channel.read(buffer);
+
+      // Check if end of stream is reached
+      if (bytesRead == -1) {
+        throw new IOException("End of stream reached before skipping the required number of bytes");
+      }
+
+      // Update the remaining bytes to skip
+      remaining -= bytesRead;
+
+      // Clear the buffer for the next read
+      buffer.clear();
+    }
   }
 
   public static ByteBuffer readIndexBuffer(ReadableByteChannel channel, Header header)
