@@ -22,6 +22,8 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 
 /**
+ * This class describes the domain model for FlatGeoBuf.
+ *
  * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
  * <p>
  * Copyright (c) 2018, Björn Harrtell

@@ -34,9 +34,12 @@ import org.apache.baremaps.flatgeobuf.generated.Header;
 import org.locationtech.jts.geom.Geometry;
 
 /**
+ * This class contains the logic for reading FlatGeoBuf files. It can either read FlatBuffers
+ * directly or convert them to a domain model.
+ * <p>
  * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
  * <p>
- * Copyright (c) 2018, Björn Harrtell
+ * Copyright (c) 2018, Bj&ouml;rn Harrtell
  */
 public class FlatGeoBufReader implements AutoCloseable {
 

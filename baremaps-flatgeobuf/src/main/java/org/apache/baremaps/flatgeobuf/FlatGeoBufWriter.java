@@ -32,6 +32,9 @@ import org.apache.baremaps.flatgeobuf.generated.*;
 import org.locationtech.jts.geom.Geometry;
 
 /**
+ * This class contains the logic for writing FlatGeoBuf files. It can either write FlatBuffers
+ * directly or write the domain model objects.
+ * <p>
  * This code has been adapted from FlatGeoBuf (BSD 2-Clause "Simplified" License).
  * <p>
  * Copyright (c) 2018, Björn Harrtell
