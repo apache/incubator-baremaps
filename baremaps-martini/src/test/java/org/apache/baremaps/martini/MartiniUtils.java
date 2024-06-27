@@ -21,9 +21,9 @@ import java.awt.image.BufferedImage;
 
 public class MartiniUtils {
 
-  public static float[] mapboxTerrainToGrid(BufferedImage png) {
+  public static double[] mapboxTerrainToGrid(BufferedImage png) {
     int gridSize = png.getWidth() + 1;
-    float[] terrain = new float[gridSize * gridSize];
+    double[] terrain = new double[gridSize * gridSize];
 
     int tileSize = png.getWidth();
 
