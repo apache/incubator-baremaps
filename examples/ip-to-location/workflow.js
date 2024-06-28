@@ -70,7 +70,7 @@ export default {"steps": [
                 return {
                     type: "DecompressFile",
                     source: `downloads/${nic.filename}.gz`,
-                    target: "archives/ripe.db",
+                    target: `archives/${nic.filename}`,
                     compression: "gzip"
                 }
             }),
