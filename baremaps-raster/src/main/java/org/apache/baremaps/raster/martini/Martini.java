@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.martini;
+package org.apache.baremaps.raster.martini;
 
 /**
  * The {@code Martini} class is a port of the MARTINI algorithm for generating 3D terrain meshes

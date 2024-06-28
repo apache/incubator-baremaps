@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.martini;
+package org.apache.baremaps.raster.martini;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import org.apache.baremaps.raster.TerrainUtils;
 import org.junit.jupiter.api.Test;
 
 public class MartiniTest {
@@ -31,9 +32,9 @@ public class MartiniTest {
     var png = ImageIO.read(
         Path.of("")
             .toAbsolutePath()
-            .resolveSibling("baremaps-martini/src/test/resources/fuji.png")
+            .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    var terrainGrid = MartiniUtils.mapboxTerrainToGrid(png);
+    var terrainGrid = TerrainUtils.grid(png);
     var martini = new Martini(png.getWidth() + 1);
     var tile = martini.createTile(terrainGrid);
     var mesh = tile.getMesh(500);
