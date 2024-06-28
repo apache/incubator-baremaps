@@ -6,7 +6,7 @@
     <artifactId>baremaps</artifactId>
     <version>0.7.4-SNAPSHOT</version>
   </parent>
-  <artifactId>baremaps-martini</artifactId>
+  <artifactId>baremaps-raster</artifactId>
   <dependencies>
     <dependency>
       <groupId>com.twelvemonkeys.imageio</groupId>

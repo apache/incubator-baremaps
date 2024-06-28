@@ -28,6 +28,7 @@ import org.apache.baremaps.cli.database.Database;
 import org.apache.baremaps.cli.geocoder.Geocoder;
 import org.apache.baremaps.cli.iploc.IpLoc;
 import org.apache.baremaps.cli.map.Map;
+import org.apache.baremaps.cli.rater.Raster;
 import org.apache.baremaps.cli.workflow.Workflow;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -37,8 +38,14 @@ import picocli.CommandLine.IVersionProvider;
 import picocli.CommandLine.Option;
 
 @Command(name = "baremaps", description = "A toolkit for producing vector tiles.",
-    versionProvider = VersionProvider.class, subcommands = {Workflow.class, Database.class,
-        Map.class, Geocoder.class, IpLoc.class},
+    versionProvider = VersionProvider.class, subcommands = {
+        Workflow.class,
+        Database.class,
+        Map.class,
+        Geocoder.class,
+        IpLoc.class,
+        Raster.class
+},
     sortOptions = false)
 public class Baremaps implements Callable<Integer> {
 

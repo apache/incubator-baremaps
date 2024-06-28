@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.martini;
+package org.apache.baremaps.raster;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 
-public class MartiniUtils {
+public class TerrainUtils {
 
-  public static double[] mapboxTerrainToGrid(BufferedImage png) {
-    int gridSize = png.getWidth() + 1;
+  public record Point(double x, double y) {
+  }
+
+  public record LineString(List<Point> points) {
+  }
+
+  public static double[] grid(BufferedImage image) {
+    int gridSize = image.getWidth() + 1;
     double[] terrain = new double[gridSize * gridSize];
 
-    int tileSize = png.getWidth();
+    int tileSize = image.getWidth();
 
     // decode terrain values
     for (int y = 0; y < tileSize; y++) {
       for (int x = 0; x < tileSize; x++) {
-        int k = (y * tileSize + x) * 4;
-        int r = (png.getRGB(x, y) >> 16) & 0xFF;
-        int g = (png.getRGB(x, y) >> 8) & 0xFF;
-        int b = png.getRGB(x, y) & 0xFF;
+        int r = (image.getRGB(x, y) >> 16) & 0xFF;
+        int g = (image.getRGB(x, y) >> 8) & 0xFF;
+        int b = image.getRGB(x, y) & 0xFF;
         terrain[y * gridSize + x] = (r * 256 * 256 + g * 256.0f + b) / 10.0f - 10000.0f;
       }
     }
