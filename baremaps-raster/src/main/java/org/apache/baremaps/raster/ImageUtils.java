@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.cli.rater;
+package org.apache.baremaps.raster;
 
-import java.util.concurrent.Callable;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
+import java.awt.image.BufferedImage;
 
-@Command(name = "hillshade", description = "Start a tile server that computes hillshades.")
-public class Hillshade implements Callable<Integer> {
-
-  @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
-  private String host = "localhost";
-
-  @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
-  private int port = 9000;
-
-  @Override
-  public Integer call() throws Exception {
+public class ImageUtils {
 
 
+    public static double[] grid(BufferedImage image) {
+        int gridSize = image.getWidth();
+        double[] terrain = new double[gridSize * gridSize];
 
-    return 0;
-  }
+        int tileSize = image.getWidth();
+
+        // decode terrain values
+        for (int y = 0; y < tileSize; y++) {
+            for (int x = 0; x < tileSize; x++) {
+                int r = (image.getRGB(x, y) >> 16) & 0xFF;
+                int g = (image.getRGB(x, y) >> 8) & 0xFF;
+                int b = image.getRGB(x, y) & 0xFF;
+                terrain[y * gridSize + x] = (r * 256.0 * 256.0 + g * 256.0 + b) / 10.0 - 10000.0;
+            }
+        }
+
+        return terrain;
+    }
+
 }

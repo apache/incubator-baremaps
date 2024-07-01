@@ -19,51 +19,111 @@ package org.apache.baremaps.raster.hillshade;
 
 public class HillShade {
 
-  public static double[] hillshade(double[] grid, int gridSize, double altitude, double azimuth) {
-    double[] hillshade = new double[grid.length];
+  public static double[] hillShade(double[] dem, int width, int height, double sunAltitude, double sunAzimuth) {
+    double[] hillshade = new double[dem.length];
 
-    // Convert altitude and azimuth to radians
-    double altitudeRad = Math.toRadians(altitude);
-    double azimuthRad = Math.toRadians(360.0 - azimuth + 90.0); // Convert azimuth to mathematical
-                                                                // coordinates
+    double scale = 0.1; // Adjust the scale factor if needed
 
-    // Precompute sine and cosine of altitude and azimuth for the light source
-    double sinAltitude = Math.sin(altitudeRad);
-    double cosAltitude = Math.cos(altitudeRad);
-    double sinAzimuth = Math.sin(azimuthRad);
-    double cosAzimuth = Math.cos(azimuthRad);
+    // Convert sun altitude and azimuth from degrees to radians
+    double sunAltitudeRad = Math.toRadians(sunAltitude);
+    double sunAzimuthRad = Math.toRadians(sunAzimuth + 90);
 
-    for (int y = 1; y < gridSize - 1; y++) {
-      for (int x = 1; x < gridSize - 1; x++) {
-        int index = y * gridSize + x;
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
 
-        // Calculate the gradients dz/dx and dz/dy using central difference
-        double dzdx = (grid[y * gridSize + (x + 1)] - grid[y * gridSize + (x - 1)]) / 2.0;
-        double dzdy = (grid[(y + 1) * gridSize + x] - grid[(y - 1) * gridSize + x]) / 2.0;
+        // Handle edge cases for border pixels
+        int top = Math.max(y - 1, 0);
+        int left = Math.max(x - 1, 0);
+        int bottom = Math.min(y + 1, height - 1);
+        int right = Math.min(x + 1, width - 1);
 
-        // Calculate the slope and aspect
-        double slope = Math.atan(Math.sqrt(dzdx * dzdx + dzdy * dzdy));
-        double aspect = Math.atan2(dzdy, -dzdx);
+        // Retrieve the elevation values from the 3x3 kernel
+        double z2 = dem[top * width + x];
+        double z4 = dem[y * width + left];
+        double z6 = dem[y * width + right];
+        double z8 = dem[bottom * width + x];
 
-        // Calculate the illumination angle
-        double hillshadeValue = 255.0 * (sinAltitude * Math.cos(slope) +
-            cosAltitude * Math.sin(slope) *
-                (cosAzimuth * Math.cos(aspect) + sinAzimuth * Math.sin(aspect)));
+        // Calculate the dz/dx and dz/dy using the 3x3 kernel
+        double dzdx = (z6 - z4) / 2.0;
+        double dzdy = (z8 - z2) / 2.0;
 
-        hillshade[index] = Math.max(0, Math.min(255, hillshadeValue));
+        // Calculate the slope
+        double slope = Math.atan(scale * Math.sqrt(dzdx * dzdx + dzdy * dzdy));
+
+        // Calculate the aspect
+        double aspect = Math.atan2(dzdy, dzdx);
+        if (aspect < 0) {
+          aspect += 2 * Math.PI;
+        }
+
+        // Calculate the reflectance
+        double reflectance = Math.cos(sunAltitudeRad)
+                * Math.cos(slope)
+                + Math.sin(sunAltitudeRad)
+                * Math.sin(slope)
+                * Math.cos(sunAzimuthRad - aspect);
+
+        // Normalize the reflectance to be between 0 and 255
+        hillshade[y * width + x] = Math.max(0, Math.min(255, reflectance * 255));
       }
-    }
-
-    // Handle the border cells (set them to zero or some other handling strategy)
-    for (int i = 0; i < gridSize; i++) {
-      hillshade[i] = 0; // Top border
-      hillshade[(gridSize - 1) * gridSize + i] = 0; // Bottom border
-      hillshade[i * gridSize] = 0; // Left border
-      hillshade[i * gridSize + (gridSize - 1)] = 0; // Right border
     }
 
     return hillshade;
   }
 
+  public static double[] hillShadeEnhanced(double[] dem, int width, int height, double sunAltitude, double sunAzimuth) {
+    double[] hillshade = new double[dem.length];
 
+    double scale = 1.0; // Adjust the scale factor if needed
+
+    // Convert sun altitude and azimuth from degrees to radians
+    double sunAltitudeRad = Math.toRadians(sunAltitude);
+    double sunAzimuthRad = Math.toRadians(sunAzimuth);
+
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+
+        // Handle edge cases for border pixels
+        int top = Math.max(y - 1, 0);
+        int bottom = Math.min(y + 1, height - 1);
+        int left = Math.max(x - 1, 0);
+        int right = Math.min(x + 1, width - 1);
+
+        // Retrieve the elevation values from the 3x3 kernel
+        double z1 = dem[top * width + left];
+        double z2 = dem[top * width + x];
+        double z3 = dem[top * width + right];
+        double z4 = dem[y * width + left];
+        double z6 = dem[y * width + right];
+        double z7 = dem[bottom * width + left];
+        double z8 = dem[bottom * width + x];
+        double z9 = dem[bottom * width + right];
+
+        // Calculate the dz/dx and dz/dy using the 3x3 kernel
+        double dzdx = ((z3 + 2 * z6 + z9) - (z1 + 2 * z4 + z7)) / 8.0;
+        double dzdy = ((z7 + 2 * z8 + z9) - (z1 + 2 * z2 + z3)) / 8.0;
+
+        // Calculate the slope
+        double slope = Math.atan(scale * Math.sqrt(dzdx * dzdx + dzdy * dzdy));
+
+        // Calculate the aspect
+        double aspect = Math.atan2(dzdy, -dzdx);
+        if (aspect < 0) {
+          aspect += 2 * Math.PI;
+        }
+
+        // Calculate the reflectance
+        double reflectance = Math.cos(sunAltitudeRad)
+                * Math.cos(slope)
+                + Math.sin(sunAltitudeRad)
+                * Math.sin(slope)
+                * Math.cos(sunAzimuthRad - aspect);
+
+        // Normalize the reflectance to be between 0 and 255
+        hillshade[y * width + x] = Math.max(0, Math.min(255, reflectance * 255));
+      }
+    }
+
+    return hillshade;
+  }
 }

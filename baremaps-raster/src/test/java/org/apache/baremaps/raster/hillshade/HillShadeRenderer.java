@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import org.apache.baremaps.raster.TerrainUtils;
+
+import org.apache.baremaps.raster.ImageUtils;
+import org.apache.baremaps.raster.martini.Martini;
 
 public class HillShadeRenderer {
 
@@ -33,8 +35,8 @@ public class HillShadeRenderer {
             .toAbsolutePath()
             .resolveSibling("baremaps/baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    var grid = TerrainUtils.grid(image);
-    var hillshade = HillShade.hillshade(grid, image.getWidth(), 45, 315);
+    var grid = ImageUtils.grid(image);
+    var hillshade = HillShade.hillShade(grid, image.getWidth(), image.getHeight(), 45, 315);
 
 
     // Create an output image

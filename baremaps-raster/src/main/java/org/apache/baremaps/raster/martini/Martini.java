@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.raster.martini;
 
+import java.awt.image.BufferedImage;
+
 /**
  * The {@code Martini} class is a port of the MARTINI algorithm for generating 3D terrain meshes
  * from height data.
@@ -80,6 +82,33 @@ public class Martini {
       this.baseCoords[k + 2] = bx;
       this.baseCoords[k + 3] = by;
     }
+  }
+
+  public static double[] grid(BufferedImage image) {
+    int gridSize = image.getWidth() + 1;
+    double[] terrain = new double[gridSize * gridSize];
+
+    int tileSize = image.getWidth();
+
+    // decode terrain values
+    for (int y = 0; y < tileSize; y++) {
+      for (int x = 0; x < tileSize; x++) {
+        int r = (image.getRGB(x, y) >> 16) & 0xFF;
+        int g = (image.getRGB(x, y) >> 8) & 0xFF;
+        int b = image.getRGB(x, y) & 0xFF;
+        terrain[y * gridSize + x] = (r * 256 * 256 + g * 256.0f + b) / 10.0f - 10000.0f;
+      }
+    }
+
+    // backfill right and bottom borders
+    for (int x = 0; x < gridSize - 1; x++) {
+      terrain[gridSize * (gridSize - 1) + x] = terrain[gridSize * (gridSize - 2) + x];
+    }
+    for (int y = 0; y < gridSize; y++) {
+      terrain[gridSize * y + gridSize - 1] = terrain[gridSize * y + gridSize - 2];
+    }
+
+    return terrain;
   }
 
   /**

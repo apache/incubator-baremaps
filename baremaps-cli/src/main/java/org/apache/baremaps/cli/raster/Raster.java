@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.cli.rater;
+package org.apache.baremaps.cli.raster;
 
 
 
-import org.apache.baremaps.cli.map.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "raster", description = "Raster processing commands.",
-    subcommands = {Hillshade.class},
+    subcommands = {HillShade.class},
     sortOptions = false)
 public class Raster implements Runnable {
 

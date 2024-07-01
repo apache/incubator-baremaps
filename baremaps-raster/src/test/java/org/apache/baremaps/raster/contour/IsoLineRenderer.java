@@ -26,8 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import org.apache.baremaps.raster.TerrainUtils;
+
 import org.apache.baremaps.raster.contour.IsoLines.IsoLine;
+import org.apache.baremaps.raster.martini.Martini;
 
 public class IsoLineRenderer {
 
@@ -41,7 +42,7 @@ public class IsoLineRenderer {
 
     var image = ImageIO.read(path);
 
-    double[] grid = TerrainUtils.grid(image);
+    double[] grid = Martini.grid(image);
     List<IsoLine> contours = new ArrayList<>();
     for (int i = 0; i < 8000; i += 100) {
       contours.addAll(isoLines(grid, image.getWidth(), i));

@@ -20,7 +20,8 @@ package org.apache.baremaps.raster.contour;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
-import org.apache.baremaps.raster.TerrainUtils;
+
+import org.apache.baremaps.raster.martini.Martini;
 import org.junit.jupiter.api.Test;
 
 class IsoLinesTest {
@@ -32,7 +33,7 @@ class IsoLinesTest {
             .toAbsolutePath()
             .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    var terrainGrid = TerrainUtils.grid(png);
+    var terrainGrid = Martini.grid(png);
     var contour = IsoLines.isoLines(terrainGrid, png.getWidth(), 500);
     System.out.println(contour);
   }

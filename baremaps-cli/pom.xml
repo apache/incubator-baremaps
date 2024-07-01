@@ -48,6 +48,10 @@ limitations under the License.
       <artifactId>baremaps-server</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-raster</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
     </dependency>

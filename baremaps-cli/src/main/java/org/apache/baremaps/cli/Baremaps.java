@@ -28,7 +28,7 @@ import org.apache.baremaps.cli.database.Database;
 import org.apache.baremaps.cli.geocoder.Geocoder;
 import org.apache.baremaps.cli.iploc.IpLoc;
 import org.apache.baremaps.cli.map.Map;
-import org.apache.baremaps.cli.rater.Raster;
+import org.apache.baremaps.cli.raster.Raster;
 import org.apache.baremaps.cli.workflow.Workflow;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -45,7 +45,7 @@ import picocli.CommandLine.Option;
         Geocoder.class,
         IpLoc.class,
         Raster.class
-},
+    },
     sortOptions = false)
 public class Baremaps implements Callable<Integer> {
 

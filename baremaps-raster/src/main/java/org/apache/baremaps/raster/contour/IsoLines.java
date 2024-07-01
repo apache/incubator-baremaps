@@ -89,6 +89,14 @@ public class IsoLines {
     return isoLines;
   }
 
+  public static List<IsoLine> isoLines(double[] grid, int gridSize, int start, int end, int interval) {
+    List<IsoLine> isoLines = new ArrayList<>();
+    for (int level = start; level < end; level++) {
+      isoLines.addAll(isoLines(grid, gridSize, level));
+    }
+    return isoLines;
+  }
+
   private static Point interpolate(
       int x1,
       int y1,

@@ -191,6 +191,42 @@ public final class TileCoord implements Comparable<TileCoord> {
   }
 
   /**
+   * Returns the tile coordinate at the left of the current tile.
+   *
+   * @return the left tile
+   */
+  public TileCoord left() {
+    return new TileCoord(x - 1, y, z);
+  }
+
+  /**
+   * Returns the tile coordinate at the right of the current tile.
+   *
+   * @return the right tile
+   */
+    public TileCoord right() {
+        return new TileCoord(x + 1, y, z);
+    }
+
+  /**
+   * Returns the tile coordinate at the top of the current tile.
+   *
+   * @return the top tile
+   */
+  public TileCoord top() {
+        return new TileCoord(x, y - 1, z);
+    }
+
+  /**
+   * Returns the tile coordinate at the bottom of the current tile.
+   *
+   * @return the bottom tile
+   */
+  public TileCoord bottom() {
+        return new TileCoord(x, y + 1, z);
+    }
+
+  /**
    * Returns the envelope of the tile coordinate.
    *
    * @return the envelope

@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import org.apache.baremaps.raster.TerrainUtils;
+
 import org.apache.baremaps.raster.contour.IsoLines;
 import org.apache.baremaps.raster.contour.IsoLines.IsoLine;
+import org.apache.baremaps.raster.martini.Martini;
 import org.junit.jupiter.api.Test;
 
 class HillShadeTest {
@@ -35,8 +36,8 @@ class HillShadeTest {
             .toAbsolutePath()
             .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    var grid = TerrainUtils.grid(png);
-    var hillshade = HillShade.hillshade(grid, png.getWidth(), 45, 315);
+    var grid = Martini.grid(png);
+    var hillshade = HillShade.hillShade(grid, png.getWidth(), png.getHeight(), 45, 315);
     var isoLines = new ArrayList<IsoLine>();
     for (int i = 0; i < 255; i += 50) {
       isoLines.addAll(IsoLines.isoLines(hillshade, png.getWidth(), i));
