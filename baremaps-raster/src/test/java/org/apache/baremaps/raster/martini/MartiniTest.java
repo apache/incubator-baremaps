@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
-import org.apache.baremaps.raster.TerrainUtils;
 import org.junit.jupiter.api.Test;
 
 public class MartiniTest {
@@ -34,7 +33,7 @@ public class MartiniTest {
             .toAbsolutePath()
             .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    var terrainGrid = TerrainUtils.grid(png);
+    var terrainGrid = Martini.grid(png);
     var martini = new Martini(png.getWidth() + 1);
     var tile = martini.createTile(terrainGrid);
     var mesh = tile.getMesh(500);

@@ -195,6 +195,11 @@ limitations under the License.
         <version>${version.lib.armeria}</version>
       </dependency>
       <dependency>
+        <groupId>com.twelvemonkeys.imageio</groupId>
+        <artifactId>imageio-tiff</artifactId>
+        <version>3.11.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.zaxxer</groupId>
         <artifactId>HikariCP</artifactId>
         <version>${version.lib.hikari}</version>
@@ -262,6 +267,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-pmtiles</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-raster</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -480,6 +490,11 @@ limitations under the License.
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.twelvemonkeys.imageio</groupId>
+      <artifactId>imageio-tiff</artifactId>
+    </dependency>
+    <!-- Provide logging for any child module during test -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
