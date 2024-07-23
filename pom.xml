@@ -116,6 +116,7 @@ limitations under the License.
     <version.lib.slf4j>2.0.12</version.lib.slf4j>
     <version.lib.sqlite>3.45.1.0</version.lib.sqlite>
     <version.lib.testcontainers>1.19.6</version.lib.testcontainers>
+    <version.lib.twelvemonkeys>3.11.0</version.lib.twelvemonkeys>
     <version.plugin.jacoco-maven-plugin>0.8.11</version.plugin.jacoco-maven-plugin>
     <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
     <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
@@ -137,7 +138,6 @@ limitations under the License.
 
   <dependencyManagement>
     <dependencies>
-
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
@@ -197,7 +197,7 @@ limitations under the License.
       <dependency>
         <groupId>com.twelvemonkeys.imageio</groupId>
         <artifactId>imageio-tiff</artifactId>
-        <version>3.11.0</version>
+        <version>${version.lib.twelvemonkeys}</version>
       </dependency>
       <dependency>
         <groupId>com.zaxxer</groupId>

@@ -20,13 +20,14 @@ package org.apache.baremaps.raster.martini;
 import java.awt.image.BufferedImage;
 
 /**
- * The {@code Martini} class is a port of the MARTINI algorithm for generating 3D terrain meshes
- * from height data.
- * <p>
- * 
+ * The {@code Martini} class implements the MARTINI algorithm for generating 3D terrain meshes from
+ * height data.
+ *
  * @see <a href="https://github.com/mapbox/martini">Martini GitHub</a>
  */
 public class Martini {
+
+  private static final double ELEVATION_OFFSET = 10000.0;
 
   private final int gridSize;
   private final int numTriangles;
@@ -36,7 +37,8 @@ public class Martini {
   /**
    * Constructs a new {@code Martini} instance with the specified grid size.
    *
-   * @param gridSize the grid size
+   * @param gridSize the grid size (must be 2^n+1)
+   * @throws IllegalArgumentException if the grid size is invalid
    */
   public Martini(int gridSize) {
     this.gridSize = gridSize;
@@ -84,7 +86,13 @@ public class Martini {
     }
   }
 
-  public static double[] grid(BufferedImage image) {
+  /**
+   * Creates a terrain grid from a BufferedImage.
+   *
+   * @param image the input image
+   * @return a double array representing the terrain grid
+   */
+  public static double[] createGrid(BufferedImage image) {
     int gridSize = image.getWidth() + 1;
     double[] terrain = new double[gridSize * gridSize];
 
@@ -96,7 +104,7 @@ public class Martini {
         int r = (image.getRGB(x, y) >> 16) & 0xFF;
         int g = (image.getRGB(x, y) >> 8) & 0xFF;
         int b = image.getRGB(x, y) & 0xFF;
-        terrain[y * gridSize + x] = (r * 256 * 256 + g * 256.0f + b) / 10.0f - 10000.0f;
+        terrain[y * gridSize + x] = (r * 256 * 256 + g * 256.0f + b) / 10.0f - ELEVATION_OFFSET;
       }
     }
 
@@ -116,6 +124,7 @@ public class Martini {
    *
    * @param terrain the terrain data
    * @return the tile
+   * @throws IllegalArgumentException if the terrain data is invalid
    */
   public Tile createTile(double[] terrain) {
     return new Tile(terrain, gridSize, numTriangles, numParentTriangles, baseCoords);
@@ -259,10 +268,20 @@ public class Martini {
       this.triangles = triangles;
     }
 
+    /**
+     * Returns the vertices of the mesh.
+     *
+     * @return an array of vertex coordinates
+     */
     public int[] getVertices() {
       return vertices;
     }
 
+    /**
+     * Returns the triangles of the mesh.
+     *
+     * @return an array of triangle indices
+     */
     public int[] getTriangles() {
       return triangles;
     }

@@ -41,7 +41,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.imageio.ImageIO;
-import org.apache.baremaps.raster.ImageUtils;
+import org.apache.baremaps.raster.elevation.ElevationUtils;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -104,7 +104,8 @@ public class HillShade implements Callable<Integer> {
   public static class HillShadeTileStore implements TileStore {
 
     // private String url = "https://s3.amazonaws.com/elevation-tiles-prod/geotiff/{z}/{x}/{y}.tif";
-    private String url = "https://demotiles.maplibre.org/terrain-tiles/{z}/{x}/{y}.png";
+    // private String url = "https://demotiles.maplibre.org/terrain-tiles/{z}/{x}/{y}.png";
+    private String url = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 
     private final LoadingCache<TileCoord, BufferedImage> cache = Caffeine.newBuilder()
         .maximumSize(1000)
@@ -171,8 +172,8 @@ public class HillShade implements Callable<Integer> {
             image.getWidth() + 2,
             image.getHeight() + 2);
 
-        var grid = ImageUtils.grid(buffer);
-        var hillshade = org.apache.baremaps.raster.hillshade.HillShade.hillShade(grid,
+        var grid = ElevationUtils.imageToGrid(buffer);
+        var hillshade = org.apache.baremaps.raster.elevation.HillShade.hillShade(grid,
             buffer.getWidth(), buffer.getHeight(), 45, 315);
 
         // Create an output image

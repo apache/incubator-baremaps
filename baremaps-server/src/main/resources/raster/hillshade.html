@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>3D Terrain</title>
+    <meta property="og:description" content="Go beyond hillshade and show elevation in actual 3D." />
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css' />
+    <script src='https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js'></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        html, body, #map { height: 100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    const map = (window.map = new maplibregl.Map({
+        container: 'map',
+        zoom: 11,
+        center: [11.5519, 47.2719],
+        hash: true,
+        style: {
+            version: 8,
+            sources: {
+                rasterSource: {
+                    type: 'raster',
+                    'tiles': [
+                        'http://localhost:9000/tiles/{z}/{x}/{y}.png'
+                    ],
+                    tileSize: 256
+                },
+            },
+            layers: [
+                {
+                    'id': 'raster',
+                    'type': 'raster',
+                    'source': 'rasterSource',
+                    'paint': {}
+                },
+            ],
+        },
+        maxZoom: 18,
+        maxPitch: 85
+    }));
+
+    map.addControl(
+        new maplibregl.NavigationControl({
+            visualizePitch: false,
+            showZoom: true,
+            showCompass: true
+        })
+    );
+
+</script>
+</body>
+</html>

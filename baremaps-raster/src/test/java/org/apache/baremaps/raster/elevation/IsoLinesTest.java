@@ -15,25 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.contour;
+package org.apache.baremaps.raster.elevation;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
-import org.apache.baremaps.raster.martini.Martini;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
 class IsoLinesTest {
 
   @Test
-  void contour() throws IOException {
-    var png = ImageIO.read(
+  @DisplayName("Test simple grid")
+  void testSimpleGrid() throws ParseException {
+    var grid = new double[] {
+        0, 0, 0,
+        0, 1, 0,
+        0, 0, 0,
+    };
+    var expectedContour = new WKTReader().read("LINESTRING (0 1.5, 1.5 3, 3 1.5, 1.5 0, 0 1.5)");
+    var generatedContour = IsoLines.generateIsoLines(grid, 3, 3, 0, true).get(0);
+    assertEquals(expectedContour, generatedContour);
+  }
+
+  @Test
+  void testMountFuji() throws IOException {
+    var fujiImage = ImageIO.read(
         Path.of("")
             .toAbsolutePath()
             .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    var terrainGrid = Martini.grid(png);
-    var contour = IsoLines.isoLines(terrainGrid, png.getWidth(), 500);
-    System.out.println(contour);
+    var fujiGrid = ElevationUtils.imageToGrid(fujiImage);
+    var fujiContours =
+        IsoLines.generateIsoLines(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), 500, true);
+    assertFalse(fujiContours.isEmpty());
   }
 }

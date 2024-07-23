@@ -33,7 +33,7 @@ public class MartiniTest {
             .toAbsolutePath()
             .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    var terrainGrid = Martini.grid(png);
+    var terrainGrid = Martini.createGrid(png);
     var martini = new Martini(png.getWidth() + 1);
     var tile = martini.createTile(terrainGrid);
     var mesh = tile.getMesh(500);
