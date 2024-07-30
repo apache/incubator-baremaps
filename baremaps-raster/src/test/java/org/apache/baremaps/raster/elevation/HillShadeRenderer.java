@@ -129,8 +129,8 @@ public class HillShadeRenderer extends JFrame {
     double scale = scaleSlider.getValue() / 10.0;
     boolean isSimple = isSimpleCheckbox.isSelected();
 
-    double[] hillshade = HillShade.hillShade(grid, originalImage.getWidth(),
-        originalImage.getHeight(), sunAltitude, sunAzimuth, scale, isSimple);
+    double[] hillshade = new HillshadeCalculator(grid, originalImage.getWidth(),
+        originalImage.getHeight(), scale, isSimple).calculate(sunAltitude, sunAzimuth);
 
     BufferedImage hillshadeImage = new BufferedImage(originalImage.getWidth(),
         originalImage.getHeight(), BufferedImage.TYPE_BYTE_GRAY);

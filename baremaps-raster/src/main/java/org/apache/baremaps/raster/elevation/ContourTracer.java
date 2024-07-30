@@ -18,6 +18,7 @@
 package org.apache.baremaps.raster.elevation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryTransformer;
@@ -55,7 +56,7 @@ public class ContourTracer {
    */
   public ContourTracer(double[] grid, int width, int height, boolean normalize,
       boolean polygonize) {
-    this.grid = grid;
+    this.grid = Arrays.copyOf(grid, grid.length);
     this.width = width;
     this.height = height;
     this.normalize = normalize;

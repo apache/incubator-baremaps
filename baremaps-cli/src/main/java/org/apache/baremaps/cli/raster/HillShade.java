@@ -42,6 +42,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.imageio.ImageIO;
 import org.apache.baremaps.raster.elevation.ElevationUtils;
+import org.apache.baremaps.raster.elevation.HillshadeCalculator;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -173,8 +174,9 @@ public class HillShade implements Callable<Integer> {
             image.getHeight() + 2);
 
         var grid = ElevationUtils.imageToGrid(buffer);
-        var hillshade = org.apache.baremaps.raster.elevation.HillShade.hillShade(grid,
-            buffer.getWidth(), buffer.getHeight(), 45, 315);
+        var hillshade =
+            new HillshadeCalculator(grid, buffer.getWidth(), buffer.getHeight(), 1, true)
+                .calculate(45, 315);
 
         // Create an output image
         BufferedImage hillshadeImage =

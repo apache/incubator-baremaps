@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class HillShadeTest {
+class HillshadeCalculatorTest {
 
   private static final double DELTA = 1e-6;
 
@@ -43,7 +43,8 @@ class HillShadeTest {
     double sunAltitude = 45;
     double sunAzimuth = 315;
 
-    double[] result = HillShade.hillShade(dem, width, height, sunAltitude, sunAzimuth);
+    double[] result =
+        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
 
     assertNotNull(result);
     assertEquals(dem.length, result.length);
@@ -62,7 +63,8 @@ class HillShadeTest {
     double sunAltitude = 45;
     double sunAzimuth = 315;
 
-    double[] result = HillShade.hillShadeEnhanced(dem, width, height, sunAltitude, sunAzimuth);
+    double[] result =
+        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
 
     assertNotNull(result);
     assertEquals(dem.length, result.length);
@@ -74,7 +76,8 @@ class HillShadeTest {
   void testHillShadeInvalidInput(double[] dem, int width, int height, double sunAltitude,
       double sunAzimuth, Class<? extends Exception> expectedException) {
     assertThrows(expectedException,
-        () -> HillShade.hillShade(dem, width, height, sunAltitude, sunAzimuth));
+        () -> new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude,
+            sunAzimuth));
   }
 
   @ParameterizedTest
@@ -83,7 +86,8 @@ class HillShadeTest {
   void testHillShadeEnhancedInvalidInput(double[] dem, int width, int height, double sunAltitude,
       double sunAzimuth, Class<? extends Exception> expectedException) {
     assertThrows(expectedException,
-        () -> HillShade.hillShadeEnhanced(dem, width, height, sunAltitude, sunAzimuth));
+        () -> new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude,
+            sunAzimuth));
   }
 
   private static Stream<Arguments> provideInvalidInput() {
@@ -111,7 +115,8 @@ class HillShadeTest {
     double sunAltitude = 45;
     double sunAzimuth = 315;
 
-    double[] result = HillShade.hillShade(dem, width, height, sunAltitude, sunAzimuth);
+    double[] result =
+        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
 
     for (double value : result) {
       assertTrue(value >= 0 && value <= 255, "Hillshade value should be between 0 and 255");
@@ -130,7 +135,8 @@ class HillShadeTest {
     double sunAltitude = 45;
     double sunAzimuth = 315;
 
-    double[] result = HillShade.hillShadeEnhanced(dem, width, height, sunAltitude, sunAzimuth);
+    double[] result =
+        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
 
     for (double value : result) {
       assertTrue(value >= 0 && value <= 255, "Hillshade value should be between 0 and 255");

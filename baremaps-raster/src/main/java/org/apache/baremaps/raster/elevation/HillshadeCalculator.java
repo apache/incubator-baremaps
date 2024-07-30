@@ -20,7 +20,7 @@ package org.apache.baremaps.raster.elevation;
 /**
  * Provides methods for generating hillshade effects on digital elevation models (DEMs).
  */
-public class HillShade {
+public class HillshadeCalculator {
 
   private static final double DEFAULT_SCALE = 0.1;
   private static final double ENHANCED_SCALE = 1.0;
@@ -28,56 +28,54 @@ public class HillShade {
   private static final double MAX_REFLECTANCE = 255.0;
   private static final double TWO_PI = 2 * Math.PI;
 
-  private HillShade() {
-    // Prevent instantiation
+  private final double[] dem;
+  private final int width;
+  private final int height;
+  private final double scale;
+  private final boolean isSimple;
+
+  public HillshadeCalculator(double[] dem, int width, int height, double scale, boolean isSimple) {
+    this.dem = dem;
+    this.width = width;
+    this.height = height;
+    this.scale = scale;
+    this.isSimple = isSimple;
+  }
+
+  /**
+   * Generates a hillshade effect on the DEM.
+   *
+   * @param sunAltitude The sun's altitude in degrees
+   * @param sunAzimuth The sun's azimuth in degrees
+   * @return An array representing the hillshade effect
+   */
+  public double[] calculate(double sunAltitude, double sunAzimuth) {
+    validateInput(dem, width, height, sunAltitude, sunAzimuth);
+    return calculateHillshade(sunAltitude, sunAzimuth);
   }
 
   /**
    * Generates a hillshade effect on the given DEM.
    *
-   * @param dem The digital elevation model data
-   * @param width The width of the DEM
-   * @param height The height of the DEM
    * @param sunAltitude The sun's altitude in degrees
    * @param sunAzimuth The sun's azimuth in degrees
    * @return An array representing the hillshade effect
    */
-  public static double[] hillShade(double[] dem, int width, int height, double sunAltitude,
-      double sunAzimuth) {
+  public double[] calculate(double sunAltitude, double sunAzimuth, double scale, boolean isSimple) {
     validateInput(dem, width, height, sunAltitude, sunAzimuth);
-    return calculateHillShade(dem, width, height, sunAltitude, sunAzimuth, DEFAULT_SCALE, true);
-  }
-
-  /**
-   * Generates a hillshade effect on the given DEM.
-   *
-   * @param dem The digital elevation model data
-   * @param width The width of the DEM
-   * @param height The height of the DEM
-   * @param sunAltitude The sun's altitude in degrees
-   * @param sunAzimuth The sun's azimuth in degrees
-   * @return An array representing the hillshade effect
-   */
-  public static double[] hillShade(double[] dem, int width, int height, double sunAltitude,
-      double sunAzimuth, double scale, boolean isSimple) {
-    validateInput(dem, width, height, sunAltitude, sunAzimuth);
-    return calculateHillShade(dem, width, height, sunAltitude, sunAzimuth, scale, isSimple);
+    return calculateHillshade(sunAltitude, sunAzimuth);
   }
 
   /**
    * Generates an enhanced hillshade effect on the given DEM.
    *
-   * @param dem The digital elevation model data
-   * @param width The width of the DEM
-   * @param height The height of the DEM
    * @param sunAltitude The sun's altitude in degrees
    * @param sunAzimuth The sun's azimuth in degrees
    * @return An array representing the enhanced hillshade effect
    */
-  public static double[] hillShadeEnhanced(double[] dem, int width, int height, double sunAltitude,
-      double sunAzimuth) {
+  public double[] calculateEnhanced(double sunAltitude, double sunAzimuth) {
     validateInput(dem, width, height, sunAltitude, sunAzimuth);
-    return calculateHillShade(dem, width, height, sunAltitude, sunAzimuth, ENHANCED_SCALE, false);
+    return calculateHillshade(sunAltitude, sunAzimuth);
   }
 
   private static void validateInput(double[] dem, int width, int height, double sunAltitude,
@@ -99,12 +97,11 @@ public class HillShade {
     }
   }
 
-  private static double[] calculateHillShade(double[] dem, int width, int height,
-      double sunAltitude, double sunAzimuth, double scale, boolean isSimple) {
+  private double[] calculateHillshade(double sunAltitude, double sunAzimuth) {
     double[] hillshade = new double[dem.length];
 
     double sunAltitudeRad = Math.toRadians(sunAltitude);
-    double sunAzimuthRad = Math.toRadians(sunAzimuth + (isSimple ? 90 : 0));
+    double sunAzimuthRad = Math.toRadians(sunAzimuth + (isSimple ? 90 : 180));
     double cosSunAltitude = Math.cos(sunAltitudeRad);
     double sinSunAltitude = Math.sin(sunAltitudeRad);
 
