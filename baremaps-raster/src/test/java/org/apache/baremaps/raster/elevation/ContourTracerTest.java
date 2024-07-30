@@ -17,7 +17,8 @@
 
 package org.apache.baremaps.raster.elevation;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -27,31 +28,35 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-class IsoLinesTest {
+public class ContourTracerTest {
 
   @Test
-  @DisplayName("Test simple grid")
-  void testSimpleGrid() throws ParseException {
+  @DisplayName("Test grid normalization")
+  void testGrid1() throws ParseException {
     var grid = new double[] {
         0, 0, 0,
         0, 1, 0,
         0, 0, 0,
     };
-    var expectedContour = new WKTReader().read("LINESTRING (0 1.5, 1.5 3, 3 1.5, 1.5 0, 0 1.5)");
-    var generatedContour = IsoLines.generateIsoLines(grid, 3, 3, 0, true).get(0);
+    var expectedContour = new WKTReader().read("POLYGON ((0 1.5, 1.5 3, 3 1.5, 1.5 0, 0 1.5))");
+    var generatedContour = new ContourTracer(grid, 3, 3, true, true).traceContours(0).get(0);
     assertEquals(expectedContour, generatedContour);
   }
 
   @Test
+  @DisplayName("Test Mount Fuji")
   void testMountFuji() throws IOException {
     var fujiImage = ImageIO.read(
         Path.of("")
             .toAbsolutePath()
             .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
+
     var fujiGrid = ElevationUtils.imageToGrid(fujiImage);
     var fujiContours =
-        IsoLines.generateIsoLines(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), 500, true);
+        new ContourTracer(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), false, true)
+            .traceContours(200);
     assertFalse(fujiContours.isEmpty());
   }
+
 }

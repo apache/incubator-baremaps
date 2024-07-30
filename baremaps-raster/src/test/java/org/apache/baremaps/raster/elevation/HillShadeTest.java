@@ -19,20 +19,12 @@ package org.apache.baremaps.raster.elevation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
-import javax.imageio.ImageIO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.locationtech.jts.geom.LineString;
 
 class HillShadeTest {
 
@@ -143,48 +135,5 @@ class HillShadeTest {
     for (double value : result) {
       assertTrue(value >= 0 && value <= 255, "Hillshade value should be between 0 and 255");
     }
-  }
-
-  @Test
-  @DisplayName("Test hillShade with fuji.png")
-  void testHillShadeWithFujiPng(@TempDir Path tempDir) throws IOException {
-    Path imagePath = Path.of("")
-        .toAbsolutePath()
-        .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
-        .toAbsolutePath();
-    var png = ImageIO.read(imagePath.toFile());
-    assertNotNull(png, "Failed to load test image");
-
-    var grid = ElevationUtils.imageToGrid(png);
-    int width = png.getWidth();
-    int height = png.getHeight();
-    double sunAltitude = 45;
-    double sunAzimuth = 315;
-
-    var hillshade = HillShade.hillShade(grid, width, height, sunAltitude, sunAzimuth);
-
-    assertNotNull(hillshade, "Hillshade result should not be null");
-    assertEquals(width * height, hillshade.length,
-        "Hillshade array size should match image dimensions");
-
-    var isoLines = new ArrayList<LineString>();
-    for (int i = 0; i < 255; i += 50) {
-      List<LineString> lines = IsoLines.generateIsoLines(hillshade, width, height, i, true);
-      assertNotNull(lines, "Isoline generation should not return null");
-      isoLines.addAll(lines);
-    }
-
-    assertFalse(isoLines.isEmpty(), "At least one isoline should be generated");
-
-    BufferedImage hillshadeImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        int gray = (int) hillshade[y * width + x];
-        hillshadeImage.setRGB(x, y, (gray << 16) | (gray << 8) | gray);
-      }
-    }
-    Path outputPath = tempDir.resolve("fuji_hillshade.png");
-    ImageIO.write(hillshadeImage, "png", outputPath.toFile());
-    assertTrue(outputPath.toFile().exists(), "Hillshade image should be saved");
   }
 }

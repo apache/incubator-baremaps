@@ -17,8 +17,6 @@
 
 package org.apache.baremaps.raster.elevation;
 
-import static org.apache.baremaps.raster.elevation.IsoLines.generateIsoLines;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -28,12 +26,12 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Geometry;
 
-public class IsoLinesRenderer {
+public class ContourRenderer {
 
   public static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth,
-      int targetHeight) throws IOException {
+      int targetHeight) {
     Image resultingImage =
         originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
     BufferedImage outputImage =
@@ -50,32 +48,33 @@ public class IsoLinesRenderer {
 
     var image1 = ImageIO.read(path);
     double[] grid1 = ElevationUtils.imageToGrid(image1);
-    List<LineString> contours1 = new ArrayList<>();
+    List<Geometry> contours1 = new ArrayList<>();
     for (int i = 0; i < 8000; i += 100) {
-      contours1.addAll(generateIsoLines(grid1, image1.getWidth(), image1.getHeight(), i, true));
+      contours1.addAll(new ContourTracer(grid1, image1.getWidth(), image1.getHeight(), true, true)
+          .traceContours(i));
     }
 
     // Downscale the image by 16
     var image2 = resizeImage(image1, 32, 32);
     double[] grid2 = ElevationUtils.imageToGrid(image2);
-    List<LineString> contours2 = new ArrayList<>();
+    List<Geometry> contours2 = new ArrayList<>();
     for (int i = 0; i < 8000; i += 100) {
-      for (LineString lineString : generateIsoLines(grid2, image2.getWidth(), image2.getHeight(), i,
-          true)) {
+      for (Geometry contour : new ContourTracer(grid2, image2.getWidth(), image2.getHeight(), true,
+          true).traceContours(i)) {
         // Upscale the line string by 16
-        lineString = (LineString) lineString.clone();
-        for (int j = 0; j < lineString.getNumPoints(); j++) {
-          lineString.getCoordinates()[j].x *= 16;
-          lineString.getCoordinates()[j].y *= 16;
+        contour = (org.locationtech.jts.geom.Polygon) contour.clone();
+        for (int j = 0; j < contour.getNumPoints(); j++) {
+          contour.getCoordinates()[j].x *= 16;
+          contour.getCoordinates()[j].y *= 16;
         }
-        contours2.add(lineString);
+        contours2.add(contour);
 
       }
     }
 
     // Create a frame to display the contours
     JFrame frame = new JFrame("Contour Lines");
-    frame.setSize(image1.getWidth(), image1.getHeight());
+    frame.setSize(image1.getWidth() + 20, image1.getHeight() + 20);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.add(new ContourCanvas(image1, contours1, contours2));
     frame.setVisible(true);
@@ -86,11 +85,11 @@ public class IsoLinesRenderer {
 
     Image image;
 
-    List<LineString> contours1;
+    List<Geometry> contours1;
 
-    List<LineString> contours2;
+    List<Geometry> contours2;
 
-    public ContourCanvas(Image image, List<LineString> contours1, List<LineString> contours2) {
+    public ContourCanvas(Image image, List<Geometry> contours1, List<Geometry> contours2) {
       this.image = image;
       this.contours1 = contours1;
       this.contours2 = contours2;
@@ -100,12 +99,24 @@ public class IsoLinesRenderer {
     public void paint(Graphics g) {
 
       // Draw the image
-      g.drawImage(image, 0, 0, null);
+      g.drawImage(image, 10, 10, null);
 
-      g.setColor(Color.BLACK);
-      for (LineString contour : contours1) {
+      // g.setColor(Color.RED);
+      // for (Geometry contour : contours1) {
+      // List<Point> points = Stream.of(contour.getCoordinates())
+      // .map(p -> new Point((int) p.getX() + 10, (int) p.getY() + 10))
+      // .toList();
+      // for (int i = 0; i < points.size() - 1; i++) {
+      // Point p1 = points.get(i);
+      // Point p2 = points.get(i + 1);
+      // g.drawLine(p1.x, p1.y, p2.x, p2.y);
+      // }
+      // }
+
+      g.setColor(Color.RED);
+      for (Geometry contour : contours2) {
         List<Point> points = Stream.of(contour.getCoordinates())
-            .map(p -> new Point((int) p.getX(), (int) p.getY()))
+            .map(p -> new Point((int) p.getX() + 10, (int) p.getY() + 10))
             .toList();
         for (int i = 0; i < points.size() - 1; i++) {
           Point p1 = points.get(i);
@@ -113,19 +124,6 @@ public class IsoLinesRenderer {
           g.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
       }
-
-      g.setColor(Color.BLUE);
-      for (LineString contour : contours2) {
-        List<Point> points = Stream.of(contour.getCoordinates())
-            .map(p -> new Point((int) p.getX(), (int) p.getY()))
-            .toList();
-        for (int i = 0; i < points.size() - 1; i++) {
-          Point p1 = points.get(i);
-          Point p2 = points.get(i + 1);
-          g.drawLine(p1.x, p1.y, p2.x, p2.y);
-        }
-      }
-
     }
   }
 }
