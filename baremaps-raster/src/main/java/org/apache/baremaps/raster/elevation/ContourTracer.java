@@ -24,7 +24,8 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 
 /**
- * Provides methods for generating contour polygons from digital elevation models (DEMs).
+ * Provides methods for generating contour lines and contour polygons from digital elevation models
+ * (DEMs).
  */
 public class ContourTracer {
 
@@ -42,6 +43,16 @@ public class ContourTracer {
 
   private final boolean polygonize;
 
+  /**
+   * Constructs a new ContourTracer with the specified grid, width, height, normalization, and
+   * polygonization options.
+   *
+   * @param grid The grid of elevation values
+   * @param width The width of the grid
+   * @param height The height of the grid
+   * @param normalize Whether to normalize the coordinates
+   * @param polygonize Whether to polygonize the contours
+   */
   public ContourTracer(double[] grid, int width, int height, boolean normalize,
       boolean polygonize) {
     this.grid = grid;
@@ -92,12 +103,12 @@ public class ContourTracer {
   }
 
   /**
-   * Generates isolines for a given grid at multiple levels within a specified range.
+   * Generates contour for a given range of elevation levels.
    *
-   * @param start The starting elevation level
-   * @param end The ending elevation level
+   * @param start The starting elevation level (inclusive)
+   * @param end The ending elevation level (exclusive)
    * @param interval The interval between elevation levels
-   * @return A list of LineString objects representing the isolines
+   * @return A list of contour geometries
    */
   public List<Geometry> traceContours(int start, int end, int interval) {
     validateInput(grid, width, height);
@@ -120,19 +131,13 @@ public class ContourTracer {
     }
   }
 
-  protected List<LineString> processCell(double level, int x, int y) {
+  private List<LineString> processCell(double level, int x, int y) {
     List<LineString> segments = new ArrayList<>();
 
-    double tl = grid[y * width + x];
-    double tr = grid[y * width + (x + 1)];
-    double br = grid[(y + 1) * width + (x + 1)];
-    double bl = grid[(y + 1) * width + x];
-
-    int index =
-        (tl > level ? 1 : 0) |
-            (tr > level ? 2 : 0) |
-            (br > level ? 4 : 0) |
-            (bl > level ? 8 : 0);
+    boolean htb = polygonize && y == height - 2;
+    boolean hrb = polygonize && x == width - 2;
+    boolean hbb = polygonize && y == 0;
+    boolean hlb = polygonize && x == 0;
 
     Coordinate tlc = new Coordinate(x, y + 1);
     Coordinate tmc = interpolateCoordinate(level, x, y + 1, x + 1, y + 1);
@@ -143,199 +148,205 @@ public class ContourTracer {
     Coordinate blc = new Coordinate(x, y);
     Coordinate mlc = interpolateCoordinate(level, x, y, x, y + 1);
 
-    boolean ht = polygonize && y == height - 2;
-    boolean hr = polygonize && x == width - 2;
-    boolean hb = polygonize && y == 0;
-    boolean hl = polygonize && x == 0;
+    double tlv = grid[y * width + x];
+    double trv = grid[y * width + (x + 1)];
+    double brv = grid[(y + 1) * width + (x + 1)];
+    double blv = grid[(y + 1) * width + x];
+
+    int index =
+        (tlv > level ? 1 : 0) |
+            (trv > level ? 2 : 0) |
+            (brv > level ? 4 : 0) |
+            (blv > level ? 8 : 0);
 
     switch (index) {
       case 1 -> {
         segments.add(createSegment(mlc, bmc));
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(bmc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, mlc));
         }
       }
       case 2 -> {
         segments.add(createSegment(bmc, mrc));
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(mrc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, bmc));
         }
       }
       case 3 -> {
         segments.add(createSegment(mlc, mrc));
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(mrc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, mlc));
         }
       }
       case 4 -> {
         segments.add(createSegment(mrc, tmc));
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tmc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, mrc));
         }
       }
       case 5 -> {
         segments.add(createSegment(mlc, tmc));
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tmc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, mrc));
         }
         segments.add(createSegment(mrc, bmc));
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(bmc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, mlc));
         }
       }
       case 6 -> {
         segments.add(createSegment(bmc, tmc));
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tmc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, bmc));
         }
       }
       case 7 -> {
         segments.add(createSegment(mlc, tmc));
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tmc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, mlc));
         }
       }
       case 8 -> {
         segments.add(createSegment(tmc, mlc));
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(mlc, tlc));
         }
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, tmc));
         }
       }
       case 9 -> {
         segments.add(createSegment(tmc, bmc));
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(bmc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, tlc));
         }
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, tmc));
         }
       }
       case 10 -> {
         segments.add(createSegment(bmc, mlc));
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(mlc, tlc));
         }
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, tmc));
         }
         segments.add(createSegment(tmc, mrc));
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(mrc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, bmc));
         }
       }
       case 11 -> {
         segments.add(createSegment(tmc, mrc));
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(mrc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, tlc));
         }
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, tmc));
         }
       }
       case 12 -> {
         segments.add(createSegment(mrc, mlc));
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(mlc, tlc));
         }
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, mrc));
         }
       }
       case 13 -> {
         segments.add(createSegment(mrc, bmc));
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(bmc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, tlc));
         }
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, mrc));
         }
       }
       case 14 -> {
         segments.add(createSegment(bmc, mlc));
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(mlc, tlc));
         }
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, bmc));
         }
       }
       case 15 -> {
-        if (ht) {
+        if (htb) {
           segments.add(createSegment(tlc, trc));
         }
-        if (hr) {
+        if (hrb) {
           segments.add(createSegment(trc, brc));
         }
-        if (hb) {
+        if (hbb) {
           segments.add(createSegment(brc, blc));
         }
-        if (hl) {
+        if (hlb) {
           segments.add(createSegment(blc, tlc));
         }
       }
@@ -362,9 +373,9 @@ public class ContourTracer {
     @Override
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent) {
       for (int i = 0; i < coords.size(); i++) {
-        Coordinate coord = coords.getCoordinate(i);
-        double x = coord.getX() / (width - 1) * width;
-        double y = coord.getY() / (height - 1) * height;
+        Coordinate coordinate = coords.getCoordinate(i);
+        double x = coordinate.getX() / (width - 1) * width;
+        double y = coordinate.getY() / (height - 1) * height;
         coords.setOrdinate(i, 0, x);
         coords.setOrdinate(i, 1, y);
       }
