@@ -208,7 +208,7 @@ public class Hillshade implements Callable<Integer> {
           return ByteBuffer.wrap(baos.toByteArray());
         }
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new TileStoreException(e);
       }
     }
 
@@ -231,9 +231,7 @@ public class Hillshade implements Callable<Integer> {
   public class HillShadeTileResource {
 
     private static final Logger logger =
-        LoggerFactory.getLogger(org.apache.baremaps.server.TileResource.class);
-
-    // public static final String TILE_ENCODING = "gzip";
+        LoggerFactory.getLogger(HillShadeTileResource.class);
 
     public static final String TILE_TYPE = "image/png";
 
@@ -253,7 +251,6 @@ public class Hillshade implements Callable<Integer> {
         if (blob != null) {
           var headers = ResponseHeaders.builder(200)
               .add(CONTENT_TYPE, TILE_TYPE)
-              // .add(CONTENT_ENCODING, TILE_ENCODING)
               .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
               .build();
           byte[] bytes = new byte[blob.remaining()];
@@ -297,16 +294,11 @@ public class Hillshade implements Callable<Integer> {
       for (int level = -10000; level < 10000; level += 100) {
         var contours = new ContourTracer(grid, image.getWidth(), image.getHeight(), false, false)
             .traceContours(level);
-
         for (var contour : contours) {
-
           contour = AffineTransformation
               .translationInstance(-4, -4)
               .scale(16, 16)
               .transform(contour);
-
-          // contour = new ChaikinSmoother(2, 0.25).transform(contour);
-
           features.add(new Feature(level, Map.of("level", String.valueOf(level)), contour));
         }
       }
@@ -320,7 +312,7 @@ public class Hillshade implements Callable<Integer> {
         gzip.close();
         return ByteBuffer.wrap(baos.toByteArray());
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new TileStoreException(e);
       }
 
     }

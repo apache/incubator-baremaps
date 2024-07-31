@@ -132,6 +132,7 @@ public class ContourTracer {
     }
   }
 
+  @SuppressWarnings("squid:S3776")
   private List<LineString> processCell(double level, int x, int y) {
     List<LineString> segments = new ArrayList<>();
 
@@ -140,11 +141,11 @@ public class ContourTracer {
     boolean hbb = polygonize && y == 0;
     boolean hlb = polygonize && x == 0;
 
-    Coordinate tlc = new Coordinate(x, y + 1);
+    Coordinate tlc = new Coordinate(x, y + 1.0);
     Coordinate tmc = interpolateCoordinate(level, x, y + 1, x + 1, y + 1);
-    Coordinate trc = new Coordinate(x + 1, y + 1);
+    Coordinate trc = new Coordinate(x + 1.0, y + 1.0);
     Coordinate mrc = interpolateCoordinate(level, x + 1, y, x + 1, y + 1);
-    Coordinate brc = new Coordinate(x + 1, y);
+    Coordinate brc = new Coordinate(x + 1.0, y);
     Coordinate bmc = interpolateCoordinate(level, x, y, x + 1, y);
     Coordinate blc = new Coordinate(x, y);
     Coordinate mlc = interpolateCoordinate(level, x, y, x, y + 1);
@@ -350,6 +351,9 @@ public class ContourTracer {
         if (hlb) {
           segments.add(createSegment(blc, tlc));
         }
+      }
+      default -> {
+        // No segments
       }
     }
 

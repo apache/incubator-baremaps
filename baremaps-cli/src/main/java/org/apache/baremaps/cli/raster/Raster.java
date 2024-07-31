@@ -25,6 +25,7 @@ import picocli.CommandLine.Command;
 @Command(name = "raster", description = "Raster processing commands.",
     subcommands = {Hillshade.class},
     sortOptions = false)
+@SuppressWarnings("squid:S106")
 public class Raster implements Runnable {
 
   @Override

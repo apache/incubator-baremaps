@@ -18,7 +18,8 @@
 package org.apache.baremaps.raster.elevation;
 
 import java.awt.image.BufferedImage;
-import java.util.function.Function;
+import java.util.function.DoubleToIntFunction;
+import java.util.function.IntToDoubleFunction;
 
 /**
  * Provides utility methods for processing raster images, particularly for elevation data.
@@ -39,7 +40,7 @@ public class ElevationUtils {
    * @return A double array representing the elevation grid
    */
   public static double[] imageToGrid(BufferedImage image,
-      Function<Integer, Double> pixelToElevation) {
+      IntToDoubleFunction pixelToElevation) {
     validateImage(image);
     int width = image.getWidth();
     int height = image.getHeight();
@@ -47,7 +48,8 @@ public class ElevationUtils {
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        grid[y * width + x] = pixelToElevation.apply(image.getRGB(x, y));
+        int rgb = image.getRGB(x, y);
+        grid[y * width + x] = pixelToElevation.applyAsDouble(rgb);
       }
     }
 
@@ -63,13 +65,14 @@ public class ElevationUtils {
    * @return A BufferedImage representing the elevation data
    */
   public static BufferedImage gridToImage(double[] grid, int width, int height,
-      Function<Double, Integer> elevationToPixel) {
+      DoubleToIntFunction elevationToPixel) {
     validateGrid(grid, width, height);
     BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        image.setRGB(x, y, elevationToPixel.apply(grid[y * width + x]));
+        double elevation = grid[y * width + x];
+        image.setRGB(x, y, elevationToPixel.applyAsInt(elevation));
       }
     }
 
@@ -90,7 +93,7 @@ public class ElevationUtils {
     return (r * 256 + g + b / 256) - 32768;
   }
 
-  private static int elevationToPixel(double elevation) {
+  public static int elevationToPixel(double elevation) {
     int value = (int) ((elevation + ELEVATION_OFFSET) * 10.0);
     int r = (value >> 16) & 0xFF;
     int g = (value >> 8) & 0xFF;
