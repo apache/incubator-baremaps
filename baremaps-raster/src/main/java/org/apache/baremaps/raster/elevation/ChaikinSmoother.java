@@ -17,71 +17,87 @@
 
 package org.apache.baremaps.raster.elevation;
 
-import java.util.Arrays;
-import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
+import org.locationtech.jts.geom.util.GeometryTransformer;
 
-public class ChaikinSmoother {
+public class ChaikinSmoother extends GeometryTransformer {
 
-  private final Coordinate[] coordinates;
-  private final double minX;
-  private final double minY;
-  private final double maxX;
-  private final double maxY;
-  private final boolean isOpen;
+  private final int iterations;
 
-  public ChaikinSmoother(Coordinate[] coordinates, double minX, double minY, double maxX,
-      double maxY) {
-    this.coordinates = Arrays.copyOf(coordinates, coordinates.length);
-    this.minX = minX;
-    this.minY = minY;
-    this.maxX = maxX;
-    this.maxY = maxY;
-    this.isOpen = !coordinates[0].equals(coordinates[coordinates.length - 1]);
+  private final double factor;
+
+  public ChaikinSmoother(int iterations, double factor) {
+    this.iterations = iterations;
+    this.factor = factor;
   }
 
-  public Coordinate[] smooth(int iterations, double factor) {
-    Coordinate[] result = isOpen
-        ? Arrays.copyOf(coordinates, coordinates.length - 1)
-        : coordinates;
+  @Override
+  protected CoordinateSequence transformCoordinates(
+      CoordinateSequence coordinateSequence,
+      Geometry parent) {
+    return smooth(coordinateSequence, iterations, factor);
+  }
 
-    double f1 = 1 - factor;
-    double f2 = factor;
+  public static LinearRing smooth(LinearRing linearRing, int iterations, double factor) {
+    CoordinateSequence coordinateSequence =
+        smooth(linearRing.getCoordinateSequence(), iterations, factor);
+    return linearRing.getFactory().createLinearRing(coordinateSequence);
+  }
 
-    // Apply the algorithm repeatedly
-    for (int n = 0; n < iterations; n++) {
-      Coordinate[] temp = new Coordinate[isOpen ? 2 * result.length - 2 : 2 * result.length];
+  public static LineString smooth(LineString lineString, int iterations, double factor) {
+    CoordinateSequence coordinateSequence =
+        smooth(lineString.getCoordinateSequence(), iterations, factor);
+    return lineString.getFactory().createLineString(coordinateSequence);
+  }
 
-      for (int i = 0; i < result.length; i++) {
-        if (isOnBoundary(result[i]) || isOnBoundary(result[(i + 1) % result.length])) {
-          temp[2 * i] = result[i];
-          temp[2 * i + 1] = result[(i + 1) % result.length];
-        } else {
-          temp[2 * i] = new Coordinate(
-              f1 * result[i].x + f2 * result[(i + 1) % result.length].x,
-              f1 * result[i].y + f2 * result[(i + 1) % result.length].y);
-          temp[2 * i + 1] = new Coordinate(
-              f2 * result[i].x + f1 * result[(i + 1) % result.length].x,
-              f2 * result[i].y + f1 * result[(i + 1) % result.length].y);
-        }
-      }
+  public static Coordinate[] smooth(Coordinate[] coordinates, int iterations, double factor) {
+    return smooth(new CoordinateArraySequence(coordinates), iterations, factor).toCoordinateArray();
+  }
 
-      if (isOpen) {
-        temp[0] = result[0];
-        temp[temp.length - 1] = result[result.length - 1];
-      }
+  public static CoordinateSequence smooth(CoordinateSequence coordinateSequence, int iterations,
+      double factor) {
+    if (CoordinateSequences.isRing(coordinateSequence)) {
+      return new CoordinateArraySequence(chaikin(coordinateSequence.toCoordinateArray(), 2, 0.25));
+    } else {
+      Coordinate[] original = coordinateSequence.toCoordinateArray();
+      Coordinate[] smoothed = chaikin(original, iterations, factor);
+      int sumOfSquares = (iterations * (iterations + 1) * (2 * iterations + 1)) / 6;
+      int trimmedLength = smoothed.length - sumOfSquares;
+      Coordinate[] result = new Coordinate[trimmedLength + 2];
+      result[0] = original[0];
+      System.arraycopy(smoothed, 0, result, 1, trimmedLength);
+      result[trimmedLength + 1] = original[original.length - 1];
+      return new CoordinateArraySequence(result);
+    }
+  }
 
-      result = temp;
+  private static Coordinate[] chaikin(Coordinate[] coordinates, int iterations, double factor) {
+    if (iterations <= 0) {
+      return coordinates;
     }
 
-    if (!isOpen) {
-      result = Arrays.copyOf(result, result.length + 1);
-      result[result.length - 1] = result[0];
+    for (int i = 0; i < iterations; i++) {
+      int l = coordinates.length;
+      double f1 = 1 - factor;
+      double f2 = factor;
+
+      Coordinate[] smoothed = new Coordinate[l * 2];
+      for (int j = 0; j < l; j++) {
+        Coordinate c1 = coordinates[j];
+        Coordinate c2 = coordinates[(j + 1) % l];
+        smoothed[j * 2] = new Coordinate(
+            f1 * c1.getX() + f2 * c2.getX(),
+            f1 * c1.getY() + f2 * c2.getY());
+        smoothed[j * 2 + 1] = new Coordinate(
+            f2 * c1.getX() + f1 * c2.getX(),
+            f2 * c1.getY() + f1 * c2.getY());
+      }
+
+      coordinates = smoothed;
     }
 
-    return result;
+    return coordinates;
   }
 
-  private boolean isOnBoundary(Coordinate coord) {
-    return coord.x == minX || coord.x == maxX || coord.y == minY || coord.y == maxY;
-  }
 }

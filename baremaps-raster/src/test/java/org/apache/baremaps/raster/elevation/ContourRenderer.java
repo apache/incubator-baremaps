@@ -18,7 +18,6 @@
 package org.apache.baremaps.raster.elevation;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -40,7 +39,7 @@ public class ContourRenderer {
     var image = ImageIO.read(path);
 
     // Downscale the image by a factor of 16
-    image = resizeImage(image, 32, 32);
+    image = RasterUtils.resizeImage(image, 32, 32);
 
     // Convert the image to a grid
     double[] grid = ElevationUtils.imageToGrid(image);
@@ -50,7 +49,7 @@ public class ContourRenderer {
             .traceContours(0, 9000, 100);
 
     // Scale the image back to its original size
-    image = resizeImage(image, image.getWidth() * 16, image.getHeight() * 16);
+    image = RasterUtils.resizeImage(image, image.getWidth() * 16, image.getHeight() * 16);
 
     // Scale the contour back to its original size
     contour = contour.stream()
@@ -65,8 +64,7 @@ public class ContourRenderer {
     // Smooth the contour with the Chaikin algorithm
     contour = contour.stream()
         .map(polygon -> {
-          var coordinates =
-              new ChaikinSmoother(polygon.getCoordinates(), 0, 0, 512, 512).smooth(2, 0.25);
+          var coordinates = ChaikinSmoother.smooth(polygon.getCoordinates(), 2, 0.25);
           return (Geometry) new GeometryFactory().createPolygon(coordinates);
         })
         .toList();
@@ -77,16 +75,6 @@ public class ContourRenderer {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.add(new ContourCanvas(image, contour));
     frame.setVisible(true);
-  }
-
-  private static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth,
-      int targetHeight) {
-    Image resultingImage =
-        originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
-    BufferedImage outputImage =
-        new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-    outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
-    return outputImage;
   }
 
   // Custom Canvas to draw the contours

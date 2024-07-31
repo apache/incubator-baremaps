@@ -24,6 +24,7 @@
 <div id="map"></div>
 <script>
     const map = (window.map = new maplibregl.Map({
+        antialias: true,
         container: 'map',
         zoom: 11,
         center: [11.5519, 47.2719],
@@ -34,23 +35,46 @@
                 rasterSource: {
                     type: 'raster',
                     'tiles': [
-                        'http://localhost:9000/tiles/{z}/{x}/{y}.png'
+                        'http://localhost:9000/raster/{z}/{x}/{y}.png'
                     ],
                     tileSize: 256
                 },
+                contourSource: {
+                    type: 'vector',
+                    tiles: [
+                        'http://localhost:9000/tiles/{z}/{x}/{y}.mvt'
+                    ],
+                },
             },
             layers: [
+                // {
+                //     'id': 'raster',
+                //     'type': 'raster',
+                //     'source': 'rasterSource',
+                //     'paint': {}
+                // },
                 {
-                    'id': 'raster',
-                    'type': 'raster',
-                    'source': 'rasterSource',
-                    'paint': {}
+                    'id': 'contour',
+                    'type': 'line',
+                    'source': 'contourSource',
+                    'source-layer': 'elevation',
+                    'layout': {},
+                    'paint': {
+                        'line-color': '#f00',
+                        'line-width': 1,
+                    },
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round',
+                    },
                 },
             ],
         },
         maxZoom: 18,
         maxPitch: 85
     }));
+
+    // map.showTileBoundaries = true;
 
     map.addControl(
         new maplibregl.NavigationControl({

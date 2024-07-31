@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.cli.raster;
+package org.apache.baremaps.raster.elevation;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
-
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-
-@Command(name = "raster", description = "Raster processing commands.",
-    subcommands = {Hillshade.class},
-    sortOptions = false)
-public class Raster implements Runnable {
-
-  @Override
-  public void run() {
-    CommandLine.usage(this, System.out);
+public class RasterUtils {
+  public static BufferedImage resizeImage(
+      BufferedImage originalImage, int targetWidth, int targetHeight) {
+    Image resultingImage =
+        originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
+    BufferedImage outputImage =
+        new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+    outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
+    return outputImage;
   }
 }

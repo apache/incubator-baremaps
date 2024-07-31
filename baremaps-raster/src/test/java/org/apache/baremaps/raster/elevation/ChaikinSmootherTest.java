@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.cli.raster;
+package org.apache.baremaps.raster.elevation;
 
+import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
+class ChaikinSmootherTest {
 
-@Command(name = "raster", description = "Raster processing commands.",
-    subcommands = {Hillshade.class},
-    sortOptions = false)
-public class Raster implements Runnable {
-
-  @Override
-  public void run() {
-    CommandLine.usage(this, System.out);
+  @Test
+  void smoothLineString() {
+    LineString lineString = new GeometryFactory().createLineString(new Coordinate[] {
+        new Coordinate(0, 0),
+        new Coordinate(1, 1),
+    });
+    Geometry smoothedLineString = new ChaikinSmoother(2, 0.25).transform(lineString);
+    System.out.println(smoothedLineString);
   }
+
+
+
 }

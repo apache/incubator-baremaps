@@ -45,7 +45,7 @@ public class ElevationUtils {
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        grid[y * width + x] = pixelToElevation(image.getRGB(x, y));
+        grid[y * width + x] = pixelToElevationTerrarium(image.getRGB(x, y));
       }
     }
 
@@ -78,6 +78,13 @@ public class ElevationUtils {
     int g = (rgb >> 8) & 0xFF;
     int b = rgb & 0xFF;
     return (r * ELEVATION_SCALE + g * 256.0 + b) / 10.0 - ELEVATION_OFFSET;
+  }
+
+  private static double pixelToElevationTerrarium(int rgb) {
+    int r = (rgb >> 16) & 0xFF;
+    int g = (rgb >> 8) & 0xFF;
+    int b = rgb & 0xFF;
+    return (r * 256 + g + b / 256) - 32768;
   }
 
   private static int elevationToPixel(double elevation) {

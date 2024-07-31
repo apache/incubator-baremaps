@@ -19,6 +19,7 @@ package org.apache.baremaps.tilestore;
 
 
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public interface TileStore extends AutoCloseable {
    * @return the content of the tiles
    * @throws TileStoreException
    */
-  default List<ByteBuffer> read(List<TileCoord> tileCoords) throws TileStoreException {
+  default List<ByteBuffer> read(List<TileCoord> tileCoords) throws TileStoreException, IOException {
     var blobs = new ArrayList<ByteBuffer>();
     for (var tileCoord : tileCoords) {
       blobs.add(read(tileCoord));
