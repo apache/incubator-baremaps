@@ -42,7 +42,7 @@ public class ContourRenderer {
     image = RasterUtils.resizeImage(image, 32, 32);
 
     // Convert the image to a grid
-    double[] grid = ElevationUtils.imageToGrid(image);
+    double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationStandard);
 
     List<Geometry> contour =
         new ContourTracer(grid, image.getWidth(), image.getHeight(), true, true)

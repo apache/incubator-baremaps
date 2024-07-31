@@ -49,7 +49,7 @@ public class HillShadeRenderer extends JFrame {
             .toAbsolutePath()
             .resolveSibling("baremaps/baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    grid = ElevationUtils.imageToGrid(originalImage);
+    grid = ElevationUtils.imageToGrid(originalImage, ElevationUtils::pixelToElevationStandard);
 
     // Create UI components
     altitudeSlider = new JSlider(JSlider.VERTICAL, 0, 90, 45);

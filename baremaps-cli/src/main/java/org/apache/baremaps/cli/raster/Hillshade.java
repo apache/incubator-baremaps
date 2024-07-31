@@ -187,7 +187,7 @@ public class Hillshade implements Callable<Integer> {
             image.getWidth() + 2,
             image.getHeight() + 2);
 
-        var grid = ElevationUtils.imageToGrid(buffer);
+        var grid = ElevationUtils.imageToGrid(buffer, ElevationUtils::pixelToElevationTerrarium);
         var hillshadeGrid =
             new HillshadeCalculator(grid, buffer.getWidth(), buffer.getHeight(), 1, false)
                 .calculate(45, 315);
@@ -290,11 +290,11 @@ public class Hillshade implements Callable<Integer> {
           image.getWidth() + 8,
           image.getHeight() + 8);
 
-      var grid = ElevationUtils.imageToGrid(image);
+      var grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
 
       var features = new ArrayList<Feature>();
 
-      for (int level = 0; level < 9000; level += 100) {
+      for (int level = -10000; level < 10000; level += 100) {
         var contours = new ContourTracer(grid, image.getWidth(), image.getHeight(), false, false)
             .traceContours(level);
 
@@ -302,7 +302,7 @@ public class Hillshade implements Callable<Integer> {
 
           contour = AffineTransformation
               .translationInstance(-4, -4)
-              .scaleInstance(16, 16)
+              .scale(16, 16)
               .transform(contour);
 
           // contour = new ChaikinSmoother(2, 0.25).transform(contour);

@@ -18,6 +18,7 @@
 package org.apache.baremaps.raster.elevation;
 
 import java.awt.image.BufferedImage;
+import java.util.function.Function;
 
 /**
  * Provides utility methods for processing raster images, particularly for elevation data.
@@ -37,7 +38,8 @@ public class ElevationUtils {
    * @param image The input BufferedImage
    * @return A double array representing the elevation grid
    */
-  public static double[] imageToGrid(BufferedImage image) {
+  public static double[] imageToGrid(BufferedImage image,
+      Function<Integer, Double> pixelToElevation) {
     validateImage(image);
     int width = image.getWidth();
     int height = image.getHeight();
@@ -45,7 +47,7 @@ public class ElevationUtils {
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        grid[y * width + x] = pixelToElevationTerrarium(image.getRGB(x, y));
+        grid[y * width + x] = pixelToElevation.apply(image.getRGB(x, y));
       }
     }
 
@@ -60,27 +62,28 @@ public class ElevationUtils {
    * @param height The height of the grid
    * @return A BufferedImage representing the elevation data
    */
-  public static BufferedImage gridToImage(double[] grid, int width, int height) {
+  public static BufferedImage gridToImage(double[] grid, int width, int height,
+      Function<Double, Integer> elevationToPixel) {
     validateGrid(grid, width, height);
     BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        image.setRGB(x, y, elevationToPixel(grid[y * width + x]));
+        image.setRGB(x, y, elevationToPixel.apply(grid[y * width + x]));
       }
     }
 
     return image;
   }
 
-  private static double pixelToElevation(int rgb) {
+  public static double pixelToElevationStandard(int rgb) {
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
     int b = rgb & 0xFF;
     return (r * ELEVATION_SCALE + g * 256.0 + b) / 10.0 - ELEVATION_OFFSET;
   }
 
-  private static double pixelToElevationTerrarium(int rgb) {
+  public static double pixelToElevationTerrarium(int rgb) {
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
     int b = rgb & 0xFF;

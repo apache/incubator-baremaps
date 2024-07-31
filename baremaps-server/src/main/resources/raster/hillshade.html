@@ -47,12 +47,14 @@
                 },
             },
             layers: [
-                // {
-                //     'id': 'raster',
-                //     'type': 'raster',
-                //     'source': 'rasterSource',
-                //     'paint': {}
-                // },
+                {
+                    'id': 'raster',
+                    'type': 'raster',
+                    'source': 'rasterSource',
+                    'paint': {
+                        'raster-opacity': 0.5
+                    }
+                },
                 {
                     'id': 'contour',
                     'type': 'line',
