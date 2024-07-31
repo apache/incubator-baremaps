@@ -24,9 +24,8 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.util.AffineTransformation;
 
 public class ContourRenderer {
 
@@ -45,28 +44,22 @@ public class ContourRenderer {
     double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationStandard);
 
     List<Geometry> contour =
-        new ContourTracer(grid, image.getWidth(), image.getHeight(), true, true)
+        new ContourTracer(grid, image.getWidth(), image.getHeight(), true, false)
             .traceContours(0, 9000, 100);
 
     // Scale the image back to its original size
     image = RasterUtils.resizeImage(image, image.getWidth() * 16, image.getHeight() * 16);
 
     // Scale the contour back to its original size
+    AffineTransformation transformation = AffineTransformation.scaleInstance(16, 16);
     contour = contour.stream()
-        .map(polygon -> {
-          var coordinates = Stream.of(polygon.getCoordinates())
-              .map(c -> new Coordinate(c.getX() * 16, c.getY() * 16))
-              .toArray(Coordinate[]::new);
-          return (Geometry) new GeometryFactory().createPolygon(coordinates);
-        })
+        .map(transformation::transform)
         .toList();
 
     // Smooth the contour with the Chaikin algorithm
+    ChaikinSmoother smoother = new ChaikinSmoother(1, 0.25);
     contour = contour.stream()
-        .map(polygon -> {
-          var coordinates = ChaikinSmoother.smooth(polygon.getCoordinates(), 2, 0.25);
-          return (Geometry) new GeometryFactory().createPolygon(coordinates);
-        })
+        .map(smoother::transform)
         .toList();
 
     // Create a frame to display the contours

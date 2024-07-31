@@ -39,22 +39,6 @@ public class ChaikinSmoother extends GeometryTransformer {
     return smooth(coordinateSequence, iterations, factor);
   }
 
-  public static LinearRing smooth(LinearRing linearRing, int iterations, double factor) {
-    CoordinateSequence coordinateSequence =
-        smooth(linearRing.getCoordinateSequence(), iterations, factor);
-    return linearRing.getFactory().createLinearRing(coordinateSequence);
-  }
-
-  public static LineString smooth(LineString lineString, int iterations, double factor) {
-    CoordinateSequence coordinateSequence =
-        smooth(lineString.getCoordinateSequence(), iterations, factor);
-    return lineString.getFactory().createLineString(coordinateSequence);
-  }
-
-  public static Coordinate[] smooth(Coordinate[] coordinates, int iterations, double factor) {
-    return smooth(new CoordinateArraySequence(coordinates), iterations, factor).toCoordinateArray();
-  }
-
   public static CoordinateSequence smooth(CoordinateSequence coordinateSequence, int iterations,
       double factor) {
     if (CoordinateSequences.isRing(coordinateSequence)) {
