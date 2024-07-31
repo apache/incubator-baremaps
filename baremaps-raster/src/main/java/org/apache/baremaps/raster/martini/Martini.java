@@ -54,7 +54,12 @@ public class Martini {
     this.baseCoords = new int[this.numTriangles * 4];
     for (int i = 0; i < this.numTriangles; i++) {
       int id = i + 2;
-      int ax = 0, ay = 0, bx = 0, by = 0, cx = 0, cy = 0;
+      int ax = 0;
+      int ay = 0;
+      int bx = 0;
+      int by = 0;
+      int cx = 0;
+      int cy = 0;
       if ((id & 1) != 0) {
         bx = by = cx = tileSize;
       } else {

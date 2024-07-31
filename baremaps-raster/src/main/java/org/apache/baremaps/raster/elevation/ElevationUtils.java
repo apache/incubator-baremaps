@@ -90,7 +90,7 @@ public class ElevationUtils {
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
     int b = rgb & 0xFF;
-    return (r * 256 + g + b / 256) - 32768;
+    return (r * 256.0 + g + b / 256.0) - 32768.0;
   }
 
   public static int elevationToPixel(double elevation) {

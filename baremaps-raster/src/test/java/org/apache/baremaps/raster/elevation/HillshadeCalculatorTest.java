@@ -122,24 +122,4 @@ class HillshadeCalculatorTest {
       assertTrue(value >= 0 && value <= 255, "Hillshade value should be between 0 and 255");
     }
   }
-
-  @Test
-  @DisplayName("Test hillShadeEnhanced output range")
-  void testHillShadeEnhancedOutputRange() {
-    double[] dem = new double[100];
-    for (int i = 0; i < dem.length; i++) {
-      dem[i] = Math.random() * 1000;
-    }
-    int width = 10;
-    int height = 10;
-    double sunAltitude = 45;
-    double sunAzimuth = 315;
-
-    double[] result =
-        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
-
-    for (double value : result) {
-      assertTrue(value >= 0 && value <= 255, "Hillshade value should be between 0 and 255");
-    }
-  }
 }

@@ -60,14 +60,13 @@
                     'type': 'line',
                     'source': 'contourSource',
                     'source-layer': 'elevation',
-                    'layout': {},
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round',
+                    },
                     'paint': {
                         'line-color': '#f00',
                         'line-width': 1,
-                    },
-                    layout: {
-                        'line-join': 'round',
-                        'line-cap': 'round',
                     },
                 },
             ],
@@ -75,9 +74,7 @@
         maxZoom: 18,
         maxPitch: 85
     }));
-
-    // map.showTileBoundaries = true;
-
+    
     map.addControl(
         new maplibregl.NavigationControl({
             visualizePitch: false,

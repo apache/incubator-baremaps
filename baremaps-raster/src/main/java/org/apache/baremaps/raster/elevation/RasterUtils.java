@@ -21,6 +21,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class RasterUtils {
+
+  private RasterUtils() {
+    // Private constructor to prevent instantiation
+  }
+
   public static BufferedImage resizeImage(
       BufferedImage originalImage, int targetWidth, int targetHeight) {
     Image resultingImage =

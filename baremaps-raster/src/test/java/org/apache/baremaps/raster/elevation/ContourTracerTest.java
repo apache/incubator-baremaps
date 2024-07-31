@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-public class ContourTracerTest {
+class ContourTracerTest {
 
   @Test
   @DisplayName("Test grid normalization")

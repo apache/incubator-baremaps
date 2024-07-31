@@ -34,9 +34,7 @@ class ChaikinSmootherTest {
         new Coordinate(1, 1),
     });
     Geometry smoothedLineString = new ChaikinSmoother(2, 0.25).transform(lineString);
-    System.out.println(smoothedLineString);
+    assertEquals("LINESTRING (0 0, 0.375 0.375, 0.625 0.625, 0.75 0.75, 1 1)",
+        smoothedLineString.toString());
   }
-
-
-
 }

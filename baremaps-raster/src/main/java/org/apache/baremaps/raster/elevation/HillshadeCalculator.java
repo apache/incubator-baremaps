@@ -54,30 +54,6 @@ public class HillshadeCalculator {
     return calculateHillshade(sunAltitude, sunAzimuth);
   }
 
-  /**
-   * Generates a hillshade effect on the given DEM.
-   *
-   * @param sunAltitude The sun's altitude in degrees
-   * @param sunAzimuth The sun's azimuth in degrees
-   * @return An array representing the hillshade effect
-   */
-  public double[] calculate(double sunAltitude, double sunAzimuth, double scale, boolean isSimple) {
-    validateInput(dem, width, height, sunAltitude, sunAzimuth);
-    return calculateHillshade(sunAltitude, sunAzimuth);
-  }
-
-  /**
-   * Generates an enhanced hillshade effect on the given DEM.
-   *
-   * @param sunAltitude The sun's altitude in degrees
-   * @param sunAzimuth The sun's azimuth in degrees
-   * @return An array representing the enhanced hillshade effect
-   */
-  public double[] calculateEnhanced(double sunAltitude, double sunAzimuth) {
-    validateInput(dem, width, height, sunAltitude, sunAzimuth);
-    return calculateHillshade(sunAltitude, sunAzimuth);
-  }
-
   private static void validateInput(double[] dem, int width, int height, double sunAltitude,
       double sunAzimuth) {
     if (dem == null || dem.length == 0) {
@@ -112,7 +88,8 @@ public class HillshadeCalculator {
         int left = Math.max(x - 1, 0);
         int right = Math.min(x + 1, width - 1);
 
-        double dzdx, dzdy;
+        double dzdx;
+        double dzdy;
         if (isSimple) {
           dzdx = (dem[y * width + right] - dem[y * width + left]) / 2.0;
           dzdy = (dem[bottom * width + x] - dem[top * width + x]) / 2.0;

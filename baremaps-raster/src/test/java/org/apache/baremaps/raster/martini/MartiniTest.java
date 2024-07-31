@@ -24,10 +24,10 @@ import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
-public class MartiniTest {
+class MartiniTest {
 
   @Test
-  public void generateAMesh() throws IOException {
+  void generateAMesh() throws IOException {
     var png = ImageIO.read(
         Path.of("")
             .toAbsolutePath()

@@ -96,8 +96,8 @@ public class ContourRenderer {
       g.drawImage(image, 10, 10, null);
 
       g.setColor(Color.RED);
-      for (Geometry contour : contour) {
-        List<Point> points = Stream.of(contour.getCoordinates())
+      for (Geometry geometry : contour) {
+        List<Point> points = Stream.of(geometry.getCoordinates())
             .map(p -> new Point((int) p.getX() + 10, (int) p.getY() + 10))
             .toList();
         for (int i = 0; i < points.size() - 1; i++) {
