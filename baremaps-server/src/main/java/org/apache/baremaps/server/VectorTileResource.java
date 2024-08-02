@@ -72,7 +72,7 @@ public class VectorTileResource {
         return HttpResponse.of(204);
       }
     } catch (TileStoreException ex) {
-      logger.error("Error while reading tile.", ex);
+      logger.error("Error while reading tile {}", tileCoord, ex);
       return HttpResponse.of(404);
     }
   }

@@ -23,6 +23,7 @@ import java.util.List;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 /**
  * Provides methods for generating contour lines and contour polygons from digital elevation models
@@ -80,16 +81,16 @@ public class ContourTracer {
       }
     }
 
-    // Merge segments into line strings
-    LineMerger segmentMerger = new LineMerger();
-    segmentMerger.add(segments);
-    List<Geometry> contours = new ArrayList<>(segmentMerger.getMergedLineStrings());
-
     // Polygonize the line strings
-    if (polygonize) {
-      contours = contours.stream()
-          .map(geometry -> (Geometry) GEOMETRY_FACTORY.createPolygon(geometry.getCoordinates()))
-          .toList();
+    List<Geometry> contours;
+    if (!polygonize) {
+      LineMerger segmentMerger = new LineMerger();
+      segmentMerger.add(segments);
+      contours = new ArrayList<>(segmentMerger.getMergedLineStrings());
+    } else {
+      Polygonizer polygonizer = new Polygonizer();
+      polygonizer.add(segments);
+      contours = new ArrayList<>(polygonizer.getPolygons());
     }
 
     // Normalize the coordinates

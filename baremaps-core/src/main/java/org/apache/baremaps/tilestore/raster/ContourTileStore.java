@@ -19,7 +19,6 @@ package org.apache.baremaps.tilestore.raster;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,40 +45,42 @@ public class ContourTileStore implements TileStore<ByteBuffer> {
 
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
-    var image = tileStore.read(tileCoord);
-    var onion = BufferedImageTileStore.onion(tileStore, tileCoord, 1);
-    image = onion.getSubimage(
-        image.getWidth() - 4,
-        image.getHeight() - 4,
-        image.getWidth() + 8,
-        image.getHeight() + 8);
+    try {
+      var image = tileStore.read(tileCoord);
+      var onion = BufferedImageTileStore.onion(tileStore, tileCoord, 1);
+      image = onion.getSubimage(
+          image.getWidth() - 4,
+          image.getHeight() - 4,
+          image.getWidth() + 8,
+          image.getHeight() + 8);
 
-    var grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
-    var features = new ArrayList<Feature>();
-    for (int level = -10000; level < 10000; level += 100) {
-      var contours = new ContourTracer(grid, image.getWidth(), image.getHeight(), false, false)
-          .traceContours(level);
-      for (var contour : contours) {
-        contour = AffineTransformation
-            .translationInstance(-4, -4)
-            .scale(16, 16)
-            .transform(contour);
-        features.add(new Feature(level, Map.of("level", String.valueOf(level)), contour));
+      var grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
+      var features = new ArrayList<Feature>();
+      for (int level = -10000; level < 10000; level += 100) {
+
+        var contours = new ContourTracer(grid, image.getWidth(), image.getHeight(), false, true)
+            .traceContours(level);
+        for (var contour : contours) {
+          contour = AffineTransformation
+              .translationInstance(-4, -4)
+              .scale(16, 16)
+              .transform(contour);
+          features.add(new Feature(level, Map.of("level", String.valueOf(level)), contour));
+        }
       }
-    }
 
-    var layer = new Layer("elevation", 4096, features);
-    var tile = new Tile(List.of(layer));
-    var vectorTile = new VectorTileEncoder().encodeTile(tile);
-    try (var baos = new ByteArrayOutputStream()) {
-      var gzip = new GZIPOutputStream(baos);
-      vectorTile.writeTo(gzip);
-      gzip.close();
-      return ByteBuffer.wrap(baos.toByteArray());
-    } catch (IOException e) {
+      var layer = new Layer("elevation", 4096, features);
+      var tile = new Tile(List.of(layer));
+      var vectorTile = new VectorTileEncoder().encodeTile(tile);
+      try (var baos = new ByteArrayOutputStream()) {
+        var gzip = new GZIPOutputStream(baos);
+        vectorTile.writeTo(gzip);
+        gzip.close();
+        return ByteBuffer.wrap(baos.toByteArray());
+      }
+    } catch (Exception e) {
       throw new TileStoreException(e);
     }
-
   }
 
   @Override

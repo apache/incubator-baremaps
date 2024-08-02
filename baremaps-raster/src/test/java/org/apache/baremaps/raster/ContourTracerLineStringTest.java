@@ -29,33 +29,21 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 0")
   void testProcessCellWithCase00() {
-    var grid = new double[] {
-        0, 0,
-        0, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_00);
     assertTrue(lines.isEmpty());
   }
 
   @Test
   @DisplayName("Test case 1")
   void testProcessCellWithCase01() {
-    var grid = new double[] {
-        1, 0,
-        0, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_01);
     assertEquals("LINESTRING (0 0.5, 0.5 0)", lines.get(0).toString());
   }
 
   @Test
   @DisplayName("Test case 2")
   void testProcessCellWithCase02() {
-    var grid = new double[] {
-        0, 1,
-        0, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_02);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0.5 0, 1 0.5)", lines.get(0).toString());
   }
@@ -63,11 +51,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 3")
   void testProcessCellWithCase03() {
-    var grid = new double[] {
-        1, 1,
-        0, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_03);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0 0.5, 1 0.5)", lines.get(0).toString());
   }
@@ -75,11 +59,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 4")
   void testProcessCellWithCase04() {
-    var grid = new double[] {
-        0, 0,
-        0, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_04);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (1 0.5, 0.5 1)", lines.get(0).toString());
   }
@@ -87,11 +67,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 5")
   void testProcessCellWithCase05() {
-    var grid = new double[] {
-        1, 0,
-        0, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_05);
     assertEquals(2, lines.size());
     assertEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0).toString());
     assertEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(1).toString());
@@ -100,11 +76,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 6")
   void testProcessCellWithCase06() {
-    var grid = new double[] {
-        0, 1,
-        0, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_06);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0.5 0, 0.5 1)", lines.get(0).toString());
   }
@@ -112,11 +84,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 7")
   void testProcessCellWithCase07() {
-    var grid = new double[] {
-        1, 1,
-        0, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_07);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0).toString());
   }
@@ -124,11 +92,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 8")
   void testProcessCellWithCase08() {
-    var grid = new double[] {
-        0, 0,
-        1, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_08);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0.5 1, 0 0.5)", lines.get(0).toString());
   }
@@ -136,11 +100,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 9")
   void testProcessCellWithCase09() {
-    var grid = new double[] {
-        1, 0,
-        1, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_09);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0.5 1, 0.5 0)", lines.get(0).toString());
   }
@@ -148,11 +108,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 10")
   void testProcessCellWithCase10() {
-    var grid = new double[] {
-        0, 1,
-        1, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_10);
     assertEquals(2, lines.size());
     assertEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0).toString());
     assertEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(1).toString());
@@ -161,11 +117,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 11")
   void testProcessCellWithCase11() {
-    var grid = new double[] {
-        1, 1,
-        1, 0,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_11);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(0).toString());
   }
@@ -173,11 +125,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 12")
   void testProcessCellWithCase12() {
-    var grid = new double[] {
-        0, 0,
-        1, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_12);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (1 0.5, 0 0.5)", lines.get(0).toString());
   }
@@ -185,11 +133,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 13")
   void testProcessCellWithCase13() {
-    var grid = new double[] {
-        1, 0,
-        1, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_13);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(0).toString());
   }
@@ -197,11 +141,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 14")
   void testProcessCellWithCase14() {
-    var grid = new double[] {
-        0, 1,
-        1, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_14);
     assertEquals(1, lines.size());
     assertEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0).toString());
   }
@@ -209,11 +149,7 @@ class ContourTracerLineStringTest {
   @Test
   @DisplayName("Test case 15")
   void testProcessCellWithCase15() {
-    var grid = new double[] {
-        1, 1,
-        1, 1,
-    };
-    var lines = trace(grid);
+    var lines = trace(MarchingSquareCases.CASE_15);
     assertTrue(lines.isEmpty());
   }
 
