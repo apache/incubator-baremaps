@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.elevation;
+package org.apache.baremaps.raster;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;

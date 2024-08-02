@@ -28,6 +28,7 @@ import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.file.HttpFile;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -36,7 +37,7 @@ import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.maplibre.style.Style;
 import org.apache.baremaps.maplibre.tilejson.TileJSON;
 import org.apache.baremaps.server.*;
-import org.apache.baremaps.tilestore.TileCache;
+import org.apache.baremaps.tilestore.ByteBufferTileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
 import org.apache.baremaps.utils.SqliteUtils;
@@ -83,8 +84,8 @@ public class MBTiles implements Callable<Integer> {
 
     var datasource = SqliteUtils.createDataSource(mbtilesPath, true);
     try (var tileStore = new MBTilesStore(datasource);
-        var tileCache = new TileCache(tileStore, caffeineSpec)) {
-      var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
+        var tileCache = new ByteBufferTileCache(tileStore, caffeineSpec)) {
+      var tileStoreSupplier = (Supplier<TileStore<ByteBuffer>>) () -> tileCache;
 
       var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
       var styleSupplier = (Supplier<Style>) () -> style;
@@ -96,7 +97,8 @@ public class MBTiles implements Callable<Integer> {
       serverBuilder.http(port);
 
       var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
-      serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
+      serverBuilder.annotatedService("/tiles", new VectorTileResource(tileStoreSupplier),
+          jsonResponseConverter);
       serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
       serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
 

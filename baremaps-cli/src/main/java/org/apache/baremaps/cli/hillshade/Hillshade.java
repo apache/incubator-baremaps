@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.cli.raster;
+package org.apache.baremaps.cli.hillshade;
 
 
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "raster", description = "Raster processing commands.",
-    subcommands = {Hillshade.class},
+@Command(name = "hillshade", description = "Hillshade processing commands.",
+    subcommands = {Serve.class},
     sortOptions = false)
 @SuppressWarnings("squid:S106")
-public class Raster implements Runnable {
+public class Hillshade implements Runnable {
 
   @Override
   public void run() {

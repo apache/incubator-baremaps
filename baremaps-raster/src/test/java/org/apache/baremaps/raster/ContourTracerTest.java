@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.elevation;
+package org.apache.baremaps.raster;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

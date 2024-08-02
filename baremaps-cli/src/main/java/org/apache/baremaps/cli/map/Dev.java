@@ -27,6 +27,7 @@ import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.file.HttpFile;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -37,8 +38,8 @@ import org.apache.baremaps.maplibre.style.Style;
 import org.apache.baremaps.maplibre.tileset.Tileset;
 import org.apache.baremaps.server.ChangeResource;
 import org.apache.baremaps.server.StyleResource;
-import org.apache.baremaps.server.TileResource;
 import org.apache.baremaps.server.TilesetResource;
+import org.apache.baremaps.server.VectorTileResource;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.PostgresUtils;
@@ -96,7 +97,7 @@ public class Dev implements Callable<Integer> {
       }
     };
 
-    var tileStoreSupplier = (Supplier<TileStore>) () -> {
+    var tileStoreSupplier = (Supplier<TileStore<ByteBuffer>>) () -> {
       var tileJSON = tilesetSupplier.get();
       return new PostgresTileStore(datasource, tileJSON);
     };
@@ -116,7 +117,8 @@ public class Dev implements Callable<Integer> {
     var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
     serverBuilder.annotatedService(new ChangeResource(tilesetPath, stylePath),
         jsonResponseConverter);
-    serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
+    serverBuilder.annotatedService("/tiles", new VectorTileResource(tileStoreSupplier),
+        jsonResponseConverter);
     serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
     serverBuilder.annotatedService(new TilesetResource(tilesetSupplier), jsonResponseConverter);
 

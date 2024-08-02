@@ -39,7 +39,7 @@ import org.apache.baremaps.tilestore.TileStoreException;
  * <a href="https://docs.mapbox.com/help/glossary/mbtiles/">MBTiles</a> file format for storing
  * tiles.
  */
-public class MBTilesStore implements TileStore {
+public class MBTilesStore implements TileStore<ByteBuffer> {
 
   public static final String CREATE_TABLE_METADATA =
       "CREATE TABLE IF NOT EXISTS metadata (name TEXT, value TEXT, PRIMARY KEY (name))";
@@ -119,13 +119,13 @@ public class MBTilesStore implements TileStore {
    * {@inheritDoc}
    */
   @Override
-  public void write(List<TileEntry> tileEntries) throws TileStoreException {
+  public void write(List<TileEntry<ByteBuffer>> tileEntries) throws TileStoreException {
     try (
         Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
-      for (TileEntry tileEntry : tileEntries) {
+      for (TileEntry<ByteBuffer> tileEntry : tileEntries) {
         TileCoord tileCoord = tileEntry.getTileCoord();
-        ByteBuffer byteBuffer = tileEntry.getByteBuffer();
+        ByteBuffer byteBuffer = tileEntry.getTileValue();
         statement.setInt(1, tileCoord.z());
         statement.setInt(2, tileCoord.x());
         statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.martini;
+package org.apache.baremaps.raster;
 
 import java.awt.image.BufferedImage;
 

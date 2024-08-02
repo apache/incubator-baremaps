@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.elevation;
+package org.apache.baremaps.raster;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 
-class ContourTracerPolygonTest {
+class ContourTracerLineStringTest {
 
   @Test
   @DisplayName("Test case 0")
@@ -33,8 +33,8 @@ class ContourTracerPolygonTest {
         0, 0,
         0, 0,
     };
-    var polygons = trace(grid);
-    assertTrue(polygons.isEmpty());
+    var lines = trace(grid);
+    assertTrue(lines.isEmpty());
   }
 
   @Test
@@ -44,8 +44,8 @@ class ContourTracerPolygonTest {
         1, 0,
         0, 0,
     };
-    var polygons = trace(grid);
-    assertEquals("POLYGON ((0 0, 0 0.5, 0.5 0, 0 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals("LINESTRING (0 0.5, 0.5 0)", lines.get(0).toString());
   }
 
   @Test
@@ -55,9 +55,9 @@ class ContourTracerPolygonTest {
         0, 1,
         0, 0,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0.5 0, 1 0.5, 1 0, 0.5 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0.5 0, 1 0.5)", lines.get(0).toString());
   }
 
   @Test
@@ -67,9 +67,9 @@ class ContourTracerPolygonTest {
         1, 1,
         0, 0,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 0.5, 1 0.5, 1 0, 0 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0 0.5, 1 0.5)", lines.get(0).toString());
   }
 
   @Test
@@ -79,9 +79,9 @@ class ContourTracerPolygonTest {
         0, 0,
         0, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0.5 1, 1 1, 1 0.5, 0.5 1))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (1 0.5, 0.5 1)", lines.get(0).toString());
   }
 
   @Test
@@ -91,10 +91,10 @@ class ContourTracerPolygonTest {
         1, 0,
         0, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 0.5, 0.5 1, 1 1, 1 0.5, 0.5 0, 0 0))",
-        polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(2, lines.size());
+    assertEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0).toString());
+    assertEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(1).toString());
   }
 
   @Test
@@ -104,9 +104,9 @@ class ContourTracerPolygonTest {
         0, 1,
         0, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0.5 0, 0.5 1, 1 1, 1 0, 0.5 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0.5 0, 0.5 1)", lines.get(0).toString());
   }
 
   @Test
@@ -116,9 +116,9 @@ class ContourTracerPolygonTest {
         1, 1,
         0, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 0.5, 0.5 1, 1 1, 1 0, 0 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0).toString());
   }
 
   @Test
@@ -128,9 +128,9 @@ class ContourTracerPolygonTest {
         0, 0,
         1, 0,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 0.5 1, 0 0.5))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0.5 1, 0 0.5)", lines.get(0).toString());
   }
 
   @Test
@@ -140,9 +140,9 @@ class ContourTracerPolygonTest {
         1, 0,
         1, 0,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 0.5 1, 0.5 0, 0 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0.5 1, 0.5 0)", lines.get(0).toString());
   }
 
   @Test
@@ -152,10 +152,10 @@ class ContourTracerPolygonTest {
         0, 1,
         1, 0,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 0.5 1, 1 0.5, 1 0, 0.5 0, 0 0.5))",
-        polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(2, lines.size());
+    assertEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0).toString());
+    assertEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(1).toString());
   }
 
   @Test
@@ -165,9 +165,9 @@ class ContourTracerPolygonTest {
         1, 1,
         1, 0,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 0.5 1, 1 0.5, 1 0, 0 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(0).toString());
   }
 
   @Test
@@ -177,9 +177,9 @@ class ContourTracerPolygonTest {
         0, 0,
         1, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 1 1, 1 0.5, 0 0.5))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (1 0.5, 0 0.5)", lines.get(0).toString());
   }
 
   @Test
@@ -189,9 +189,9 @@ class ContourTracerPolygonTest {
         1, 0,
         1, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 1 1, 1 0.5, 0.5 0, 0 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(0).toString());
   }
 
   @Test
@@ -201,9 +201,9 @@ class ContourTracerPolygonTest {
         0, 1,
         1, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 1 1, 1 0, 0.5 0, 0 0.5))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertEquals(1, lines.size());
+    assertEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0).toString());
   }
 
   @Test
@@ -213,12 +213,12 @@ class ContourTracerPolygonTest {
         1, 1,
         1, 1,
     };
-    var polygons = trace(grid);
-    assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))", polygons.get(0).toString());
+    var lines = trace(grid);
+    assertTrue(lines.isEmpty());
   }
 
   List<Geometry> trace(double[] grid) {
-    return new ContourTracer(grid, 2, 2, false, true).traceContours(0.5);
+    return new ContourTracer(grid, 2, 2, false, false).traceContours(0.5);
   }
+
 }

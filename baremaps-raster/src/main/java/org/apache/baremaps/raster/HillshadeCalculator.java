@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.elevation;
+package org.apache.baremaps.raster;
 
 /**
  * Provides methods for generating hillshade effects on digital elevation models (DEMs).
