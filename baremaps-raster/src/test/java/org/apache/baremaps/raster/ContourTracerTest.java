@@ -18,7 +18,6 @@
 package org.apache.baremaps.raster;
 
 import static org.apache.baremaps.testing.GeometryAssertions.assertGeometryEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
@@ -27,7 +26,6 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 
 class ContourTracerTest {
 
