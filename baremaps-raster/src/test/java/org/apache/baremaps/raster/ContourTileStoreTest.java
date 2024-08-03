@@ -38,7 +38,7 @@ class ContourTileStoreTest {
         .toList();
 
     JFrame frame = new JFrame("Geometry Drawer");
-    GeometryDrawer drawer = new GeometryDrawer(contours);
+    MarchingSquareRenderer drawer = new MarchingSquareRenderer(contours);
     frame.add(drawer);
     frame.setSize(1200, 1200);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

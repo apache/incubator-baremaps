@@ -28,10 +28,10 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.AffineTransformation;
 
-public class GeometryDrawer extends JPanel {
+public class MarchingSquareRenderer extends JPanel {
   private List<Geometry> geometries;
 
-  public GeometryDrawer(List<Geometry> geometries) {
+  public MarchingSquareRenderer(List<Geometry> geometries) {
     this.geometries = geometries;
   }
 
@@ -87,19 +87,18 @@ public class GeometryDrawer extends JPanel {
   }
 
   public static void main(String[] args) {
-
     JFrame frame = new JFrame("Geometry Drawer");
 
     JPanel mainPanel = new JPanel(new GridLayout(4, 4));
     // mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-    for (double[] c : MarchingSquareCases.BUFFERED_CASES) {
+    for (double[] c : MarchingSquareUtils.CASES) {
 
       List<Geometry> geometries = trace(c)
           .stream()
           .map(AffineTransformation.scaleInstance(50, 50).translate(0, 0)::transform)
           .toList();
 
-      GeometryDrawer drawer = new GeometryDrawer(geometries);
+      MarchingSquareRenderer drawer = new MarchingSquareRenderer(geometries);
       mainPanel.add(drawer);
     }
 

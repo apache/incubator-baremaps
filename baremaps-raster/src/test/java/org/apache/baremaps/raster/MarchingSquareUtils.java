@@ -19,7 +19,7 @@ package org.apache.baremaps.raster;
 
 import java.util.List;
 
-public class MarchingSquareCases {
+public class MarchingSquareUtils {
 
   public static final double[] CASE_00 = {
       0, 0,
