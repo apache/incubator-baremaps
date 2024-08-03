@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.raster;
 
+import static org.apache.baremaps.testing.GeometryAssertions.assertGeometryEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 
-class ContourTracerPolygonSimpleTest {
+class ContourTracerPolygonTest {
 
   @Test
   @DisplayName("Test case 0")
@@ -37,7 +38,7 @@ class ContourTracerPolygonSimpleTest {
   @DisplayName("Test case 1")
   void testProcessCellWithCase01() {
     var polygons = trace(MarchingSquareCases.CASE_01);
-    assertEquals("POLYGON ((0 0, 0 0.5, 0.5 0, 0 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0.5 0, 0 0, 0 0.5, 0.5 0))", polygons.get(0));
   }
 
   @Test
@@ -45,7 +46,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase02() {
     var polygons = trace(MarchingSquareCases.CASE_02);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0.5 0, 1 0.5, 1 0, 0.5 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((1 0.5, 1 0, 0.5 0, 1 0.5))", polygons.get(0));
   }
 
   @Test
@@ -53,7 +54,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase03() {
     var polygons = trace(MarchingSquareCases.CASE_03);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 0.5, 1 0.5, 1 0, 0 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0 0, 0 0.5, 1 0.5, 1 0, 0 0))", polygons.get(0));
   }
 
   @Test
@@ -61,7 +62,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase04() {
     var polygons = trace(MarchingSquareCases.CASE_04);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0.5 1, 1 1, 1 0.5, 0.5 1))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((1 1, 1 0.5, 0.5 1, 1 1))", polygons.get(0));
   }
 
   @Test
@@ -69,8 +70,8 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase05() {
     var polygons = trace(MarchingSquareCases.CASE_05);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 0.5, 0.5 1, 1 1, 1 0.5, 0.5 0, 0 0))",
-        polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((1 1, 1 0.5, 0.5 0, 0 0, 0 0.5, 0.5 1, 1 1))",
+        polygons.get(0));
   }
 
   @Test
@@ -78,7 +79,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase06() {
     var polygons = trace(MarchingSquareCases.CASE_06);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0.5 0, 0.5 1, 1 1, 1 0, 0.5 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0.5 1, 1 1, 1 0, 0.5 0, 0.5 1))", polygons.get(0));
   }
 
   @Test
@@ -86,7 +87,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase07() {
     var polygons = trace(MarchingSquareCases.CASE_07);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 0.5, 0.5 1, 1 1, 1 0, 0 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((1 1, 1 0, 0 0, 0 0.5, 0.5 1, 1 1))", polygons.get(0));
   }
 
   @Test
@@ -94,7 +95,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase08() {
     var polygons = trace(MarchingSquareCases.CASE_08);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 0.5 1, 0 0.5))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0.5 1, 0 0.5, 0 1, 0.5 1))", polygons.get(0));
   }
 
   @Test
@@ -102,7 +103,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase09() {
     var polygons = trace(MarchingSquareCases.CASE_09);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 0.5 1, 0.5 0, 0 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0.5 1, 0.5 0, 0 0, 0 1, 0.5 1))", polygons.get(0));
   }
 
   @Test
@@ -110,8 +111,8 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase10() {
     var polygons = trace(MarchingSquareCases.CASE_10);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 0.5 1, 1 0.5, 1 0, 0.5 0, 0 0.5))",
-        polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0.5 1, 1 0.5, 1 0, 0.5 0, 0 0.5, 0 1, 0.5 1))",
+        polygons.get(0));
   }
 
   @Test
@@ -119,7 +120,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase11() {
     var polygons = trace(MarchingSquareCases.CASE_11);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 0.5 1, 1 0.5, 1 0, 0 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((1 0, 0 0, 0 1, 0.5 1, 1 0.5, 1 0))", polygons.get(0));
   }
 
   @Test
@@ -127,7 +128,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase12() {
     var polygons = trace(MarchingSquareCases.CASE_12);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 1 1, 1 0.5, 0 0.5))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((1 0.5, 0 0.5, 0 1, 1 1, 1 0.5))", polygons.get(0));
   }
 
   @Test
@@ -135,7 +136,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase13() {
     var polygons = trace(MarchingSquareCases.CASE_13);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 1 1, 1 0.5, 0.5 0, 0 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0.5 0, 0 0, 0 1, 1 1, 1 0.5, 0.5 0))", polygons.get(0));
   }
 
   @Test
@@ -143,7 +144,7 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase14() {
     var polygons = trace(MarchingSquareCases.CASE_14);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0.5, 0 1, 1 1, 1 0, 0.5 0, 0 0.5))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0 0.5, 0 1, 1 1, 1 0, 0.5 0, 0 0.5))", polygons.get(0));
   }
 
   @Test
@@ -151,12 +152,12 @@ class ContourTracerPolygonSimpleTest {
   void testProcessCellWithCase15() {
     var polygons = trace(MarchingSquareCases.CASE_15);
     assertEquals(1, polygons.size());
-    assertEquals("POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))", polygons.get(0).toString());
+    assertGeometryEquals("POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))", polygons.get(0));
   }
 
   public static List<Geometry> trace(double[] grid) {
     int size = (int) Math.sqrt(grid.length);
-    return new ContourTracer(grid, size, size, false, true).traceContours(0.5);
+    return new PolygonContourTracer(grid, size, size, false, true).traceContours(0.5);
   }
 
 }

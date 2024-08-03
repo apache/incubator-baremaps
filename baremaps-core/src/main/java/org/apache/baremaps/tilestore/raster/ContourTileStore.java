@@ -28,8 +28,8 @@ import org.apache.baremaps.maplibre.vectortile.Feature;
 import org.apache.baremaps.maplibre.vectortile.Layer;
 import org.apache.baremaps.maplibre.vectortile.Tile;
 import org.apache.baremaps.maplibre.vectortile.VectorTileEncoder;
-import org.apache.baremaps.raster.ContourTracer;
 import org.apache.baremaps.raster.ElevationUtils;
+import org.apache.baremaps.raster.PolygonContourTracer;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -58,8 +58,9 @@ public class ContourTileStore implements TileStore<ByteBuffer> {
       var features = new ArrayList<Feature>();
       for (int level = -10000; level < 10000; level += 100) {
 
-        var contours = new ContourTracer(grid, image.getWidth(), image.getHeight(), false, true)
-            .traceContours(level);
+        var contours =
+            new PolygonContourTracer(grid, image.getWidth(), image.getHeight(), false, true)
+                .traceContours(level);
         for (var contour : contours) {
           contour = AffineTransformation
               .translationInstance(-4, -4)

@@ -29,7 +29,7 @@ import org.locationtech.jts.operation.polygonize.Polygonizer;
  * Provides methods for generating contour lines and contour polygons from digital elevation models
  * (DEMs).
  */
-public class ContourTracer {
+public class PolygonContourTracer {
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
@@ -55,7 +55,7 @@ public class ContourTracer {
    * @param normalize Whether to normalize the coordinates
    * @param polygonize Whether to polygonize the contours
    */
-  public ContourTracer(double[] grid, int width, int height, boolean normalize,
+  public PolygonContourTracer(double[] grid, int width, int height, boolean normalize,
       boolean polygonize) {
     this.grid = Arrays.copyOf(grid, grid.length);
     this.width = width;

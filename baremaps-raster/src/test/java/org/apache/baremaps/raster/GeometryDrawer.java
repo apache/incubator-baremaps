@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.raster;
 
-import static org.apache.baremaps.raster.ContourTracerPolygonSimpleTest.*;
+import static org.apache.baremaps.raster.ContourTracerPolygonTest.*;
 
 import java.awt.*;
 import java.util.List;

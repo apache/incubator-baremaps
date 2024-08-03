@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.raster;
 
+import static org.apache.baremaps.testing.GeometryAssertions.assertGeometryEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -37,7 +38,7 @@ class ContourTracerLineStringTest {
   @DisplayName("Test case 1")
   void testProcessCellWithCase01() {
     var lines = trace(MarchingSquareCases.CASE_01);
-    assertEquals("LINESTRING (0 0.5, 0.5 0)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0 0.5, 0.5 0)", lines.get(0));
   }
 
   @Test
@@ -45,7 +46,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase02() {
     var lines = trace(MarchingSquareCases.CASE_02);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0.5 0, 1 0.5)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0.5 0, 1 0.5)", lines.get(0));
   }
 
   @Test
@@ -53,7 +54,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase03() {
     var lines = trace(MarchingSquareCases.CASE_03);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0 0.5, 1 0.5)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0 0.5, 1 0.5)", lines.get(0));
   }
 
   @Test
@@ -61,7 +62,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase04() {
     var lines = trace(MarchingSquareCases.CASE_04);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (1 0.5, 0.5 1)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (1 0.5, 0.5 1)", lines.get(0));
   }
 
   @Test
@@ -69,8 +70,8 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase05() {
     var lines = trace(MarchingSquareCases.CASE_05);
     assertEquals(2, lines.size());
-    assertEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0).toString());
-    assertEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(1).toString());
+    assertGeometryEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0));
+    assertGeometryEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(1));
   }
 
   @Test
@@ -78,7 +79,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase06() {
     var lines = trace(MarchingSquareCases.CASE_06);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0.5 0, 0.5 1)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0.5 0, 0.5 1)", lines.get(0));
   }
 
   @Test
@@ -86,7 +87,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase07() {
     var lines = trace(MarchingSquareCases.CASE_07);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0 0.5, 0.5 1)", lines.get(0));
   }
 
   @Test
@@ -94,7 +95,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase08() {
     var lines = trace(MarchingSquareCases.CASE_08);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0.5 1, 0 0.5)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0.5 1, 0 0.5)", lines.get(0));
   }
 
   @Test
@@ -102,7 +103,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase09() {
     var lines = trace(MarchingSquareCases.CASE_09);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0.5 1, 0.5 0)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0.5 1, 0.5 0)", lines.get(0));
   }
 
   @Test
@@ -110,8 +111,8 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase10() {
     var lines = trace(MarchingSquareCases.CASE_10);
     assertEquals(2, lines.size());
-    assertEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0).toString());
-    assertEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(1).toString());
+    assertGeometryEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0));
+    assertGeometryEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(1));
   }
 
   @Test
@@ -119,7 +120,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase11() {
     var lines = trace(MarchingSquareCases.CASE_11);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0.5 1, 1 0.5)", lines.get(0));
   }
 
   @Test
@@ -127,7 +128,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase12() {
     var lines = trace(MarchingSquareCases.CASE_12);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (1 0.5, 0 0.5)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (1 0.5, 0 0.5)", lines.get(0));
   }
 
   @Test
@@ -135,7 +136,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase13() {
     var lines = trace(MarchingSquareCases.CASE_13);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (1 0.5, 0.5 0)", lines.get(0));
   }
 
   @Test
@@ -143,7 +144,7 @@ class ContourTracerLineStringTest {
   void testProcessCellWithCase14() {
     var lines = trace(MarchingSquareCases.CASE_14);
     assertEquals(1, lines.size());
-    assertEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0).toString());
+    assertGeometryEquals("LINESTRING (0.5 0, 0 0.5)", lines.get(0));
   }
 
   @Test
@@ -154,7 +155,7 @@ class ContourTracerLineStringTest {
   }
 
   List<Geometry> trace(double[] grid) {
-    return new ContourTracer(grid, 2, 2, false, false).traceContours(0.5);
+    return new PolygonContourTracer(grid, 2, 2, false, false).traceContours(0.5);
   }
 
 }

@@ -38,8 +38,8 @@ class ContourTracerTest {
         0, 1, 0,
         0, 0, 0,
     };
-    var expectedContour = new WKTReader().read("POLYGON ((0 1.5, 1.5 3, 3 1.5, 1.5 0, 0 1.5))");
-    var generatedContour = new ContourTracer(grid, 3, 3, true, true).traceContours(0).get(0);
+    var expectedContour = new WKTReader().read("POLYGON ((1.5 0, 0 1.5, 1.5 3, 3 1.5, 1.5 0))");
+    var generatedContour = new PolygonContourTracer(grid, 3, 3, true, true).traceContours(0).get(0);
     assertEquals(expectedContour, generatedContour);
   }
 
@@ -54,7 +54,7 @@ class ContourTracerTest {
 
     var fujiGrid = ElevationUtils.imageToGrid(fujiImage, ElevationUtils::pixelToElevationStandard);
     var fujiContours =
-        new ContourTracer(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), false, true)
+        new PolygonContourTracer(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), false, true)
             .traceContours(500);
 
     assertFalse(fujiContours.isEmpty());

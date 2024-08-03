@@ -44,7 +44,7 @@ public class ContourRenderer {
     double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationStandard);
 
     List<Geometry> contour =
-        new ContourTracer(grid, image.getWidth(), image.getHeight(), true, false)
+        new PolygonContourTracer(grid, image.getWidth(), image.getHeight(), true, false)
             .traceContours(0, 9000, 100);
 
     // Scale the image back to its original size

@@ -29,7 +29,7 @@ class ContourTileStoreTest {
     var image = ImageIO
         .read(new URL("https://s3.amazonaws.com/elevation-tiles-prod/terrarium/8/131/89.png"));
     var grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
-    var tracer = new ContourTracer(grid, image.getWidth(), image.getHeight(), false, true);
+    var tracer = new PolygonContourTracer(grid, image.getWidth(), image.getHeight(), false, true);
 
     var contours = tracer.traceContours(200).stream()
         .map(AffineTransformation
