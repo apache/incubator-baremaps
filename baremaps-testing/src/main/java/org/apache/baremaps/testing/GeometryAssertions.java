@@ -32,11 +32,20 @@ public class GeometryAssertions {
     throw new AssertionError("Expected " + expected + " but was " + actual);
   }
 
-  public static void assertGeometryEquals(String wkt, Geometry actual) {
+  public static void assertGeometryEquals(String expected, String actual) {
     try {
-      assertGeometryEquals(new WKTReader().read(wkt), actual);
+      var reader = new WKTReader();
+      assertGeometryEquals(reader.read(expected), reader.read(expected));
     } catch (Exception e) {
-      throwAssertionError(wkt, actual);
+      throwAssertionError(expected, actual);
+    }
+  }
+
+  public static void assertGeometryEquals(String expected, Geometry actual) {
+    try {
+      assertGeometryEquals(new WKTReader().read(expected), actual);
+    } catch (Exception e) {
+      throwAssertionError(expected, actual);
     }
   }
 

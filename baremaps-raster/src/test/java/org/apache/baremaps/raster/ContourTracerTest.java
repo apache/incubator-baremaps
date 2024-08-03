@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.raster;
 
+import static org.apache.baremaps.testing.GeometryAssertions.assertGeometryEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -38,9 +39,8 @@ class ContourTracerTest {
         0, 1, 0,
         0, 0, 0,
     };
-    var expectedContour = new WKTReader().read("POLYGON ((1.5 0, 0 1.5, 1.5 3, 3 1.5, 1.5 0))");
     var generatedContour = new PolygonContourTracer(grid, 3, 3, true, true).traceContours(0).get(0);
-    assertEquals(expectedContour, generatedContour);
+    assertGeometryEquals("POLYGON ((1.5 0, 0 1.5, 1.5 3, 3 1.5, 1.5 0))", generatedContour);
   }
 
   @Test
