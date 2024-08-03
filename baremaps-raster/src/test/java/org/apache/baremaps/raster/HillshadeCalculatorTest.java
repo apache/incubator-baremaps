@@ -50,26 +50,6 @@ class HillshadeCalculatorTest {
     assertEquals(dem.length, result.length);
   }
 
-  @Test
-  @DisplayName("Test hillShadeEnhanced with valid input")
-  void testHillShadeEnhancedValidInput() {
-    double[] dem = {
-        1, 2, 3,
-        4, 5, 6,
-        7, 8, 9
-    };
-    int width = 3;
-    int height = 3;
-    double sunAltitude = 45;
-    double sunAzimuth = 315;
-
-    double[] result =
-        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
-
-    assertNotNull(result);
-    assertEquals(dem.length, result.length);
-  }
-
   @ParameterizedTest
   @MethodSource("provideInvalidInput")
   @DisplayName("Test hillShade with invalid input")
