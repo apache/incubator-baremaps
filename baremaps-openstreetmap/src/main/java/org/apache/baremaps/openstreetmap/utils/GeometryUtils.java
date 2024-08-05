@@ -21,6 +21,7 @@ import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
@@ -93,4 +94,25 @@ public class GeometryUtils {
     return new ProjectionTransformer(inputSRID, outputSRID);
   }
 
+  /**
+   * Scales a geometry by a factor.
+   *
+   * @param geometry The geometry to scale
+   * @param factor The factor to scale by
+   * @return The scaled geometry
+   */
+  public static Geometry scale(Geometry geometry, double factor) {
+    AffineTransformation transform = AffineTransformation.scaleInstance(factor, factor);
+    return transform.transform(geometry);
+  }
+
+  public static Geometry createEnvelope(int xMin, int yMin, int xMax, int yMax) {
+    return new GeometryFactory().createPolygon(new Coordinate[] {
+        new Coordinate(xMin, yMin),
+        new Coordinate(xMin, yMax),
+        new Coordinate(xMax, yMax),
+        new Coordinate(xMax, yMin),
+        new Coordinate(xMin, yMin)
+    });
+  }
 }

@@ -18,45 +18,44 @@
 package org.apache.baremaps.tilestore;
 
 
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.github.benmanes.caffeine.cache.Weigher;
-import java.nio.ByteBuffer;
+import java.awt.image.BufferedImage;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** A {@code TileStore} decorator that uses caffeine to cache the content of tiles. */
-public class TileCache implements TileStore {
+public class BufferedImageTileCache implements TileStore<BufferedImage> {
 
-  private static final Logger logger = LoggerFactory.getLogger(TileCache.class);
+  private static final Logger logger = LoggerFactory.getLogger(BufferedImageTileCache.class);
 
-  private final TileStore tileStore;
+  private final TileStore<BufferedImage> tileStore;
 
-  private final Cache<TileCoord, ByteBuffer> cache;
+  private final Cache<TileCoord, BufferedImage> cache;
 
   /**
    * Decorates the TileStore with a cache.
    *
-   * @param tileStore
-   * @param spec
+   * @param tileStore the tile store
+   * @param caffeineSpec the cache specification
    */
-  public TileCache(TileStore tileStore, CaffeineSpec spec) {
+  public BufferedImageTileCache(TileStore<BufferedImage> tileStore, CaffeineSpec caffeineSpec) {
     this.tileStore = tileStore;
-    this.cache = Caffeine.from(spec).weigher(new Weigher<TileCoord, ByteBuffer>() {
+    this.cache = Caffeine.from(caffeineSpec).weigher(new Weigher<TileCoord, BufferedImage>() {
       @Override
-      public @NonNegative int weigh(TileCoord tileCoord, ByteBuffer blob) {
-        return 28 + blob.capacity();
+      public @NonNegative int weigh(TileCoord tileCoord, BufferedImage bufferedImage) {
+        return bufferedImage.getData().getDataBuffer().getSize() * 4;
       }
     }).build();
   }
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
-    var buffer = cache.get(tileCoord, t -> {
+  public BufferedImage read(TileCoord tileCoord) throws TileStoreException {
+    return cache.get(tileCoord, t -> {
       try {
         return tileStore.read(t);
       } catch (TileStoreException e) {
@@ -64,17 +63,12 @@ public class TileCache implements TileStore {
         return null;
       }
     });
-    if (buffer == null) {
-      return null;
-    } else {
-      return buffer.duplicate();
-    }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(TileCoord tileCoord, ByteBuffer bytes) throws TileStoreException {
-    tileStore.write(tileCoord, bytes);
+  public void write(TileCoord tileCoord, BufferedImage bufferedImage) throws TileStoreException {
+    tileStore.write(tileCoord, bufferedImage);
     cache.invalidate(tileCoord);
   }
 
@@ -85,6 +79,7 @@ public class TileCache implements TileStore {
     cache.invalidate(tileCoord);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
     tileStore.close();

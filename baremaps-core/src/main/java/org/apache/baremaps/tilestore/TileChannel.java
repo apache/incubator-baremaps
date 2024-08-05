@@ -19,15 +19,14 @@ package org.apache.baremaps.tilestore;
 
 
 
-import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
 /** A channel that conveys tiles from a source to a target. */
-public class TileChannel implements Consumer<TileCoord> {
+public class TileChannel<T> implements Consumer<TileCoord> {
 
-  public final TileStore source;
+  public final TileStore<T> source;
 
-  public final TileStore target;
+  public final TileStore<T> target;
 
   public final boolean deleteEmptyTiles;
 
@@ -37,7 +36,7 @@ public class TileChannel implements Consumer<TileCoord> {
    * @param source the source
    * @param target the target
    */
-  public TileChannel(TileStore source, TileStore target) {
+  public TileChannel(TileStore<T> source, TileStore<T> target) {
     this(source, target, false);
   }
 
@@ -48,7 +47,7 @@ public class TileChannel implements Consumer<TileCoord> {
    * @param target the target
    * @param deleteEmptyTiles deletes empty tiles
    */
-  public TileChannel(TileStore source, TileStore target, boolean deleteEmptyTiles) {
+  public TileChannel(TileStore<T> source, TileStore<T> target, boolean deleteEmptyTiles) {
     this.source = source;
     this.target = target;
     this.deleteEmptyTiles = deleteEmptyTiles;
@@ -58,9 +57,9 @@ public class TileChannel implements Consumer<TileCoord> {
   @Override
   public void accept(TileCoord tileCoord) {
     try {
-      ByteBuffer blob = source.read(tileCoord);
-      if (blob != null) {
-        target.write(tileCoord, blob);
+      T tile = source.read(tileCoord);
+      if (tile != null) {
+        target.write(tileCoord, tile);
       } else if (deleteEmptyTiles) {
         target.delete(tileCoord);
       }

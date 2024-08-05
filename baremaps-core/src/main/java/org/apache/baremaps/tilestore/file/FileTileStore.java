@@ -28,7 +28,7 @@ import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
 /** Represents a {@code TileStore} baked by a directory. */
-public class FileTileStore implements TileStore {
+public class FileTileStore implements TileStore<ByteBuffer> {
 
   private final Path path;
 

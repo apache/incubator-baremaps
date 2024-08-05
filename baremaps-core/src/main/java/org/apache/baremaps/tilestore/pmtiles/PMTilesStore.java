@@ -29,7 +29,7 @@ import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
-public class PMTilesStore implements TileStore {
+public class PMTilesStore implements TileStore<ByteBuffer> {
 
   private final PMTilesWriter writer;
 

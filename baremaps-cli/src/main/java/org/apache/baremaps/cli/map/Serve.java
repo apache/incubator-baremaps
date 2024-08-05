@@ -28,6 +28,7 @@ import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.file.HttpFile;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -39,8 +40,8 @@ import org.apache.baremaps.maplibre.tileset.Tileset;
 import org.apache.baremaps.server.SearchResource;
 import org.apache.baremaps.server.StyleResource;
 import org.apache.baremaps.server.TileJSONResource;
-import org.apache.baremaps.server.TileResource;
-import org.apache.baremaps.tilestore.TileCache;
+import org.apache.baremaps.server.VectorTileResource;
+import org.apache.baremaps.tilestore.ByteBufferTileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.utils.PostgresUtils;
@@ -95,9 +96,9 @@ public class Serve implements Callable<Integer> {
 
     try (
         var tileStore = new PostgresTileStore(datasource, tileset);
-        var tileCache = new TileCache(tileStore, caffeineSpec)) {
+        var tileCache = new ByteBufferTileCache(tileStore, caffeineSpec)) {
 
-      var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
+      var tileStoreSupplier = (Supplier<TileStore<ByteBuffer>>) () -> tileCache;
 
       var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
       var styleSupplier = (Supplier<Style>) () -> style;
@@ -109,7 +110,8 @@ public class Serve implements Callable<Integer> {
       serverBuilder.http(port);
 
       var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
-      serverBuilder.annotatedService(new TileResource(tileStoreSupplier), jsonResponseConverter);
+      serverBuilder.annotatedService("/tiles", new VectorTileResource(tileStoreSupplier),
+          jsonResponseConverter);
       serverBuilder.annotatedService(new StyleResource(styleSupplier), jsonResponseConverter);
       serverBuilder.annotatedService(new TileJSONResource(tileJSONSupplier), jsonResponseConverter);
       serverBuilder.annotatedService(new SearchResource(datasource), jsonResponseConverter);

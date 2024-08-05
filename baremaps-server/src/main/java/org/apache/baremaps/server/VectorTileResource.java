@@ -36,26 +36,26 @@ import org.slf4j.LoggerFactory;
 /**
  * A resource that provides access to the tiles.
  */
-public class TileResource {
+public class VectorTileResource {
 
-  private static final Logger logger = LoggerFactory.getLogger(TileResource.class);
+  private static final Logger logger = LoggerFactory.getLogger(VectorTileResource.class);
 
   public static final String TILE_ENCODING = "gzip";
 
   public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
 
-  private final Supplier<TileStore> tileStoreSupplier;
+  private final Supplier<TileStore<ByteBuffer>> tileStoreSupplier;
 
-  public TileResource(Supplier<TileStore> tileStoreSupplier) {
+  public VectorTileResource(Supplier<TileStore<ByteBuffer>> tileStoreSupplier) {
     this.tileStoreSupplier = tileStoreSupplier;
   }
 
-  @Get("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).mvt$")
+  @Get("regex:^/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).mvt$")
   @Blocking
   public HttpResponse tile(@Param("z") int z, @Param("x") int x, @Param("y") int y) {
     TileCoord tileCoord = new TileCoord(x, y, z);
     try {
-      TileStore tileStore = tileStoreSupplier.get();
+      TileStore<ByteBuffer> tileStore = tileStoreSupplier.get();
       ByteBuffer blob = tileStore.read(tileCoord);
       if (blob != null) {
         var headers = ResponseHeaders.builder(200)
@@ -72,7 +72,7 @@ public class TileResource {
         return HttpResponse.of(204);
       }
     } catch (TileStoreException ex) {
-      logger.error("Error while reading tile.", ex);
+      logger.error("Error while reading tile {}", tileCoord, ex);
       return HttpResponse.of(404);
     }
   }

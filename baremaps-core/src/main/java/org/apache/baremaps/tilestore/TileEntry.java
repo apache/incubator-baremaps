@@ -17,23 +17,22 @@
 
 package org.apache.baremaps.tilestore;
 
-import java.nio.ByteBuffer;
 
-public class TileEntry {
+public class TileEntry<T> {
 
   private final TileCoord tileCoord;
-  private final ByteBuffer byteBuffer;
+  private final T tileValue;
 
-  public TileEntry(TileCoord tileCoord, ByteBuffer byteBuffer) {
+  public TileEntry(TileCoord tileCoord, T tileValue) {
     this.tileCoord = tileCoord;
-    this.byteBuffer = byteBuffer;
+    this.tileValue = tileValue;
   }
 
   public TileCoord getTileCoord() {
     return tileCoord;
   }
 
-  public ByteBuffer getByteBuffer() {
-    return byteBuffer;
+  public T getTileValue() {
+    return tileValue;
   }
 }
