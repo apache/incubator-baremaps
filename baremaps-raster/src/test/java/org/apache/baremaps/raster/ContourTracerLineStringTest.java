@@ -155,7 +155,7 @@ class ContourTracerLineStringTest {
   }
 
   List<Geometry> trace(double[] grid) {
-    return new PolygonContourTracer(grid, 2, 2, false, false).traceContours(0.5);
+    return new ContourTracer(grid, 2, 2, false, false).traceContours(0.5);
   }
 
 }

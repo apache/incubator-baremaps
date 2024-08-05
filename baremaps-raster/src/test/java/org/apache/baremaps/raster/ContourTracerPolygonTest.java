@@ -157,7 +157,7 @@ class ContourTracerPolygonTest {
 
   public static List<Geometry> trace(double[] grid) {
     int size = (int) Math.sqrt(grid.length);
-    return new PolygonContourTracer(grid, size, size, false, true).traceContours(0.5);
+    return new ContourTracer(grid, size, size, false, true).traceContours(0.5);
   }
 
 }

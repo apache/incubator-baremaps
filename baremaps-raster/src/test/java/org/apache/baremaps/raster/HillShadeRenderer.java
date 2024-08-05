@@ -49,7 +49,7 @@ public class HillShadeRenderer extends JFrame {
             .toAbsolutePath()
             .resolveSibling("baremaps/baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
-    grid = ElevationUtils.imageToGrid(originalImage, ElevationUtils::pixelToElevationStandard);
+    grid = ElevationUtils.imageToGrid(originalImage, ElevationUtils::pixelToElevationNormal);
 
     // Create UI components
     altitudeSlider = new JSlider(JSlider.VERTICAL, 0, 90, 45);
@@ -127,10 +127,9 @@ public class HillShadeRenderer extends JFrame {
     int sunAltitude = altitudeSlider.getValue();
     int sunAzimuth = azimuthSlider.getValue();
     double scale = scaleSlider.getValue() / 10.0;
-    boolean isSimple = isSimpleCheckbox.isSelected();
 
     double[] hillshade = new HillshadeCalculator(grid, originalImage.getWidth(),
-        originalImage.getHeight(), scale, isSimple).calculate(sunAltitude, sunAzimuth);
+        originalImage.getHeight(), scale).calculate(sunAltitude, sunAzimuth);
 
     BufferedImage hillshadeImage = new BufferedImage(originalImage.getWidth(),
         originalImage.getHeight(), BufferedImage.TYPE_BYTE_GRAY);

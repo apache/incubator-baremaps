@@ -44,7 +44,7 @@ class HillshadeCalculatorTest {
     double sunAzimuth = 315;
 
     double[] result =
-        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
+        new HillshadeCalculator(dem, width, height, 1).calculate(sunAltitude, sunAzimuth);
 
     assertNotNull(result);
     assertEquals(dem.length, result.length);
@@ -56,7 +56,7 @@ class HillshadeCalculatorTest {
   void testHillShadeInvalidInput(double[] dem, int width, int height, double sunAltitude,
       double sunAzimuth, Class<? extends Exception> expectedException) {
     assertThrows(expectedException,
-        () -> new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude,
+        () -> new HillshadeCalculator(dem, width, height, 1).calculate(sunAltitude,
             sunAzimuth));
   }
 
@@ -66,7 +66,7 @@ class HillshadeCalculatorTest {
   void testHillShadeEnhancedInvalidInput(double[] dem, int width, int height, double sunAltitude,
       double sunAzimuth, Class<? extends Exception> expectedException) {
     assertThrows(expectedException,
-        () -> new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude,
+        () -> new HillshadeCalculator(dem, width, height, 1).calculate(sunAltitude,
             sunAzimuth));
   }
 
@@ -96,7 +96,7 @@ class HillshadeCalculatorTest {
     double sunAzimuth = 315;
 
     double[] result =
-        new HillshadeCalculator(dem, width, height, 1, true).calculate(sunAltitude, sunAzimuth);
+        new HillshadeCalculator(dem, width, height, 1).calculate(sunAltitude, sunAzimuth);
 
     for (double value : result) {
       assertTrue(value >= 0 && value <= 255, "Hillshade value should be between 0 and 255");

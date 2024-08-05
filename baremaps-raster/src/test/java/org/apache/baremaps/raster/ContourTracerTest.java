@@ -37,7 +37,7 @@ class ContourTracerTest {
         0, 1, 0,
         0, 0, 0,
     };
-    var generatedContour = new PolygonContourTracer(grid, 3, 3, true, true).traceContours(0).get(0);
+    var generatedContour = new ContourTracer(grid, 3, 3, true, true).traceContours(0).get(0);
     assertGeometryEquals("POLYGON ((1.5 0, 0 1.5, 1.5 3, 3 1.5, 1.5 0))", generatedContour);
   }
 
@@ -50,9 +50,9 @@ class ContourTracerTest {
             .resolveSibling("baremaps-raster/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
 
-    var fujiGrid = ElevationUtils.imageToGrid(fujiImage, ElevationUtils::pixelToElevationStandard);
+    var fujiGrid = ElevationUtils.imageToGrid(fujiImage, ElevationUtils::pixelToElevationNormal);
     var fujiContours =
-        new PolygonContourTracer(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), false, true)
+        new ContourTracer(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), false, true)
             .traceContours(500);
 
     assertFalse(fujiContours.isEmpty());

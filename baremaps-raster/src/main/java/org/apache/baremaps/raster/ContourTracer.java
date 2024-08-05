@@ -23,13 +23,12 @@ import java.util.List;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 import org.locationtech.jts.operation.linemerge.LineMerger;
-import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 /**
  * Provides methods for generating contour lines and contour polygons from digital elevation models
  * (DEMs).
  */
-public class PolygonContourTracer {
+public class ContourTracer {
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
@@ -55,7 +54,7 @@ public class PolygonContourTracer {
    * @param normalize Whether to normalize the coordinates
    * @param polygonize Whether to polygonize the contours
    */
-  public PolygonContourTracer(double[] grid, int width, int height, boolean normalize,
+  public ContourTracer(double[] grid, int width, int height, boolean normalize,
       boolean polygonize) {
     this.grid = Arrays.copyOf(grid, grid.length);
     this.width = width;
@@ -81,16 +80,16 @@ public class PolygonContourTracer {
       }
     }
 
-    // Polygonize the line strings
-    List<Geometry> contours;
-    if (!polygonize) {
-      LineMerger segmentMerger = new LineMerger();
-      segmentMerger.add(segments);
-      contours = new ArrayList<>(segmentMerger.getMergedLineStrings());
-    } else {
-      Polygonizer polygonizer = new Polygonizer();
-      polygonizer.add(segments);
-      contours = new ArrayList<>(polygonizer.getPolygons());
+    // Merge the lines
+    LineMerger segmentMerger = new LineMerger();
+    segmentMerger.add(segments);
+    List<Geometry> contours = new ArrayList<>(segmentMerger.getMergedLineStrings());
+
+    if (polygonize) {
+      contours.stream()
+          .map(Geometry::getCoordinates)
+          .map(GEOMETRY_FACTORY::createPolygon)
+          .toList();
     }
 
     // Normalize the coordinates
@@ -155,6 +154,7 @@ public class PolygonContourTracer {
     double trv = grid[y * width + (x + 1)];
     double brv = grid[(y + 1) * width + (x + 1)];
     double blv = grid[(y + 1) * width + x];
+    double avg = (tlv + trv + brv + blv) / 4.0;
 
     int index =
         (tlv > level ? 1 : 0) |
@@ -203,19 +203,37 @@ public class PolygonContourTracer {
         }
       }
       case 5 -> {
-        segments.add(createSegment(mlc, tmc));
-        if (htb) {
-          segments.add(createSegment(tmc, trc));
-        }
-        if (hrb) {
-          segments.add(createSegment(trc, mrc));
-        }
-        segments.add(createSegment(mrc, bmc));
-        if (hbb) {
-          segments.add(createSegment(bmc, blc));
-        }
-        if (hlb) {
-          segments.add(createSegment(blc, mlc));
+        // Detect saddle points ambiguity
+        if (avg <= level) {
+          segments.add(createSegment(mlc, tmc));
+          if (htb) {
+            segments.add(createSegment(tmc, trc));
+          }
+          if (hrb) {
+            segments.add(createSegment(trc, mrc));
+          }
+          segments.add(createSegment(mrc, bmc));
+          if (hbb) {
+            segments.add(createSegment(bmc, blc));
+          }
+          if (hlb) {
+            segments.add(createSegment(blc, mlc));
+          }
+        } else {
+          segments.add(createSegment(bmc, mlc));
+          if (hlb) {
+            segments.add(createSegment(mlc, tlc));
+          }
+          if (htb) {
+            segments.add(createSegment(tlc, tmc));
+          }
+          segments.add(createSegment(tmc, mrc));
+          if (hrb) {
+            segments.add(createSegment(mrc, brc));
+          }
+          if (hbb) {
+            segments.add(createSegment(brc, bmc));
+          }
         }
       }
       case 6 -> {
@@ -267,19 +285,37 @@ public class PolygonContourTracer {
         }
       }
       case 10 -> {
-        segments.add(createSegment(bmc, mlc));
-        if (hlb) {
-          segments.add(createSegment(mlc, tlc));
-        }
-        if (htb) {
-          segments.add(createSegment(tlc, tmc));
-        }
-        segments.add(createSegment(tmc, mrc));
-        if (hrb) {
-          segments.add(createSegment(mrc, brc));
-        }
-        if (hbb) {
-          segments.add(createSegment(brc, bmc));
+        // Detect saddle points ambiguity
+        if (avg <= level) {
+          segments.add(createSegment(bmc, mlc));
+          if (hlb) {
+            segments.add(createSegment(mlc, tlc));
+          }
+          if (htb) {
+            segments.add(createSegment(tlc, tmc));
+          }
+          segments.add(createSegment(tmc, mrc));
+          if (hrb) {
+            segments.add(createSegment(mrc, brc));
+          }
+          if (hbb) {
+            segments.add(createSegment(brc, bmc));
+          }
+        } else {
+          segments.add(createSegment(mlc, tmc));
+          if (htb) {
+            segments.add(createSegment(tmc, trc));
+          }
+          if (hrb) {
+            segments.add(createSegment(trc, mrc));
+          }
+          segments.add(createSegment(mrc, bmc));
+          if (hbb) {
+            segments.add(createSegment(bmc, blc));
+          }
+          if (hlb) {
+            segments.add(createSegment(blc, mlc));
+          }
         }
       }
       case 11 -> {

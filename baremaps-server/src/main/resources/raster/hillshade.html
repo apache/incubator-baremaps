@@ -42,32 +42,78 @@
                 contourSource: {
                     type: 'vector',
                     tiles: [
+                        'http://localhost:9000/contour/{z}/{x}/{y}.mvt'
+                    ],
+                },
+                vectorHillshadeSource: {
+                    type: 'vector',
+                    tiles: [
                         'http://localhost:9000/tiles/{z}/{x}/{y}.mvt'
                     ],
                 },
             },
             layers: [
                 {
-                    'id': 'raster',
-                    'type': 'raster',
-                    'source': 'rasterSource',
+                    'id': 'background',
+                    'type': 'background',
                     'paint': {
-                        'raster-opacity': 0.5
+                        'background-color': '#bdbdbd'
+                    }
+                },
+                // {
+                //     'id': 'raster',
+                //     'type': 'raster',
+                //     'source': 'rasterSource',
+                //     'paint': {
+                //         'raster-opacity': 1
+                //     }
+                // },
+                {
+                    'id': 'hillshade',
+                    'type': 'fill',
+                    'source': 'vectorHillshadeSource',
+                    'source-layer': 'elevation',
+                    "layout" : {
+                        "visibility" : "visible",
+                        "fill-sort-key": [
+                            "match",
+                            ["get", "level"],
+                            "1", 6,
+                            "2", 5,
+                            "3", 1,
+                            "4", 2,
+                            "5", 3,
+                            "6", 4,
+                            0
+                        ],
+                    },
+                    "paint" : {
+                        "fill-color" : [
+                            "match",
+                            ["get", "level"],
+                            "1", "#ffffff",
+                            "2", "#d9d9d9",
+                            "3", "#919191",
+                            "4", "#595959",
+                            "5", "#343434",
+                            "6", "#181818",
+                            "rgba(0,0,0,0)"
+                        ],
+                        "fill-opacity" : 1,
+                        "fill-antialias" : false,
                     }
                 },
                 {
                     'id': 'contour',
                     'type': 'line',
                     'source': 'contourSource',
-                    'source-layer': 'elevation',
-                    'layout': {
-                        'line-join': 'round',
-                        'line-cap': 'round',
+                    'source-layer': 'contour',
+                    "layout" : {
+                        "visibility" : "visible",
                     },
-                    'paint': {
-                        'line-color': '#f00',
-                        'line-width': 1,
-                    },
+                    "paint" : {
+                        "line-color" : "#000000",
+                    }
                 },
             ],
         },

@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.tilestore.raster;
 
+import static org.apache.baremaps.raster.HillshadeCalculator.getResolution;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -30,13 +32,13 @@ import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
-public class HillshadeTileStore implements TileStore<ByteBuffer> {
+public class RasterHillshadeTileStore implements TileStore<ByteBuffer> {
 
   private final TileStore<BufferedImage> tileStore;
 
   private final IntToDoubleFunction pixelToElevation;
 
-  public HillshadeTileStore(TileStore<BufferedImage> tileStore,
+  public RasterHillshadeTileStore(TileStore<BufferedImage> tileStore,
       IntToDoubleFunction pixelToElevation) {
     this.tileStore = tileStore;
     this.pixelToElevation = pixelToElevation;
@@ -45,25 +47,24 @@ public class HillshadeTileStore implements TileStore<ByteBuffer> {
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
-      var image = tileStore.read(tileCoord);
-      var onion = BufferedImageTileStore.onion(tileStore, tileCoord, 1);
-      var buffer = onion.getSubimage(
-          image.getWidth() - 1,
-          image.getHeight() - 1,
-          image.getWidth() + 2,
-          image.getHeight() + 2);
+      var size = 256;
+      var buffer = BufferedImageTileStore.onion(tileStore, tileCoord, 1).getSubimage(
+          size - 1,
+          size - 1,
+          size + 2,
+          size + 2);
 
-      var grid = ElevationUtils.imageToGrid(buffer, pixelToElevation);
-      var hillshadeGrid =
-          new HillshadeCalculator(grid, buffer.getWidth(), buffer.getHeight(), 1, false)
+      var grid = new HillshadeCalculator(
+          ElevationUtils.clampGrid(ElevationUtils.imageToGrid(buffer, pixelToElevation), 0, 10000),
+          size + 2, size + 2, getResolution(tileCoord.z()))
               .calculate(45, 315);
 
       // Create an output image
       BufferedImage hillshadeImage =
-          new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-      for (int y = 0; y < image.getHeight(); y++) {
-        for (int x = 0; x < image.getWidth(); x++) {
-          int value = (int) hillshadeGrid[(y + 1) * buffer.getHeight() + x + 1];
+          new BufferedImage(size, size, BufferedImage.TYPE_BYTE_GRAY);
+      for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+          int value = (int) grid[(y + 1) * buffer.getHeight() + x + 1];
           hillshadeImage.setRGB(x, y, new Color(value, value, value).getRGB());
         }
       }

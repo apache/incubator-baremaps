@@ -79,7 +79,7 @@ public class ElevationUtils {
     return image;
   }
 
-  public static double pixelToElevationStandard(int rgb) {
+  public static double pixelToElevationNormal(int rgb) {
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
     int b = rgb & 0xFF;
@@ -122,4 +122,19 @@ public class ElevationUtils {
     }
   }
 
+  public static double[] invertGrid(double[] grid) {
+    double[] invertedGrid = new double[grid.length];
+    for (int i = 0; i < grid.length; i++) {
+      invertedGrid[i] = 255.0 - grid[i];
+    }
+    return invertedGrid;
+  }
+
+  public static double[] clampGrid(double[] grid, double min, double max) {
+    double[] clampedGrid = new double[grid.length];
+    for (int i = 0; i < grid.length; i++) {
+      clampedGrid[i] = Math.max(min, Math.min(max, grid[i]));
+    }
+    return clampedGrid;
+  }
 }

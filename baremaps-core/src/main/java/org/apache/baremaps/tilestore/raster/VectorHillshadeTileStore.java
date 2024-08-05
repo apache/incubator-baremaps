@@ -19,10 +19,12 @@ package org.apache.baremaps.tilestore.raster;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntToDoubleFunction;
 import java.util.zip.GZIPOutputStream;
 import org.apache.baremaps.maplibre.vectortile.Feature;
 import org.apache.baremaps.maplibre.vectortile.Layer;
@@ -30,47 +32,58 @@ import org.apache.baremaps.maplibre.vectortile.Tile;
 import org.apache.baremaps.maplibre.vectortile.VectorTileEncoder;
 import org.apache.baremaps.raster.ContourTracer;
 import org.apache.baremaps.raster.ElevationUtils;
+import org.apache.baremaps.raster.HillshadeCalculator;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.locationtech.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 
-public class ContourTileStore implements TileStore<ByteBuffer> {
+public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
 
   private final TileStore<BufferedImage> tileStore;
 
-  public ContourTileStore(TileStore<BufferedImage> tileStore) {
+  private final IntToDoubleFunction pixelToElevation;
+
+  public VectorHillshadeTileStore(TileStore<BufferedImage> tileStore,
+      IntToDoubleFunction pixelToElevation) {
     this.tileStore = tileStore;
+    this.pixelToElevation = pixelToElevation;
   }
 
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
-      var image = tileStore.read(tileCoord);
-      var onion = BufferedImageTileStore.onion(tileStore, tileCoord, 1);
-      image = onion.getSubimage(
-          image.getWidth() - 4,
-          image.getHeight() - 4,
-          image.getWidth() + 8,
-          image.getHeight() + 8);
 
-      var grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
+      var size = 256;
+
+      // Read the elevation data
+      var image = BufferedImageTileStore.onion(tileStore, tileCoord, 1).getSubimage(
+          size - 16,
+          size - 16,
+          size + 32,
+          size + 32);
 
       var features = new ArrayList<Feature>();
-      for (int level = -10000; level < 10000; level += 100) {
-        var contours =
-            new ContourTracer(grid, image.getWidth(), image.getHeight(), false, false)
-                .traceContours(level);
-        for (var contour : contours) {
-          contour = AffineTransformation
-              .translationInstance(-4, -4)
-              .scale(16, 16)
-              .transform(contour);
-          features.add(new Feature(level, Map.of("level", String.valueOf(level)), contour));
-        }
-      }
 
-      var layer = new Layer("contour", 4096, features);
+      // Calculate the hillshade
+      var grid = new HillshadeCalculator(
+          ElevationUtils.clampGrid(ElevationUtils.imageToGrid(image, pixelToElevation), 0, 10000),
+          size + 32, size + 32, HillshadeCalculator.getResolution(tileCoord.z()))
+              .calculate(45, 315);
+
+      contours(grid, 255 - 16, features, "1");
+      contours(grid, 255 - 32, features, "2");
+
+      grid = ElevationUtils.invertGrid(grid);
+      contours(grid, 255 - 32, features, "6");
+      contours(grid, 255 - 64, features, "5");
+      contours(grid, 255 - 98, features, "4");
+      contours(grid, 255 - 128, features, "3");
+
+
+
+      var layer = new Layer("elevation", 4096, features);
       var tile = new Tile(List.of(layer));
       var vectorTile = new VectorTileEncoder().encodeTile(tile);
       try (var baos = new ByteArrayOutputStream()) {
@@ -79,8 +92,24 @@ public class ContourTileStore implements TileStore<ByteBuffer> {
         gzip.close();
         return ByteBuffer.wrap(baos.toByteArray());
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new TileStoreException(e);
+    }
+  }
+
+  private static void contours(double[] grid, int level, ArrayList<Feature> features, String id) {
+    var contours =
+        new ContourTracer(grid, (int) Math.sqrt(grid.length), (int) Math.sqrt(grid.length), false,
+            true)
+                .traceContours(level);
+    for (var contour : contours) {
+      contour = AffineTransformation
+          .translationInstance(-16, -16)
+          .scale(16, 16)
+          .transform(contour);
+
+      contour = TopologyPreservingSimplifier.simplify(contour, 4);
+      features.add(new Feature(4, Map.of("level", id), contour));
     }
   }
 

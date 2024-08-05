@@ -22,103 +22,71 @@ package org.apache.baremaps.raster;
  */
 public class HillshadeCalculator {
 
-  private static final double DEFAULT_SCALE = 0.1;
-  private static final double ENHANCED_SCALE = 1.0;
-  private static final double MIN_REFLECTANCE = 0.0;
-  private static final double MAX_REFLECTANCE = 255.0;
-  private static final double TWO_PI = 2 * Math.PI;
+  private double[] dem;
+  private int width;
+  private int height;
+  private double cellSize;
+  private double[] hillshade;
 
-  private final double[] dem;
-  private final int width;
-  private final int height;
-  private final double scale;
-  private final boolean isSimple;
-
-  public HillshadeCalculator(double[] dem, int width, int height, double scale, boolean isSimple) {
+  public HillshadeCalculator(double[] dem, int width, int height, double cellSize) {
     this.dem = dem;
     this.width = width;
     this.height = height;
-    this.scale = scale;
-    this.isSimple = isSimple;
+    this.cellSize = cellSize;
+    this.hillshade = new double[width * height];
   }
 
-  /**
-   * Generates a hillshade effect on the DEM.
-   *
-   * @param sunAltitude The sun's altitude in degrees
-   * @param sunAzimuth The sun's azimuth in degrees
-   * @return An array representing the hillshade effect
-   */
-  public double[] calculate(double sunAltitude, double sunAzimuth) {
-    validateInput(dem, width, height, sunAltitude, sunAzimuth);
-    return calculateHillshade(sunAltitude, sunAzimuth);
-  }
+  public double[] calculate(double altitude, double azimuth) {
+    double azimuthDeg = 360.0 - azimuth + 90.0;
+    double azimuthRad = Math.toRadians(azimuthDeg);
 
-  private static void validateInput(double[] dem, int width, int height, double sunAltitude,
-      double sunAzimuth) {
-    if (dem == null || dem.length == 0) {
-      throw new IllegalArgumentException("DEM array cannot be null or empty");
-    }
-    if (width <= 0 || height <= 0) {
-      throw new IllegalArgumentException("Width and height must be positive");
-    }
-    if (dem.length != width * height) {
-      throw new IllegalArgumentException("DEM array length does not match width * height");
-    }
-    if (sunAltitude < 0 || sunAltitude > 90) {
-      throw new IllegalArgumentException("Sun altitude must be between 0 and 90 degrees");
-    }
-    if (sunAzimuth < 0 || sunAzimuth > 360) {
-      throw new IllegalArgumentException("Sun azimuth must be between 0 and 360 degrees");
-    }
-  }
-
-  private double[] calculateHillshade(double sunAltitude, double sunAzimuth) {
-    double[] hillshade = new double[dem.length];
-
-    double sunAltitudeRad = Math.toRadians(sunAltitude);
-    double sunAzimuthRad = Math.toRadians(sunAzimuth + (isSimple ? 90 : 180));
-    double cosSunAltitude = Math.cos(sunAltitudeRad);
-    double sinSunAltitude = Math.sin(sunAltitudeRad);
+    double zenithDeg = 90 - altitude;
+    double zenithRad = Math.toRadians(zenithDeg);
 
     for (int y = 0; y < height; y++) {
       for (int x = 0; x < width; x++) {
-        int top = Math.max(y - 1, 0);
-        int bottom = Math.min(y + 1, height - 1);
-        int left = Math.max(x - 1, 0);
-        int right = Math.min(x + 1, width - 1);
+        double a = getElevation(x - 1, y - 1);
+        double b = getElevation(x, y - 1);
+        double c = getElevation(x + 1, y - 1);
+        double d = getElevation(x - 1, y);
+        double f = getElevation(x + 1, y);
+        double g = getElevation(x - 1, y + 1);
+        double h = getElevation(x, y + 1);
+        double i = getElevation(x + 1, y + 1);
 
-        double dzdx;
-        double dzdy;
-        if (isSimple) {
-          dzdx = (dem[y * width + right] - dem[y * width + left]) / 2.0;
-          dzdy = (dem[bottom * width + x] - dem[top * width + x]) / 2.0;
-        } else {
-          dzdx = ((dem[top * width + right] + 2 * dem[y * width + right]
-              + dem[bottom * width + right]) -
-              (dem[top * width + left] + 2 * dem[y * width + left] + dem[bottom * width + left]))
-              / 8.0;
-          dzdy = ((dem[bottom * width + left] + 2 * dem[bottom * width + x]
-              + dem[bottom * width + right]) -
-              (dem[top * width + left] + 2 * dem[top * width + x] + dem[top * width + right]))
-              / 8.0;
+        double dzdx = ((c + 2 * f + i) - (a + 2 * d + g)) / (8 * cellSize);
+        double dzdy = ((g + 2 * h + i) - (a + 2 * b + c)) / (8 * cellSize);
+
+        double slopeRad = Math.atan(Math.sqrt(dzdx * dzdx + dzdy * dzdy));
+
+        double aspectRad = Math.atan2(dzdy, -dzdx);
+        if (aspectRad < 0) {
+          aspectRad += 2 * Math.PI;
         }
 
-        double slope = Math.atan(scale * Math.hypot(dzdx, dzdy));
-        double aspect = Math.atan2(dzdy, isSimple ? dzdx : -dzdx);
-        if (aspect < 0) {
-          aspect += TWO_PI;
-        }
+        double hillshadeValue = 255.0
+            * ((Math.cos(zenithRad) * Math.cos(slopeRad))
+                + (Math.sin(zenithRad) * Math.sin(slopeRad) * Math.cos(azimuthRad - aspectRad)));
 
-        double reflectance = cosSunAltitude * Math.cos(slope) +
-            sinSunAltitude * Math.sin(slope) * Math.cos(sunAzimuthRad - aspect);
+        hillshadeValue = Math.max(0, Math.min(255, hillshadeValue));
 
-        hillshade[y * width + x] =
-            Math.max(MIN_REFLECTANCE, Math.min(MAX_REFLECTANCE, reflectance * MAX_REFLECTANCE));
+        hillshade[y * width + x] = hillshadeValue;
       }
     }
 
     return hillshade;
   }
 
+  double getElevation(int x, int y) {
+    x = Math.max(0, Math.min(width - 1, x));
+    y = Math.max(0, Math.min(height - 1, y));
+    return dem[y * width + x];
+  }
+
+  private static final double EARTH_RADIUS = 6378137; // in meters
+  private static final int TILE_SIZE = 256; // in pixels
+
+  public static double getResolution(int zoomLevel) {
+    return (2 * Math.PI * EARTH_RADIUS) / (TILE_SIZE * Math.pow(2, zoomLevel));
+  }
 }

@@ -33,7 +33,8 @@ import org.apache.baremaps.server.VectorTileResource;
 import org.apache.baremaps.tilestore.BufferedImageTileCache;
 import org.apache.baremaps.tilestore.raster.BufferedImageTileStore;
 import org.apache.baremaps.tilestore.raster.ContourTileStore;
-import org.apache.baremaps.tilestore.raster.HillshadeTileStore;
+import org.apache.baremaps.tilestore.raster.RasterHillshadeTileStore;
+import org.apache.baremaps.tilestore.raster.VectorHillshadeTileStore;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -60,8 +61,13 @@ public class Serve implements Callable<Integer> {
     var bufferedImageTileCache =
         new BufferedImageTileCache(bufferedImageTileStore, CaffeineSpec.parse("maximumSize=1000"));
     var hillshadeTileStore =
-        new HillshadeTileStore(bufferedImageTileCache, ElevationUtils::pixelToElevationTerrarium);
+        new RasterHillshadeTileStore(bufferedImageTileCache,
+            ElevationUtils::pixelToElevationTerrarium);
+
     var contourTileStore = new ContourTileStore(bufferedImageTileCache);
+
+    var vectorHillshadeTileStore = new VectorHillshadeTileStore(bufferedImageTileCache,
+        ElevationUtils::pixelToElevationTerrarium);
 
     serverBuilder.annotatedService(
         "/raster",
@@ -69,8 +75,13 @@ public class Serve implements Callable<Integer> {
         jsonResponseConverter);
 
     serverBuilder.annotatedService(
-        "/tiles",
+        "/contour",
         new VectorTileResource(() -> contourTileStore),
+        jsonResponseConverter);
+
+    serverBuilder.annotatedService(
+        "/tiles",
+        new VectorTileResource(() -> vectorHillshadeTileStore),
         jsonResponseConverter);
 
     var index = HttpFile.of(ClassLoader.getSystemClassLoader(), "/raster/hillshade.html");
