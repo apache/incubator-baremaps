@@ -37,9 +37,9 @@ import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.maplibre.style.Style;
 import org.apache.baremaps.maplibre.tilejson.TileJSON;
 import org.apache.baremaps.server.*;
-import org.apache.baremaps.tilestore.ByteBufferTileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
+import org.apache.baremaps.tilestore.vector.VectorTileCache;
 import org.apache.baremaps.utils.SqliteUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +84,7 @@ public class MBTiles implements Callable<Integer> {
 
     var datasource = SqliteUtils.createDataSource(mbtilesPath, true);
     try (var tileStore = new MBTilesStore(datasource);
-        var tileCache = new ByteBufferTileCache(tileStore, caffeineSpec)) {
+        var tileCache = new VectorTileCache(tileStore, caffeineSpec)) {
       var tileStoreSupplier = (Supplier<TileStore<ByteBuffer>>) () -> tileCache;
 
       var style = objectMapper.readValue(configReader.read(stylePath), Style.class);

@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.config;
 
+import static org.apache.baremaps.testing.TestFiles.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -31,8 +32,6 @@ import org.junit.Test;
 
 public class TileSetTest {
 
-  final String tilesetFile = "/tilesets/tileset.json";
-  final String tilejsonFile = "/tilesets/tilejson.json";
   final ObjectMapper objectMapper = ObjectMapperUtils.objectMapper();
   final ConfigReader configReader = new ConfigReader();
 
@@ -55,9 +54,9 @@ public class TileSetTest {
   @Test
   public void validateTileset() throws IOException {
     // Mapping to a POJO for baremaps-core and baremaps-server
-    var tileSet = objectMapper.readValue(resourceFile(tilesetFile), Tileset.class);
+    var tileSet = objectMapper.readValue(TILESET_JSON.toFile(), Tileset.class);
     // Mapping to a POJO strictly following TileJSON specifications for API clients.
-    var tileJSON = objectMapper.readValue(resourceFile(tilesetFile), TileJSON.class);
+    var tileJSON = objectMapper.readValue(TILESET_JSON.toFile(), TileJSON.class);
 
     assertEquals("jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
         tileSet.getDatabase());
@@ -67,14 +66,11 @@ public class TileSetTest {
   @Test
   public void validateSpecificationExample() throws IOException {
     // Mapping to a POJO for baremaps-core and baremaps-server
-    var tileSet = objectMapper.readValue(resourceFile(tilejsonFile), Tileset.class);
+    var tileSet = objectMapper.readValue(TILEJSON_JSON.toFile(), Tileset.class);
     // Mapping to a POJO strictly following TileJSON specifications for API clients.
-    var tileJSON = objectMapper.readValue(resourceFile(tilejsonFile), TileJSON.class);
+    var tileJSON = objectMapper.readValue(TILEJSON_JSON.toFile(), TileJSON.class);
 
     assertNull(tileSet.getDatabase());
-    assertEquals("telephone", tileJSON.getVectorLayers().get(0).id());
-    assertEquals("the phone number", tileJSON.getVectorLayers().stream()
-        .filter(vl -> vl.id().equals("telephone"))
-        .findFirst().get().fields().get("phone_number"));
+    assertEquals("layer_a", tileJSON.getVectorLayers().get(0).id());
   }
 }

@@ -35,11 +35,11 @@ import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.locationtech.jts.geom.util.AffineTransformation;
 
-public class ContourTileStore implements TileStore<ByteBuffer> {
+public class VectorContourTileStore implements TileStore<ByteBuffer> {
 
   private final TileStore<BufferedImage> tileStore;
 
-  public ContourTileStore(TileStore<BufferedImage> tileStore) {
+  public VectorContourTileStore(TileStore<BufferedImage> tileStore) {
     this.tileStore = tileStore;
   }
 
@@ -47,7 +47,7 @@ public class ContourTileStore implements TileStore<ByteBuffer> {
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
       var image = tileStore.read(tileCoord);
-      var onion = BufferedImageTileStore.onion(tileStore, tileCoord, 1);
+      var onion = RasterTileStore.onion(tileStore, tileCoord, 1);
       image = onion.getSubimage(
           image.getWidth() - 4,
           image.getHeight() - 4,
@@ -56,10 +56,29 @@ public class ContourTileStore implements TileStore<ByteBuffer> {
 
       var grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
 
+      int increment = switch (tileCoord.z()) {
+        case 1 -> 2000;
+        case 2 -> 2000;
+        case 3 -> 1000;
+        case 4 -> 1000;
+        case 5 -> 1000;
+        case 6 -> 1000;
+        case 7 -> 1000;
+        case 8 -> 500;
+        case 9 -> 500;
+        case 10 -> 250;
+        case 11 -> 250;
+        case 12 -> 100;
+        case 13 -> 100;
+        case 14 -> 50;
+        default -> 10;
+      };
+
+
       var features = new ArrayList<Feature>();
-      for (int level = -10000; level < 10000; level += 100) {
+      for (int level = -10000; level < 10000; level += increment) {
         var contours =
-            new ContourTracer(grid, image.getWidth(), image.getHeight(), false, false)
+            new ContourTracer(grid, image.getWidth(), image.getHeight(), false, true)
                 .traceContours(level);
         for (var contour : contours) {
           contour = AffineTransformation

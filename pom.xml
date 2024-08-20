@@ -89,7 +89,7 @@ limitations under the License.
     <sonar.projectKey>apache_baremaps</sonar.projectKey>
     <version.lib.armeria>1.27.2</version.lib.armeria>
     <version.lib.awaitability>4.2.0</version.lib.awaitability>
-    <version.lib.awssdk>2.24.13</version.lib.awssdk>
+    <version.lib.awssdk>2.20.155</version.lib.awssdk>
     <version.lib.caffeine>3.1.8</version.lib.caffeine>
     <version.lib.calcite>1.36.0</version.lib.calcite>
     <version.lib.commons-compress>1.26.0</version.lib.commons-compress>

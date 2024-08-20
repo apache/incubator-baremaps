@@ -28,13 +28,10 @@ import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.file.HttpFile;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.raster.ElevationUtils;
-import org.apache.baremaps.server.RasterTileResource;
+import org.apache.baremaps.server.BufferedImageResource;
 import org.apache.baremaps.server.VectorTileResource;
-import org.apache.baremaps.tilestore.BufferedImageTileCache;
-import org.apache.baremaps.tilestore.raster.BufferedImageTileStore;
-import org.apache.baremaps.tilestore.raster.ContourTileStore;
-import org.apache.baremaps.tilestore.raster.RasterHillshadeTileStore;
-import org.apache.baremaps.tilestore.raster.VectorHillshadeTileStore;
+import org.apache.baremaps.tilestore.raster.*;
+import org.apache.baremaps.tilestore.raster.RasterTileCache;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -56,22 +53,18 @@ public class Serve implements Callable<Integer> {
     var objectMapper = objectMapper();
     var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
 
-    var bufferedImageTileStore = new BufferedImageTileStore(
-        "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png");
-    var bufferedImageTileCache =
-        new BufferedImageTileCache(bufferedImageTileStore, CaffeineSpec.parse("maximumSize=1000"));
-    var hillshadeTileStore =
-        new RasterHillshadeTileStore(bufferedImageTileCache,
-            ElevationUtils::pixelToElevationTerrarium);
-
-    var contourTileStore = new ContourTileStore(bufferedImageTileCache);
-
-    var vectorHillshadeTileStore = new VectorHillshadeTileStore(bufferedImageTileCache,
+    var elevationTileStore =
+        new RasterTileCache(new RasterElevationTileStore(), CaffeineSpec.parse("maximumSize=1000"));
+    var rasterHillshadeTileStore =
+        new RasterHillshadeTileStore(elevationTileStore, ElevationUtils::pixelToElevationTerrarium);
+    var vectorHillshadeTileStore = new VectorHillshadeTileStore(elevationTileStore,
         ElevationUtils::pixelToElevationTerrarium);
+    var contourTileStore = new VectorContourTileStore(elevationTileStore);
+
 
     serverBuilder.annotatedService(
         "/raster",
-        new RasterTileResource(() -> hillshadeTileStore),
+        new BufferedImageResource(() -> rasterHillshadeTileStore),
         jsonResponseConverter);
 
     serverBuilder.annotatedService(

@@ -19,7 +19,6 @@ package org.apache.baremaps.tilestore.raster;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,7 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
       var size = 256;
 
       // Read the elevation data
-      var image = BufferedImageTileStore.onion(tileStore, tileCoord, 1).getSubimage(
+      var image = RasterTileStore.onion(tileStore, tileCoord, 1).getSubimage(
           size - 16,
           size - 16,
           size + 32,
@@ -69,7 +68,7 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
       // Calculate the hillshade
       var grid = new HillshadeCalculator(
           ElevationUtils.clampGrid(ElevationUtils.imageToGrid(image, pixelToElevation), 0, 10000),
-          size + 32, size + 32, HillshadeCalculator.getResolution(tileCoord.z()))
+          size + 32, size + 32, HillshadeCalculator.getResolution(tileCoord.z()) / 2)
               .calculate(45, 315);
 
       contours(grid, 255 - 16, features, "1");
@@ -81,8 +80,6 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
       contours(grid, 255 - 98, features, "4");
       contours(grid, 255 - 128, features, "3");
 
-
-
       var layer = new Layer("elevation", 4096, features);
       var tile = new Tile(List.of(layer));
       var vectorTile = new VectorTileEncoder().encodeTile(tile);
@@ -92,7 +89,7 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
         gzip.close();
         return ByteBuffer.wrap(baos.toByteArray());
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new TileStoreException(e);
     }
   }

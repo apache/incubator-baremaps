@@ -24,6 +24,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 
 class ContourTracerPolygonTest {
 
@@ -160,4 +161,31 @@ class ContourTracerPolygonTest {
     return new ContourTracer(grid, size, size, false, true).traceContours(0.5);
   }
 
+  @Test
+  @DisplayName("Closed LineString Bug 1")
+  void testProcessCellWithCaseClosedLineStringBug1() {
+    var grid = new double[] {
+        133.3801854240864, 121.23325422569911, 153.52819487296264, 167.57377406292332,
+        100.937349262252, 96.62896517856514, 132.65708268451803, 147.307915356104,
+        98.7659308960914, 104.55934526711907, 141.3071569592299, 151.71211629894563,
+        139.87179431281479, 144.5483699607932, 171.74295402684095, 175.7901414451639
+    };
+    var contours = new ContourTracer(grid, 4, 4, false, true).traceContours(99);
+    assertFalse(contours.isEmpty());
+    assertTrue(contours.stream().allMatch(Polygon.class::isInstance));
+  }
+
+  @Test
+  @DisplayName("Closed LineString Bug 2")
+  void testProcessCellWithCaseClosedLineStringBug2() {
+    var grid = new double[] {
+        1001.0, 1001.0, 1001.0, 1001.0,
+        999.0, 1000.0, 1000.0, 1000.0,
+        1001.0, 1002.0, 1003.0, 1003.0,
+        1008.0, 1009.0, 1010.0, 1010.0,
+    };
+    var contours = new ContourTracer(grid, 4, 4, false, true).traceContours(1000);
+    assertFalse(contours.isEmpty());
+    assertTrue(contours.stream().allMatch(Polygon.class::isInstance));
+  }
 }

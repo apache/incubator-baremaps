@@ -19,6 +19,7 @@ package org.apache.baremaps.raster;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryTransformer;
@@ -73,22 +74,24 @@ public class ContourTracer {
     validateInput(grid, width, height);
 
     // Process each cell in the grid to generate segments
-    List<LineString> segments = new ArrayList<>();
+    List<LineString> cells = new ArrayList<>();
     for (int y = 0; y < height - 1; y++) {
       for (int x = 0; x < width - 1; x++) {
-        segments.addAll(processCell(level, x, y));
+        cells.addAll(processCell(level, x, y));
       }
     }
 
-    // Merge the lines
-    LineMerger segmentMerger = new LineMerger();
-    segmentMerger.add(segments);
-    List<Geometry> contours = new ArrayList<>(segmentMerger.getMergedLineStrings());
+    // Merge the cells
+    LineMerger cellMerger = new LineMerger();
+    cellMerger.add(cells);
+    List<Geometry> contours = new ArrayList<>(cellMerger.getMergedLineStrings());
 
+    // Polygonize the lines
     if (polygonize) {
-      contours.stream()
+      contours = contours.stream()
           .map(Geometry::getCoordinates)
           .map(GEOMETRY_FACTORY::createPolygon)
+          .map(Geometry.class::cast)
           .toList();
     }
 
@@ -157,10 +160,10 @@ public class ContourTracer {
     double avg = (tlv + trv + brv + blv) / 4.0;
 
     int index =
-        (tlv > level ? 1 : 0) |
-            (trv > level ? 2 : 0) |
-            (brv > level ? 4 : 0) |
-            (blv > level ? 8 : 0);
+        (tlv >= level ? 1 : 0) |
+            (trv >= level ? 2 : 0) |
+            (brv >= level ? 4 : 0) |
+            (blv >= level ? 8 : 0);
 
     switch (index) {
       case 1 -> {
@@ -203,37 +206,19 @@ public class ContourTracer {
         }
       }
       case 5 -> {
-        // Detect saddle points ambiguity
-        if (avg <= level) {
-          segments.add(createSegment(mlc, tmc));
-          if (htb) {
-            segments.add(createSegment(tmc, trc));
-          }
-          if (hrb) {
-            segments.add(createSegment(trc, mrc));
-          }
-          segments.add(createSegment(mrc, bmc));
-          if (hbb) {
-            segments.add(createSegment(bmc, blc));
-          }
-          if (hlb) {
-            segments.add(createSegment(blc, mlc));
-          }
-        } else {
-          segments.add(createSegment(bmc, mlc));
-          if (hlb) {
-            segments.add(createSegment(mlc, tlc));
-          }
-          if (htb) {
-            segments.add(createSegment(tlc, tmc));
-          }
-          segments.add(createSegment(tmc, mrc));
-          if (hrb) {
-            segments.add(createSegment(mrc, brc));
-          }
-          if (hbb) {
-            segments.add(createSegment(brc, bmc));
-          }
+        segments.add(createSegment(mlc, tmc));
+        if (htb) {
+          segments.add(createSegment(tmc, trc));
+        }
+        if (hrb) {
+          segments.add(createSegment(trc, mrc));
+        }
+        segments.add(createSegment(mrc, bmc));
+        if (hbb) {
+          segments.add(createSegment(bmc, blc));
+        }
+        if (hlb) {
+          segments.add(createSegment(blc, mlc));
         }
       }
       case 6 -> {
@@ -286,36 +271,19 @@ public class ContourTracer {
       }
       case 10 -> {
         // Detect saddle points ambiguity
-        if (avg <= level) {
-          segments.add(createSegment(bmc, mlc));
-          if (hlb) {
-            segments.add(createSegment(mlc, tlc));
-          }
-          if (htb) {
-            segments.add(createSegment(tlc, tmc));
-          }
-          segments.add(createSegment(tmc, mrc));
-          if (hrb) {
-            segments.add(createSegment(mrc, brc));
-          }
-          if (hbb) {
-            segments.add(createSegment(brc, bmc));
-          }
-        } else {
-          segments.add(createSegment(mlc, tmc));
-          if (htb) {
-            segments.add(createSegment(tmc, trc));
-          }
-          if (hrb) {
-            segments.add(createSegment(trc, mrc));
-          }
-          segments.add(createSegment(mrc, bmc));
-          if (hbb) {
-            segments.add(createSegment(bmc, blc));
-          }
-          if (hlb) {
-            segments.add(createSegment(blc, mlc));
-          }
+        segments.add(createSegment(bmc, mlc));
+        if (hlb) {
+          segments.add(createSegment(mlc, tlc));
+        }
+        if (htb) {
+          segments.add(createSegment(tlc, tmc));
+        }
+        segments.add(createSegment(tmc, mrc));
+        if (hrb) {
+          segments.add(createSegment(mrc, brc));
+        }
+        if (hbb) {
+          segments.add(createSegment(brc, bmc));
         }
       }
       case 11 -> {
@@ -394,7 +362,15 @@ public class ContourTracer {
       }
     }
 
-    return segments;
+    // TODO:
+    // The contour tracer should only produce rings, but the LineMerger sometimes produces lines
+    // when the segments are merged all at once. To work around this issue, the segments are first
+    // merged by cell and then merged all at once. We should investigate the cause of this issue.
+    LineMerger segmentMerger = new LineMerger();
+    segmentMerger.add(segments);
+    Collection<LineString> mergedSegments = segmentMerger.getMergedLineStrings();
+
+    return new ArrayList<>(mergedSegments);
   }
 
   private LineString createSegment(Coordinate c1, Coordinate c2) {
@@ -416,8 +392,8 @@ public class ContourTracer {
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent) {
       for (int i = 0; i < coords.size(); i++) {
         Coordinate coordinate = coords.getCoordinate(i);
-        double x = coordinate.getX() / (width - 1) * width;
-        double y = coordinate.getY() / (height - 1) * height;
+        double x = coordinate.getX() / width * (width + 1);
+        double y = coordinate.getY() / height * (height + 1);
         coords.setOrdinate(i, 0, x);
         coords.setOrdinate(i, 1, y);
       }

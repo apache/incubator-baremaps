@@ -28,8 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class HillshadeCalculatorTest {
 
-  private static final double DELTA = 1e-6;
-
   @Test
   @DisplayName("Test hillShade with valid input")
   void testHillShadeValidInput() {

@@ -25,11 +25,11 @@ import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
-public class BufferedImageTileStore implements TileStore<BufferedImage> {
+public class RasterTileStore implements TileStore<BufferedImage> {
 
   private String url;
 
-  public BufferedImageTileStore(String url) {
+  public RasterTileStore(String url) {
     this.url = url;
   }
 

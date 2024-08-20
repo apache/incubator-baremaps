@@ -38,7 +38,9 @@ class ContourTracerTest {
         0, 0, 0,
     };
     var generatedContour = new ContourTracer(grid, 3, 3, true, true).traceContours(0).get(0);
-    assertGeometryEquals("POLYGON ((1.5 0, 0 1.5, 1.5 3, 3 1.5, 1.5 0))", generatedContour);
+    assertGeometryEquals(
+        "POLYGON ((0 1.3333333333333333, 0 2.6666666666666665, 1.3333333333333333 2.6666666666666665, 2.6666666666666665 2.6666666666666665, 2.6666666666666665 1.3333333333333333, 2.6666666666666665 0, 1.3333333333333333 0, 0 0, 0 1.3333333333333333))",
+        generatedContour);
   }
 
   @Test

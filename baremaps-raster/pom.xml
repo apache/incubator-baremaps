@@ -17,6 +17,26 @@
       <artifactId>baremaps-testing</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.sis.cloud</groupId>
+      <artifactId>sis-cloud-aws</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sis.non-free</groupId>
+      <artifactId>sis-embedded-data</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sis.storage</groupId>
+      <artifactId>sis-geotiff</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gdal</groupId>
+      <artifactId>gdal</artifactId>
+      <version>3.9.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.locationtech.jts</groupId>
       <artifactId>jts-core</artifactId>
     </dependency>

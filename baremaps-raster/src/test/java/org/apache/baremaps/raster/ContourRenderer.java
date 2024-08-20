@@ -20,12 +20,12 @@ package org.apache.baremaps.raster;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.util.AffineTransformation;
 
 public class ContourRenderer {
 
@@ -37,36 +37,21 @@ public class ContourRenderer {
         .toAbsolutePath().toFile();
     var image = ImageIO.read(path);
 
-    // Downscale the image by a factor of 16
-    image = RasterUtils.resizeImage(image, 32, 32);
-
     // Convert the image to a grid
-    double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationNormal);
+    double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
 
-    List<Geometry> contour =
-        new ContourTracer(grid, image.getWidth(), image.getHeight(), true, false)
-            .traceContours(0, 9000, 100);
-
-    // Scale the image back to its original size
-    image = RasterUtils.resizeImage(image, image.getWidth() * 16, image.getHeight() * 16);
-
-    // Scale the contour back to its original size
-    AffineTransformation transformation = AffineTransformation.scaleInstance(16, 16);
-    contour = contour.stream()
-        .map(transformation::transform)
-        .toList();
-
-    // Smooth the contour with the Chaikin algorithm
-    ChaikinSmoother smoother = new ChaikinSmoother(1, 0.25);
-    contour = contour.stream()
-        .map(smoother::transform)
-        .toList();
+    // Trace the contours
+    List<Geometry> contours = new ArrayList<>();
+    for (int i = 0; i < 10000; i += 100) {
+      contours.addAll(new ContourTracer(grid, image.getWidth(), image.getHeight(), false, false)
+          .traceContours(i));
+    }
 
     // Create a frame to display the contours
     JFrame frame = new JFrame("Contour Lines");
-    frame.setSize(image.getWidth() + 20, image.getHeight() + 20);
+    frame.setSize(image.getWidth() + 20, image.getHeight() + 48);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.add(new ContourCanvas(image, contour));
+    frame.add(new ContourCanvas(image, contours));
     frame.setVisible(true);
   }
 
@@ -75,11 +60,11 @@ public class ContourRenderer {
 
     Image image;
 
-    List<Geometry> contour;
+    List<Geometry> contours;
 
-    public ContourCanvas(Image image, List<Geometry> contour) {
+    public ContourCanvas(Image image, List<Geometry> contours) {
       this.image = image;
-      this.contour = contour;
+      this.contours = contours;
     }
 
     @Override
@@ -89,7 +74,7 @@ public class ContourRenderer {
       g.drawImage(image, 10, 10, null);
 
       g.setColor(Color.RED);
-      for (Geometry geometry : contour) {
+      for (Geometry geometry : contours) {
         List<Point> points = Stream.of(geometry.getCoordinates())
             .map(p -> new Point((int) p.getX() + 10, (int) p.getY() + 10))
             .toList();

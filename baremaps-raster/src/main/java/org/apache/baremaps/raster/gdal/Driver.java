@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster;
+package org.apache.baremaps.raster.gdal;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class Driver implements AutoCloseable {
 
-import org.junit.jupiter.api.Test;
+  private final org.gdal.gdal.Driver driver;
 
-class HillShadeRendererTest {
-
-  @Test
-  void testCalculate() {
-    double[] dem = new double[] {
-        2450, 2461, 2483,
-        2452, 2461, 2483,
-        2447, 2455, 2477,
-    };
-    HillshadeCalculator hillshadeCalculator = new HillshadeCalculator(dem, 3, 3, 5);
-    double[] hillshade = hillshadeCalculator.calculate(315, 45);
-    assertEquals(154.0286599079096, hillshade[4]);
+  public Driver(org.gdal.gdal.Driver driver) {
+    this.driver = driver;
   }
 
+  public String getShortName() {
+    return driver.getShortName();
+  }
 
+  public String getLongName() {
+    return driver.getLongName();
+  }
 
+  public String getHelpTopic() {
+    return driver.getHelpTopic();
+  }
+
+  @Override
+  public void close() throws Exception {
+    driver.delete();
+  }
 }

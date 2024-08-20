@@ -86,6 +86,20 @@ public class ElevationUtils {
     return (r * ELEVATION_SCALE + g * 256.0 + b) / 10.0 - ELEVATION_OFFSET;
   }
 
+  public static int elevationToPixelStandard(double elevation) {
+    int value = (int) ((elevation + ELEVATION_OFFSET) * 10.0);
+    int r = (value >> 16) & 0xFF;
+    int g = (value >> 8) & 0xFF;
+    int b = value & 0xFF;
+    return (r << 16) | (g << 8) | b;
+  }
+
+  /**
+   * Converts a pixel value to an elevation value using the Terrarium color scheme.
+   *
+   * @param rgb The input pixel value
+   * @return The elevation value
+   */
   public static double pixelToElevationTerrarium(int rgb) {
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
@@ -93,13 +107,27 @@ public class ElevationUtils {
     return (r * 256.0 + g + b / 256.0) - 32768.0;
   }
 
-  public static int elevationToPixel(double elevation) {
-    int value = (int) ((elevation + ELEVATION_OFFSET) * 10.0);
-    int r = (value >> 16) & 0xFF;
-    int g = (value >> 8) & 0xFF;
-    int b = value & 0xFF;
+  /**
+   * Converts an elevation value to a pixel value using the Terrarium color scheme.
+   *
+   * @param elevation The input elevation value
+   * @return The pixel value
+   */
+  public static int elevationToPixelTerrarium(double elevation) {
+    double adjustedElevation = elevation + 32768.0;
+    int r = (int) (adjustedElevation / 256.0);
+    int g = (int) (adjustedElevation % 256.0);
+    int b = (int) ((adjustedElevation - (r * 256.0) - g) * 256.0);
     return (r << 16) | (g << 8) | b;
   }
+
+  public static void main(String... args) {
+    double elevation = 1000.0;
+    int pixel = elevationToPixelTerrarium(elevation);
+    double value = pixelToElevationTerrarium(pixel);
+    System.out.println(value);
+  }
+
 
   private static void validateImage(BufferedImage image) {
     if (image == null) {

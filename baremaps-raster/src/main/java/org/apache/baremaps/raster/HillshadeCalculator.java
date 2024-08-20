@@ -36,7 +36,28 @@ public class HillshadeCalculator {
     this.hillshade = new double[width * height];
   }
 
+  private static void validateInput(double[] grid, int width, int height, double altitude,
+      double azimuth) {
+    if (grid == null || grid.length == 0) {
+      throw new IllegalArgumentException("Grid array cannot be null or empty");
+    }
+    if (width <= 0 || height <= 0) {
+      throw new IllegalArgumentException("Width and height must be positive");
+    }
+    if (grid.length != width * height) {
+      throw new IllegalArgumentException("Grid array length does not match width * height");
+    }
+    if (altitude < 0 || altitude > 90) {
+      throw new IllegalArgumentException("Altitude must be between 0 and 90 degrees");
+    }
+    if (azimuth < 0 || azimuth > 360) {
+      throw new IllegalArgumentException("Azimuth must be between 0 and 360 degrees");
+    }
+  }
+
   public double[] calculate(double altitude, double azimuth) {
+    validateInput(dem, width, height, altitude, azimuth);
+
     double azimuthDeg = 360.0 - azimuth + 90.0;
     double azimuthRad = Math.toRadians(azimuthDeg);
 

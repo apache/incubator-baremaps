@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.tilestore;
+package org.apache.baremaps.tilestore.raster;
 
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -23,14 +23,17 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.github.benmanes.caffeine.cache.Weigher;
 import java.awt.image.BufferedImage;
+import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.TileStoreException;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** A {@code TileStore} decorator that uses caffeine to cache the content of tiles. */
-public class BufferedImageTileCache implements TileStore<BufferedImage> {
+public class RasterTileCache implements TileStore<BufferedImage> {
 
-  private static final Logger logger = LoggerFactory.getLogger(BufferedImageTileCache.class);
+  private static final Logger logger = LoggerFactory.getLogger(RasterTileCache.class);
 
   private final TileStore<BufferedImage> tileStore;
 
@@ -42,7 +45,7 @@ public class BufferedImageTileCache implements TileStore<BufferedImage> {
    * @param tileStore the tile store
    * @param caffeineSpec the cache specification
    */
-  public BufferedImageTileCache(TileStore<BufferedImage> tileStore, CaffeineSpec caffeineSpec) {
+  public RasterTileCache(TileStore<BufferedImage> tileStore, CaffeineSpec caffeineSpec) {
     this.tileStore = tileStore;
     this.cache = Caffeine.from(caffeineSpec).weigher(new Weigher<TileCoord, BufferedImage>() {
       @Override

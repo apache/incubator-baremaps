@@ -26,24 +26,27 @@ import com.linecorp.armeria.common.ResponseHeaders;
 import com.linecorp.armeria.server.annotation.Blocking;
 import com.linecorp.armeria.server.annotation.Get;
 import com.linecorp.armeria.server.annotation.Param;
-import java.nio.ByteBuffer;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.function.Supplier;
+import javax.imageio.ImageIO;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RasterTileResource {
+public class BufferedImageResource {
 
   private static final Logger logger =
-      LoggerFactory.getLogger(RasterTileResource.class);
+      LoggerFactory.getLogger(BufferedImageResource.class);
 
   public static final String TILE_TYPE = "image/png";
 
-  private final Supplier<TileStore<ByteBuffer>> tileStoreSupplier;
+  private final Supplier<TileStore<BufferedImage>> tileStoreSupplier;
 
-  public RasterTileResource(Supplier<TileStore<ByteBuffer>> tileStoreSupplier) {
+  public BufferedImageResource(Supplier<TileStore<BufferedImage>> tileStoreSupplier) {
     this.tileStoreSupplier = tileStoreSupplier;
   }
 
@@ -52,22 +55,27 @@ public class RasterTileResource {
   public HttpResponse tile(@Param("z") int z, @Param("x") int x, @Param("y") int y) {
     TileCoord tileCoord = new TileCoord(x, y, z);
     try {
-      TileStore<ByteBuffer> tileStore = tileStoreSupplier.get();
-      ByteBuffer blob = tileStore.read(tileCoord);
-      if (blob != null) {
+      TileStore<BufferedImage> tileStore = tileStoreSupplier.get();
+      BufferedImage bufferedImage = tileStore.read(tileCoord);
+      if (bufferedImage != null) {
         var headers = ResponseHeaders.builder(200)
             .add(CONTENT_TYPE, TILE_TYPE)
             .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
             .build();
-        byte[] bytes = new byte[blob.remaining()];
-        blob.get(bytes);
-        HttpData data = HttpData.wrap(bytes);
-        return HttpResponse.of(headers, data);
+
+        try (var outputStream = new ByteArrayOutputStream()) {
+          ImageIO.write(bufferedImage, "png", outputStream);
+          HttpData data = HttpData.wrap(outputStream.toByteArray());
+          return HttpResponse.of(headers, data);
+        }
       } else {
         return HttpResponse.of(204);
       }
     } catch (TileStoreException ex) {
       logger.error("Error while reading tile.", ex);
+      return HttpResponse.of(404);
+    } catch (IOException ex) {
+      logger.error("Error while encoding tile.", ex);
       return HttpResponse.of(404);
     }
   }

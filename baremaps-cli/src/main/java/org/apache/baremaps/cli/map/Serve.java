@@ -41,9 +41,9 @@ import org.apache.baremaps.server.SearchResource;
 import org.apache.baremaps.server.StyleResource;
 import org.apache.baremaps.server.TileJSONResource;
 import org.apache.baremaps.server.VectorTileResource;
-import org.apache.baremaps.tilestore.ByteBufferTileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.tilestore.vector.VectorTileCache;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +96,7 @@ public class Serve implements Callable<Integer> {
 
     try (
         var tileStore = new PostgresTileStore(datasource, tileset);
-        var tileCache = new ByteBufferTileCache(tileStore, caffeineSpec)) {
+        var tileCache = new VectorTileCache(tileStore, caffeineSpec)) {
 
       var tileStoreSupplier = (Supplier<TileStore<ByteBuffer>>) () -> tileCache;
 
