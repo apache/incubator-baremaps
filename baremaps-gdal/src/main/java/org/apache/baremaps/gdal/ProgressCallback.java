@@ -15,18 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
-public class Layer implements AutoCloseable {
+public interface ProgressCallback {
 
-  private final org.gdal.ogr.Layer layer;
+  void progress(double progress, String message);
 
-  protected Layer(org.gdal.ogr.Layer layer) {
-    this.layer = layer;
-  }
-
-  @Override
-  public void close() throws Exception {
-    layer.delete();
-  }
 }

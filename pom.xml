@@ -53,6 +53,7 @@ limitations under the License.
     <module>baremaps-core</module>
     <module>baremaps-data</module>
     <module>baremaps-flatgeobuf</module>
+    <module>baremaps-gdal</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
@@ -247,6 +248,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-flatgeobuf</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-gdal</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

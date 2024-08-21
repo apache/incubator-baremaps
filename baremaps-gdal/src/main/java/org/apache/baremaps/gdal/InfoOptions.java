@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
 public class InfoOptions extends Options {
 

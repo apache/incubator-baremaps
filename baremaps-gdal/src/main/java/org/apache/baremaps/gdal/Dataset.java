@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
 public class Dataset implements AutoCloseable {
 
@@ -44,16 +44,6 @@ public class Dataset implements AutoCloseable {
   public Band getRasterBand(int index) {
     return new Band(dataset.GetRasterBand(index));
   }
-
-  public void setProjection(String projection) {
-    dataset.SetProjection(projection);
-  }
-
-  public void setGeoTransform(double[] geoTransform) {
-    dataset.SetGeoTransform(geoTransform);
-  }
-
-
 
   @Override
   public void close() throws Exception {

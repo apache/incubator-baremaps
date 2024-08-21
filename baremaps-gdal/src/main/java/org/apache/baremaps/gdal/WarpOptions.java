@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
 public class WarpOptions extends Options {
 
@@ -130,9 +130,9 @@ public class WarpOptions extends Options {
     return this;
   }
 
-  public WarpOptions outputType(String type) {
-    add("-ot");
-    add(type);
+  public WarpOptions outputFormat(String format) {
+    add("-of");
+    add(format);
     return this;
   }
 

@@ -15,19 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
-public class Band implements AutoCloseable {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
-  private final org.gdal.gdal.Band band;
+public class Options {
 
-  protected Band(org.gdal.gdal.Band band) {
-    this.band = band;
+  private final List<String> options;
+
+  public Options() {
+    this.options = new ArrayList<>();
   }
 
-  @Override
-  public void close() throws Exception {
-    band.delete();
+  public Options add(String value) {
+    options.add(value);
+    return this;
+  }
+
+  public Options add(int value) {
+    options.add(String.valueOf(value));
+    return this;
+  }
+
+  public Options add(double value) {
+    options.add(String.valueOf(value));
+    return this;
+  }
+
+  public Options add(boolean value) {
+    options.add(String.valueOf(value));
+    return this;
+  }
+
+  public Vector<String> asVector() {
+    return new Vector<>(options);
   }
 
 }

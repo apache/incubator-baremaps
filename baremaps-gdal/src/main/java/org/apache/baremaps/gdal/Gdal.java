@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,12 +42,12 @@ public class Gdal {
     if (Files.notExists(Path.of(path))) {
       throw new IllegalArgumentException("File not found: " + path);
     }
-    org.gdal.gdal.Dataset dataset = gdal.OpenEx(path);
+    var dataset = gdal.OpenEx(path);
     return new Dataset(dataset);
   }
 
   public static Dataset copy(String path, Dataset source) {
-    org.gdal.gdal.Driver driver = gdal.IdentifyDriver(path);
+    var driver = gdal.IdentifyDriver(path);
     return new Dataset(driver.CreateCopy(path, source.dataset));
   }
 
@@ -56,84 +56,95 @@ public class Gdal {
   }
 
   public static String info(Dataset dataset, InfoOptions options) {
-    return org.gdal.gdal.gdal.GDALInfo(dataset.dataset,
-        new org.gdal.gdal.InfoOptions(options.asVector()));
+    try (var infoOptions = new InfoResource(options)) {
+      return org.gdal.gdal.gdal.GDALInfo(dataset.dataset, infoOptions);
+    }
   }
 
   public static Dataset buildVRT(List<String> files, BuildVRTOptions options) {
-    org.gdal.gdal.Dataset target = org.gdal.gdal.gdal.BuildVRT(
-        "",
-        new Vector<>(files),
-        new org.gdal.gdal.BuildVRTOptions(options.asVector()));
-    return new Dataset(target);
+    var buildVRTOptions = new org.gdal.gdal.BuildVRTOptions(options.asVector());
+    try (var buildVRTResource = new BuildVRTResource(options)) {
+      var target = org.gdal.gdal.gdal.BuildVRT(
+          "",
+          new Vector<>(files),
+          buildVRTResource);
+      return new Dataset(target);
+    } finally {
+      buildVRTOptions.delete();
+    }
   }
 
   public static Dataset buildVRT(List<String> files, BuildVRTOptions options,
-      ProgressListener progressListener) {
-    ProgressCallback callback = new ProgressCallback(progressListener);
-    try {
+      ProgressCallback progressListener) {
+    try (var buildVRTResource = new BuildVRTResource(options);
+        var progressResource = new ProgressResource(progressListener)) {
       org.gdal.gdal.Dataset target = org.gdal.gdal.gdal.BuildVRT(
           "",
           new Vector<>(files),
-          new org.gdal.gdal.BuildVRTOptions(options.asVector()),
-          callback);
+          buildVRTResource,
+          progressResource);
       return new Dataset(target);
-    } finally {
-      callback.delete();
     }
   }
 
   public static Dataset translate(Dataset source, TranslateOptions options) {
-    org.gdal.gdal.Dataset dataset = org.gdal.gdal.gdal.Translate(
-        "",
-        source.dataset,
-        new org.gdal.gdal.TranslateOptions(options.asVector()));
-    return new Dataset(dataset);
+    try (var translateResource = new TranslateResource(options)) {
+      var dataset = org.gdal.gdal.gdal.Translate(
+          "",
+          source.dataset,
+          translateResource);
+      return new Dataset(dataset);
+    }
   }
 
   public static Dataset translate(Dataset source, TranslateOptions options,
-      ProgressListener progressListener) {
-    ProgressCallback callback = new ProgressCallback(progressListener);
-    try {
-      org.gdal.gdal.Dataset dataset = org.gdal.gdal.gdal.Translate(
+      ProgressCallback progressListener) {
+    try (var translateResource = new TranslateResource(options);
+        var progressResource = new ProgressResource(progressListener)) {
+      var dataset = org.gdal.gdal.gdal.Translate(
           "",
           source.dataset,
-          new org.gdal.gdal.TranslateOptions(options.asVector()),
-          callback);
+          translateResource,
+          progressResource);
       return new Dataset(dataset);
-    } finally {
-      callback.delete();
     }
   }
 
   public static Dataset warp(Dataset source, WarpOptions options) {
-    org.gdal.gdal.Dataset target = gdal.Warp(
-        "",
-        new org.gdal.gdal.Dataset[] {source.dataset},
-        new org.gdal.gdal.WarpOptions(options.asVector()));
-    return new Dataset(target);
+    try (var warpResource = new WarpResource(options)) {
+      var target = gdal.Warp(
+          "",
+          new org.gdal.gdal.Dataset[] {source.dataset},
+          warpResource);
+      return new Dataset(target);
+    }
   }
 
   public static Dataset warp(Dataset source, WarpOptions options,
-      ProgressListener progressListener) {
-    ProgressCallback callback = new ProgressCallback(progressListener);
-    try {
-      org.gdal.gdal.Dataset target = gdal.Warp(
-          "",
+      ProgressCallback progressCallback) {
+    try (var warpResource = new WarpResource(options);
+        var progressResource = new ProgressResource(progressCallback)) {
+      var target = gdal.Open("MEM");
+      gdal.Warp(
+          target,
           new org.gdal.gdal.Dataset[] {source.dataset},
-          new org.gdal.gdal.WarpOptions(options.asVector()),
-          callback);
+          warpResource,
+          progressResource);
       return new Dataset(target);
-    } finally {
-      callback.delete();
     }
+  }
+
+  public static void warp(Dataset target, List<Dataset> source, WarpOptions options) {
+    gdal.Warp(
+        target.dataset,
+        source.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+        new WarpResource(options));
   }
 
   public static void main(String[] args) {
     Gdal.initialize();
     Dataset dataset = Gdal.open("/data/gebco_2024_web_mercator.tif");
     System.out.println(Gdal.info(dataset, new InfoOptions()));
-
   }
 
 }

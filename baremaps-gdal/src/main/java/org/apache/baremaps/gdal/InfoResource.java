@@ -15,30 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
-public class Driver implements AutoCloseable {
+class InfoResource extends org.gdal.gdal.InfoOptions implements AutoCloseable {
 
-  private final org.gdal.gdal.Driver driver;
-
-  public Driver(org.gdal.gdal.Driver driver) {
-    this.driver = driver;
-  }
-
-  public String getShortName() {
-    return driver.getShortName();
-  }
-
-  public String getLongName() {
-    return driver.getLongName();
-  }
-
-  public String getHelpTopic() {
-    return driver.getHelpTopic();
+  public InfoResource(InfoOptions options) {
+    super(options.asVector());
   }
 
   @Override
-  public void close() throws Exception {
-    driver.delete();
+  public void close() {
+    this.delete();
   }
 }

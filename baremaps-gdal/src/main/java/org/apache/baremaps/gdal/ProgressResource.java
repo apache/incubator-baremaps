@@ -15,42 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+class ProgressResource extends org.gdal.gdal.ProgressCallback implements AutoCloseable {
 
-public class Options {
+  private final ProgressCallback callback;
 
-  private final List<String> options;
-
-  public Options() {
-    this.options = new ArrayList<>();
+  public ProgressResource(ProgressCallback callback) {
+    this.callback = callback;
   }
 
-  public Options add(String value) {
-    options.add(value);
-    return this;
+  @Override
+  public int run(double progress, String message) {
+    callback.progress(progress, message);
+    return 1;
   }
 
-  public Options add(int value) {
-    options.add(String.valueOf(value));
-    return this;
+  @Override
+  public void close() {
+    this.delete();
   }
-
-  public Options add(double value) {
-    options.add(String.valueOf(value));
-    return this;
-  }
-
-  public Options add(boolean value) {
-    options.add(String.valueOf(value));
-    return this;
-  }
-
-  public Vector<String> asVector() {
-    return new Vector<>(options);
-  }
-
 }

@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.raster.gdal;
+package org.apache.baremaps.gdal;
 
-class ProgressCallback extends org.gdal.gdal.ProgressCallback {
+class BuildVRTResource extends org.gdal.gdal.BuildVRTOptions implements AutoCloseable {
 
-  private final ProgressListener listener;
-
-  public ProgressCallback(ProgressListener listener) {
-    this.listener = listener;
+  public BuildVRTResource(BuildVRTOptions options) {
+    super(options.asVector());
   }
 
   @Override
-  public int run(double progress, String message) {
-    listener.progress(progress, message);
-    return 1;
+  public void close() {
+    this.delete();
   }
-
 }
