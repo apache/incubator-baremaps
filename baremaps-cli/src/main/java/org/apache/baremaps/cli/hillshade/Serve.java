@@ -64,7 +64,7 @@ public class Serve implements Callable<Integer> {
 
     serverBuilder.annotatedService(
         "/raster",
-        new BufferedImageResource(() -> rasterHillshadeTileStore),
+        new BufferedImageResource(() -> elevationTileStore),
         jsonResponseConverter);
 
     serverBuilder.annotatedService(

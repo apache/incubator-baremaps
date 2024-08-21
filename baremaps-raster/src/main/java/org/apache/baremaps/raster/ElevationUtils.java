@@ -26,6 +26,7 @@ import java.util.function.IntToDoubleFunction;
  */
 public class ElevationUtils {
 
+  private static final double TERRARIUM_OFFSET = 32768.0;
   private static final double ELEVATION_SCALE = 256.0 * 256.0;
   private static final double ELEVATION_OFFSET = 10000.0;
 
@@ -104,7 +105,7 @@ public class ElevationUtils {
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
     int b = rgb & 0xFF;
-    return (r * 256.0 + g + b / 256.0) - 32768.0;
+    return (r * 256.0 + g + b / 256.0) - TERRARIUM_OFFSET;
   }
 
   /**
@@ -114,7 +115,7 @@ public class ElevationUtils {
    * @return The pixel value
    */
   public static int elevationToPixelTerrarium(double elevation) {
-    double adjustedElevation = elevation + 32768.0;
+    double adjustedElevation = elevation + TERRARIUM_OFFSET;
     int r = (int) (adjustedElevation / 256.0);
     int g = (int) (adjustedElevation % 256.0);
     int b = (int) ((adjustedElevation - (r * 256.0) - g) * 256.0);

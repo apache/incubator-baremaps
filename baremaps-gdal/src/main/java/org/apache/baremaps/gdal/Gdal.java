@@ -34,6 +34,10 @@ public class Gdal {
     gdal.UseExceptions();
   }
 
+  public static String versionInfo() {
+    return gdal.VersionInfo();
+  }
+
   public static Dataset open(Path path) {
     return open(path.normalize().toAbsolutePath().toString());
   }
@@ -111,38 +115,69 @@ public class Gdal {
   }
 
   public static Dataset warp(Dataset source, WarpOptions options) {
-    try (var warpResource = new WarpResource(options)) {
-      var target = gdal.Warp(
-          "",
-          new org.gdal.gdal.Dataset[] {source.dataset},
-          warpResource);
-      return new Dataset(target);
-    }
+    return warp(List.of(source), options);
+  }
+
+  public static void warp(Dataset target, Dataset source, WarpOptions options) {
+    warp(target, List.of(source), options);
   }
 
   public static Dataset warp(Dataset source, WarpOptions options,
       ProgressCallback progressCallback) {
-    try (var warpResource = new WarpResource(options);
-        var progressResource = new ProgressResource(progressCallback)) {
-      var target = gdal.Open("MEM");
-      gdal.Warp(
-          target,
-          new org.gdal.gdal.Dataset[] {source.dataset},
-          warpResource,
-          progressResource);
-      return new Dataset(target);
+    return warp(List.of(source), options, progressCallback);
+  }
+
+  public static void warp(Dataset target, Dataset source, WarpOptions options,
+      ProgressCallback progressCallback) {
+    warp(target, List.of(source), options, progressCallback);
+  }
+
+  public static Dataset warp(List<Dataset> sources, WarpOptions options) {
+    try (var warpResource = new WarpResource(options)) {
+      return new Dataset(gdal.Warp(
+          "",
+          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          warpResource));
     }
   }
 
-  public static void warp(Dataset target, List<Dataset> source, WarpOptions options) {
-    gdal.Warp(
-        target.dataset,
-        source.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
-        new WarpResource(options));
+  public static Dataset warp(List<Dataset> sources, WarpOptions options,
+      ProgressCallback progressCallback) {
+    try (var warpResource = new WarpResource(options);
+        var progressResource = new ProgressResource(progressCallback)) {
+      return new Dataset(gdal.Warp(
+          "",
+          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          warpResource,
+          progressResource));
+    }
+  }
+
+  public static void warp(Dataset target, List<Dataset> sources, WarpOptions options) {
+    try (var warpResource = new WarpResource(options)) {
+      gdal.Warp(
+          target.dataset,
+          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          warpResource);
+    }
+  }
+
+  public static void warp(Dataset target, List<Dataset> sources, WarpOptions options,
+      ProgressCallback progressCallback) {
+    try (var warpResource = new WarpResource(options);
+        var progressResource = new ProgressResource(progressCallback)) {
+      gdal.Warp(
+          target.dataset,
+          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          warpResource,
+          progressResource);
+    }
   }
 
   public static void main(String[] args) {
     Gdal.initialize();
+    System.out.println(Gdal.versionInfo());
+
     Dataset dataset = Gdal.open("/data/gebco_2024_web_mercator.tif");
     System.out.println(Gdal.info(dataset, new InfoOptions()));
   }

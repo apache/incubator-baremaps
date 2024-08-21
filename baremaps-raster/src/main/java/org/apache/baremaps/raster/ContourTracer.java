@@ -381,6 +381,11 @@ public class ContourTracer {
     double v1 = grid[y1 * width + x1];
     double v2 = grid[y2 * width + x2];
     double t = (Math.abs(v2 - v1) < EPSILON) ? 0.5 : (level - v1) / (v2 - v1);
+    if (t < EPSILON) {
+      t = EPSILON;
+    } else if (t > 1 - EPSILON) {
+      t = 1 - EPSILON;
+    }
     double x = x1 + t * (x2 - x1);
     double y = y1 + t * (y2 - y1);
     return new Coordinate(x, y);

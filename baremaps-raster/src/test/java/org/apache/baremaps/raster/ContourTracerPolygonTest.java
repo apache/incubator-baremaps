@@ -179,12 +179,12 @@ class ContourTracerPolygonTest {
   @DisplayName("Closed LineString Bug 2")
   void testProcessCellWithCaseClosedLineStringBug2() {
     var grid = new double[] {
-        1001.0, 1001.0, 1001.0, 1001.0,
-        999.0, 1000.0, 1000.0, 1000.0,
-        1001.0, 1002.0, 1003.0, 1003.0,
-        1008.0, 1009.0, 1010.0, 1010.0,
+        491.0, 495.0, 502.0, 503.0,
+        487.0, 493.0, 500.0, 499.0,
+        490.0, 495.0, 500.0, 497.0,
+        499.0, 502.0, 505.0, 500.0,
     };
-    var contours = new ContourTracer(grid, 4, 4, false, true).traceContours(1000);
+    var contours = new ContourTracer(grid, 4, 4, false, true).traceContours(500);
     assertFalse(contours.isEmpty());
     assertTrue(contours.stream().allMatch(Polygon.class::isInstance));
   }
