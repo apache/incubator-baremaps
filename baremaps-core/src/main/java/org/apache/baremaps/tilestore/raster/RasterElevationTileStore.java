@@ -19,10 +19,9 @@ package org.apache.baremaps.tilestore.raster;
 
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.apache.baremaps.dem.ElevationUtils;
 import org.apache.baremaps.gdal.Gdal;
 import org.apache.baremaps.gdal.WarpOptions;
-import org.apache.baremaps.raster.ElevationUtils;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -31,9 +30,9 @@ public class RasterElevationTileStore implements TileStore<BufferedImage> {
 
   private final Path path;
 
-  public RasterElevationTileStore() {
+  public RasterElevationTileStore(Path path) {
     Gdal.initialize();
-    path = Paths.get("/data/gebco_2024_web_mercator.tif");
+    this.path = path;
   }
 
   @Override
@@ -88,9 +87,5 @@ public class RasterElevationTileStore implements TileStore<BufferedImage> {
   @Override
   public void close() throws Exception {
     throw new UnsupportedOperationException();
-  }
-
-  public static void main(String... args) throws TileStoreException {
-    new RasterElevationTileStore().read(new TileCoord(8511, 5821, 14));
   }
 }

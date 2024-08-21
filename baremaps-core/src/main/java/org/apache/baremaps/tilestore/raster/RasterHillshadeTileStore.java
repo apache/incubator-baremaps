@@ -17,13 +17,13 @@
 
 package org.apache.baremaps.tilestore.raster;
 
-import static org.apache.baremaps.raster.HillshadeCalculator.getResolution;
+import static org.apache.baremaps.dem.HillshadeCalculator.getResolution;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.IntToDoubleFunction;
-import org.apache.baremaps.raster.ElevationUtils;
-import org.apache.baremaps.raster.HillshadeCalculator;
+import org.apache.baremaps.dem.ElevationUtils;
+import org.apache.baremaps.dem.HillshadeCalculator;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;

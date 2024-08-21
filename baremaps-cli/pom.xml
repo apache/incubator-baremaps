@@ -45,7 +45,7 @@ limitations under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.baremaps</groupId>
-      <artifactId>baremaps-raster</artifactId>
+      <artifactId>baremaps-dem</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.baremaps</groupId>

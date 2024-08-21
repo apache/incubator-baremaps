@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>DEM</title>
+    <meta property="og:description" content="Digital Elevation Model (DEM)" />
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js" integrity="sha256-RU7N55x2fpxos26u6Mrn26qPlDih4ZiqZMstWPipnGE=" crossorigin="anonymous"></script>
+    <script src="https://baremaps.apache.org/assets/maplibre/maplibre-gl-inspect.js" integrity="sha256-NYdRoIbqeAWkTHjpa/BukMLXcsiqFoDuJCYzzaRei30=" crossorigin="anonymous"></script>
+    <script src="https://baremaps.apache.org/assets/maplibre/maplibre-gl-tile-boundaries.js" integrity="sha256-Jo8NvxMzooqayU8+eIsjO49b4EoakoE0o0tSSrBWPCU=" crossorigin="anonymous"></script>
+    <script src="https://baremaps.apache.org/assets/maplibre/maplibre-custom-controls.js" integrity="sha256-80a3VIbp5OJ8HSIWJ7+6NjTvdBmVirLCR6otKucXnlw=" crossorigin="anonymous"></script>
+    <script src="https://baremaps.apache.org/assets/maplibre/maplibre-gl-framerate.js" integrity="sha256-6IVzv2heNDAl7KkSqjRkmjr56asfkdCxO2q8ouTo8t8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" integrity="sha256-V2sIX92Uh6ZaGSFTKMHghsB85b9toJtmazgG09AI2uk=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://baremaps.apache.org/assets/maplibre/maplibre-gl-inspect.css" integrity="sha256-ePhsoaklgbCBxK7kfSUcP+V+bVqnfFwpILz7hkSR0Lo=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://baremaps.apache.org/assets/maplibre/maplibre-gl-tile-boundaries.css" integrity="sha256-FxIRliWXnU67sT1i97MgNQ0qL8LjsgYiBH9v/uNxzdM=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://baremaps.apache.org/assets/maplibre/maplibre-custom-controls.css" integrity="sha256-rFc19qrZTPgcrNeYjtsLCcDOqM5NrLiPy2U+0FxW9vA=" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="https://baremaps.apache.org/assets/favicon/favicon.ico">
+    <style>
+        body { margin: 0; padding: 0; }
+        html, body, #map { height: 100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    const map = (window.map = new maplibregl.Map({
+        antialias: true,
+        container: 'map',
+        zoom: 11,
+        center: [11.5519, 47.2719],
+        hash: true,
+        style: {
+            version: 8,
+            sources: {
+                rasterElevationSource: {
+                    type: 'raster',
+                    'tiles': [
+                        'http://localhost:9000/raster/elevation/{z}/{x}/{y}.png'
+                    ],
+                    tileSize: 256
+                },
+                rasterHillshadeSource: {
+                    type: 'raster',
+                    'tiles': [
+                        'http://localhost:9000/raster/hillshade/{z}/{x}/{y}.png'
+                    ],
+                    tileSize: 256
+                },
+                vectorContourSource: {
+                    type: 'vector',
+                    tiles: [
+                        'http://localhost:9000/vector/contour/{z}/{x}/{y}.mvt'
+                    ],
+                },
+                vectorHillshadeSource: {
+                    type: 'vector',
+                    tiles: [
+                        'http://localhost:9000/vector/hillshade/{z}/{x}/{y}.mvt'
+                    ],
+                },
+            },
+            layers: [
+                {
+                    'id': 'background',
+                    'type': 'background',
+                    'paint': {
+                        'background-color': '#bdbdbd'
+                    }
+                },
+                {
+                    'id': 'rasterElevation',
+                    'type': 'raster',
+                    'source': 'rasterElevationSource',
+                    'paint': {
+                        'raster-opacity': 0.5
+                    }
+                },
+                {
+                    'id': 'rasterHillshade',
+                    'type': 'raster',
+                    'source': 'rasterHillshadeSource',
+                    'paint': {
+                        'raster-opacity': 0.5
+                    }
+                },
+                {
+                    'id': 'vectorHillshade',
+                    'type': 'fill',
+                    'source': 'vectorHillshadeSource',
+                    'source-layer': 'elevation',
+                    "layout" : {
+                        "visibility" : "visible",
+                        "fill-sort-key": [
+                            "match",
+                            ["get", "level"],
+                            "1", 6,
+                            "2", 5,
+                            "3", 1,
+                            "4", 2,
+                            "5", 3,
+                            "6", 4,
+                            0
+                        ],
+                    },
+                    "paint" : {
+                        "fill-color" : [
+                            "match",
+                            ["get", "level"],
+                            "1", "#ffffff",
+                            "2", "#d9d9d9",
+                            "3", "#919191",
+                            "4", "#595959",
+                            "5", "#343434",
+                            "6", "#181818",
+                            "rgba(0,0,0,0)"
+                        ],
+                        "fill-opacity" : 1,
+                        "fill-antialias" : false,
+                    }
+                },
+                {
+                    'id': 'vectorContour',
+                    'type': 'line',
+                    'source': 'vectorContourSource',
+                    'source-layer': 'contour',
+                    "layout" : {
+                        "visibility" : "visible",
+                    },
+                    "paint" : {
+                        "line-color" : "#000000",
+                    }
+                },
+            ],
+        },
+        maxZoom: 18,
+        maxPitch: 85
+    }));
+
+    map.addControl(
+        new maplibregl.NavigationControl({
+            visualizePitch: false,
+            showZoom: true,
+            showCompass: true
+        })
+    );
+
+</script>
+</body>
+</html>

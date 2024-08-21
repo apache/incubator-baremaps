@@ -173,13 +173,4 @@ public class Gdal {
           progressResource);
     }
   }
-
-  public static void main(String[] args) {
-    Gdal.initialize();
-    System.out.println(Gdal.versionInfo());
-
-    Dataset dataset = Gdal.open("/data/gebco_2024_web_mercator.tif");
-    System.out.println(Gdal.info(dataset, new InfoOptions()));
-  }
-
 }

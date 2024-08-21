@@ -25,8 +25,8 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Baremaps.VersionProvider;
 import org.apache.baremaps.cli.database.Database;
+import org.apache.baremaps.cli.dem.DEM;
 import org.apache.baremaps.cli.geocoder.Geocoder;
-import org.apache.baremaps.cli.hillshade.Hillshade;
 import org.apache.baremaps.cli.iploc.IpLoc;
 import org.apache.baremaps.cli.map.Map;
 import org.apache.baremaps.cli.workflow.Workflow;
@@ -49,7 +49,7 @@ import picocli.CommandLine.Option;
         Map.class,
         Geocoder.class,
         IpLoc.class,
-        Hillshade.class
+        DEM.class
     },
     sortOptions = false)
 @SuppressWarnings("squid:S106")
