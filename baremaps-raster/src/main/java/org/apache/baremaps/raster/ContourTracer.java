@@ -19,7 +19,6 @@ package org.apache.baremaps.raster;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryTransformer;
@@ -362,15 +361,7 @@ public class ContourTracer {
       }
     }
 
-    // TODO:
-    // The contour tracer should only produce rings, but the LineMerger sometimes produces lines
-    // when the segments are merged all at once. To work around this issue, the segments are first
-    // merged by cell and then merged all at once. We should investigate the cause of this issue.
-    LineMerger segmentMerger = new LineMerger();
-    segmentMerger.add(segments);
-    Collection<LineString> mergedSegments = segmentMerger.getMergedLineStrings();
-
-    return new ArrayList<>(mergedSegments);
+    return segments;
   }
 
   private LineString createSegment(Coordinate c1, Coordinate c2) {
