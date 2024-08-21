@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+
 public class Band implements AutoCloseable {
 
   private final org.gdal.gdal.Band band;
@@ -47,6 +50,26 @@ public class Band implements AutoCloseable {
 
   public void read(int x, int y, int width, int height, double[] buffer) {
     band.ReadRaster(x, y, width, height, buffer);
+  }
+
+  public BufferedImage asBufferedImage(int imageType) {
+    // Copy the data of the band into a byte array
+    int width = band.getXSize();
+    int height = band.getYSize();
+    double[] values = new double[height * width];
+    band.ReadRaster(0, 0, 256, 256, values);
+
+    // Create a BufferedImage from the byte array
+    BufferedImage image = new BufferedImage(width, height, imageType);
+    WritableRaster raster = image.getRaster();
+    for (int x = 0; x < 256; x++) {
+      for (int y = 0; y < 256; y++) {
+        double value = values[y * 256 + x];
+        raster.setDataElements(x, y, value);
+      }
+    }
+
+    return image;
   }
 
   @Override
