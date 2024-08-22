@@ -20,12 +20,23 @@ package org.apache.baremaps.dem;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Provides utility methods for processing raster images.
+ */
 public class RasterUtils {
 
   private RasterUtils() {
     // Private constructor to prevent instantiation
   }
 
+  /**
+   * Resizes a BufferedImage to the specified dimensions.
+   *
+   * @param originalImage The original BufferedImage
+   * @param targetWidth The target width
+   * @param targetHeight The target height
+   * @return The resized BufferedImage
+   */
   public static BufferedImage resizeImage(
       BufferedImage originalImage, int targetWidth, int targetHeight) {
     Image resultingImage =

@@ -74,7 +74,6 @@ public class VectorContourTileStore implements TileStore<ByteBuffer> {
         default -> 10;
       };
 
-
       var features = new ArrayList<Feature>();
       for (int level = -10000; level < 10000; level += increment) {
         var contours =
@@ -113,6 +112,7 @@ public class VectorContourTileStore implements TileStore<ByteBuffer> {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
     // Do nothing

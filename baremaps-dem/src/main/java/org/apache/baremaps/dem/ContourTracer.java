@@ -122,6 +122,13 @@ public class ContourTracer {
     return contours;
   }
 
+  /**
+   * Validates the input grid, width, and height.
+   *
+   * @param grid The grid of elevation values
+   * @param width The width of the grid
+   * @param height The height of the grid
+   */
   private static void validateInput(double[] grid, int width, int height) {
     if (grid == null || grid.length == 0) {
       throw new IllegalArgumentException("Grid array cannot be null or empty");
@@ -134,6 +141,14 @@ public class ContourTracer {
     }
   }
 
+  /**
+   * Processes a cell in the grid to generate line segments for a given elevation level.
+   *
+   * @param level The elevation level
+   * @param x The x-coordinate of the cell
+   * @param y The y-coordinate of the cell
+   * @return A list of line segments
+   */
   @SuppressWarnings("squid:S3776")
   private List<LineString> processCell(double level, int x, int y) {
     List<LineString> segments = new ArrayList<>();
@@ -364,10 +379,29 @@ public class ContourTracer {
     return segments;
   }
 
+  /**
+   * Creates a line segment between two coordinates.
+   *
+   * @param c1 the first coordinate
+   * @param c2 the second coordinate
+   * @return the line segment
+   */
   private LineString createSegment(Coordinate c1, Coordinate c2) {
     return GEOMETRY_FACTORY.createLineString(new Coordinate[] {c1, c2});
   }
 
+  /**
+   * Interpolates a coordinate between two grid points. This method avoid division by zero by using
+   * a small epsilon value. It also ensures that the extreme values are not reached using the same
+   * epsilon value.
+   *
+   * @param level the elevation level
+   * @param x1 the x-coordinate of the first grid point
+   * @param y1 the y-coordinate of the first grid point
+   * @param x2 the x-coordinate of the second grid point
+   * @param y2 the y-coordinate of the second grid point
+   * @return the interpolated coordinate
+   */
   private Coordinate interpolateCoordinate(double level, int x1, int y1, int x2, int y2) {
     double v1 = grid[y1 * width + x1];
     double v2 = grid[y2 * width + x2];
@@ -382,6 +416,9 @@ public class ContourTracer {
     return new Coordinate(x, y);
   }
 
+  /**
+   * A transformer that normalizes the coordinates of a geometry.
+   */
   private class NormalizationTransformer extends GeometryTransformer {
 
     @Override

@@ -22,12 +22,23 @@ package org.apache.baremaps.dem;
  */
 public class HillshadeCalculator {
 
+  private static final double EARTH_RADIUS = 6378137; // in meters
+  private static final int TILE_SIZE = 256; // in pixels
+
   private double[] dem;
   private int width;
   private int height;
   private double cellSize;
   private double[] hillshade;
 
+  /**
+   * Constructs a HillshadeCalculator with the specified DEM, width, height, and cell size.
+   *
+   * @param dem The digital elevation model
+   * @param width The width of the DEM
+   * @param height The height of the DEM
+   * @param cellSize The cell size of the DEM
+   */
   public HillshadeCalculator(double[] dem, int width, int height, double cellSize) {
     this.dem = dem;
     this.width = width;
@@ -36,6 +47,15 @@ public class HillshadeCalculator {
     this.hillshade = new double[width * height];
   }
 
+  /**
+   * Validates the input parameters for the hillshade calculation.
+   *
+   * @param grid The DEM grid
+   * @param width The width of the DEM
+   * @param height The height of the DEM
+   * @param altitude The altitude of the light source
+   * @param azimuth The azimuth of the light source
+   */
   private static void validateInput(double[] grid, int width, int height, double altitude,
       double azimuth) {
     if (grid == null || grid.length == 0) {
@@ -55,6 +75,13 @@ public class HillshadeCalculator {
     }
   }
 
+  /**
+   * Calculates the hillshade effect for the specified altitude and azimuth.
+   *
+   * @param altitude The altitude of the light source
+   * @param azimuth The azimuth of the light source
+   * @return The hillshade effect
+   */
   public double[] calculate(double altitude, double azimuth) {
     validateInput(dem, width, height, altitude, azimuth);
 
@@ -98,15 +125,25 @@ public class HillshadeCalculator {
     return hillshade;
   }
 
-  double getElevation(int x, int y) {
+  /**
+   * Returns the elevation at the specified coordinates.
+   *
+   * @param x The x-coordinate
+   * @param y The y-coordinate
+   * @return The elevation
+   */
+  public double getElevation(int x, int y) {
     x = Math.max(0, Math.min(width - 1, x));
     y = Math.max(0, Math.min(height - 1, y));
     return dem[y * width + x];
   }
 
-  private static final double EARTH_RADIUS = 6378137; // in meters
-  private static final int TILE_SIZE = 256; // in pixels
-
+  /**
+   * Returns the resolution of the specified zoom level.
+   *
+   * @param zoomLevel The zoom level
+   * @return The resolution
+   */
   public static double getResolution(int zoomLevel) {
     return (2 * Math.PI * EARTH_RADIUS) / (TILE_SIZE * Math.pow(2, zoomLevel));
   }

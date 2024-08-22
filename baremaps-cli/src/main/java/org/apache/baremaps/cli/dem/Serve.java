@@ -45,48 +45,46 @@ public class Serve implements Callable<Integer> {
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
 
-  @Option(names = {"--path"}, paramLabel = "PORT",
-      description = "The path of an EPSG:3857 geoTIFF file.")
+  @Option(names = {"--path"}, paramLabel = "PORT", description = "The path of a geoTIFF file.")
   private Path path;
 
   @Override
   public Integer call() throws Exception {
+    // Initialize the tile stores
+    var rasterElevationTileStore =
+        new RasterTileCache(
+            new RasterElevationTileStore(path),
+            CaffeineSpec.parse("maximumSize=1000"));
+    var rasterHillshadeTileStore =
+        new RasterHillshadeTileStore(
+            rasterElevationTileStore,
+            ElevationUtils::pixelToElevationTerrarium);
+    var vectorHillshadeTileStore =
+        new VectorHillshadeTileStore(
+            rasterElevationTileStore,
+            ElevationUtils::pixelToElevationTerrarium);
+    var vectorContourTileStore =
+        new VectorContourTileStore(rasterElevationTileStore);
 
+    // Initialize the server
+    var objectMapper = objectMapper();
+    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
     var serverBuilder = Server.builder();
     serverBuilder.http(port);
 
-    var objectMapper = objectMapper();
-    var jsonResponseConverter = new JacksonResponseConverterFunction(objectMapper);
-
-    var rasterElevationTileStore =
-        new RasterTileCache(new RasterElevationTileStore(path),
-            CaffeineSpec.parse("maximumSize=1000"));
-
-    var rasterHillshadeTileStore =
-        new RasterHillshadeTileStore(rasterElevationTileStore,
-            ElevationUtils::pixelToElevationTerrarium);
-
-    var vectorHillshadeTileStore = new VectorHillshadeTileStore(rasterElevationTileStore,
-        ElevationUtils::pixelToElevationTerrarium);
-
-    var vectorContourTileStore = new VectorContourTileStore(rasterElevationTileStore);
-
-
+    // Register the services
     serverBuilder.annotatedService(
         "/raster/elevation",
         new BufferedImageResource(() -> rasterElevationTileStore),
         jsonResponseConverter);
-
     serverBuilder.annotatedService(
         "/raster/hillshade",
         new BufferedImageResource(() -> rasterHillshadeTileStore),
         jsonResponseConverter);
-
     serverBuilder.annotatedService(
         "/vector/contour",
         new VectorTileResource(() -> vectorContourTileStore),
         jsonResponseConverter);
-
     serverBuilder.annotatedService(
         "/vector/hillshade",
         new VectorTileResource(() -> vectorHillshadeTileStore),
@@ -112,7 +110,6 @@ public class Serve implements Callable<Integer> {
 
     serverBuilder.disableServerHeader();
     serverBuilder.disableDateHeader();
-
     var server = serverBuilder.build();
 
     var startFuture = server.start();

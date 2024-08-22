@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * A callback interface for reporting progress.
+ */
 public interface ProgressCallback {
 
   void progress(double progress, String message);

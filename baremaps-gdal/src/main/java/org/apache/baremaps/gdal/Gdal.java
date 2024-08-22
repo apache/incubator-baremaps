@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Vector;
 import org.gdal.gdal.gdal;
 
+/**
+ * An utility class to interact with the GDAL library in a more Java-friendly and idiomatic way.
+ */
 public class Gdal {
 
   private Gdal() {

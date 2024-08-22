@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.ogr.Layer} class.
+ */
 public class Layer implements AutoCloseable {
 
   private final org.gdal.ogr.Layer layer;

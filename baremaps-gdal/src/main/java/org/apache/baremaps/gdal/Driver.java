@@ -17,11 +17,14 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.gdal.Driver} class.
+ */
 public class Driver implements AutoCloseable {
 
   private final org.gdal.gdal.Driver driver;
 
-  public Driver(org.gdal.gdal.Driver driver) {
+  protected Driver(org.gdal.gdal.Driver driver) {
     this.driver = driver;
   }
 

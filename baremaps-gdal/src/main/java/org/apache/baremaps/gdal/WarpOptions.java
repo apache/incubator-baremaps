@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * Options for the warp method.
+ */
 public class WarpOptions extends Options {
 
   public WarpOptions() {

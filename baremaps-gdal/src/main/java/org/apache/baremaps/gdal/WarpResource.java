@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.gdal.WarpOptions} class.
+ */
 class WarpResource extends org.gdal.gdal.WarpOptions implements AutoCloseable {
 
   public WarpResource(WarpOptions options) {

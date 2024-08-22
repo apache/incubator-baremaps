@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * A resource that wraps the {@link org.gdal.gdal.BuildVRTOptions} class.
+ */
 public class Dataset implements AutoCloseable {
 
   protected final org.gdal.gdal.Dataset dataset;

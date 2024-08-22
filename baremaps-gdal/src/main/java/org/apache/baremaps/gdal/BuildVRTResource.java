@@ -17,9 +17,12 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.gdal.BuildVRTOptions} class.
+ */
 class BuildVRTResource extends org.gdal.gdal.BuildVRTOptions implements AutoCloseable {
 
-  public BuildVRTResource(BuildVRTOptions options) {
+  protected BuildVRTResource(BuildVRTOptions options) {
     super(options.asVector());
   }
 

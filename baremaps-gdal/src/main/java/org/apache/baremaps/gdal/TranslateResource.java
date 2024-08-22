@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.gdal.TranslateOptions} class.
+ */
 class TranslateResource extends org.gdal.gdal.TranslateOptions implements AutoCloseable {
 
   public TranslateResource(TranslateOptions options) {

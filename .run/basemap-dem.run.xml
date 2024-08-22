@@ -2,7 +2,7 @@
   <configuration default="false" name="basemap-dem" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
-    <option name="PROGRAM_PARAMETERS" value="dem serve --path /data/gebco_2024_web_mercator.tif" />
+    <option name="PROGRAM_PARAMETERS" value="dem serve --path /data/gebco_2024.tif" />
     <target name="gdal" />
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
       <option name="credential" />

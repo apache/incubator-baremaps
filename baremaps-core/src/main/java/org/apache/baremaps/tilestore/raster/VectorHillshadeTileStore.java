@@ -53,7 +53,6 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
-
       var size = 256;
 
       // Read the elevation data
@@ -110,16 +109,19 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
     }
   }
 
+  /** Unsupported operation. */
   @Override
   public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /** Unsupported operation. */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
     // Do nothing

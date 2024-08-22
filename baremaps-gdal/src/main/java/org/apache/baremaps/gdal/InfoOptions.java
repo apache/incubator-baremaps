@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * Options for the info method.
+ */
 public class InfoOptions extends Options {
 
   public InfoOptions() {

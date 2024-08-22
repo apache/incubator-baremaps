@@ -88,6 +88,7 @@ public class VectorTileCache implements TileStore<ByteBuffer> {
     cache.invalidate(tileCoord);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
     tileStore.close();

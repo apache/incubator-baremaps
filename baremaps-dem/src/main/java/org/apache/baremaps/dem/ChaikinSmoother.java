@@ -21,17 +21,34 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
+/**
+ * A geometry transformer that applies the Chaikin smoothing algorithm to the coordinates of a
+ * geometry.
+ */
 public class ChaikinSmoother extends GeometryTransformer {
 
   private final int iterations;
 
   private final double factor;
 
+  /**
+   * Constructs a ChaikinSmoother with the specified number of iterations and factor.
+   *
+   * @param iterations the number of iterations
+   * @param factor the smoothing factor
+   */
   public ChaikinSmoother(int iterations, double factor) {
     this.iterations = iterations;
     this.factor = factor;
   }
 
+  /**
+   * Transforms the coordinates of a geometry using the Chaikin smoothing algorithm.
+   *
+   * @param coordinateSequence the coordinates to transform
+   * @param parent the parent geometry
+   * @return the transformed coordinates
+   */
   @Override
   protected CoordinateSequence transformCoordinates(
       CoordinateSequence coordinateSequence,
@@ -39,7 +56,18 @@ public class ChaikinSmoother extends GeometryTransformer {
     return smooth(coordinateSequence, iterations, factor);
   }
 
-  public static CoordinateSequence smooth(CoordinateSequence coordinateSequence, int iterations,
+  /**
+   * Smooths the coordinates of a coordinate sequence using the Chaikin algorithm. This method
+   * distinguishes between rings and lines and applies the algorithm accordingly.
+   *
+   * @param coordinateSequence the coordinates to smooth
+   * @param iterations the number of iterations
+   * @param factor the smoothing factor
+   * @return the smoothed coordinates
+   */
+  public static CoordinateSequence smooth(
+      CoordinateSequence coordinateSequence,
+      int iterations,
       double factor) {
     if (CoordinateSequences.isRing(coordinateSequence)) {
       return new CoordinateArraySequence(chaikin(coordinateSequence.toCoordinateArray(), 2, 0.25));
@@ -56,7 +84,18 @@ public class ChaikinSmoother extends GeometryTransformer {
     }
   }
 
-  private static Coordinate[] chaikin(Coordinate[] coordinates, int iterations, double factor) {
+  /**
+   * Applies the Chaikin smoothing algorithm to the specified coordinates.
+   *
+   * @param coordinates the coordinates to smooth
+   * @param iterations the number of iterations
+   * @param factor the smoothing factor
+   * @return the smoothed coordinates
+   */
+  private static Coordinate[] chaikin(
+      Coordinate[] coordinates,
+      int iterations,
+      double factor) {
     if (iterations <= 0) {
       return coordinates;
     }

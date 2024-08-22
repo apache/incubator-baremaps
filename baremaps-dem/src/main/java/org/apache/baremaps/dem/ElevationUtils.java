@@ -80,6 +80,12 @@ public class ElevationUtils {
     return image;
   }
 
+  /**
+   * Converts a pixel value to an elevation value using the standard color scheme.
+   *
+   * @param rgb The input pixel value
+   * @return The elevation value
+   */
   public static double pixelToElevationNormal(int rgb) {
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
@@ -87,6 +93,12 @@ public class ElevationUtils {
     return (r * ELEVATION_SCALE + g * 256.0 + b) / 10.0 - ELEVATION_OFFSET;
   }
 
+  /**
+   * Converts an elevation value to a pixel value using the standard color scheme.
+   *
+   * @param elevation The input elevation value
+   * @return The pixel value
+   */
   public static int elevationToPixelStandard(double elevation) {
     int value = (int) ((elevation + ELEVATION_OFFSET) * 10.0);
     int r = (value >> 16) & 0xFF;
@@ -122,14 +134,11 @@ public class ElevationUtils {
     return (r << 16) | (g << 8) | b;
   }
 
-  public static void main(String... args) {
-    double elevation = 1000.0;
-    int pixel = elevationToPixelTerrarium(elevation);
-    double value = pixelToElevationTerrarium(pixel);
-    System.out.println(value);
-  }
-
-
+  /**
+   * Validates the input image.
+   *
+   * @param image The input image
+   */
   private static void validateImage(BufferedImage image) {
     if (image == null) {
       throw new IllegalArgumentException("Input image cannot be null");
@@ -139,6 +148,13 @@ public class ElevationUtils {
     }
   }
 
+  /**
+   * Validates the input grid.
+   *
+   * @param grid The input grid
+   * @param width The width of the grid
+   * @param height The height of the grid
+   */
   private static void validateGrid(double[] grid, int width, int height) {
     if (grid == null || grid.length == 0) {
       throw new IllegalArgumentException("Grid array cannot be null or empty");
@@ -151,6 +167,12 @@ public class ElevationUtils {
     }
   }
 
+  /**
+   * Inverts the values in the input grid.
+   *
+   * @param grid The input grid
+   * @return The inverted grid
+   */
   public static double[] invertGrid(double[] grid) {
     double[] invertedGrid = new double[grid.length];
     for (int i = 0; i < grid.length; i++) {
@@ -159,6 +181,14 @@ public class ElevationUtils {
     return invertedGrid;
   }
 
+  /**
+   * Clamps the values in the input grid to the specified range.
+   *
+   * @param grid The input grid
+   * @param min The minimum value
+   * @param max The maximum value
+   * @return The clamped grid
+   */
   public static double[] clampGrid(double[] grid, double min, double max) {
     double[] clampedGrid = new double[grid.length];
     for (int i = 0; i < grid.length; i++) {

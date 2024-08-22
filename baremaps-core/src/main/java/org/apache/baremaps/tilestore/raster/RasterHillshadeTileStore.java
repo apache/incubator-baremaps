@@ -28,18 +28,36 @@ import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
+/**
+ * A {@code TileStore} that calculates hillshade tiles from elevation tiles.
+ */
 public class RasterHillshadeTileStore implements TileStore<BufferedImage> {
 
   private final TileStore<BufferedImage> tileStore;
 
   private final IntToDoubleFunction pixelToElevation;
 
-  public RasterHillshadeTileStore(TileStore<BufferedImage> tileStore,
+  /**
+   * Constructs a {@code RasterHillshadeTileStore} with the specified tile store and pixel to
+   * elevation function.
+   *
+   * @param tileStore the tile store
+   * @param pixelToElevation the pixel to elevation function
+   */
+  public RasterHillshadeTileStore(
+      TileStore<BufferedImage> tileStore,
       IntToDoubleFunction pixelToElevation) {
     this.tileStore = tileStore;
     this.pixelToElevation = pixelToElevation;
   }
 
+  /**
+   * Read the hillshade data for the specified tile coordinate.
+   *
+   * @param tileCoord the tile coordinate
+   * @return the hillshade data
+   * @throws TileStoreException if an error occurs
+   */
   @Override
   public BufferedImage read(TileCoord tileCoord) throws TileStoreException {
     var size = 256;
@@ -67,16 +85,19 @@ public class RasterHillshadeTileStore implements TileStore<BufferedImage> {
     return hillshadeImage;
   }
 
+  /** Unsupported operation. */
   @Override
   public void write(TileCoord tileCoord, BufferedImage blob) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /** Unsupported operation. */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
     // Do nothing

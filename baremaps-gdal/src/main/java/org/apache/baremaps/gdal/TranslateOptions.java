@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * Options for the translate method.
+ */
 public class TranslateOptions extends Options {
 
   public TranslateOptions() {

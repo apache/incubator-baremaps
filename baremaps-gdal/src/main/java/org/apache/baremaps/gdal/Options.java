@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ * A simple wrapper around the {@link java.util.List} class.
+ */
 public class Options {
 
   private final List<String> options;

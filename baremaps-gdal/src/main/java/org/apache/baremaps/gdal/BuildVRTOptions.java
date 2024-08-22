@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * Options for the build vrt method.
+ */
 public class BuildVRTOptions extends Options {
 
   public BuildVRTOptions() {

@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.gdal.InfoOptions} class.
+ */
 class InfoResource extends org.gdal.gdal.InfoOptions implements AutoCloseable {
 
   public InfoResource(InfoOptions options) {

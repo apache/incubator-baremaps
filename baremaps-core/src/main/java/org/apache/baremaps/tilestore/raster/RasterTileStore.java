@@ -46,22 +46,27 @@ public class RasterTileStore implements TileStore<BufferedImage> {
     }
   }
 
+  /** Unsupported operation. */
   @Override
   public void write(TileCoord tileCoord, BufferedImage blob) {
     throw new UnsupportedOperationException();
   }
 
+  /** Unsupported operation. */
   @Override
   public void delete(TileCoord tileCoord) {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
     // Do nothing
   }
 
-  public static BufferedImage onion(TileStore<BufferedImage> tileStore, TileCoord centerTile,
+  protected static BufferedImage onion(
+      TileStore<BufferedImage> tileStore,
+      TileCoord centerTile,
       int layers) throws TileStoreException {
     BufferedImage centerImage = tileStore.read(centerTile);
     int mosaicWidth = centerImage.getWidth() * (2 * layers + 1);

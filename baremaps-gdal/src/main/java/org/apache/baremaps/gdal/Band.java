@@ -20,6 +20,9 @@ package org.apache.baremaps.gdal;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.gdal.Band} class.
+ */
 public class Band implements AutoCloseable {
 
   private final org.gdal.gdal.Band band;

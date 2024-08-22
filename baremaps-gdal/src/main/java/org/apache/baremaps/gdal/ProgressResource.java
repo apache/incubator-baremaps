@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.gdal;
 
+/**
+ * An auto closable wrapper around the {@link org.gdal.gdal.ProgressCallback} class.
+ */
 class ProgressResource extends org.gdal.gdal.ProgressCallback implements AutoCloseable {
 
   private final ProgressCallback callback;
