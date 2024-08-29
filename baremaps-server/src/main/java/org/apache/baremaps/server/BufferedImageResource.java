@@ -67,7 +67,6 @@ public class BufferedImageResource {
           HttpData data = HttpData.wrap(outputStream.toByteArray());
           return HttpResponse.of(headers, data);
         } catch (Exception e) {
-          e.printStackTrace();
           return HttpResponse.of(204);
         }
       } else {
