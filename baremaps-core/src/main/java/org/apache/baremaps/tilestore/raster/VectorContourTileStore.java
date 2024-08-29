@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.tilestore.raster;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import org.apache.baremaps.dem.ContourTracer;
-import org.apache.baremaps.dem.ElevationUtils;
 import org.apache.baremaps.maplibre.vectortile.Feature;
 import org.apache.baremaps.maplibre.vectortile.Layer;
 import org.apache.baremaps.maplibre.vectortile.Tile;
@@ -37,24 +35,16 @@ import org.locationtech.jts.geom.util.AffineTransformation;
 
 public class VectorContourTileStore implements TileStore<ByteBuffer> {
 
-  private final TileStore<BufferedImage> tileStore;
+  private final GeoTiffReader geoTiffReader;
 
-  public VectorContourTileStore(TileStore<BufferedImage> tileStore) {
-    this.tileStore = tileStore;
+  public VectorContourTileStore(GeoTiffReader geoTiffReader) {
+    this.geoTiffReader = geoTiffReader;
   }
 
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
-      var image = tileStore.read(tileCoord);
-      var onion = RasterTileStore.onion(tileStore, tileCoord, 1);
-      image = onion.getSubimage(
-          image.getWidth() - 4,
-          image.getHeight() - 4,
-          image.getWidth() + 8,
-          image.getHeight() + 8);
-
-      var grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
+      var grid = geoTiffReader.read(tileCoord, 256, 4);
 
       int increment = switch (tileCoord.z()) {
         case 1 -> 2000;
@@ -77,7 +67,7 @@ public class VectorContourTileStore implements TileStore<ByteBuffer> {
       var features = new ArrayList<Feature>();
       for (int level = -10000; level < 10000; level += increment) {
         var contours =
-            new ContourTracer(grid, image.getWidth(), image.getHeight(), false, true)
+            new ContourTracer(grid, 264, 264, false, true)
                 .traceContours(level);
         for (var contour : contours) {
           contour = AffineTransformation
@@ -115,6 +105,6 @@ public class VectorContourTileStore implements TileStore<ByteBuffer> {
   /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
-    // Do nothing
+    geoTiffReader.close();
   }
 }

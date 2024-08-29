@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.tilestore.raster;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -40,13 +39,13 @@ import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 
 public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
 
-  private final TileStore<BufferedImage> tileStore;
+  private final GeoTiffReader geoTiffReader;
 
   private final IntToDoubleFunction pixelToElevation;
 
-  public VectorHillshadeTileStore(TileStore<BufferedImage> tileStore,
-      IntToDoubleFunction pixelToElevation) {
-    this.tileStore = tileStore;
+  public VectorHillshadeTileStore(GeoTiffReader geoTiffReader,
+                                  IntToDoubleFunction pixelToElevation) {
+    this.geoTiffReader = geoTiffReader;
     this.pixelToElevation = pixelToElevation;
   }
 
@@ -56,17 +55,13 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
       var size = 256;
 
       // Read the elevation data
-      var image = RasterTileStore.onion(tileStore, tileCoord, 1).getSubimage(
-          size - 16,
-          size - 16,
-          size + 32,
-          size + 32);
-
       var features = new ArrayList<Feature>();
 
       // Calculate the hillshade
-      var grid = new HillshadeCalculator(
-          ElevationUtils.clampGrid(ElevationUtils.imageToGrid(image, pixelToElevation), 0, 10000),
+      var grid = geoTiffReader.read(tileCoord, size, 16);
+      grid = ElevationUtils.clampGrid(grid, 0, 10000);
+      grid = new HillshadeCalculator(
+          grid,
           size + 32, size + 32, HillshadeCalculator.getResolution(tileCoord.z()) / 2)
               .calculate(45, 315);
 

@@ -28,7 +28,6 @@ import com.linecorp.armeria.server.annotation.Get;
 import com.linecorp.armeria.server.annotation.Param;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.function.Supplier;
 import javax.imageio.ImageIO;
 import org.apache.baremaps.tilestore.TileCoord;
@@ -67,15 +66,15 @@ public class BufferedImageResource {
           ImageIO.write(bufferedImage, "png", outputStream);
           HttpData data = HttpData.wrap(outputStream.toByteArray());
           return HttpResponse.of(headers, data);
+        } catch (Exception e) {
+          e.printStackTrace();
+          return HttpResponse.of(204);
         }
       } else {
         return HttpResponse.of(204);
       }
     } catch (TileStoreException ex) {
       logger.error("Error while reading tile.", ex);
-      return HttpResponse.of(404);
-    } catch (IOException ex) {
-      logger.error("Error while encoding tile.", ex);
       return HttpResponse.of(404);
     }
   }

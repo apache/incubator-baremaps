@@ -26,12 +26,27 @@ import java.util.function.IntToDoubleFunction;
  */
 public class ElevationUtils {
 
-  private static final double TERRARIUM_OFFSET = 32768.0;
   private static final double ELEVATION_SCALE = 256.0 * 256.0;
   private static final double ELEVATION_OFFSET = 10000.0;
+  private static final double TERRARIUM_OFFSET = 32768.0;
 
   private ElevationUtils() {
     // Private constructor to prevent instantiation
+  }
+
+  /**
+   * Converts a BufferedImage to a grid of elevation values.
+   *
+   * @param image The input BufferedImage
+   * @return A double array representing the elevation grid
+   */
+  public static double[] imageToGrid(BufferedImage image) {
+    validateImage(image);
+    int width = image.getWidth();
+    int height = image.getHeight();
+    double[] grid = new double[width * height];
+    image.getRaster().getPixels(0, 0, width, height, grid);
+    return grid;
   }
 
   /**
@@ -108,33 +123,6 @@ public class ElevationUtils {
   }
 
   /**
-   * Converts a pixel value to an elevation value using the Terrarium color scheme.
-   *
-   * @param rgb The input pixel value
-   * @return The elevation value
-   */
-  public static double pixelToElevationTerrarium(int rgb) {
-    int r = (rgb >> 16) & 0xFF;
-    int g = (rgb >> 8) & 0xFF;
-    int b = rgb & 0xFF;
-    return (r * 256.0 + g + b / 256.0) - TERRARIUM_OFFSET;
-  }
-
-  /**
-   * Converts an elevation value to a pixel value using the Terrarium color scheme.
-   *
-   * @param elevation The input elevation value
-   * @return The pixel value
-   */
-  public static int elevationToPixelTerrarium(double elevation) {
-    double adjustedElevation = elevation + TERRARIUM_OFFSET;
-    int r = (int) (adjustedElevation / 256.0);
-    int g = (int) (adjustedElevation % 256.0);
-    int b = (int) ((adjustedElevation - (r * 256.0) - g) * 256.0);
-    return (r << 16) | (g << 8) | b;
-  }
-
-  /**
    * Validates the input image.
    *
    * @param image The input image
@@ -195,5 +183,32 @@ public class ElevationUtils {
       clampedGrid[i] = Math.max(min, Math.min(max, grid[i]));
     }
     return clampedGrid;
+  }
+
+  /**
+   * Converts a pixel value to an elevation value using the Terrarium color scheme.
+   *
+   * @param rgb The input pixel value
+   * @return The elevation value
+   */
+  public static double terrariumToElevation(int rgb) {
+    int r = (rgb >> 16) & 0xFF;
+    int g = (rgb >> 8) & 0xFF;
+    int b = rgb & 0xFF;
+    return (r * 256.0 + g + b / 256.0) - TERRARIUM_OFFSET;
+  }
+
+  /**
+   * Converts an elevation value to a pixel value using the Terrarium color scheme.
+   *
+   * @param elevation The input elevation value
+   * @return The pixel value
+   */
+  public static int elevationToTerrarium(double elevation) {
+    double adjustedElevation = elevation + TERRARIUM_OFFSET;
+    int r = (int) (adjustedElevation / 256.0);
+    int g = (int) (adjustedElevation % 256.0);
+    int b = (int) ((adjustedElevation - (r * 256.0) - g) * 256.0);
+    return (r << 16) | (g << 8) | b;
   }
 }

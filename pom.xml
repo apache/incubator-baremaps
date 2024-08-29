@@ -69,17 +69,6 @@ limitations under the License.
     <url>scm:git:git@github.com:apache/baremaps.git</url>
   </scm>
 
-  <distributionManagement>
-    <repository>
-      <id>maven</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>maven</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
@@ -117,7 +106,6 @@ limitations under the License.
     <version.lib.slf4j>2.0.12</version.lib.slf4j>
     <version.lib.sqlite>3.45.1.0</version.lib.sqlite>
     <version.lib.testcontainers>1.19.6</version.lib.testcontainers>
-    <version.lib.twelvemonkeys>3.11.0</version.lib.twelvemonkeys>
     <version.plugin.jacoco-maven-plugin>0.8.11</version.plugin.jacoco-maven-plugin>
     <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
     <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
@@ -194,11 +182,6 @@ limitations under the License.
         <groupId>com.linecorp.armeria</groupId>
         <artifactId>armeria-reactor3</artifactId>
         <version>${version.lib.armeria}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.twelvemonkeys.imageio</groupId>
-        <artifactId>imageio-tiff</artifactId>
-        <version>${version.lib.twelvemonkeys}</version>
       </dependency>
       <dependency>
         <groupId>com.zaxxer</groupId>
@@ -496,10 +479,10 @@ limitations under the License.
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.twelvemonkeys.imageio</groupId>
-      <artifactId>imageio-tiff</artifactId>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>com.twelvemonkeys.imageio</groupId>-->
+    <!--      <artifactId>imageio-tiff</artifactId>-->
+    <!--    </dependency>-->
     <!-- Provide logging for any child module during test -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -553,6 +536,14 @@ limitations under the License.
       <artifactId>testcontainers</artifactId>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>apache.snapshots.https</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>https://repository.apache.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>

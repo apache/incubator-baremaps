@@ -23,7 +23,10 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "dem", description = "DEM processing commands.",
-    subcommands = {Serve.class},
+    subcommands = {
+        Serve.class,
+        VectorTileContours.class
+    },
     sortOptions = false)
 @SuppressWarnings("squid:S106")
 public class DEM implements Runnable {

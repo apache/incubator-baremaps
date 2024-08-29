@@ -9,27 +9,8 @@
   <artifactId>baremaps-dem</artifactId>
   <dependencies>
     <dependency>
-      <groupId>com.twelvemonkeys.imageio</groupId>
-      <artifactId>imageio-tiff</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sis.cloud</groupId>
-      <artifactId>sis-cloud-aws</artifactId>
-      <version>1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sis.non-free</groupId>
-      <artifactId>sis-embedded-data</artifactId>
-      <version>1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sis.storage</groupId>
-      <artifactId>sis-geotiff</artifactId>
-      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>

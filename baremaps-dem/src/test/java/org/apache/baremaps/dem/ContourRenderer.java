@@ -38,7 +38,7 @@ public class ContourRenderer {
     var image = ImageIO.read(path);
 
     // Convert the image to a grid
-    double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::pixelToElevationTerrarium);
+    double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::terrariumToElevation);
 
     // Trace the contours
     List<Geometry> contours = new ArrayList<>();

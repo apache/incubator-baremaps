@@ -19,7 +19,6 @@ package org.apache.baremaps.cli.dem;
 
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
-import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.linecorp.armeria.common.*;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.annotation.JacksonResponseConverterFunction;
@@ -32,7 +31,6 @@ import org.apache.baremaps.dem.ElevationUtils;
 import org.apache.baremaps.server.BufferedImageResource;
 import org.apache.baremaps.server.VectorTileResource;
 import org.apache.baremaps.tilestore.raster.*;
-import org.apache.baremaps.tilestore.raster.RasterTileCache;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -45,26 +43,24 @@ public class Serve implements Callable<Integer> {
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
 
-  @Option(names = {"--path"}, paramLabel = "PORT", description = "The path of a geoTIFF file.")
+  @Option(names = {"--path"}, paramLabel = "PATH", description = "The path of a geoTIFF file.")
   private Path path;
 
   @Override
   public Integer call() throws Exception {
     // Initialize the tile stores
-    var rasterElevationTileStore =
-        new RasterTileCache(
-            new RasterElevationTileStore(path),
-            CaffeineSpec.parse("maximumSize=1000"));
+    var geoTiffReader = new GeoTiffReader(path);
+    var rasterElevationTileStore = new TerrariumTileStore(geoTiffReader);
     var rasterHillshadeTileStore =
         new RasterHillshadeTileStore(
             rasterElevationTileStore,
-            ElevationUtils::pixelToElevationTerrarium);
+            ElevationUtils::terrariumToElevation);
     var vectorHillshadeTileStore =
         new VectorHillshadeTileStore(
-            rasterElevationTileStore,
-            ElevationUtils::pixelToElevationTerrarium);
+            geoTiffReader,
+            ElevationUtils::terrariumToElevation);
     var vectorContourTileStore =
-        new VectorContourTileStore(rasterElevationTileStore);
+        new VectorContourTileStore(geoTiffReader);
 
     // Initialize the server
     var objectMapper = objectMapper();
