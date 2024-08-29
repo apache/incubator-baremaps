@@ -68,8 +68,8 @@ public class VectorTileContours implements Callable<Integer> {
 
     // Initialize the tile stores
     try (var geoTiffReader = new GeoTiffReader(path);
-         var sourceTileStore = new VectorContourTileStore(geoTiffReader);
-         var targetTileStore = new PMTilesStore(repository, tileset);) {
+        var sourceTileStore = new VectorContourTileStore(geoTiffReader);
+        var targetTileStore = new PMTilesStore(repository, tileset);) {
 
       var envelope = new Envelope(-180, 180, -85.0511, 85.0511);
       var count = TileCoord.count(envelope, 0, 10);

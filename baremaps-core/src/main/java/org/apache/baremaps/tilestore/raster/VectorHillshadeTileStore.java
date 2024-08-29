@@ -44,7 +44,7 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
   private final IntToDoubleFunction pixelToElevation;
 
   public VectorHillshadeTileStore(GeoTiffReader geoTiffReader,
-                                  IntToDoubleFunction pixelToElevation) {
+      IntToDoubleFunction pixelToElevation) {
     this.geoTiffReader = geoTiffReader;
     this.pixelToElevation = pixelToElevation;
   }
