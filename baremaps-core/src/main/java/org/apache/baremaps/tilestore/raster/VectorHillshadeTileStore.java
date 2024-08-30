@@ -35,7 +35,6 @@ import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.locationtech.jts.geom.util.AffineTransformation;
-import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
 
 public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
 
@@ -65,14 +64,14 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
           size + 32, size + 32, HillshadeCalculator.getResolution(tileCoord.z()) / 2)
               .calculate(45, 315);
 
-      contours(grid, 255 - 16, features, "1");
-      contours(grid, 255 - 32, features, "2");
+      contours(grid, 255 - 16, features, 1);
+      contours(grid, 255 - 32, features, 2);
 
       grid = ElevationUtils.invertGrid(grid);
-      contours(grid, 255 - 32, features, "6");
-      contours(grid, 255 - 64, features, "5");
-      contours(grid, 255 - 98, features, "4");
-      contours(grid, 255 - 128, features, "3");
+      contours(grid, 255 - 32, features, 6);
+      contours(grid, 255 - 64, features, 5);
+      contours(grid, 255 - 98, features, 4);
+      contours(grid, 255 - 128, features, 3);
 
       var layer = new Layer("elevation", 4096, features);
       var tile = new Tile(List.of(layer));
@@ -88,7 +87,8 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
     }
   }
 
-  private static void contours(double[] grid, int level, ArrayList<Feature> features, String id) {
+  private static void contours(double[] grid, int level, ArrayList<Feature> features,
+      int category) {
     var contours =
         new ContourTracer(grid, (int) Math.sqrt(grid.length), (int) Math.sqrt(grid.length), false,
             true)
@@ -98,9 +98,7 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
           .translationInstance(-16, -16)
           .scale(16, 16)
           .transform(contour);
-
-      contour = TopologyPreservingSimplifier.simplify(contour, 4);
-      features.add(new Feature(4, Map.of("level", id), contour));
+      features.add(new Feature(category, Map.of("level", String.valueOf(category)), contour));
     }
   }
 

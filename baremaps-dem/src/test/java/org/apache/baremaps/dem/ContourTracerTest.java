@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Polygon;
@@ -64,23 +62,29 @@ class ContourTracerTest {
     assertFalse(fujiContours.isEmpty());
   }
 
-  @Disabled
   @Test
-  @DisplayName("Test polygon with hole")
+  @DisplayName("Test polygon with hole and island")
   void testPolygonWithHole() {
     var grid = new double[] {
-        0, 0, 0, 0, 0,
-        0, 1, 1, 1, 0,
-        0, 1, 0, 1, 0,
-        0, 1, 1, 1, 0,
-        0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1,
+        1, 0, 0, 0, 1,
+        1, 0, 1, 0, 1,
+        1, 0, 0, 0, 1,
+        1, 1, 1, 1, 1,
     };
     var generatedContours = new ContourTracer(grid, 5, 5, false, true).traceContours(0.5);
-    var polygon = (Polygon) generatedContours.get(0);
-    var exteriorRing = polygon.getExteriorRing();
-    var interiorRing = polygon.getInteriorRingN(0);
-    assertGeometryEquals("LINEARRING(0.5 1, 0.5 2, 0.5 3, 1 3.5, 2 3.5, 3 3.5, 3.5 3, 3.5 2, 3.5 1, 3 0.5, 2 0.5, 1 0.5, 0.5 1)", exteriorRing);
-    assertGeometryEquals("LINEARRING(1.5 1.5, 1.5 2.5, 2.5 2.5, 2.5 1.5, 1.5 1.5)", interiorRing);
+    assertEquals(2, generatedContours.size());
+    var polygon1 = (Polygon) generatedContours.get(0);
+    var exteriorRing = polygon1.getExteriorRing();
+    var interiorRing = polygon1.getInteriorRingN(0);
+    assertGeometryEquals(
+        "LINEARRING (0 0, 0 1, 0 2, 0 3, 0 4, 1 4, 2 4, 3 4, 4 4, 4 3, 4 2, 4 1, 4 0, 3 0, 2 0, 1 0, 0 0)",
+        exteriorRing);
+    assertGeometryEquals(
+        "LINEARRING (0.5 1, 1 0.5, 2 0.5, 3 0.5, 3.5 1, 3.5 2, 3.5 3, 3 3.5, 2 3.5, 1 3.5, 0.5 3, 0.5 2, 0.5 1)",
+        interiorRing);
+    var polygon2 = (Polygon) generatedContours.get(1);
+    assertGeometryEquals("LINEARRING (1.5 2, 2 2.5, 2.5 2, 2 1.5, 1.5 2)",
+        polygon2.getExteriorRing());
   }
-
 }

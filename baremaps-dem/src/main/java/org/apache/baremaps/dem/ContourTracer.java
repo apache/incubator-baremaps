@@ -17,10 +17,9 @@
 
 package org.apache.baremaps.dem;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 
@@ -81,28 +80,96 @@ public class ContourTracer {
     }
 
     // Merge the cells
-    LineMerger cellMerger = new LineMerger();
-    cellMerger.add(cells);
-    List<Geometry> contours = new ArrayList<>(cellMerger.getMergedLineStrings());
+    List<Geometry> contours = merge(cells);
 
     // Polygonize the lines
     if (polygonize) {
-      contours = contours.stream()
-          .map(Geometry::getCoordinates)
-          .map(GEOMETRY_FACTORY::createPolygon)
-          .map(Geometry.class::cast)
-          .toList();
+      contours = polygonize(contours);
     }
 
     // Normalize the coordinates
     if (normalize) {
-      NormalizationTransformer transformer = new NormalizationTransformer();
-      contours = contours.stream()
-          .map(geometry -> transformer.transform(geometry.copy()))
-          .toList();
+      contours = normalize(contours);
     }
 
     return contours;
+  }
+
+  public List<Geometry> merge(List<LineString> lineStrings) {
+    LineMerger cellMerger = new LineMerger();
+    cellMerger.add(lineStrings);
+    return new ArrayList<>(cellMerger.getMergedLineStrings());
+  }
+
+  private List<Geometry> polygonize(List<Geometry> geometries) {
+    var polygons = new ArrayList<>(geometries.stream()
+        .map(Geometry::getCoordinates)
+        .map(GEOMETRY_FACTORY::createPolygon)
+        .map(polygon -> new GeometryFixer(polygon).getResult())
+        .map(Polygon.class::cast)
+        .sorted((a, b) -> Double.compare(b.getArea(), a.getArea()))
+        .toList());
+
+    List<Geometry> polygonized = new ArrayList<>();
+    for (int i = 0; i < polygons.size(); i++) {
+      // Skip null polygons
+      if (polygons.get(i) == null) {
+        continue;
+      }
+
+      // Extract the shell and holes
+      Polygon shell = polygons.get(i);
+      List<Polygon> holes = new ArrayList<>();
+      for (int j = i + 1; j < polygons.size(); j++) {
+        // Skip null polygons
+        if (polygons.get(j) == null) {
+          continue;
+        }
+
+        Polygon polygon = polygons.get(j);
+        if (shell.contains(polygon)) {
+
+          // Check if the hole is within a previously found hole
+          boolean within = false;
+          for (Polygon hole : holes) {
+            if (hole.contains(polygon)) {
+              within = true;
+              break;
+            }
+          }
+          if (within) {
+            continue;
+          }
+
+          // Add the hole to the list
+          holes.add(polygon);
+
+          // Set the used polygon to null
+          polygons.set(j, null);
+        }
+      }
+
+      // Combine the shell and holes
+      Polygon combinedPolygon = GEOMETRY_FACTORY.createPolygon(
+          shell.getExteriorRing(),
+          holes.stream()
+              .map(Polygon::getExteriorRing)
+              .toArray(LinearRing[]::new));
+      polygonized.add(combinedPolygon);
+
+      // Set the used polygon to null
+      polygons.set(i, null);
+    }
+
+    return polygonized;
+  }
+
+  private List<Geometry> normalize(List<Geometry> contours) {
+    NormalizationTransformer transformer = new NormalizationTransformer();
+    List<Geometry> normalized = contours.stream()
+        .map(geometry -> transformer.transform(geometry.copy()))
+        .toList();
+    return normalized;
   }
 
   /**
