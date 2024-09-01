@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Baremaps.VersionProvider;
 import org.apache.baremaps.cli.database.Database;
+import org.apache.baremaps.cli.dem.DEM;
 import org.apache.baremaps.cli.geocoder.Geocoder;
 import org.apache.baremaps.cli.iploc.IpLoc;
 import org.apache.baremaps.cli.map.Map;
@@ -42,7 +43,14 @@ import picocli.CommandLine.Option;
     name = "baremaps",
     description = "A toolkit for producing vector tiles.",
     versionProvider = VersionProvider.class,
-    subcommands = {Workflow.class, Database.class, Map.class, Geocoder.class, IpLoc.class},
+    subcommands = {
+        Workflow.class,
+        Database.class,
+        Map.class,
+        Geocoder.class,
+        IpLoc.class,
+        DEM.class
+    },
     sortOptions = false)
 @SuppressWarnings("squid:S106")
 public class Baremaps implements Callable<Integer> {

@@ -50,7 +50,9 @@ limitations under the License.
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-data</module>
+    <module>baremaps-dem</module>
     <module>baremaps-flatgeobuf</module>
+    <module>baremaps-gdal</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
@@ -126,7 +128,6 @@ limitations under the License.
 
   <dependencyManagement>
     <dependencies>
-
       <dependency>
         <groupId>com.aayushatharva.brotli4j</groupId>
         <artifactId>native-linux-aarch64</artifactId>
@@ -266,7 +267,17 @@ limitations under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-dem</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-flatgeobuf</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-gdal</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
