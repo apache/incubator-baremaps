@@ -22,26 +22,26 @@ package org.apache.baremaps.gdal;
  */
 public class Driver implements AutoCloseable {
 
-  private final org.gdal.gdal.Driver driver;
+  private final org.gdal.gdal.Driver gdalDriver;
 
-  protected Driver(org.gdal.gdal.Driver driver) {
-    this.driver = driver;
+  protected Driver(org.gdal.gdal.Driver gdalDriver) {
+    this.gdalDriver = gdalDriver;
   }
 
   public String getShortName() {
-    return driver.getShortName();
+    return gdalDriver.getShortName();
   }
 
   public String getLongName() {
-    return driver.getLongName();
+    return gdalDriver.getLongName();
   }
 
   public String getHelpTopic() {
-    return driver.getHelpTopic();
+    return gdalDriver.getHelpTopic();
   }
 
   @Override
   public void close() throws Exception {
-    driver.delete();
+    gdalDriver.delete();
   }
 }

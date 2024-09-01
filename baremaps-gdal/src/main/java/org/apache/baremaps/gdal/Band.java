@@ -25,42 +25,42 @@ import java.awt.image.WritableRaster;
  */
 public class Band implements AutoCloseable {
 
-  private final org.gdal.gdal.Band band;
+  private final org.gdal.gdal.Band gdalBand;
 
-  protected Band(org.gdal.gdal.Band band) {
-    this.band = band;
+  protected Band(org.gdal.gdal.Band gdalBand) {
+    this.gdalBand = gdalBand;
   }
 
   public int getWidth() {
-    return band.getXSize();
+    return gdalBand.getXSize();
   }
 
   public int getHeight() {
-    return band.getYSize();
+    return gdalBand.getYSize();
   }
 
   public void read(int x, int y, int width, int height, byte[] buffer) {
-    band.ReadRaster(x, y, width, height, buffer);
+    gdalBand.ReadRaster(x, y, width, height, buffer);
   }
 
   public void read(int x, int y, int width, int height, int[] buffer) {
-    band.ReadRaster(x, y, width, height, buffer);
+    gdalBand.ReadRaster(x, y, width, height, buffer);
   }
 
   public void read(int x, int y, int width, int height, long[] buffer) {
-    band.ReadRaster(x, y, width, height, buffer);
+    gdalBand.ReadRaster(x, y, width, height, buffer);
   }
 
   public void read(int x, int y, int width, int height, double[] buffer) {
-    band.ReadRaster(x, y, width, height, buffer);
+    gdalBand.ReadRaster(x, y, width, height, buffer);
   }
 
   public BufferedImage asBufferedImage(int imageType) {
     // Copy the data of the band into a byte array
-    int width = band.getXSize();
-    int height = band.getYSize();
+    int width = gdalBand.getXSize();
+    int height = gdalBand.getYSize();
     double[] values = new double[height * width];
-    band.ReadRaster(0, 0, 256, 256, values);
+    gdalBand.ReadRaster(0, 0, 256, 256, values);
 
     // Create a BufferedImage from the byte array
     BufferedImage image = new BufferedImage(width, height, imageType);
@@ -77,7 +77,7 @@ public class Band implements AutoCloseable {
 
   @Override
   public void close() throws Exception {
-    band.delete();
+    gdalBand.delete();
   }
 
 }

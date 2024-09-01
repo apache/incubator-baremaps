@@ -22,34 +22,34 @@ package org.apache.baremaps.gdal;
  */
 public class Dataset implements AutoCloseable {
 
-  protected final org.gdal.gdal.Dataset dataset;
+  protected final org.gdal.gdal.Dataset gdalDataset;
 
-  protected Dataset(org.gdal.gdal.Dataset dataset) {
-    this.dataset = dataset;
+  protected Dataset(org.gdal.gdal.Dataset gdalDataset) {
+    this.gdalDataset = gdalDataset;
   }
 
   public Driver getDriver() {
-    return new Driver(dataset.GetDriver());
+    return new Driver(gdalDataset.GetDriver());
   }
 
   public int getRasterWidth() {
-    return dataset.getRasterXSize();
+    return gdalDataset.getRasterXSize();
   }
 
   public int getRasterHeight() {
-    return dataset.getRasterYSize();
+    return gdalDataset.getRasterYSize();
   }
 
   public int getRasterCount() {
-    return dataset.getRasterCount();
+    return gdalDataset.getRasterCount();
   }
 
   public Band getRasterBand(int index) {
-    return new Band(dataset.GetRasterBand(index));
+    return new Band(gdalDataset.GetRasterBand(index));
   }
 
   @Override
   public void close() throws Exception {
-    dataset.delete();
+    gdalDataset.delete();
   }
 }

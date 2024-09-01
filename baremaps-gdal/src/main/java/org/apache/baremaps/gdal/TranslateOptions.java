@@ -83,24 +83,24 @@ public class TranslateOptions extends Options {
     return this;
   }
 
-  public TranslateOptions outsize(int xsize, int ysize) {
+  public TranslateOptions outsize(int xSize, int ySize) {
     add("-outsize");
-    add(xsize);
-    add(ysize);
+    add(xSize);
+    add(ySize);
     return this;
   }
 
-  public TranslateOptions outsizePercent(int xpercent, int ypercent) {
+  public TranslateOptions outsizePercent(int xPercent, int yPercent) {
     add("-outsize");
-    add(xpercent + "%");
-    add(ypercent + "%");
+    add(xPercent + "%");
+    add(yPercent + "%");
     return this;
   }
 
-  public TranslateOptions targetResolution(double xres, double yres) {
+  public TranslateOptions targetResolution(double xRes, double yRes) {
     add("-tr");
-    add(xres);
-    add(yres);
+    add(xRes);
+    add(yRes);
     return this;
   }
 
@@ -164,11 +164,11 @@ public class TranslateOptions extends Options {
     return this;
   }
 
-  public TranslateOptions srcWindow(int xoff, int yoff, int xsize, int ysize) {
+  public TranslateOptions srcWindow(int xOff, int yOff, int xSize, int ySize) {
     add("-srcwin");
-    add(xoff);
-    add(yoff);
-    add(xsize);
+    add(xOff);
+    add(yOff);
+    add(xSize);
     return this;
   }
 
@@ -314,13 +314,13 @@ public class TranslateOptions extends Options {
     return this;
   }
 
-  public TranslateOptions srcDataset(String dataset) {
-    add(dataset);
+  public TranslateOptions srcDataset(String srcDataset) {
+    add(srcDataset);
     return this;
   }
 
-  public TranslateOptions dstDataset(String dataset) {
-    add(dataset);
+  public TranslateOptions dstDataset(String dstDataset) {
+    add(dstDataset);
     return this;
   }
 }

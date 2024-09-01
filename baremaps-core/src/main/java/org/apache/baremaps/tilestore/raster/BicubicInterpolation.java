@@ -23,6 +23,7 @@ import org.apache.sis.image.Interpolation;
 
 class BicubicInterpolation extends Interpolation {
 
+  @Override
   public Dimension getSupportSize() {
     return new Dimension(4, 4);
   }

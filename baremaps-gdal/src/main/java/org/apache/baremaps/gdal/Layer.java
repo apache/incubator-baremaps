@@ -22,14 +22,14 @@ package org.apache.baremaps.gdal;
  */
 public class Layer implements AutoCloseable {
 
-  private final org.gdal.ogr.Layer layer;
+  private final org.gdal.ogr.Layer gdalLayer;
 
-  protected Layer(org.gdal.ogr.Layer layer) {
-    this.layer = layer;
+  protected Layer(org.gdal.ogr.Layer gdalLayer) {
+    this.gdalLayer = gdalLayer;
   }
 
   @Override
   public void close() throws Exception {
-    layer.delete();
+    gdalLayer.delete();
   }
 }

@@ -90,7 +90,6 @@ public class MarchingSquareRenderer extends JPanel {
     JFrame frame = new JFrame("Geometry Drawer");
 
     JPanel mainPanel = new JPanel(new GridLayout(4, 4));
-    // mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
     for (double[] c : MarchingSquareUtils.CASES) {
 
       List<Geometry> geometries = trace(c)

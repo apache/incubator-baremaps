@@ -19,7 +19,6 @@ package org.apache.baremaps.tilestore.raster;
 
 import java.nio.file.Path;
 import org.apache.baremaps.tilestore.TileCoord;
-import org.apache.baremaps.tilestore.TileStoreException;
 import org.apache.sis.coverage.grid.*;
 import org.apache.sis.geometry.Envelopes;
 import org.apache.sis.geometry.GeneralEnvelope;
@@ -52,7 +51,7 @@ public class GeoTiffReader implements AutoCloseable {
             Id["EPSG", 3857]]
           """);
     } catch (FactoryException e) {
-      throw new RuntimeException(e);
+      throw new IllegalArgumentException(e);
     }
   }
 
@@ -60,7 +59,7 @@ public class GeoTiffReader implements AutoCloseable {
 
   private final GridCoverage gridCoverage;
 
-  public GeoTiffReader(Path path) {
+  public GeoTiffReader(Path path) throws GeoTiffException {
     try {
       this.dataStore = DataStores.open(path);
       var allImages = ((Aggregate) dataStore).components();
@@ -68,11 +67,11 @@ public class GeoTiffReader implements AutoCloseable {
       firstImage.setLoadingStrategy(RasterLoadingStrategy.AT_GET_TILE_TIME);
       gridCoverage = firstImage.read(null);
     } catch (DataStoreException e) {
-      throw new RuntimeException(e);
+      throw new GeoTiffException(e);
     }
   }
 
-  public double[] read(TileCoord tileCoord, int size, int buffer) throws TileStoreException {
+  public double[] read(TileCoord tileCoord, int size, int buffer) throws GeoTiffException {
     try {
       // Compute the buffer size and expand the envelope
       var fullSize = size + 2 * buffer;
@@ -95,8 +94,8 @@ public class GeoTiffReader implements AutoCloseable {
       // Resample and render the image
       var gridCoverageProcessor = new GridCoverageProcessor();
       gridCoverageProcessor.setInterpolation(new BicubicInterpolation());
-      var gridCoverage = gridCoverageProcessor.resample(this.gridCoverage, targetGridGeometry);
-      var renderedImage = gridCoverage.render(null);
+      var tileGridCoverage = gridCoverageProcessor.resample(this.gridCoverage, targetGridGeometry);
+      var renderedImage = tileGridCoverage.render(null);
 
       // Convert the image to the terrarium color scale
       var imageProcessor = new ImageProcessor();
@@ -115,7 +114,7 @@ public class GeoTiffReader implements AutoCloseable {
 
       return values;
     } catch (Exception e) {
-      throw new TileStoreException(e);
+      throw new GeoTiffException(e);
     }
   }
 

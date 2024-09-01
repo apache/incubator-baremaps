@@ -27,6 +27,7 @@ import org.locationtech.jts.operation.linemerge.LineMerger;
  * Provides methods for generating contour lines and contour polygons from digital elevation models
  * (DEMs).
  */
+@SuppressWarnings({"squid:S3776", "squid:S135"})
 public class ContourTracer {
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
@@ -222,7 +223,6 @@ public class ContourTracer {
    * @param y The y-coordinate of the cell
    * @return A list of line segments
    */
-  @SuppressWarnings("squid:S3776")
   private List<LineString> processCell(double level, int x, int y) {
     List<LineString> segments = new ArrayList<>();
 
@@ -244,7 +244,6 @@ public class ContourTracer {
     double trv = grid[y * width + (x + 1)];
     double brv = grid[(y + 1) * width + (x + 1)];
     double blv = grid[(y + 1) * width + x];
-    double avg = (tlv + trv + brv + blv) / 4.0;
 
     int index =
         (tlv >= level ? 1 : 0) |

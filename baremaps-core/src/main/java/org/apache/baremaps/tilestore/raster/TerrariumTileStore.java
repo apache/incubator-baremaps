@@ -34,17 +34,21 @@ public class TerrariumTileStore implements TileStore<BufferedImage> {
 
   @Override
   public BufferedImage read(TileCoord tileCoord) throws TileStoreException {
-    var size = 256;
-    var grid = geoTiffReader.read(tileCoord, size, 0);
-    var bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-    for (int x = 0; x < size; x++) {
-      for (int y = 0; y < size; y++) {
-        double value = (int) grid[y * size + x];
-        int rgb = ElevationUtils.elevationToTerrarium(value);
-        bufferedImage.setRGB(x, y, rgb);
+    try {
+      var size = 256;
+      var grid = geoTiffReader.read(tileCoord, size, 0);
+      var bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+      for (int x = 0; x < size; x++) {
+        for (int y = 0; y < size; y++) {
+          double value = (int) grid[y * size + x];
+          int rgb = ElevationUtils.elevationToTerrarium(value);
+          bufferedImage.setRGB(x, y, rgb);
+        }
       }
+      return bufferedImage;
+    } catch (Exception e) {
+      throw new TileStoreException(e);
     }
-    return bufferedImage;
   }
 
   @Override

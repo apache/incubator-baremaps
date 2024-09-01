@@ -52,12 +52,6 @@ public class WarpOptions extends Options {
     return this;
   }
 
-  public WarpOptions format(String format) {
-    add("-of");
-    add(format);
-    return this;
-  }
-
   public WarpOptions creationOption(String name, String value) {
     add("-co");
     add(name + "=" + value);
@@ -169,6 +163,7 @@ public class WarpOptions extends Options {
 
   public WarpOptions tgtCoordEpoch(String epoch) {
     add("-t_coord_epoch");
+    add(epoch);
     return this;
   }
 

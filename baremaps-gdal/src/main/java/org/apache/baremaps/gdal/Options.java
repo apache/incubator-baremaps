@@ -26,34 +26,34 @@ import java.util.Vector;
  */
 public class Options {
 
-  private final List<String> options;
+  private final List<String> values;
 
   public Options() {
-    this.options = new ArrayList<>();
+    this.values = new ArrayList<>();
   }
 
   public Options add(String value) {
-    options.add(value);
+    values.add(value);
     return this;
   }
 
   public Options add(int value) {
-    options.add(String.valueOf(value));
+    values.add(String.valueOf(value));
     return this;
   }
 
   public Options add(double value) {
-    options.add(String.valueOf(value));
+    values.add(String.valueOf(value));
     return this;
   }
 
   public Options add(boolean value) {
-    options.add(String.valueOf(value));
+    values.add(String.valueOf(value));
     return this;
   }
 
   public Vector<String> asVector() {
-    return new Vector<>(options);
+    return new Vector<>(values);
   }
 
 }

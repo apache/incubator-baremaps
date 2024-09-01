@@ -17,10 +17,33 @@
 
 package org.apache.baremaps.tilestore.raster;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class GeoTiffException extends Exception {
 
+  /**
+   * Constructs an {@code GeoTiffException} with the specified detail message.
+   *
+   * @param message the message
+   */
+  public GeoTiffException(String message) {
+    super(message);
+  }
 
-class VectorHillshadeTileStoreTest {
+  /**
+   * Constructs a {@code GeoTiffException} with the specified cause.
+   *
+   * @param cause the cause
+   */
+  public GeoTiffException(Throwable cause) {
+    super(cause);
+  }
 
-
+  /**
+   * Constructs a {@code GeoTiffException} with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
+  public GeoTiffException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

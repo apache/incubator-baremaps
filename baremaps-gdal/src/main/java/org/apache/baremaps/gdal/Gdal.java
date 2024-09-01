@@ -55,16 +55,16 @@ public class Gdal {
 
   public static Dataset copy(String path, Dataset source) {
     var driver = gdal.IdentifyDriver(path);
-    return new Dataset(driver.CreateCopy(path, source.dataset));
+    return new Dataset(driver.CreateCopy(path, source.gdalDataset));
   }
 
   public static String info(Dataset dataset) {
-    return org.gdal.gdal.gdal.GDALInfo(dataset.dataset, null);
+    return org.gdal.gdal.gdal.GDALInfo(dataset.gdalDataset, null);
   }
 
   public static String info(Dataset dataset, InfoOptions options) {
     try (var infoOptions = new InfoResource(options)) {
-      return org.gdal.gdal.gdal.GDALInfo(dataset.dataset, infoOptions);
+      return org.gdal.gdal.gdal.GDALInfo(dataset.gdalDataset, infoOptions);
     }
   }
 
@@ -98,7 +98,7 @@ public class Gdal {
     try (var translateResource = new TranslateResource(options)) {
       var dataset = org.gdal.gdal.gdal.Translate(
           "",
-          source.dataset,
+          source.gdalDataset,
           translateResource);
       return new Dataset(dataset);
     }
@@ -110,7 +110,7 @@ public class Gdal {
         var progressResource = new ProgressResource(progressListener)) {
       var dataset = org.gdal.gdal.gdal.Translate(
           "",
-          source.dataset,
+          source.gdalDataset,
           translateResource,
           progressResource);
       return new Dataset(dataset);
@@ -139,7 +139,7 @@ public class Gdal {
     try (var warpResource = new WarpResource(options)) {
       return new Dataset(gdal.Warp(
           "",
-          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          sources.stream().map(d -> d.gdalDataset).toArray(org.gdal.gdal.Dataset[]::new),
           warpResource));
     }
   }
@@ -150,7 +150,7 @@ public class Gdal {
         var progressResource = new ProgressResource(progressCallback)) {
       return new Dataset(gdal.Warp(
           "",
-          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          sources.stream().map(d -> d.gdalDataset).toArray(org.gdal.gdal.Dataset[]::new),
           warpResource,
           progressResource));
     }
@@ -159,8 +159,8 @@ public class Gdal {
   public static void warp(Dataset target, List<Dataset> sources, WarpOptions options) {
     try (var warpResource = new WarpResource(options)) {
       gdal.Warp(
-          target.dataset,
-          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          target.gdalDataset,
+          sources.stream().map(d -> d.gdalDataset).toArray(org.gdal.gdal.Dataset[]::new),
           warpResource);
     }
   }
@@ -170,8 +170,8 @@ public class Gdal {
     try (var warpResource = new WarpResource(options);
         var progressResource = new ProgressResource(progressCallback)) {
       gdal.Warp(
-          target.dataset,
-          sources.stream().map(d -> d.dataset).toArray(org.gdal.gdal.Dataset[]::new),
+          target.gdalDataset,
+          sources.stream().map(d -> d.gdalDataset).toArray(org.gdal.gdal.Dataset[]::new),
           warpResource,
           progressResource);
     }

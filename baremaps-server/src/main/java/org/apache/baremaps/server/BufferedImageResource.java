@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 import javax.imageio.ImageIO;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
-import org.apache.baremaps.tilestore.TileStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,26 +52,21 @@ public class BufferedImageResource {
   @Blocking
   public HttpResponse tile(@Param("z") int z, @Param("x") int x, @Param("y") int y) {
     TileCoord tileCoord = new TileCoord(x, y, z);
-    try {
-      TileStore<BufferedImage> tileStore = tileStoreSupplier.get();
+    TileStore<BufferedImage> tileStore = tileStoreSupplier.get();
+    try (var outputStream = new ByteArrayOutputStream()) {
       BufferedImage bufferedImage = tileStore.read(tileCoord);
       if (bufferedImage != null) {
         var headers = ResponseHeaders.builder(200)
             .add(CONTENT_TYPE, TILE_TYPE)
             .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
             .build();
-
-        try (var outputStream = new ByteArrayOutputStream()) {
-          ImageIO.write(bufferedImage, "png", outputStream);
-          HttpData data = HttpData.wrap(outputStream.toByteArray());
-          return HttpResponse.of(headers, data);
-        } catch (Exception e) {
-          return HttpResponse.of(204);
-        }
+        ImageIO.write(bufferedImage, "png", outputStream);
+        HttpData data = HttpData.wrap(outputStream.toByteArray());
+        return HttpResponse.of(headers, data);
       } else {
         return HttpResponse.of(204);
       }
-    } catch (TileStoreException ex) {
+    } catch (Exception ex) {
       logger.error("Error while reading tile.", ex);
       return HttpResponse.of(404);
     }

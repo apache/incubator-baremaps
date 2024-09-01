@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.apache.baremaps.maplibre.tilejson.TileJSON;
@@ -34,10 +33,6 @@ public class TileSetTest {
 
   final ObjectMapper objectMapper = ObjectMapperUtils.objectMapper();
   final ConfigReader configReader = new ConfigReader();
-
-  private File resourceFile(String path) {
-    return new File(TileSetTest.class.getResource(path).getFile());
-  }
 
   @Test
   public void testBasemapJSConfig() throws IOException {

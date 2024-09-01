@@ -38,7 +38,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 @Command(name = "vector-contours", description = "Generate vector contours from a DEM.")
-@SuppressWarnings("squid:S106")
+@SuppressWarnings({"squid:S106", "squid:S3864"})
 public class VectorTileContours implements Callable<Integer> {
 
   @Option(names = {"--path"}, paramLabel = "PATH", description = "The path of a geoTIFF file.")

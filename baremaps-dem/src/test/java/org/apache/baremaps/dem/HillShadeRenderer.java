@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class HillShadeRenderer extends JFrame {
@@ -75,11 +74,9 @@ public class HillShadeRenderer extends JFrame {
     scaleSlider.setPaintLabels(true);
 
     // Add listeners
-    ChangeListener listener = new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        updateLabels();
-        redrawHillshade();
-      }
+    ChangeListener listener = e -> {
+      updateLabels();
+      redrawHillshade();
     };
     altitudeSlider.addChangeListener(listener);
     azimuthSlider.addChangeListener(listener);

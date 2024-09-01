@@ -27,13 +27,12 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.ParseException;
 
 class ContourTracerTest {
 
   @Test
   @DisplayName("Test grid normalization")
-  void testGrid1() throws ParseException {
+  void testGrid1() {
     var grid = new double[] {
         0, 0, 0,
         0, 1, 0,
