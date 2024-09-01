@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.tilestore;
+package org.apache.baremaps.tilestore.raster;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
-public class TileEntry<T> {
+class VectorHillshadeTileStoreTest {
 
-  private final TileCoord tileCoord;
-  private final T tileValue;
 
-  public TileEntry(TileCoord tileCoord, T tileValue) {
-    this.tileCoord = tileCoord;
-    this.tileValue = tileValue;
-  }
-
-  public TileCoord getTileCoord() {
-    return tileCoord;
-  }
-
-  public T getTileValue() {
-    return tileValue;
-  }
 }
