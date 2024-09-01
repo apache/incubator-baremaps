@@ -70,6 +70,12 @@ public class TestFiles {
   public static final Path GEOPARQUET =
       resolve("baremaps-testing/data/samples/example.parquet");
 
+  public static final Path TILESET_JSON =
+      resolve("baremaps-testing/data/tilesets/tileset.json");
+
+  public static final Path TILEJSON_JSON =
+      resolve("baremaps-testing/data/tilesets/tilejson.json");
+
   /* The geometries of the osm-sample/sample.osm.xml file */
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
