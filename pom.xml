@@ -52,7 +52,9 @@ limitations under the License.
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-data</module>
+    <module>baremaps-dem</module>
     <module>baremaps-flatgeobuf</module>
+    <module>baremaps-gdal</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
@@ -67,17 +69,6 @@ limitations under the License.
     <url>scm:git:git@github.com:apache/baremaps.git</url>
   </scm>
 
-  <distributionManagement>
-    <repository>
-      <id>maven</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>maven</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
@@ -88,7 +79,7 @@ limitations under the License.
     <sonar.projectKey>apache_baremaps</sonar.projectKey>
     <version.lib.armeria>1.27.2</version.lib.armeria>
     <version.lib.awaitability>4.2.0</version.lib.awaitability>
-    <version.lib.awssdk>2.24.13</version.lib.awssdk>
+    <version.lib.awssdk>2.20.155</version.lib.awssdk>
     <version.lib.caffeine>3.1.8</version.lib.caffeine>
     <version.lib.calcite>1.36.0</version.lib.calcite>
     <version.lib.commons-compress>1.26.0</version.lib.commons-compress>
@@ -136,7 +127,6 @@ limitations under the License.
 
   <dependencyManagement>
     <dependencies>
-
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
@@ -240,7 +230,17 @@ limitations under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-dem</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-flatgeobuf</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-gdal</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
