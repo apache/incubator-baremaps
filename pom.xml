@@ -66,8 +66,10 @@ limitations under the License.
   </scm>
 
   <properties>
+    <maven.compiler.release>17</maven.compiler.release>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <project.build.outputTimestamp>2024-03-18T11:01:08Z</project.build.outputTimestamp>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
@@ -76,6 +78,7 @@ limitations under the License.
     <version.lib.armeria>1.30.0</version.lib.armeria>
     <version.lib.awaitability>4.2.2</version.lib.awaitability>
     <version.lib.awssdk>2.27.17</version.lib.awssdk>
+    <version.lib.brotli4j>1.16.0</version.lib.brotli4j>
     <version.lib.caffeine>3.1.8</version.lib.caffeine>
     <version.lib.calcite>1.37.0</version.lib.calcite>
     <version.lib.commons-compress>1.27.1</version.lib.commons-compress>
@@ -124,6 +127,36 @@ limitations under the License.
   <dependencyManagement>
     <dependencies>
 
+      <dependency>
+        <groupId>com.aayushatharva.brotli4j</groupId>
+        <artifactId>native-linux-aarch64</artifactId>
+        <version>${version.lib.brotli4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.aayushatharva.brotli4j</groupId>
+        <artifactId>native-linux-x86_64</artifactId>
+        <version>${version.lib.brotli4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.aayushatharva.brotli4j</groupId>
+        <artifactId>native-osx-aarch64</artifactId>
+        <version>${version.lib.brotli4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.aayushatharva.brotli4j</groupId>
+        <artifactId>native-osx-x86_64</artifactId>
+        <version>${version.lib.brotli4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.aayushatharva.brotli4j</groupId>
+        <artifactId>native-windows-aarch64</artifactId>
+        <version>${version.lib.brotli4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.aayushatharva.brotli4j</groupId>
+        <artifactId>native-windows-x86_64</artifactId>
+        <version>${version.lib.brotli4j}</version>
+      </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
@@ -570,6 +603,17 @@ limitations under the License.
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${version.plugin.maven-compiler-plugin}</version>
+        <configuration>
+          <release>17</release>
+          <compilerArgs>
+            <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${version.plugin.maven-surefire-plugin}</version>
       </plugin>
@@ -577,6 +621,13 @@ limitations under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>${version.plugin.maven-jar-plugin}</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Build-Date>${project.build.outputTimestamp}</Build-Date>
+            </manifestEntries>
+          </archive>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -744,17 +795,6 @@ limitations under the License.
                 </goals>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>${version.plugin.nexus-staging-maven-plugin}</version>
-            <extensions>true</extensions>
-            <configuration>
-              <serverId>maven</serverId>
-              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>false</autoReleaseAfterClose>
-            </configuration>
           </plugin>
         </plugins>
       </build>
