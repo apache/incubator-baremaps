@@ -35,11 +35,17 @@ jobs:
       - name: Build candidate
         run: mvn install -B
 
+      - name: Set up GPG
+        run: |
+          echo "${{ secrets.BAREMAPS_GPG_SECRET_KEY }}" | gpg --batch --import
+          gpg --list-keys
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+
       - name: Sign and hash candidate
         shell: bash
         run: |
           cd ./baremaps-cli/target
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch
           
           mv apache-baremaps-${{ steps.variables.outputs.mvn_version }}-incubating-src.tar.gz apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
           shasum -a 512 "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz" > "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.sha512"
@@ -65,11 +71,8 @@ jobs:
           gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc
 
       - name: Publish candidate on Apache
-        env:
-          APACHE_USERNAME: ${{ secrets.INCUBATOR_SVN_DEV_USERNAME }}
-          APACHE_PASSWORD: ${{ secrets.INCUBATOR_SVN_DEV_PASSWORD }}
         run: |
-          svn --username $APACHE_USERNAME --password $APACHE_PASSWORD import -m "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz https://dist.apache.org/repos/dist/dev/incubator/baremaps/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
+          svn --username ${{ secrets.INCUBATOR_SVN_DEV_USERNAME }} --password ${{ secrets.INCUBATOR_SVN_DEV_PASSWORD }} import -m "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz https://dist.apache.org/repos/dist/dev/incubator/baremaps/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
 
       - name: Publish candidate on Maven
         env:
