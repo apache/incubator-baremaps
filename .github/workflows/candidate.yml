@@ -72,7 +72,7 @@ jobs:
 
       - name: Publish candidate on Apache
         run: |
-          svn --username ${{ secrets.INCUBATOR_SVN_DEV_USERNAME }} --password ${{ secrets.INCUBATOR_SVN_DEV_PASSWORD }} import -m "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz https://dist.apache.org/repos/dist/dev/incubator/baremaps/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
+          svn --username "${{ secrets.INCUBATOR_SVN_DEV_USERNAME }}" --password "${{ secrets.INCUBATOR_SVN_DEV_PASSWORD }}" import -m "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz https://dist.apache.org/repos/dist/dev/incubator/baremaps/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
 
       - name: Publish candidate on Maven
         env:
