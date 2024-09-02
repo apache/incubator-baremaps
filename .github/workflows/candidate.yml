@@ -21,10 +21,9 @@ jobs:
           distribution: temurin
           cache: maven
           server-id: apache.snapshots.https
-          server-username: NEXUS_USERNAME
-          server-password: NEXUS_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          server-username: NEXUS_USER
+          server-password: NEXUS_PW
+          gpg-private-key: ${{ secrets.BAREMAPS_GPG_SECRET_KEY }}
 
       - name: Extract variables
         id: variables
@@ -44,11 +43,11 @@ jobs:
           
           mv apache-baremaps-${{ steps.variables.outputs.mvn_version }}-incubating-src.tar.gz apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
           shasum -a 512 "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz" > "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.sha512"
-          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz"
 
           mv apache-baremaps-${{ steps.variables.outputs.mvn_version }}-incubating-bin.tar.gz apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz
           shasum -a 512 "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz" > "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.sha512"
-          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz"
           cd -
 
       - name: Publish candidate on GitHub
@@ -67,16 +66,16 @@ jobs:
 
       - name: Publish candidate on Apache
         env:
-          APACHE_USERNAME: ${{ secrets.APACHE_USERNAME }}
-          APACHE_PASSWORD: ${{ secrets.APACHE_PASSWORD }}
+          APACHE_USERNAME: ${{ secrets.INCUBATOR_SVN_DEV_USERNAME }}
+          APACHE_PASSWORD: ${{ secrets.INCUBATOR_SVN_DEV_PASSWORD }}
         run: |
           # TODO: Publish the candidate on the dev directory of the Apache dist server
           # svn --username $APACHE_USERNAME --password $APACHE_PASSWORD import -m "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz https://dist.apache.org/repos/dist/dev/incubator/baremaps/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
 
       - name: Publish candidate on Maven
         env:
-          SERVER_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          SERVER_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          SERVER_USERNAME: ${{ secrets.NEXUS_USER }}
+          SERVER_PASSWORD: ${{ secrets.NEXUS_PW }}
         run: |
           # TODO: Deploy the candidate on the Apache Maven repository
           # mvn deploy
