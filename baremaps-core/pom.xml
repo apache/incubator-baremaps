@@ -133,17 +133,14 @@ limitations under the License.
     <dependency>
       <groupId>org.apache.sis.storage</groupId>
       <artifactId>sis-geotiff</artifactId>
-      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.sis.storage</groupId>
       <artifactId>sis-sqlstore</artifactId>
-      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.sis.storage</groupId>
       <artifactId>sis-storage</artifactId>
-      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>org.graalvm.js</groupId>

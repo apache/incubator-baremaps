@@ -104,6 +104,7 @@ limitations under the License.
     <version.lib.proj4j>1.3.0</version.lib.proj4j>
     <version.lib.protobuf>4.28.0</version.lib.protobuf>
     <version.lib.roaringbitmap>1.2.1</version.lib.roaringbitmap>
+    <version.lib.sis>1.4</version.lib.sis>
     <version.lib.slf4j>2.0.16</version.lib.slf4j>
     <version.lib.sqlite>3.46.1.0</version.lib.sqlite>
     <version.lib.testcontainers>1.20.1</version.lib.testcontainers>
@@ -400,10 +401,30 @@ limitations under the License.
         <version>${version.lib.parquet}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-geotiff</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-sqlstore</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-storage</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>${version.lib.awaitability}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.gdal</groupId>
+        <artifactId>gdal</artifactId>
+        <version>${version.lib.gdal}</version>
       </dependency>
       <dependency>
         <groupId>org.graalvm.js</groupId>
