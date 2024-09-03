@@ -86,35 +86,35 @@ limitations under the License.
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
     <sonar.organization>apache</sonar.organization>
     <sonar.projectKey>apache_baremaps</sonar.projectKey>
-    <version.lib.armeria>1.27.2</version.lib.armeria>
-    <version.lib.awaitability>4.2.0</version.lib.awaitability>
-    <version.lib.awssdk>2.24.13</version.lib.awssdk>
+    <version.lib.armeria>1.30.0</version.lib.armeria>
+    <version.lib.awaitability>4.2.2</version.lib.awaitability>
+    <version.lib.awssdk>2.27.17</version.lib.awssdk>
     <version.lib.caffeine>3.1.8</version.lib.caffeine>
-    <version.lib.calcite>1.36.0</version.lib.calcite>
-    <version.lib.commons-compress>1.26.0</version.lib.commons-compress>
-    <version.lib.fastutil>8.5.13</version.lib.fastutil>
+    <version.lib.calcite>1.37.0</version.lib.calcite>
+    <version.lib.commons-compress>1.27.1</version.lib.commons-compress>
+    <version.lib.fastutil>8.5.14</version.lib.fastutil>
     <version.lib.flatgeobuf>3.26.2</version.lib.flatgeobuf>
-    <version.lib.geopackage>6.6.4</version.lib.geopackage>
-    <version.lib.graalvm>23.0.3</version.lib.graalvm>
-    <version.lib.guava>33.0.0-jre</version.lib.guava>
+    <version.lib.geopackage>6.6.5</version.lib.geopackage>
+    <version.lib.graalvm>23.0.5</version.lib.graalvm>
+    <version.lib.guava>33.3.0-jre</version.lib.guava>
     <version.lib.hadoop>3.4.0</version.lib.hadoop>
     <version.lib.hikari>5.1.0</version.lib.hikari>
     <version.lib.ipresource>1.52</version.lib.ipresource>
-    <version.lib.jackson>2.16.1</version.lib.jackson>
-    <version.lib.jts>1.19.0</version.lib.jts>
-    <version.lib.junit>5.10.2</version.lib.junit>
+    <version.lib.jackson>2.17.2</version.lib.jackson>
+    <version.lib.jts>1.20.0</version.lib.jts>
+    <version.lib.junit>5.11.0</version.lib.junit>
     <version.lib.log4j>3.0.0-beta2</version.lib.log4j>
-    <version.lib.lucene>9.10.0</version.lib.lucene>
-    <version.lib.parquet>1.13.1</version.lib.parquet>
-    <version.lib.pgbulkinsert>8.1.2</version.lib.pgbulkinsert>
-    <version.lib.picocli>4.7.5</version.lib.picocli>
-    <version.lib.postgresql>42.7.2</version.lib.postgresql>
+    <version.lib.lucene>9.11.1</version.lib.lucene>
+    <version.lib.parquet>1.14.2</version.lib.parquet>
+    <version.lib.pgbulkinsert>8.1.4</version.lib.pgbulkinsert>
+    <version.lib.picocli>4.7.6</version.lib.picocli>
+    <version.lib.postgresql>42.7.4</version.lib.postgresql>
     <version.lib.proj4j>1.3.0</version.lib.proj4j>
-    <version.lib.protobuf>3.25.3</version.lib.protobuf>
-    <version.lib.roaringbitmap>1.0.1</version.lib.roaringbitmap>
-    <version.lib.slf4j>2.0.12</version.lib.slf4j>
-    <version.lib.sqlite>3.45.1.0</version.lib.sqlite>
-    <version.lib.testcontainers>1.19.6</version.lib.testcontainers>
+    <version.lib.protobuf>4.28.0</version.lib.protobuf>
+    <version.lib.roaringbitmap>1.2.1</version.lib.roaringbitmap>
+    <version.lib.slf4j>2.0.16</version.lib.slf4j>
+    <version.lib.sqlite>3.46.1.0</version.lib.sqlite>
+    <version.lib.testcontainers>1.20.1</version.lib.testcontainers>
     <version.plugin.jacoco-maven-plugin>0.8.11</version.plugin.jacoco-maven-plugin>
     <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
     <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
