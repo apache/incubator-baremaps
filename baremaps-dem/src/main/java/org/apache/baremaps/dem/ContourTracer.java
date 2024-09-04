@@ -173,10 +173,9 @@ public class ContourTracer {
 
   private List<Geometry> normalize(List<Geometry> contours) {
     NormalizationTransformer transformer = new NormalizationTransformer();
-    List<Geometry> normalized = contours.stream()
+    return contours.stream()
         .map(geometry -> transformer.transform(geometry.copy()))
         .toList();
-    return normalized;
   }
 
   /**

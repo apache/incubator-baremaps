@@ -52,6 +52,7 @@ public class Options {
     return this;
   }
 
+  @SuppressWarnings("squid:S1149")
   public Vector<String> asVector() {
     return new Vector<>(values);
   }

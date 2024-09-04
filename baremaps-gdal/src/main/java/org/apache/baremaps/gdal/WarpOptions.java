@@ -138,6 +138,7 @@ public class WarpOptions extends Options {
     return this;
   }
 
+  @SuppressWarnings("squid:S4144")
   public WarpOptions dstDataset(String datasetName) {
     add(datasetName);
     return this;

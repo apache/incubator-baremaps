@@ -169,6 +169,7 @@ public class TranslateOptions extends Options {
     add(xOff);
     add(yOff);
     add(xSize);
+    add(ySize);
     return this;
   }
 
