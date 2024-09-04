@@ -33,14 +33,29 @@ import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.locationtech.jts.geom.util.AffineTransformation;
 
+/**
+ * A {@code TileStore} that calculates vector contour tiles from elevation tiles.
+ */
 public class VectorContourTileStore implements TileStore<ByteBuffer> {
 
   private final GeoTiffReader geoTiffReader;
 
+  /**
+   * Constructs a {@code VectorContourTileStore} with the specified GeoTIFF reader.
+   *
+   * @param geoTiffReader the geotiff reader
+   */
   public VectorContourTileStore(GeoTiffReader geoTiffReader) {
     this.geoTiffReader = geoTiffReader;
   }
 
+  /**
+   * Read the contour data for the specified tile coordinate.
+   *
+   * @param tileCoord the tile coordinate
+   * @return the contour data
+   * @throws TileStoreException if an error occurs
+   */
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
@@ -92,11 +107,13 @@ public class VectorContourTileStore implements TileStore<ByteBuffer> {
     }
   }
 
+  /** Unsupported operation. */
   @Override
   public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /** Unsupported operation. */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     throw new UnsupportedOperationException();

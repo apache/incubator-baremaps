@@ -21,13 +21,18 @@ import java.awt.*;
 import java.nio.DoubleBuffer;
 import org.apache.sis.image.Interpolation;
 
+/**
+ * An {@code Interpolation} that performs bicubic interpolation.
+ */
 class BicubicInterpolation extends Interpolation {
 
+  /** {@inheritDoc} */
   @Override
   public Dimension getSupportSize() {
     return new Dimension(4, 4);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void interpolate(DoubleBuffer source, int numBands, double xfrac, double yfrac,
       double[] writeTo, int writeToOffset) {

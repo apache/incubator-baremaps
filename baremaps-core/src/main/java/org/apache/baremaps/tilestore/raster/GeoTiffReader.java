@@ -59,6 +59,12 @@ public class GeoTiffReader implements AutoCloseable {
 
   private final GridCoverage gridCoverage;
 
+  /**
+   * Constructs a {@code GeoTiffReader} with the specified path.
+   *
+   * @param path the path of the geotiff file
+   * @throws GeoTiffException if an error occurs
+   */
   public GeoTiffReader(Path path) throws GeoTiffException {
     try {
       this.dataStore = DataStores.open(path);
@@ -71,23 +77,33 @@ public class GeoTiffReader implements AutoCloseable {
     }
   }
 
-  public double[] read(TileCoord tileCoord, int size, int buffer) throws GeoTiffException {
+  /**
+   * Read the elevation data for the specified tile coordinate.
+   *
+   * @param tileCoord the tile coordinate
+   * @param tileSizePx the size of the tile in pixels
+   * @param tileBufferPx the buffer size in pixels
+   * @return the elevation data
+   * @throws GeoTiffException if an error occurs
+   */
+  public double[] read(TileCoord tileCoord, int tileSizePx, int tileBufferPx)
+      throws GeoTiffException {
     try {
       // Compute the buffer size and expand the envelope
-      var fullSize = size + 2 * buffer;
+      var imageSize = tileSizePx + 2 * tileBufferPx;
       var tileEnvelope = tileCoord.envelope();
       var tileWidth = tileEnvelope.getWidth();
       var tileHeight = tileEnvelope.getHeight();
-      var pixelWidth = tileWidth / size;
-      var pixelHeight = tileHeight / size;
-      tileEnvelope.expandBy(pixelWidth * buffer, pixelHeight * buffer);
+      var pixelWidth = tileWidth / tileSizePx;
+      var pixelHeight = tileHeight / tileSizePx;
+      tileEnvelope.expandBy(pixelWidth * tileBufferPx, pixelHeight * tileBufferPx);
 
       // Create the target grid geometry in the web mercator projection
       var sourceEnvelope = new GeneralEnvelope(CommonCRS.WGS84.normalizedGeographic());
       sourceEnvelope.setRange(0, tileEnvelope.getMinX(), tileEnvelope.getMaxX());
       sourceEnvelope.setRange(1, tileEnvelope.getMinY(), tileEnvelope.getMaxY());
       var targetEnvelope = Envelopes.transform(sourceEnvelope, WEB_MERCATOR);
-      var targetSize = new GridExtent(fullSize, fullSize);
+      var targetSize = new GridExtent(imageSize, imageSize);
       var targetGridGeometry =
           new GridGeometry(targetSize, targetEnvelope, GridOrientation.DISPLAY);
 
@@ -99,9 +115,7 @@ public class GeoTiffReader implements AutoCloseable {
 
       // Convert the image to the terrarium color scale
       var imageProcessor = new ImageProcessor();
-      renderedImage = imageProcessor.prefetch(
-          renderedImage,
-          null);
+      renderedImage = imageProcessor.prefetch(renderedImage, null);
 
       // Convert the image to a grid
       var values = new double[renderedImage.getWidth() * renderedImage.getHeight()];
@@ -118,6 +132,11 @@ public class GeoTiffReader implements AutoCloseable {
     }
   }
 
+  /**
+   * Closes the reader.
+   *
+   * @throws Exception if an error occurs
+   */
   @Override
   public void close() throws Exception {
     this.dataStore.close();

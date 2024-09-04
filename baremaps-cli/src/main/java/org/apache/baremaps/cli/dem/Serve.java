@@ -53,12 +53,11 @@ public class Serve implements Callable<Integer> {
     var rasterElevationTileStore = new TerrariumTileStore(geoTiffReader);
     var rasterHillshadeTileStore =
         new RasterHillshadeTileStore(
-            rasterElevationTileStore,
+            geoTiffReader,
             ElevationUtils::terrariumToElevation);
     var vectorHillshadeTileStore =
         new VectorHillshadeTileStore(
-            geoTiffReader,
-            ElevationUtils::terrariumToElevation);
+            geoTiffReader);
     var vectorContourTileStore =
         new VectorContourTileStore(geoTiffReader);
 

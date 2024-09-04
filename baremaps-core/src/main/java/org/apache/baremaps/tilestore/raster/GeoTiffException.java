@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.tilestore.raster;
 
+/**
+ * An exception thrown when an error occurs while reading a GeoTIFF file.
+ */
 public class GeoTiffException extends Exception {
 
   /**

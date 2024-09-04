@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.tilestore.raster;
 
-import static org.apache.baremaps.dem.HillshadeCalculator.getResolution;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -33,7 +32,7 @@ import org.apache.baremaps.tilestore.TileStoreException;
  */
 public class RasterHillshadeTileStore implements TileStore<BufferedImage> {
 
-  private final TileStore<BufferedImage> tileStore;
+  private final GeoTiffReader geoTiffReader;
 
   private final IntToDoubleFunction pixelToElevation;
 
@@ -41,13 +40,13 @@ public class RasterHillshadeTileStore implements TileStore<BufferedImage> {
    * Constructs a {@code RasterHillshadeTileStore} with the specified tile store and pixel to
    * elevation function.
    *
-   * @param tileStore the tile store
+   * @param geoTiffReader the geotiff reader
    * @param pixelToElevation the pixel to elevation function
    */
   public RasterHillshadeTileStore(
-      TileStore<BufferedImage> tileStore,
+      GeoTiffReader geoTiffReader,
       IntToDoubleFunction pixelToElevation) {
-    this.tileStore = tileStore;
+    this.geoTiffReader = geoTiffReader;
     this.pixelToElevation = pixelToElevation;
   }
 
@@ -60,29 +59,36 @@ public class RasterHillshadeTileStore implements TileStore<BufferedImage> {
    */
   @Override
   public BufferedImage read(TileCoord tileCoord) throws TileStoreException {
-    var size = 256;
-    var buffer = RasterTileStore.onion(tileStore, tileCoord, 1).getSubimage(
-        size - 1,
-        size - 1,
-        size + 2,
-        size + 2);
+    try {
+      var tileSize = 256;
+      var tileBuffer = 1;
+      var imageSize = tileSize + tileBuffer + tileBuffer;
 
-    var grid = new HillshadeCalculator(
-        ElevationUtils.clampGrid(ElevationUtils.imageToGrid(buffer, pixelToElevation), 0, 10000),
-        size + 2, size + 2, getResolution(tileCoord.z()))
-            .calculate(45, 315);
+      // Read the elevation data
+      var grid = geoTiffReader.read(tileCoord, tileSize, tileBuffer);
+      grid = ElevationUtils.clampGrid(grid, 0, 10000);
+      grid = new HillshadeCalculator(
+          grid,
+          imageSize,
+          imageSize,
+          HillshadeCalculator.getResolution(tileCoord.z()) / 2)
+              .calculate(45, 315);
 
-    // Create an output image
-    BufferedImage hillshadeImage =
-        new BufferedImage(size, size, BufferedImage.TYPE_BYTE_GRAY);
-    for (int y = 0; y < size; y++) {
-      for (int x = 0; x < size; x++) {
-        int value = (int) grid[(y + 1) * buffer.getHeight() + x + 1];
-        hillshadeImage.setRGB(x, y, new Color(value, value, value).getRGB());
+      // Create the hillshade image
+      BufferedImage hillshadeImage =
+          new BufferedImage(imageSize, imageSize, BufferedImage.TYPE_BYTE_GRAY);
+      for (int y = 0; y < imageSize; y++) {
+        for (int x = 0; x < imageSize; x++) {
+          int value = (int) grid[y * imageSize + x];
+          hillshadeImage.setRGB(x, y, new Color(value, value, value).getRGB());
+        }
       }
-    }
 
-    return hillshadeImage;
+      // Return the hillshade image without the buffer
+      return hillshadeImage.getSubimage(1, 1, tileSize, tileSize);
+    } catch (Exception e) {
+      throw new TileStoreException(e);
+    }
   }
 
   /** Unsupported operation. */

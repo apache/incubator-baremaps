@@ -23,15 +23,30 @@ import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 
+/**
+ * A {@code TileStore} that reads elevation tiles from a GeoTIFF file and converts them to terrarium
+ * tiles format.
+ */
 public class TerrariumTileStore implements TileStore<BufferedImage> {
-
 
   private final GeoTiffReader geoTiffReader;
 
+  /**
+   * Constructs a {@code TerrariumTileStore} with the specified GeoTIFF reader.
+   *
+   * @param geoTiffReader
+   */
   public TerrariumTileStore(GeoTiffReader geoTiffReader) {
     this.geoTiffReader = geoTiffReader;
   }
 
+  /**
+   * Read the elevation data for the specified tile coordinate.
+   *
+   * @param tileCoord the tile coordinate
+   * @return the elevation data
+   * @throws TileStoreException if an error occurs
+   */
   @Override
   public BufferedImage read(TileCoord tileCoord) throws TileStoreException {
     try {
@@ -51,16 +66,25 @@ public class TerrariumTileStore implements TileStore<BufferedImage> {
     }
   }
 
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void write(TileCoord tileCoord, BufferedImage blob) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void close() throws Exception {
     this.geoTiffReader.close();

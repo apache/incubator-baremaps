@@ -22,7 +22,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.IntToDoubleFunction;
 import java.util.zip.GZIPOutputStream;
 import org.apache.baremaps.dem.ContourTracer;
 import org.apache.baremaps.dem.ElevationUtils;
@@ -36,18 +35,29 @@ import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.locationtech.jts.geom.util.AffineTransformation;
 
+/**
+ * A {@code TileStore} that calculates vector hillshade tiles from elevation data.
+ */
 public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
 
   private final GeoTiffReader geoTiffReader;
 
-  private final IntToDoubleFunction pixelToElevation;
-
-  public VectorHillshadeTileStore(GeoTiffReader geoTiffReader,
-      IntToDoubleFunction pixelToElevation) {
+  /**
+   * Constructs a {@code VectorHillshadeTileStore} with the specified geotiff reader.
+   *
+   * @param geoTiffReader the geotiff reader
+   */
+  public VectorHillshadeTileStore(GeoTiffReader geoTiffReader) {
     this.geoTiffReader = geoTiffReader;
-    this.pixelToElevation = pixelToElevation;
   }
 
+  /**
+   * Read the hillshade data for the specified tile coordinate.
+   *
+   * @param tileCoord the tile coordinate
+   * @return
+   * @throws TileStoreException
+   */
   @Override
   public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
