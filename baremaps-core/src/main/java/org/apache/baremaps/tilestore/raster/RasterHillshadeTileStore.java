@@ -91,13 +91,17 @@ public class RasterHillshadeTileStore implements TileStore<BufferedImage> {
     }
   }
 
-  /** Unsupported operation. */
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void write(TileCoord tileCoord, BufferedImage blob) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
-  /** Unsupported operation. */
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     throw new UnsupportedOperationException();

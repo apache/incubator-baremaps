@@ -26,7 +26,7 @@ import java.awt.image.BufferedImage;
 public class RasterUtils {
 
   private RasterUtils() {
-    // Private constructor to prevent instantiation
+    // Prevent instantiation
   }
 
   /**

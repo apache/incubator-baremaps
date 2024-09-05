@@ -30,7 +30,9 @@ import org.checkerframework.checker.index.qual.NonNegative;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A {@code TileStore} decorator that uses caffeine to cache the content of tiles. */
+/**
+ * A {@code TileStore} decorator that uses caffeine to cache the content of tiles.
+ */
 public class RasterTileCache implements TileStore<BufferedImage> {
 
   private static final Logger logger = LoggerFactory.getLogger(RasterTileCache.class);

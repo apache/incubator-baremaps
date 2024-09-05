@@ -35,13 +35,15 @@ public class GeometryUtils {
   public static final GeometryFactory GEOMETRY_FACTORY_WGS84 =
       new GeometryFactory(new PrecisionModel(), 4326);
 
-  private GeometryUtils() {}
+  private GeometryUtils() {
+    // Prevent instantiation
+  }
 
   /**
    * Serializes a geometry in the WKB format.
    *
-   * @param geometry
-   * @return
+   * @param geometry the geometry to serialize
+   * @return the serialized geometry
    */
   public static byte[] serialize(Geometry geometry) {
     if (geometry == null) {
@@ -54,8 +56,8 @@ public class GeometryUtils {
   /**
    * Deserializes a geometry in the WKB format.
    *
-   * @param wkb
-   * @return
+   * @param wkb the serialized geometry
+   * @return the deserialized geometry
    */
   public static Geometry deserialize(byte[] wkb) {
     if (wkb == null) {
@@ -106,6 +108,15 @@ public class GeometryUtils {
     return transform.transform(geometry);
   }
 
+  /**
+   * Creates an envelope with the provided bounds.
+   *
+   * @param xMin the minimum x coordinate
+   * @param yMin the minimum y coordinate
+   * @param xMax the maximum x coordinate
+   * @param yMax the maximum y coordinate
+   * @return the envelope geometry
+   */
   public static Geometry createEnvelope(int xMin, int yMin, int xMax, int yMax) {
     return new GeometryFactory().createPolygon(new Coordinate[] {
         new Coordinate(xMin, yMin),

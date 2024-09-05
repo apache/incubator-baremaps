@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A resource that provides access to the tiles.
+ * A resource that serves vector tiles as Mapbox Vector Tiles.
  */
 public class VectorTileResource {
 
@@ -46,10 +46,18 @@ public class VectorTileResource {
 
   private final Supplier<TileStore<ByteBuffer>> tileStoreSupplier;
 
+  /**
+   * Constructs a {@code VectorTileResource} with the specified tile store supplier.
+   *
+   * @param tileStoreSupplier the tile store supplier
+   */
   public VectorTileResource(Supplier<TileStore<ByteBuffer>> tileStoreSupplier) {
     this.tileStoreSupplier = tileStoreSupplier;
   }
 
+  /**
+   * Serves a vector tile as a Mapbox Vector Tile.
+   */
   @Get("regex:^/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).mvt$")
   @Blocking
   public HttpResponse tile(@Param("z") int z, @Param("x") int x, @Param("y") int y) {

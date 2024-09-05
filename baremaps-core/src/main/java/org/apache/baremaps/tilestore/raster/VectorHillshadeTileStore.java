@@ -55,7 +55,7 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
    * Read the hillshade data for the specified tile coordinate.
    *
    * @param tileCoord the tile coordinate
-   * @return
+   * @return the hillshade data
    * @throws TileStoreException
    */
   @Override
@@ -112,13 +112,17 @@ public class VectorHillshadeTileStore implements TileStore<ByteBuffer> {
     }
   }
 
-  /** Unsupported operation. */
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
-  /** Unsupported operation. */
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     throw new UnsupportedOperationException();

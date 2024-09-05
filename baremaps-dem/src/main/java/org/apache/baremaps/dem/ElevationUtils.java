@@ -31,7 +31,7 @@ public class ElevationUtils {
   private static final double TERRARIUM_OFFSET = 32768.0;
 
   private ElevationUtils() {
-    // Private constructor to prevent instantiation
+    // Prevent instantiation
   }
 
   /**
@@ -96,33 +96,6 @@ public class ElevationUtils {
   }
 
   /**
-   * Converts a pixel value to an elevation value using the standard color scheme.
-   *
-   * @param rgb The input pixel value
-   * @return The elevation value
-   */
-  public static double pixelToElevationNormal(int rgb) {
-    int r = (rgb >> 16) & 0xFF;
-    int g = (rgb >> 8) & 0xFF;
-    int b = rgb & 0xFF;
-    return (r * ELEVATION_SCALE + g * 256.0 + b) / 10.0 - ELEVATION_OFFSET;
-  }
-
-  /**
-   * Converts an elevation value to a pixel value using the standard color scheme.
-   *
-   * @param elevation The input elevation value
-   * @return The pixel value
-   */
-  public static int elevationToPixelStandard(double elevation) {
-    int value = (int) ((elevation + ELEVATION_OFFSET) * 10.0);
-    int r = (value >> 16) & 0xFF;
-    int g = (value >> 8) & 0xFF;
-    int b = value & 0xFF;
-    return (r << 16) | (g << 8) | b;
-  }
-
-  /**
    * Validates the input image.
    *
    * @param image The input image
@@ -183,6 +156,33 @@ public class ElevationUtils {
       clampedGrid[i] = Math.max(min, Math.min(max, grid[i]));
     }
     return clampedGrid;
+  }
+
+  /**
+   * Converts a pixel value to an elevation value using an rgb color scheme.
+   *
+   * @param rgb The rgb pixel value
+   * @return The elevation value
+   */
+  public static double rgbToElevation(int rgb) {
+    int r = (rgb >> 16) & 0xFF;
+    int g = (rgb >> 8) & 0xFF;
+    int b = rgb & 0xFF;
+    return (r * ELEVATION_SCALE + g * 256.0 + b) / 10.0 - ELEVATION_OFFSET;
+  }
+
+  /**
+   * Converts an elevation value to a pixel value using an rgb color scheme.
+   *
+   * @param elevation The elevation value
+   * @return The rgb pixel value
+   */
+  public static int elevationToRgb(double elevation) {
+    int value = (int) ((elevation + ELEVATION_OFFSET) * 10.0);
+    int r = (value >> 16) & 0xFF;
+    int g = (value >> 8) & 0xFF;
+    int b = value & 0xFF;
+    return (r << 16) | (g << 8) | b;
   }
 
   /**

@@ -35,6 +35,9 @@ import org.apache.baremaps.tilestore.TileStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A resource that serves raster tiles as PNG images.
+ */
 public class BufferedImageResource {
 
   private static final Logger logger =
@@ -44,10 +47,23 @@ public class BufferedImageResource {
 
   private final Supplier<TileStore<BufferedImage>> tileStoreSupplier;
 
+  /**
+   * Constructs a {@code BufferedImageResource} with the specified tile store supplier.
+   *
+   * @param tileStoreSupplier the tile store supplier
+   */
   public BufferedImageResource(Supplier<TileStore<BufferedImage>> tileStoreSupplier) {
     this.tileStoreSupplier = tileStoreSupplier;
   }
 
+  /**
+   * Serves a raster tile as a PNG image.
+   *
+   * @param z the zoom level
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * @return the HTTP response
+   */
   @Get("regex:^/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).png")
   @Blocking
   public HttpResponse tile(@Param("z") int z, @Param("x") int x, @Param("y") int y) {

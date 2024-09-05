@@ -19,7 +19,6 @@ package org.apache.baremaps.tilestore;
 
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public interface TileStore<T> extends AutoCloseable {
    * @return the content of the tiles
    * @throws TileStoreException
    */
-  default List<T> read(List<TileCoord> tileCoords) throws TileStoreException, IOException {
+  default List<T> read(List<TileCoord> tileCoords) throws TileStoreException {
     var blobs = new ArrayList<T>();
     for (var tileCoord : tileCoords) {
       blobs.add(read(tileCoord));

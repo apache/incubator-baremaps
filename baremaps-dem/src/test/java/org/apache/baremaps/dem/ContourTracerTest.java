@@ -53,7 +53,7 @@ class ContourTracerTest {
             .resolveSibling("baremaps-dem/src/test/resources/fuji.png")
             .toAbsolutePath().toFile());
 
-    var fujiGrid = ElevationUtils.imageToGrid(fujiImage, ElevationUtils::pixelToElevationNormal);
+    var fujiGrid = ElevationUtils.imageToGrid(fujiImage, ElevationUtils::rgbToElevation);
     var fujiContours =
         new ContourTracer(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), false, true)
             .traceContours(500);

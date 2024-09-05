@@ -29,6 +29,9 @@ import org.apache.sis.storage.*;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.FactoryException;
 
+/**
+ * A reader for geotiff files based on the Apache SIS library.
+ */
 public class GeoTiffReader implements AutoCloseable {
 
   private static final CoordinateReferenceSystem WEB_MERCATOR;

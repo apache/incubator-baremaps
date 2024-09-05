@@ -107,13 +107,17 @@ public class VectorContourTileStore implements TileStore<ByteBuffer> {
     }
   }
 
-  /** Unsupported operation. */
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
 
-  /** Unsupported operation. */
+  /**
+   * Unsupported operation.
+   */
   @Override
   public void delete(TileCoord tileCoord) throws TileStoreException {
     throw new UnsupportedOperationException();
