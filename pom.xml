@@ -52,7 +52,6 @@ limitations under the License.
     <module>baremaps-data</module>
     <module>baremaps-dem</module>
     <module>baremaps-flatgeobuf</module>
-    <module>baremaps-gdal</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
