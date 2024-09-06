@@ -25,7 +25,7 @@ import org.locationtech.jts.operation.linemerge.LineMerger;
 
 /**
  * Provides methods for generating contour lines and contour polygons from digital elevation models
- * (DEMs).
+ * (DEMs). All the coordinates are expressed
  */
 @SuppressWarnings({"squid:S3776", "squid:S135"})
 public class ContourTracer {
@@ -56,6 +56,7 @@ public class ContourTracer {
    */
   public ContourTracer(double[] grid, int width, int height, boolean normalize,
       boolean polygonize) {
+    validateInput(grid, width, height);
     this.grid = Arrays.copyOf(grid, grid.length);
     this.width = width;
     this.height = height;
@@ -70,8 +71,6 @@ public class ContourTracer {
    * @return A list of LineString objects representing the isolines
    */
   public List<Geometry> traceContours(double level) {
-    validateInput(grid, width, height);
-
     // Process each cell in the grid to generate segments
     List<LineString> cells = new ArrayList<>();
     for (int y = 0; y < height - 1; y++) {
