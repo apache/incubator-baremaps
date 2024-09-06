@@ -56,7 +56,7 @@ jobs:
           gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz"
           cd -
 
-      - name: Publish candidate on GitHub
+      - name: Publish release candidate on GitHub
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -70,15 +70,14 @@ jobs:
           gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.sha512
           gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc
 
-      - name: Publish candidate on Apache
+      - name: Publish release candidate on Apache SVN
         run: |
           svn --username "${{ secrets.INCUBATOR_SVN_DEV_USERNAME }}" --password "${{ secrets.INCUBATOR_SVN_DEV_PASSWORD }}" import -m "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz https://dist.apache.org/repos/dist/dev/incubator/baremaps/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
 
-      - name: Publish candidate on Maven
+      - name: Publish candidate snapshots on Apache Nexus
         env:
           SERVER_USERNAME: ${{ secrets.NEXUS_USER }}
           SERVER_PASSWORD: ${{ secrets.NEXUS_PW }}
         run: |
-          # TODO: Deploy the candidate on the Apache Maven repository
-          # mvn deploy
+          mvn deploy
 
