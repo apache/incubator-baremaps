@@ -45,5 +45,9 @@
       <groupId>org.locationtech.proj4j</groupId>
       <artifactId>proj4j</artifactId>
     </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+    </dependency>
   </dependencies>
 </project>
