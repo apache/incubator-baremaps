@@ -20,7 +20,6 @@ jobs:
           java-version: 17
           distribution: temurin
           cache: maven
-          server-id: apache.snapshots.https
           server-username: NEXUS_USER
           server-password: NEXUS_PW
           gpg-private-key: ${{ secrets.BAREMAPS_GPG_SECRET_KEY }}
@@ -69,14 +68,6 @@ jobs:
           gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz
           gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.sha512
           gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc
-
-      - name: Publish candidate snapshots on Apache Nexus
-        shell: bash
-        env:
-          NEXUS_USER: ${{ secrets.NEXUS_USER }}
-          NEXUS_PW: ${{ secrets.NEXUS_PW }}
-        run: |
-          ./mvnw deploy -DskipTests -Dmaven.javadoc.skip=true -B -V
 
       - name: Publish release candidate on Apache SVN
         shell: bash
