@@ -18,6 +18,12 @@ limitations under the License.
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>23</version>
+  </parent>
+
   <groupId>org.apache.baremaps</groupId>
   <artifactId>baremaps</artifactId>
   <version>0.7.4-SNAPSHOT</version>
@@ -29,7 +35,7 @@ limitations under the License.
 
   <organization>
     <name>baremaps</name>
-    <url>https://www.baremaps.com/</url>
+    <url>https://baremaps.apache.org/</url>
   </organization>
 
   <licenses>
@@ -39,14 +45,6 @@ limitations under the License.
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <developers>
-    <developer>
-      <id>bchapuis</id>
-      <name>Bertil Chapuis</name>
-      <email>bchapuis@gmail.com</email>
-    </developer>
-  </developers>
 
   <modules>
     <module>baremaps-cli</module>
@@ -66,17 +64,6 @@ limitations under the License.
     <developerConnection>scm:git:git@github.com:apache/baremaps.git</developerConnection>
     <url>scm:git:git@github.com:apache/baremaps.git</url>
   </scm>
-
-  <distributionManagement>
-    <repository>
-      <id>maven</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>maven</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
