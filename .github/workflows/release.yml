@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+'
+
+jobs:
+  publish-candidate:
+    name: Publish candidate
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
+          server-username: NEXUS_USER
+          server-password: NEXUS_PW
+          gpg-private-key: ${{ secrets.BAREMAPS_GPG_SECRET_KEY }}
+
+      - name: Extract variables
+        id: variables
+        run: |
+          echo "git_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "git_version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "mvn_version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
+
+      - name: Build candidate
+        run: mvn install -DskipTests -Dmaven.javadoc.skip=true -B -V
+
+      - name: Set up GPG
+        run: |
+          echo "${{ secrets.BAREMAPS_GPG_SECRET_KEY }}" | gpg --batch --import
+          gpg --list-keys
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+
+      - name: Sign and hash candidate
+        run: |
+          cd ./baremaps-cli/target
+          mv apache-baremaps-${{ steps.variables.outputs.mvn_version }}-incubating-src.tar.gz apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
+          shasum -a 512 "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz" > "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.sha512"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz"
+          mv apache-baremaps-${{ steps.variables.outputs.mvn_version }}-incubating-bin.tar.gz apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz
+          shasum -a 512 "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz" > "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.sha512"
+          gpg --no-tty --quiet --pinentry-mode loopback --default-key "${{ secrets.GPG_KEY_ID }}" --batch --yes --output "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc" --detach-sign --armor "./apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz"
+          cd -
+
+      - name: Publish release candidate on GitHub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.variables.outputs.git_tag }}" --draft --prerelease --title "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" --repo ${{ github.repository }} --generate-notes
+          gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz
+          gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.sha512
+          gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-src.tar.gz.asc
+          gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz
+          gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.sha512
+          gh release upload --clobber "${{ steps.variables.outputs.git_tag }}" ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-incubating-bin.tar.gz.asc
+
+      - name: Publish release candidate on Apache SVN
+        run: |
+          mkdir -p ${{ steps.variables.outputs.git_version }}
+          cp ./baremaps-cli/target/apache-baremaps-${{ steps.variables.outputs.git_version }}-* ${{ steps.variables.outputs.git_version }}
+          svn --username "${{ secrets.INCUBATOR_SVN_DEV_USERNAME }}" --password "${{ secrets.INCUBATOR_SVN_DEV_PASSWORD }}" import -m "Apache Baremaps ${{ steps.variables.outputs.git_version }} (incubating)" ${{ steps.variables.outputs.git_version }} https://dist.apache.org/repos/dist/dev/incubator/baremaps/${{ steps.variables.outputs.git_version }}
+          rm -rf ${{ steps.variables.outputs.git_version }}

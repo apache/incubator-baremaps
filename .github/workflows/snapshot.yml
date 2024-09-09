@@ -1,4 +1,4 @@
-name: Deploy snapshot
+name: Nexus
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  deploy-snapshot:
-    name: Deploy snapshot
+  publish-snapshot:
+    name: Publish snapshot
     runs-on: ubuntu-latest
     if: "!startsWith(github.ref, 'refs/tags/v')"
     steps:
@@ -33,7 +33,7 @@ jobs:
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
 
-      - name: Publish snapshots on Apache Nexus
+      - name: Publish snapshot artifacts on Apache Nexus
         env:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
           NEXUS_PW: ${{ secrets.NEXUS_PW }}
