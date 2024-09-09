@@ -36,7 +36,6 @@ In order to release a new version of Apache Baremaps, follow these steps:
 ```bash
 cd baremaps
 git checkout -b release-$RELEASE_VERSION
-git push --set-upstream origin release-$RELEASE_VERSION
 ```
 
 - [ ] Set the release version and commit the changes:
@@ -44,6 +43,7 @@ git push --set-upstream origin release-$RELEASE_VERSION
 ```bash 
 ./mvnw versions:set -DnewVersion=$RELEASE_VERSION
 git commit -a -m "Release Baremaps $RELEASE_VERSION"
+git push --set-upstream origin release-$RELEASE_VERSION
 ```
 
 - [ ] Tag the last commit with the release candidate version:
@@ -51,10 +51,6 @@ git commit -a -m "Release Baremaps $RELEASE_VERSION"
 ```bash
 git tag v$RELEASE_VERSION-rc$CANDIDATE_NUMBER
 ```
-
-> TODO: The following step is not yet fully automated. We need to add secrets and steps to publish the artifacts to the [dev directory](https://dist.apache.org/repos/dist/dev/incubator/baremaps/) (APACHE_USERNAME, APACHE_PASSWORD) and to the maven repository (NEXUS_USERNAME, NEXUS_PASSWORD).
-
-```bash
 
 - [ ] Push the tag to the remote repository (this will trigger GitHub Action to build the release candidate, publish the artifacts to the [dev directory](https://dist.apache.org/repos/dist/dev/incubator/baremaps/) of dist.apache.org repository, and draft a release on GitHub):
 
@@ -64,12 +60,11 @@ git push origin v$RELEASE_VERSION-rc$CANDIDATE_NUMBER
 
 - [ ] Edit the release notes for this tag on GitHub.
 - [ ] Ask the community to vote for the release candidate.
-- [ ] If the release candidate is not approved by the community, commit the necessary changes, clean the git history, 
-  and go back to step 5.
+- [ ] If the release candidate is not approved by the community, commit the necessary changes, clean the git history, create a new release candidate, and repeat the process.
 
 > TODO: The following step is not yet fully automated. We need to add secrets and steps to publish the artifacts to the [dev directory](https://dist.apache.org/repos/dist/dev/incubator/baremaps/) (APACHE_USERNAME, APACHE_PASSWORD) and to the maven repository (NEXUS_USERNAME, NEXUS_PASSWORD).
 
-- [ ] If the release candidate is approved by the community, tag the release commit with the release version (this will trigger GitHub Action to build the release candidate, publish the artifacts to the [release directory](https://dist.apache.org/repos/dist/release/incubator/baremaps/) of dist.apache.org repository, and draft a release on GitHub):
+- [ ] If the release candidate is approved by the community, tag the release commit with the release version (this will trigger the same GitHub Action as before):
 
 ```bash
 git tag -a v$RELEASE_VERSION
@@ -77,6 +72,21 @@ git push origin v$RELEASE_VERSION
 ```
 
 - [ ] Register the release on [reporter.apache.org](https://reporter.apache.org/addrelease.html?incubator-baremaps).
+- [ ] Rebase the release branch into the main branch.
+- [ ] Clean up all the release candidate branches and tags.
+- [ ] Publish the release on GitHub.
+- [ ] Copy the release artifacts from the [dev directory](https://dist.apache.org/repos/dist/dev/incubator/baremaps/) to the [release directory](https://dist.apache.org/repos/dist/release/incubator/baremaps/).
+
+```bash
+svn cp https://dist.apache.org/repos/dist/dev/incubator/baremaps/$RELEASE_VERSION-rc$CANDIDATE_NUMBER https://dist.apache.org/repos/dist/release/incubator/baremaps/$RELEASE_VERSION -m "Release Apache Baremaps (incubating) $RELEASE_VERSION"
+```
+
+- [ ] Publish the release artifacts to the maven repository.
+
+```bash
+./mvnw clean deploy -Papache-release
+```
+
 - [ ] Set the version of the next iteration and commit the changes:
 
 ```bash
@@ -85,10 +95,11 @@ git commit -a -m "Prepare for next development iteration"
 git push origin
 ```
 
-- [ ] Rebase the release branch into the main branch.
-- [ ] Publish the release on GitHub and update the website.
+```bash
+./mvnw clean deploy
+```
+
 - [ ] Notify the community of the release by sending a message to the mailing list.
-- [ ] Clean up all the release candidate branches and tags.
 
 ## Reproducing the build
 
