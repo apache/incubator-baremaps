@@ -149,7 +149,6 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
         .iterator();
   }
 
-
   /** {@inheritDoc} */
   @Override
   public long size() {

@@ -64,14 +64,14 @@ public class WorkflowContext {
   }
 
   public Map<Long, Coordinate> getCoordinateMap() throws IOException {
-    return DataConversions.asMap(getMemoryAlignedDataMap("coordinates", new LonLatDataType()));
+    return DataConversions.asMap(getMonotonicPairedDataMap("coordinates", new LonLatDataType()));
   }
 
   public Map<Long, List<Long>> getReferenceMap() throws IOException {
     return DataConversions.asMap(getMonotonicDataMap("references", new LongListDataType()));
   }
 
-  public <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
+  private <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
       throws IOException {
     var coordinateDir = Files.createDirectories(cacheDir.resolve(name));
     return new MemoryAlignedDataMap<>(
@@ -79,7 +79,7 @@ public class WorkflowContext {
         new MemoryMappedDirectory(coordinateDir));
   }
 
-  public <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)
+  private <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)
       throws IOException {
     var mapDir = Files.createDirectories(cacheDir.resolve(name));
     var keysDir = Files.createDirectories(mapDir.resolve("keys"));
@@ -91,6 +91,16 @@ public class WorkflowContext {
         new AppendOnlyLog<>(
             dataType,
             new MemoryMappedDirectory(valuesDir)));
+  }
+
+  private DataMap<Long, Coordinate> getMonotonicPairedDataMap(String name,
+      DataType<Coordinate> dataType)
+      throws IOException {
+    var mapDir = Files.createDirectories(cacheDir.resolve(name));
+    return new MonotonicPairedDataMap<>(
+        new MemoryAlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LonLatDataType()),
+            new MemoryMappedDirectory(Files.createDirectories(mapDir))));
   }
 
   public void cleanCache() throws IOException {
