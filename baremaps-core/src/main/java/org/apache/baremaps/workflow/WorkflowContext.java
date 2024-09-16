@@ -64,7 +64,7 @@ public class WorkflowContext {
   }
 
   public Map<Long, Coordinate> getCoordinateMap() throws IOException {
-    return DataConversions.asMap(getMemoryAlignedDataMap("coordinates", new LonLatDataType()));
+    return DataConversions.asMap(getMonotonicDataMap("coordinates", new LonLatDataType()));
   }
 
   public Map<Long, List<Long>> getReferenceMap() throws IOException {
