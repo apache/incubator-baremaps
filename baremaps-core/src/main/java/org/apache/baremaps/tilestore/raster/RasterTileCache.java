@@ -87,7 +87,7 @@ public class RasterTileCache implements TileStore<BufferedImage> {
   /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
-    tileStore.close();
     cache.cleanUp();
+    tileStore.close();
   }
 }
