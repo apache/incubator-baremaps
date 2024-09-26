@@ -22,7 +22,10 @@ package org.apache.baremaps.cli.dem;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "dem", description = "DEM processing commands.",
+/**
+ * A command group that contains commands for processing digital elevation models (DEMs).
+ */
+@Command(name = "dem", description = "Digital Elevation Models (DEMs) processing",
     subcommands = {
         Serve.class,
         VectorTileContours.class
