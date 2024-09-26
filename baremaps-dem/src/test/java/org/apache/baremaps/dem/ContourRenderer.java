@@ -28,8 +28,8 @@ import javax.swing.*;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A simple renderer that traces contour lines on a raster image.
- * This class is used for testing purposes only, hence it presence in the test folder.
+ * A simple renderer that traces contour lines on a raster image. This class is used for testing
+ * purposes only, hence it presence in the test folder.
  */
 public class ContourRenderer {
 

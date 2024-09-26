@@ -29,8 +29,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.AffineTransformation;
 
 /**
- * A simple renderer that displays the cases of the Marching Square algorithm.
- * This class is used for testing purposes only, hence it presence in the test folder.
+ * A simple renderer that displays the cases of the Marching Square algorithm. This class is used
+ * for testing purposes only, hence it presence in the test folder.
  */
 public class MarchingSquareRenderer extends JPanel {
   private List<Geometry> geometries;

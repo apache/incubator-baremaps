@@ -24,8 +24,8 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
 /**
  * A geometry transformer that applies the Chaikin smoothing algorithm to a geometry's coordinates.
  * This class extends the {@link GeometryTransformer} to provide a smoother version of the input
- * geometry by iteratively applying the Chaikin algorithm, which reduces sharp corners and
- * refines the shape of geometrical features.
+ * geometry by iteratively applying the Chaikin algorithm, which reduces sharp corners and refines
+ * the shape of geometrical features.
  */
 public class ChaikinSmoother extends GeometryTransformer {
 
