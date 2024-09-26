@@ -27,6 +27,7 @@ import org.apache.sis.referencing.CRS;
 import org.apache.sis.referencing.CommonCRS;
 import org.apache.sis.storage.*;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
 
 /**
@@ -130,7 +131,7 @@ public class GeoTiffReader implements AutoCloseable {
           values);
 
       return values;
-    } catch (Exception e) {
+    } catch (TransformException e) {
       throw new GeoTiffException(e);
     }
   }

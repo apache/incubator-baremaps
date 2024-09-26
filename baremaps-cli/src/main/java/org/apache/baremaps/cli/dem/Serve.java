@@ -35,8 +35,8 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 /**
- * A command that starts a tile server to preview elevation data.
- * The server serves raster tiles for elevation and hillshade data, and vector tiles for contour and hillshade data.
+ * A command that starts a tile server to preview elevation data. The server serves raster tiles for
+ * elevation and hillshade data, and vector tiles for contour and hillshade data.
  */
 @Command(name = "serve", description = "Start a tile server to preview elevation data.")
 public class Serve implements Callable<Integer> {
@@ -47,7 +47,8 @@ public class Serve implements Callable<Integer> {
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
 
-  @Option(names = {"--path"}, paramLabel = "PATH", description = "The path of a digital elevation model (DEM) file in the geotiff format.")
+  @Option(names = {"--path"}, paramLabel = "PATH",
+      description = "The path of a digital elevation model (DEM) file in the geotiff format.")
   private Path path;
 
   @Override
