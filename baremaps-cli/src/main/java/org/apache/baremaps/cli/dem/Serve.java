@@ -34,7 +34,11 @@ import org.apache.baremaps.tilestore.raster.*;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Start a tile server that serves elevation data.")
+/**
+ * A command that starts a tile server to preview elevation data.
+ * The server serves raster tiles for elevation and hillshade data, and vector tiles for contour and hillshade data.
+ */
+@Command(name = "serve", description = "Start a tile server to preview elevation data.")
 public class Serve implements Callable<Integer> {
 
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
@@ -43,7 +47,7 @@ public class Serve implements Callable<Integer> {
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
 
-  @Option(names = {"--path"}, paramLabel = "PATH", description = "The path of a geoTIFF file.")
+  @Option(names = {"--path"}, paramLabel = "PATH", description = "The path of a digital elevation model (DEM) file in the geotiff format.")
   private Path path;
 
   @Override
