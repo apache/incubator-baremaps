@@ -31,7 +31,7 @@ public abstract class TileDataSchemaTest {
   @Test
   @Tag("integration")
   void readWriteDeleteTile() throws Exception {
-    TileStore tileStore = createTileStore();
+    TileStore<ByteBuffer> tileStore = createTileStore();
     TileCoord tileCoord = new TileCoord(1, 2, 3);
     ByteBuffer blob = ByteBuffer.wrap("tile_content".getBytes());
 
@@ -47,5 +47,5 @@ public abstract class TileDataSchemaTest {
     assertThrows(TileStoreException.class, () -> tileStore.read(tileCoord));
   }
 
-  public abstract TileStore createTileStore() throws Exception;
+  public abstract TileStore<ByteBuffer> createTileStore() throws Exception;
 }

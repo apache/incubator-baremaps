@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * This {@code TileStore} combines the input queries, identifies common table expressions (CTE), and
  * generates a single optimized sql that hits the database.
  */
-public class PostgresTileStore implements TileStore {
+public class PostgresTileStore implements TileStore<ByteBuffer> {
 
   private static final Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
 

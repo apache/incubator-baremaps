@@ -19,12 +19,11 @@ package org.apache.baremaps.tilestore;
 
 
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Represents a store for tiles. */
-public interface TileStore extends AutoCloseable {
+public interface TileStore<T> extends AutoCloseable {
 
   /**
    * Reads the content of a tile.
@@ -33,7 +32,7 @@ public interface TileStore extends AutoCloseable {
    * @return the content of the tile
    * @throws TileStoreException
    */
-  ByteBuffer read(TileCoord tileCoord) throws TileStoreException;
+  T read(TileCoord tileCoord) throws TileStoreException;
 
   /**
    * Reads the content of a list of tiles.
@@ -42,8 +41,8 @@ public interface TileStore extends AutoCloseable {
    * @return the content of the tiles
    * @throws TileStoreException
    */
-  default List<ByteBuffer> read(List<TileCoord> tileCoords) throws TileStoreException {
-    var blobs = new ArrayList<ByteBuffer>();
+  default List<T> read(List<TileCoord> tileCoords) throws TileStoreException {
+    var blobs = new ArrayList<T>();
     for (var tileCoord : tileCoords) {
       blobs.add(read(tileCoord));
     }
@@ -57,7 +56,7 @@ public interface TileStore extends AutoCloseable {
    * @param blob the content of the tile
    * @throws TileStoreException
    */
-  void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException;
+  void write(TileCoord tileCoord, T blob) throws TileStoreException;
 
   /**
    * Writes the content of a list of tiles.
@@ -65,9 +64,9 @@ public interface TileStore extends AutoCloseable {
    * @param entries the tile entries
    * @throws TileStoreException
    */
-  default void write(List<TileEntry> entries) throws TileStoreException {
+  default void write(List<TileEntry<T>> entries) throws TileStoreException {
     for (var entry : entries) {
-      write(entry.getTileCoord(), entry.getByteBuffer());
+      write(entry.getTileCoord(), entry.getTileValue());
     }
   }
 

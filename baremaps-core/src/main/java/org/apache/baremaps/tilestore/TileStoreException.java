@@ -21,7 +21,7 @@ package org.apache.baremaps.tilestore;
 public class TileStoreException extends Exception {
 
   /**
-   * Constructs an {@code BlobStoreException} with the specified detail message.
+   * Constructs an {@code TileStoreException} with the specified detail message.
    *
    * @param message the message
    */
@@ -30,7 +30,7 @@ public class TileStoreException extends Exception {
   }
 
   /**
-   * Constructs a {@code BlobStoreException} with the specified cause.
+   * Constructs a {@code TileStoreException} with the specified cause.
    *
    * @param cause the cause
    */
@@ -39,7 +39,7 @@ public class TileStoreException extends Exception {
   }
 
   /**
-   * Constructs a {@code BlobStoreException} with the specified detail message and cause.
+   * Constructs a {@code TileStoreException} with the specified detail message and cause.
    *
    * @param message the message
    * @param cause the cause

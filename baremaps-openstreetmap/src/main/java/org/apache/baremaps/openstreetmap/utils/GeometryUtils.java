@@ -21,6 +21,7 @@ import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
@@ -34,13 +35,15 @@ public class GeometryUtils {
   public static final GeometryFactory GEOMETRY_FACTORY_WGS84 =
       new GeometryFactory(new PrecisionModel(), 4326);
 
-  private GeometryUtils() {}
+  private GeometryUtils() {
+    // Prevent instantiation
+  }
 
   /**
    * Serializes a geometry in the WKB format.
    *
-   * @param geometry
-   * @return
+   * @param geometry the geometry to serialize
+   * @return the serialized geometry
    */
   public static byte[] serialize(Geometry geometry) {
     if (geometry == null) {
@@ -53,8 +56,8 @@ public class GeometryUtils {
   /**
    * Deserializes a geometry in the WKB format.
    *
-   * @param wkb
-   * @return
+   * @param wkb the serialized geometry
+   * @return the deserialized geometry
    */
   public static Geometry deserialize(byte[] wkb) {
     if (wkb == null) {
@@ -93,4 +96,34 @@ public class GeometryUtils {
     return new ProjectionTransformer(inputSRID, outputSRID);
   }
 
+  /**
+   * Scales a geometry by a factor.
+   *
+   * @param geometry The geometry to scale
+   * @param factor The factor to scale by
+   * @return The scaled geometry
+   */
+  public static Geometry scale(Geometry geometry, double factor) {
+    AffineTransformation transform = AffineTransformation.scaleInstance(factor, factor);
+    return transform.transform(geometry);
+  }
+
+  /**
+   * Creates an envelope with the provided bounds.
+   *
+   * @param xMin the minimum x coordinate
+   * @param yMin the minimum y coordinate
+   * @param xMax the maximum x coordinate
+   * @param yMax the maximum y coordinate
+   * @return the envelope geometry
+   */
+  public static Geometry createEnvelope(int xMin, int yMin, int xMax, int yMax) {
+    return new GeometryFactory().createPolygon(new Coordinate[] {
+        new Coordinate(xMin, yMin),
+        new Coordinate(xMin, yMax),
+        new Coordinate(xMax, yMax),
+        new Coordinate(xMax, yMin),
+        new Coordinate(xMin, yMin)
+    });
+  }
 }
