@@ -61,7 +61,7 @@ public class GeoParquetDataTable implements DataTable {
   @Override
   public Stream<DataRow> parallelStream() {
     return reader.readParallel().map(group -> new DataRowImpl(
-        GeoParquetTypeConversion.asSchema(path.toString(), group.getSchema()),
+        GeoParquetTypeConversion.asSchema(path.toString(), group.getGeoParquetSchema()),
         GeoParquetTypeConversion.asRowValues(group)));
   }
 
