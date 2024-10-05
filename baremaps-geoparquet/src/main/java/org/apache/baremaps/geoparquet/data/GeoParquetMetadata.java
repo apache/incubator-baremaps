@@ -20,6 +20,7 @@ package org.apache.baremaps.geoparquet.data;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Objects;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,6 +34,27 @@ public class GeoParquetMetadata {
 
   @JsonProperty("columns")
   private Map<String, GeoParquetColumnMetadata> columns;
+
+  @JsonProperty("encoding")
+  private String encoding;
+
+  @JsonProperty("geometry_types")
+  private List<String> geometryTypes;
+
+  @JsonProperty("crs")
+  private Object crs;
+
+  @JsonProperty("edges")
+  private String edges;
+
+  @JsonProperty("bbox")
+  private List<Double> bbox;
+
+  @JsonProperty("epoch")
+  private String epoch;
+
+  @JsonProperty("covering")
+  private Object covering;
 
   public String getVersion() {
     return version;
@@ -56,6 +78,62 @@ public class GeoParquetMetadata {
 
   public void setColumns(Map<String, GeoParquetColumnMetadata> columns) {
     this.columns = columns;
+  }
+
+  public String getEncoding() {
+    return encoding;
+  }
+
+  public void setEncoding(String encoding) {
+    this.encoding = encoding;
+  }
+
+  public List<String> getGeometryTypes() {
+    return geometryTypes;
+  }
+
+  public void setGeometryTypes(List<String> geometryTypes) {
+    this.geometryTypes = geometryTypes;
+  }
+
+  public Object getCrs() {
+    return crs;
+  }
+
+  public void setCrs(Object crs) {
+    this.crs = crs;
+  }
+
+  public String getEdges() {
+    return edges;
+  }
+
+  public void setEdges(String edges) {
+    this.edges = edges;
+  }
+
+  public List<Double> getBbox() {
+    return bbox;
+  }
+
+  public void setBbox(List<Double> bbox) {
+    this.bbox = bbox;
+  }
+
+  public String getEpoch() {
+    return epoch;
+  }
+
+  public void setEpoch(String epoch) {
+    this.epoch = epoch;
+  }
+
+  public Object getCovering() {
+    return covering;
+  }
+
+  public void setCovering(Object covering) {
+    this.covering = covering;
   }
 
   public int getSrid(String column) {

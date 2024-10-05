@@ -37,6 +37,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider;
 import org.apache.hadoop.fs.s3a.S3AFileSystem;
 import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.BlockMetaData;
+import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 
 /**
@@ -103,7 +105,33 @@ public class GeoParquetReader {
 
   private FileInfo getFileInfo(FileStatus fileStatus) {
     try {
-      return buildFileInfo(fileStatus);
+      long recordCount;
+      MessageType messageType;
+      Map<String, String> keyValueMetadata;
+
+      ParquetMetadata parquetMetadata =
+          ParquetFileReader.readFooter(configuration, fileStatus.getPath());
+      recordCount = parquetMetadata.getBlocks().stream()
+          .mapToLong(BlockMetaData::getRowCount)
+          .sum();
+
+      messageType = parquetMetadata.getFileMetaData().getSchema();
+      keyValueMetadata = parquetMetadata.getFileMetaData().getKeyValueMetaData();
+
+      GeoParquetMetadata geoParquetMetadata = null;
+      Schema geoParquetSchema = null;
+
+      if (keyValueMetadata.containsKey("geo")) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        geoParquetMetadata =
+            objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
+        geoParquetSchema =
+            GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
+      }
+
+      return new FileInfo(fileStatus, recordCount, keyValueMetadata, messageType,
+          geoParquetMetadata, geoParquetSchema);
     } catch (IOException e) {
       throw new GeoParquetException("Failed to build FileInfo for file: " + fileStatus, e);
     }
@@ -143,33 +171,6 @@ public class GeoParquetReader {
       groupCount.set(totalCount);
     }
     return groupCount.get();
-  }
-
-  private FileInfo buildFileInfo(FileStatus file) throws IOException {
-    long recordCount;
-    MessageType messageType;
-    Map<String, String> keyValueMetadata;
-
-    try (ParquetFileReader reader = ParquetFileReader.open(configuration, file.getPath())) {
-      recordCount = reader.getRecordCount();
-      messageType = reader.getFileMetaData().getSchema();
-      keyValueMetadata = reader.getFileMetaData().getKeyValueMetaData();
-    }
-
-    GeoParquetMetadata geoParquetMetadata = null;
-    Schema geoParquetSchema = null;
-
-    if (keyValueMetadata.containsKey("geo")) {
-      ObjectMapper objectMapper = new ObjectMapper();
-      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      geoParquetMetadata =
-          objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
-      geoParquetSchema =
-          GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
-    }
-
-    return new FileInfo(file, recordCount, keyValueMetadata, messageType,
-        geoParquetMetadata, geoParquetSchema);
   }
 
   public Stream<GeoParquetGroup> readParallel() {

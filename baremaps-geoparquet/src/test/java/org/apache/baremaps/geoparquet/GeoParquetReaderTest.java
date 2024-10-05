@@ -35,7 +35,6 @@ class GeoParquetReaderTest {
     URI geoParquet = TestFiles.GEOPARQUET.toUri();
     final boolean isParallel = false;
     final int expectedGroupCount = 5;
-
     readGroups(geoParquet, isParallel, expectedGroupCount);
   }
 
