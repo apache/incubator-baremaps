@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroupRecordConverter;
+import org.apache.baremaps.geoparquet.data.GeoParquetGroupRecordMaterializer;
 import org.apache.baremaps.geoparquet.data.GeoParquetMetadata;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.parquet.hadoop.api.ReadSupport;
@@ -32,9 +32,12 @@ import org.apache.parquet.schema.MessageType;
 
 public class GeoParquetGroupReadSupport extends ReadSupport<GeoParquetGroup> {
 
+  public GeoParquetGroupReadSupport() {}
+
   @Override
   public ReadContext init(
-      Configuration configuration, Map<String, String> keyValueMetaData,
+      Configuration configuration,
+      Map<String, String> keyValueMetaData,
       MessageType fileSchema) {
     String partialSchemaString = configuration.get(ReadSupport.PARQUET_READ_SCHEMA);
     MessageType requestedProjection = getSchemaForRead(fileSchema, partialSchemaString);
@@ -42,8 +45,10 @@ public class GeoParquetGroupReadSupport extends ReadSupport<GeoParquetGroup> {
   }
 
   @Override
-  public RecordMaterializer<GeoParquetGroup> prepareForRead(Configuration configuration,
-      Map<String, String> keyValueMetaData, MessageType fileSchema,
+  public RecordMaterializer<GeoParquetGroup> prepareForRead(
+      Configuration configuration,
+      Map<String, String> keyValueMetaData,
+      MessageType fileSchema,
       ReadContext readContext) {
 
     // Read the GeoParquet metadata of the Parquet file
@@ -52,7 +57,7 @@ public class GeoParquetGroupReadSupport extends ReadSupport<GeoParquetGroup> {
       GeoParquetMetadata metadata = new ObjectMapper()
           .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
           .readValue(json, GeoParquetMetadata.class);
-      return new GeoParquetGroupRecordConverter(readContext.getRequestedSchema(), metadata);
+      return new GeoParquetGroupRecordMaterializer(readContext.getRequestedSchema(), metadata);
     } catch (JsonProcessingException e) {
       throw new GeoParquetException("Failed to read GeoParquet's metadata of the Parquet file", e);
     }

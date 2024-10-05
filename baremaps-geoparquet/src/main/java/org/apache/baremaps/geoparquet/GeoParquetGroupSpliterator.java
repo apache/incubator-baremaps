@@ -50,8 +50,6 @@ class GeoParquetGroupSpliterator implements Spliterator<GeoParquetGroup> {
     setupReaderForNextFile();
   }
 
-
-
   private void setupReaderForNextFile() {
     closeCurrentReader();
 
