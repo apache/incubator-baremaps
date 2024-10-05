@@ -30,19 +30,19 @@ import org.locationtech.jts.geom.Geometry;
 public interface GeoParquetGroup {
 
   /**
-   * Returns the GeoParquet schema of the group built upon the Parquet schema and the GeoParquet
-   * metadata.
-   *
-   * @return the GeoParquet schema
-   */
-  Schema getSchema();
-
-  /**
    * Returns the Parquet schema of the group.
    *
    * @return the Parquet schema
    */
   GroupType getParquetSchema();
+
+  /**
+   * Returns the GeoParquet schema of the group built upon the Parquet schema and the GeoParquet
+   * metadata.
+   *
+   * @return the GeoParquet schema
+   */
+  Schema getGeoParquetSchema();
 
   /**
    * Returns the GeoParquet metadata of the group.

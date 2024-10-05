@@ -67,7 +67,7 @@ public class GeoParquetTypeConversion {
 
   public static List<Object> asRowValues(GeoParquetGroup group) {
     List<Object> values = new ArrayList<>();
-    Schema schema = group.getSchema();
+    Schema schema = group.getGeoParquetSchema();
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
       if (group.getValues(i).isEmpty()) {
@@ -93,7 +93,7 @@ public class GeoParquetTypeConversion {
 
   public static Map<String, Object> asNested(GeoParquetGroup group) {
     Map<String, Object> nested = new HashMap<>();
-    Schema schema = group.getSchema();
+    Schema schema = group.getGeoParquetSchema();
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
       if (group.getValues(i).isEmpty()) {
