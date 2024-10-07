@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 import java.util.List;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Field;
+import org.apache.baremaps.geoparquet.GeoParquetGroup.Field;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
 
-public class GeoParquetGroupFactory {
+class GeoParquetGroupFactory {
 
   private final GroupType schema;
 

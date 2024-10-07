@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
@@ -36,7 +36,7 @@ import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
 
-public class GeoParquetGroupRecordMaterializer extends RecordMaterializer<GeoParquetGroup> {
+class GeoParquetGroupRecordMaterializer extends RecordMaterializer<GeoParquetGroup> {
 
   private final GeoParquetGroupFactory groupFactory;
 

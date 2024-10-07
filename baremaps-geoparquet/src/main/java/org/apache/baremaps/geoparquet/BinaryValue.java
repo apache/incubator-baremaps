@@ -15,30 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
+import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.RecordConsumer;
 
-public class FloatValue extends Primitive {
 
-  private final float value;
+class BinaryValue extends Primitive {
 
-  public FloatValue(float value) {
-    this.value = value;
+  private final Binary binary;
+
+  public BinaryValue(Binary binary) {
+    this.binary = binary;
   }
 
   @Override
-  public float getFloat() {
-    return value;
+  public Binary getBinary() {
+    return binary;
+  }
+
+  @Override
+  public String getString() {
+    return binary.toStringUsingUTF8();
   }
 
   @Override
   public void writeValue(RecordConsumer recordConsumer) {
-    recordConsumer.addFloat(value);
+    recordConsumer.addBinary(binary);
   }
 
   @Override
   public String toString() {
-    return String.valueOf(value);
+    return getString();
   }
 }
