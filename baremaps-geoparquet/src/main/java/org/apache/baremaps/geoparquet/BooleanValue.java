@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 import org.apache.parquet.io.api.RecordConsumer;
 
+class BooleanValue extends Primitive {
 
-public class IntegerValue extends Primitive {
+  private final boolean bool;
 
-  private final int value;
-
-  public IntegerValue(int value) {
-    this.value = value;
+  public BooleanValue(boolean bool) {
+    this.bool = bool;
   }
 
   @Override
   public String toString() {
-    return String.valueOf(value);
+    return String.valueOf(bool);
   }
 
   @Override
-  public int getInteger() {
-    return value;
+  public boolean getBoolean() {
+    return bool;
   }
 
   @Override
   public void writeValue(RecordConsumer recordConsumer) {
-    recordConsumer.addInteger(value);
+    recordConsumer.addBoolean(bool);
   }
 }

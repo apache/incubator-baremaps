@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 import java.util.List;
 import org.apache.parquet.io.api.Binary;

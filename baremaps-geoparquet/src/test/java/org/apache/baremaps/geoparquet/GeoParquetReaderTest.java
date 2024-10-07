@@ -23,20 +23,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class GeoParquetReaderTest {
-
-  @Test
-  void read() {
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
-    final boolean isParallel = false;
-    final int expectedGroupCount = 5;
-    readGroups(geoParquet, isParallel, expectedGroupCount);
-  }
 
   private static void readGroups(URI geoParquet, boolean parallel,
       int expectedGroupCount) {
@@ -49,8 +40,15 @@ class GeoParquetReaderTest {
       geoParquetGroupStream = geoParquetReader.read();
     }
     geoParquetGroupStream.forEach(group -> groupCount.getAndIncrement());
-
     assertEquals(expectedGroupCount, groupCount.get());
+  }
+
+  @Test
+  void read() {
+    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    final boolean isParallel = false;
+    final int expectedGroupCount = 5;
+    readGroups(geoParquet, isParallel, expectedGroupCount);
   }
 
   @Disabled("Requires access to the Internet")

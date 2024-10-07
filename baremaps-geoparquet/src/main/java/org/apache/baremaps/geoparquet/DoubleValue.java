@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
-import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.RecordConsumer;
 
-public class Int96Value extends Primitive {
+class DoubleValue extends Primitive {
 
-  private final Binary value;
+  private final double value;
 
-  public Int96Value(Binary value) {
+  public DoubleValue(double value) {
     this.value = value;
   }
 
   @Override
-  public Binary getInt96() {
+  public double getDouble() {
     return value;
   }
 
   @Override
   public void writeValue(RecordConsumer recordConsumer) {
-    recordConsumer.addBinary(value);
+    recordConsumer.addDouble(value);
   }
 
   @Override
   public String toString() {
-    return "Int96Value{" + value + "}";
+    return String.valueOf(value);
   }
 }

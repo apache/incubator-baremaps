@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.hadoop;
+package org.apache.baremaps.geoparquet;
 
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
-import org.apache.parquet.hadoop.ParquetInputFormat;
+import org.apache.parquet.io.api.Binary;
+import org.apache.parquet.io.api.RecordConsumer;
 
-/**
- * Example input format to read Parquet files
- *
- * This Input format uses a rather inefficient data model but works independently of higher level
- * abstractions.
- */
-public class GeoParquetInputFormat extends ParquetInputFormat<GeoParquetGroup> {
+class Int96Value extends Primitive {
 
-  public GeoParquetInputFormat() {
-    super(GeoParquetGroupReadSupport.class);
+  private final Binary value;
+
+  public Int96Value(Binary value) {
+    this.value = value;
   }
 
+  @Override
+  public Binary getInt96() {
+    return value;
+  }
+
+  @Override
+  public void writeValue(RecordConsumer recordConsumer) {
+    recordConsumer.addBinary(value);
+  }
+
+  @Override
+  public String toString() {
+    return "Int96Value{" + value + "}";
+  }
 }

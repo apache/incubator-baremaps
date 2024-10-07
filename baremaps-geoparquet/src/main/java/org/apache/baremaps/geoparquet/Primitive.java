@@ -15,30 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
+import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.RecordConsumer;
+import org.locationtech.jts.geom.Geometry;
 
-public class BooleanValue extends Primitive {
+abstract class Primitive {
 
-  private final boolean bool;
-
-  public BooleanValue(boolean bool) {
-    this.bool = bool;
+  public String getString() {
+    throw new UnsupportedOperationException();
   }
 
-  @Override
-  public String toString() {
-    return String.valueOf(bool);
+  public int getInteger() {
+    throw new UnsupportedOperationException();
   }
 
-  @Override
+  public long getLong() {
+    throw new UnsupportedOperationException();
+  }
+
   public boolean getBoolean() {
-    return bool;
+    throw new UnsupportedOperationException();
   }
 
-  @Override
-  public void writeValue(RecordConsumer recordConsumer) {
-    recordConsumer.addBoolean(bool);
+  public Binary getBinary() {
+    throw new UnsupportedOperationException();
   }
+
+  public Binary getInt96() {
+    throw new UnsupportedOperationException();
+  }
+
+  public float getFloat() {
+    throw new UnsupportedOperationException();
+  }
+
+  public double getDouble() {
+    throw new UnsupportedOperationException();
+  }
+
+  public Geometry getGeometry() {
+    throw new UnsupportedOperationException();
+  }
+
+  public abstract void writeValue(RecordConsumer recordConsumer);
 }

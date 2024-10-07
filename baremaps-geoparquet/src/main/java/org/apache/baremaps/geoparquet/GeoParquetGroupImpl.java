@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.GroupType;
@@ -29,7 +28,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
-public class GeoParquetGroupImpl implements GeoParquetGroup {
+class GeoParquetGroupImpl implements GeoParquetGroup {
 
   private final GroupType schema;
 

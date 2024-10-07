@@ -24,10 +24,10 @@ import java.util.Map;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Field;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup.GroupField;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
+import org.apache.baremaps.geoparquet.GeoParquetGroup;
+import org.apache.baremaps.geoparquet.GeoParquetGroup.Field;
+import org.apache.baremaps.geoparquet.GeoParquetGroup.GroupField;
+import org.apache.baremaps.geoparquet.GeoParquetGroup.Schema;
 
 public class GeoParquetTypeConversion {
 

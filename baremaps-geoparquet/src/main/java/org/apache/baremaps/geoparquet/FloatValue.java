@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 import org.apache.parquet.io.api.RecordConsumer;
 
-public class LongValue extends Primitive {
+class FloatValue extends Primitive {
 
-  private final long value;
+  private final float value;
 
-  public LongValue(long value) {
+  public FloatValue(float value) {
     this.value = value;
   }
 
   @Override
-  public String toString() {
-    return String.valueOf(value);
-  }
-
-  @Override
-  public long getLong() {
+  public float getFloat() {
     return value;
   }
 
   @Override
   public void writeValue(RecordConsumer recordConsumer) {
-    recordConsumer.addLong(value);
+    recordConsumer.addFloat(value);
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
   }
 }

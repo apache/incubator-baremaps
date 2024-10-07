@@ -15,15 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.hadoop;
+package org.apache.baremaps.geoparquet;
 
-import org.apache.baremaps.geoparquet.common.GroupWriter;
 import org.apache.parquet.io.api.RecordConsumer;
-import org.apache.parquet.schema.GroupType;
 
-public class GeoParquetGroupWriter extends GroupWriter {
 
-  public GeoParquetGroupWriter(RecordConsumer recordConsumer, GroupType schema) {
-    super(recordConsumer, schema);
+class IntegerValue extends Primitive {
+
+  private final int value;
+
+  public IntegerValue(int value) {
+    this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @Override
+  public int getInteger() {
+    return value;
+  }
+
+  @Override
+  public void writeValue(RecordConsumer recordConsumer) {
+    recordConsumer.addInteger(value);
   }
 }
