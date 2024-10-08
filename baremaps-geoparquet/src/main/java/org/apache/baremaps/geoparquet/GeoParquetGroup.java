@@ -30,17 +30,11 @@ import org.locationtech.jts.io.WKBWriter;
 public class GeoParquetGroup {
 
   private final GroupType schema;
-
   private final GeoParquetMetadata metadata;
-
   private final Schema geoParquetSchema;
-
   private final Object[] data;
 
-  public GeoParquetGroup(
-      GroupType schema,
-      GeoParquetMetadata metadata,
-      Schema geoParquetSchema) {
+  public GeoParquetGroup(GroupType schema, GeoParquetMetadata metadata, Schema geoParquetSchema) {
     this.schema = schema;
     this.metadata = metadata;
     this.geoParquetSchema = geoParquetSchema;
@@ -74,53 +68,11 @@ public class GeoParquetGroup {
   }
 
   public int getFieldRepetitionCount(int fieldIndex) {
-    Field field = geoParquetSchema.fields().get(fieldIndex);
-    if (field.cardinality() == Cardinality.REPEATED) {
-      List<?> list = (List<?>) data[fieldIndex];
-      return list == null ? 0 : list.size();
+    Object value = data[fieldIndex];
+    if (value instanceof List<?>list) {
+      return list.size();
     } else {
-      return data[fieldIndex] == null ? 0 : 1;
-    }
-  }
-
-  public String getString(int fieldIndex, int index) {
-    return getBinary(fieldIndex, index).toString();
-  }
-
-  public int getInteger(int fieldIndex, int index) {
-    return (int) getValue(fieldIndex, index);
-  }
-
-  public long getLong(int fieldIndex, int index) {
-    return (long) getValue(fieldIndex, index);
-  }
-
-  public double getDouble(int fieldIndex, int index) {
-    return (double) getValue(fieldIndex, index);
-  }
-
-  public float getFloat(int fieldIndex, int index) {
-    return (float) getValue(fieldIndex, index);
-  }
-
-  public boolean getBoolean(int fieldIndex, int index) {
-    return (boolean) getValue(fieldIndex, index);
-  }
-
-  public Binary getBinary(int fieldIndex, int index) {
-    return (Binary) getValue(fieldIndex, index);
-  }
-
-  public Binary getInt96(int fieldIndex, int index) {
-    return (Binary) getValue(fieldIndex, index);
-  }
-
-  public Geometry getGeometry(int fieldIndex, int index) {
-    byte[] bytes = getBinary(fieldIndex, index).getBytes();
-    try {
-      return new WKBReader().read(bytes);
-    } catch (ParseException e) {
-      throw new GeoParquetException("WKBReader failed to parse", e);
+      return value == null ? 0 : 1;
     }
   }
 
@@ -131,20 +83,35 @@ public class GeoParquetGroup {
     } else if (index == 0) {
       return value;
     } else {
-      String elementText = String.format(" element number %d ", index);
-      throw createGeoParquetException(fieldIndex, elementText);
+      throw createGeoParquetException(fieldIndex, "element number " + index);
     }
   }
 
-  private GeoParquetException createGeoParquetException(int fieldIndex, String elementText) {
-    String msg = String.format("Not found %d (%s)%s in group%n%s", fieldIndex,
-        schema.getFieldName(fieldIndex), elementText, this);
-    return new GeoParquetException(msg);
+  private Object getValue(int fieldIndex) {
+    Field field = geoParquetSchema.fields().get(fieldIndex);
+    if (field.cardinality() == Cardinality.REPEATED) {
+      throw new IllegalStateException("Field " + fieldIndex + " (" + field.name()
+          + ") is repeated. Use getValues() instead.");
+    }
+    return data[fieldIndex];
+  }
+
+  public List<Object> getValues(int fieldIndex) {
+    Field field = geoParquetSchema.fields().get(fieldIndex);
+    if (field.cardinality() != Cardinality.REPEATED) {
+      return List.of(getValue(fieldIndex));
+    }
+    return (List<Object>) data[fieldIndex];
+  }
+
+  private GeoParquetGroup getGroup(int fieldIndex) {
+    return (GeoParquetGroup) data[fieldIndex];
   }
 
   private void addValue(int fieldIndex, Object value) {
-    if (data[fieldIndex] instanceof List list) {
-      list.add(value);
+    Object currentValue = data[fieldIndex];
+    if (currentValue instanceof List<?>list) {
+      ((List<Object>) list).add(value);
     } else {
       data[fieldIndex] = value;
     }
@@ -167,17 +134,7 @@ public class GeoParquetGroup {
   }
 
   public void add(int fieldIndex, Binary value) {
-    switch (getParquetSchema().getType(fieldIndex).asPrimitiveType().getPrimitiveTypeName()) {
-      case BINARY, FIXED_LEN_BYTE_ARRAY:
-        addValue(fieldIndex, value);
-        break;
-      case INT96:
-        addValue(fieldIndex, value);
-        break;
-      default:
-        throw new UnsupportedOperationException(
-            getParquetSchema().asPrimitiveType().getName() + " not supported for Binary");
-    }
+    addValue(fieldIndex, value);
   }
 
   public void add(int fieldIndex, float value) {
@@ -230,8 +187,13 @@ public class GeoParquetGroup {
   }
 
   public void add(String field, Geometry geometry) {
-    byte[] bytes = new WKBWriter().write(geometry);
-    add(getParquetSchema().getFieldIndex(field), Binary.fromConstantByteArray(bytes));
+    add(getParquetSchema().getFieldIndex(field), geometry);
+  }
+
+  private GeoParquetException createGeoParquetException(int fieldIndex, String elementText) {
+    String msg = String.format("Not found %d (%s) %s in group%n%s", fieldIndex,
+        schema.getFieldName(fieldIndex), elementText, this);
+    return new GeoParquetException(msg);
   }
 
   public String toString() {
@@ -251,54 +213,29 @@ public class GeoParquetGroup {
       Object object = data[i];
       ++i;
       if (object != null) {
-        if (object instanceof List values) {
+        if (object instanceof List<?>values) {
           for (Object value : values) {
             builder.append(indent).append(name);
             if (value == null) {
               builder.append(": NULL\n");
-            } else if (value instanceof GeoParquetGroup geoParquetGroup) {
+            } else if (value instanceof GeoParquetGroup group) {
               builder.append('\n');
-              geoParquetGroup.appendToString(builder, indent + "  ");
+              group.appendToString(builder, indent + "  ");
             } else {
               builder.append(": ").append(value).append('\n');
             }
           }
         } else {
           builder.append(indent).append(name);
-          if (object == null) {
-            builder.append(": NULL\n");
-          } else if (object instanceof GeoParquetGroup geoParquetGroup) {
+          if (object instanceof GeoParquetGroup group) {
             builder.append('\n');
-            geoParquetGroup.appendToString(builder, indent + "  ");
+            group.appendToString(builder, indent + "  ");
           } else {
             builder.append(": ").append(object).append('\n');
           }
         }
       }
     }
-  }
-
-  private Object getValue(int fieldIndex) {
-    Field field = geoParquetSchema.fields().get(fieldIndex);
-    if (field.cardinality() == Cardinality.REPEATED) {
-      throw new IllegalStateException("Field " + fieldIndex + " (" + field.name()
-          + ") is repeated. Use getValues() instead.");
-    }
-    return data[fieldIndex];
-  }
-
-  public List<Object> getValues(int fieldIndex) {
-    Field field = geoParquetSchema.fields().get(fieldIndex);
-    if (field.cardinality() != Cardinality.REPEATED) {
-      throw new IllegalStateException("Field " + fieldIndex + " (" + field.name()
-          + ") is not repeated. Use getValue() instead.");
-    }
-    return (List<Object>) data[fieldIndex];
-  }
-
-
-  private List<GeoParquetGroup> getGroups(int fieldIndex) {
-    return (List<GeoParquetGroup>) data[fieldIndex];
   }
 
   public Schema getGeoParquetSchema() {
@@ -314,101 +251,155 @@ public class GeoParquetGroup {
   }
 
   public GeoParquetGroup createGroup(int fieldIndex) {
-    if (geoParquetSchema.fields().get(fieldIndex) instanceof EnvelopeField envelopeField) {
+    Field field = geoParquetSchema.fields().get(fieldIndex);
+    if (field instanceof EnvelopeField envelopeField) {
       return new GeoParquetGroup(schema.getType(fieldIndex).asGroupType(), metadata,
           envelopeField.schema());
-    }
-
-    if (geoParquetSchema.fields().get(fieldIndex) instanceof GroupField groupField) {
+    } else if (field instanceof GroupField groupField) {
       return new GeoParquetGroup(schema.getType(fieldIndex).asGroupType(), metadata,
           groupField.schema());
     }
-
-    GroupField field = ((GroupField) geoParquetSchema.fields().get(fieldIndex));
-    return new GeoParquetGroup(
-        schema.getType(fieldIndex).asGroupType(),
-        metadata,
-        field.schema());
+    throw new GeoParquetException("Field at index " + fieldIndex + " is not a group");
   }
 
-  public Binary getBinary(int fieldIndex) {
-    return getBinary(fieldIndex, 0);
+  // Getter methods for different data types
+  public String getString(int fieldIndex, int index) {
+    return getBinaryValue(fieldIndex, index).toStringUsingUTF8();
   }
 
-  public List<Binary> getBinaryValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Binary.class::cast).toList();
+  public int getInteger(int fieldIndex, int index) {
+    return (int) getValue(fieldIndex, index);
+  }
+
+  public long getLong(int fieldIndex, int index) {
+    return (long) getValue(fieldIndex, index);
+  }
+
+  public double getDouble(int fieldIndex, int index) {
+    return (double) getValue(fieldIndex, index);
+  }
+
+  public float getFloat(int fieldIndex, int index) {
+    return (float) getValue(fieldIndex, index);
+  }
+
+  public boolean getBoolean(int fieldIndex, int index) {
+    return (boolean) getValue(fieldIndex, index);
+  }
+
+  public Binary getBinaryValue(int fieldIndex, int index) {
+    return (Binary) getValue(fieldIndex, index);
+  }
+
+  public Geometry getGeometry(int fieldIndex, int index) {
+    byte[] bytes = getBinaryValue(fieldIndex, index).getBytes();
+    try {
+      return new WKBReader().read(bytes);
+    } catch (ParseException e) {
+      throw new GeoParquetException("WKBReader failed to parse", e);
+    }
+  }
+
+  // Simplify getter methods for single values
+  public Binary getBinaryValue(int fieldIndex) {
+    return (Binary) getValue(fieldIndex);
   }
 
   public Boolean getBooleanValue(int fieldIndex) {
-    return getBoolean(fieldIndex, 0);
-  }
-
-  public List<Boolean> getBooleanValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Boolean.class::cast).toList();
+    return (Boolean) getValue(fieldIndex);
   }
 
   public Double getDoubleValue(int fieldIndex) {
-    return getDouble(fieldIndex, 0);
-  }
-
-  public List<Double> getDoubleValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Double.class::cast).toList();
+    return (Double) getValue(fieldIndex);
   }
 
   public Float getFloatValue(int fieldIndex) {
-    return getFloat(fieldIndex, 0);
-  }
-
-  public List<Float> getFloatValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Float.class::cast).toList();
+    return (Float) getValue(fieldIndex);
   }
 
   public Integer getIntegerValue(int fieldIndex) {
-    return getInteger(fieldIndex, 0);
-  }
-
-  public List<Integer> getIntegerValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Integer.class::cast).toList();
-  }
-
-  public Binary getInt96Value(int fieldIndex) {
-    return getBinary(fieldIndex, 0);
-  }
-
-  public List<Binary> getInt96Values(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Binary.class::cast).toList();
+    return (Integer) getValue(fieldIndex);
   }
 
   public Long getLongValue(int fieldIndex) {
-    return getLong(fieldIndex, 0);
-  }
-
-  public List<Long> getLongValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Long.class::cast).toList();
+    return (Long) getValue(fieldIndex);
   }
 
   public String getStringValue(int fieldIndex) {
     return getString(fieldIndex, 0);
   }
 
-  public List<String> getStringValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(String.class::cast).toList();
-  }
-
   public Geometry getGeometryValue(int fieldIndex) {
     return getGeometry(fieldIndex, 0);
   }
 
+  public GeoParquetGroup getGroupValue(int fieldIndex) {
+    return (GeoParquetGroup) getValue(fieldIndex);
+  }
+
+  // Simplify getter methods for list of values
+  private <T> List<T> getValuesOfType(int fieldIndex, Class<T> clazz) {
+    return getValues(fieldIndex).stream().map(clazz::cast).toList();
+  }
+
+  public List<Binary> getBinaryValues(int fieldIndex) {
+    return getValuesOfType(fieldIndex, Binary.class);
+  }
+
+  public List<Boolean> getBooleanValues(int fieldIndex) {
+    return getValuesOfType(fieldIndex, Boolean.class);
+  }
+
+  public List<Double> getDoubleValues(int fieldIndex) {
+    return getValuesOfType(fieldIndex, Double.class);
+  }
+
+  public List<Float> getFloatValues(int fieldIndex) {
+    return getValuesOfType(fieldIndex, Float.class);
+  }
+
+  public List<Integer> getIntegerValues(int fieldIndex) {
+    return getValuesOfType(fieldIndex, Integer.class);
+  }
+
+  public List<Long> getLongValues(int fieldIndex) {
+    return getValuesOfType(fieldIndex, Long.class);
+  }
+
+  public List<String> getStringValues(int fieldIndex) {
+    return getValues(fieldIndex).stream()
+        .map(value -> ((Binary) value).toStringUsingUTF8())
+        .toList();
+  }
+
   public List<Geometry> getGeometryValues(int fieldIndex) {
-    List<Geometry> geometries = new ArrayList<>();
-    for (Binary binary : getBinaryValues(fieldIndex)) {
-      try {
-        geometries.add(new WKBReader().read(binary.getBytes()));
-      } catch (ParseException e) {
-        throw new GeoParquetException("WKBReader failed to parse.", e);
-      }
+    return getValues(fieldIndex).stream()
+        .map(value -> {
+          try {
+            return new WKBReader().read(((Binary) value).getBytes());
+          } catch (ParseException e) {
+            throw new GeoParquetException("WKBReader failed to parse.", e);
+          }
+        })
+        .toList();
+  }
+
+  public List<GeoParquetGroup> getGroupValues(int fieldIndex) {
+    if (data[fieldIndex] instanceof List<?> list) {
+      return (List<GeoParquetGroup>) list;
+    } else {
+      return List.of((GeoParquetGroup) data[fieldIndex]);
     }
-    return geometries;
+  }
+
+  // Helper method to get numeric value (float or double)
+  private double getNumericValue(GeoParquetGroup group, int fieldIndex) {
+    Type fieldType = group.getGeoParquetSchema().fields().get(fieldIndex).type();
+    return switch (fieldType) {
+      case FLOAT -> group.getFloatValue(fieldIndex);
+      case DOUBLE -> group.getDoubleValue(fieldIndex);
+      default -> throw new GeoParquetException("Expected numeric field at index " + fieldIndex);
+    };
   }
 
   public Envelope getEnvelopeValue(int fieldIndex) {
@@ -417,32 +408,17 @@ public class GeoParquetGroup {
 
   public List<Envelope> getEnvelopeValues(int fieldIndex) {
     return getGroupValues(fieldIndex).stream().map(group -> {
-      double xMin = group.getGeoParquetSchema().fields().get(0).type().equals(Type.FLOAT)
-          ? (double) group.getFloatValue(0)
-          : group.getDoubleValue(0);
-      double yMin = group.getGeoParquetSchema().fields().get(1).type().equals(Type.FLOAT)
-          ? (double) group.getFloatValue(1)
-          : group.getDoubleValue(1);
-      double xMax = group.getGeoParquetSchema().fields().get(2).type().equals(Type.FLOAT)
-          ? (double) group.getFloatValue(2)
-          : group.getDoubleValue(2);
-      double yMax = group.getGeoParquetSchema().fields().get(0).type().equals(Type.FLOAT)
-          ? (double) group.getFloatValue(3)
-          : group.getDoubleValue(3);
+      double xMin = getNumericValue(group, 0);
+      double yMin = getNumericValue(group, 1);
+      double xMax = getNumericValue(group, 2);
+      double yMax = getNumericValue(group, 3);
       return new Envelope(xMin, xMax, yMin, yMax);
     }).toList();
   }
 
-  public GeoParquetGroup getGroupValue(int fieldIndex) {
-    return getGroupValues(fieldIndex).get(0);
-  }
-
-  public List<GeoParquetGroup> getGroupValues(int fieldIndex) {
-    return getGroups(fieldIndex);
-  }
-
-  public Binary getBinary(String fieldName) {
-    return getBinaryValues(fieldName).get(0);
+  // Methods to access fields by name
+  public Binary getBinaryValue(String fieldName) {
+    return getBinaryValue(schema.getFieldIndex(fieldName));
   }
 
   public List<Binary> getBinaryValues(String fieldName) {
@@ -450,7 +426,7 @@ public class GeoParquetGroup {
   }
 
   public Boolean getBooleanValue(String fieldName) {
-    return getBooleanValues(fieldName).get(0);
+    return getBooleanValue(schema.getFieldIndex(fieldName));
   }
 
   public List<Boolean> getBooleanValues(String fieldName) {
@@ -458,7 +434,7 @@ public class GeoParquetGroup {
   }
 
   public Double getDoubleValue(String fieldName) {
-    return getDoubleValues(fieldName).get(0);
+    return getDoubleValue(schema.getFieldIndex(fieldName));
   }
 
   public List<Double> getDoubleValues(String fieldName) {
@@ -466,7 +442,7 @@ public class GeoParquetGroup {
   }
 
   public Float getFloatValue(String fieldName) {
-    return getFloatValues(fieldName).get(0);
+    return getFloatValue(schema.getFieldIndex(fieldName));
   }
 
   public List<Float> getFloatValues(String fieldName) {
@@ -474,23 +450,15 @@ public class GeoParquetGroup {
   }
 
   public Integer getIntegerValue(String fieldName) {
-    return getIntegerValues(fieldName).get(0);
+    return getIntegerValue(schema.getFieldIndex(fieldName));
   }
 
   public List<Integer> getIntegerValues(String fieldName) {
     return getIntegerValues(schema.getFieldIndex(fieldName));
   }
 
-  public Binary getInt96Value(String fieldName) {
-    return getBinaryValues(fieldName).get(0);
-  }
-
-  public List<Binary> getInt96Values(String fieldName) {
-    return getBinaryValues(schema.getFieldIndex(fieldName));
-  }
-
   public Long getLongValue(String fieldName) {
-    return getLongValues(fieldName).get(0);
+    return getLongValue(schema.getFieldIndex(fieldName));
   }
 
   public List<Long> getLongValues(String fieldName) {
@@ -498,7 +466,7 @@ public class GeoParquetGroup {
   }
 
   public String getStringValue(String fieldName) {
-    return getStringValues(fieldName).get(0);
+    return getStringValue(schema.getFieldIndex(fieldName));
   }
 
   public List<String> getStringValues(String fieldName) {
@@ -506,27 +474,27 @@ public class GeoParquetGroup {
   }
 
   public Geometry getGeometryValue(String fieldName) {
-    return getGeometryValues(fieldName).get(0);
+    return getGeometryValue(schema.getFieldIndex(fieldName));
   }
 
   public List<Geometry> getGeometryValues(String fieldName) {
     return getGeometryValues(schema.getFieldIndex(fieldName));
   }
 
-  public Envelope getEnvelopeValue(String fieldName) {
-    return getEnvelopeValues(fieldName).get(0);
-  }
-
-  public List<Envelope> getEnvelopeValues(String fieldName) {
-    return getEnvelopeValues(schema.getFieldIndex(fieldName));
-  }
-
   public GeoParquetGroup getGroupValue(String fieldName) {
-    return getGroupValues(fieldName).get(0);
+    return getGroupValue(schema.getFieldIndex(fieldName));
   }
 
   public List<GeoParquetGroup> getGroupValues(String fieldName) {
     return getGroupValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Envelope getEnvelopeValue(String fieldName) {
+    return getEnvelopeValue(schema.getFieldIndex(fieldName));
+  }
+
+  public List<Envelope> getEnvelopeValues(String fieldName) {
+    return getEnvelopeValues(schema.getFieldIndex(fieldName));
   }
 
   /**

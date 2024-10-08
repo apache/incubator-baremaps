@@ -28,6 +28,7 @@ import org.apache.baremaps.geoparquet.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.GeoParquetGroup.Field;
 import org.apache.baremaps.geoparquet.GeoParquetGroup.GroupField;
 import org.apache.baremaps.geoparquet.GeoParquetGroup.Schema;
+import org.apache.parquet.io.api.Binary;
 
 public class GeoParquetTypeConversion {
 
@@ -66,27 +67,12 @@ public class GeoParquetTypeConversion {
   }
 
   public static List<Object> asRowValues(GeoParquetGroup group) {
-    List<Object> values = new ArrayList<>();
     Schema schema = group.getGeoParquetSchema();
     List<Field> fields = schema.fields();
+    List<Object> values = new ArrayList<>();
     for (int i = 0; i < fields.size(); i++) {
-      if (group.getValues(i).isEmpty()) {
-        values.add(null);
-        continue;
-      }
       Field field = fields.get(i);
-      switch (field.type()) {
-        case BINARY -> values.add(group.getBinary(i).getBytes());
-        case BOOLEAN -> values.add(group.getBooleanValue(i));
-        case INTEGER -> values.add(group.getIntegerValue(i));
-        case INT96, LONG -> values.add(group.getLongValue(i));
-        case FLOAT -> values.add(group.getFloatValue(i));
-        case DOUBLE -> values.add(group.getDoubleValue(i));
-        case STRING -> values.add(group.getStringValue(i));
-        case GEOMETRY -> values.add(group.getGeometryValue(i));
-        case ENVELOPE -> values.add(group.getEnvelopeValue(i));
-        case GROUP -> values.add(asNested(group.getGroupValue(i)));
-      }
+      values.add(asValue(field, group, i));
     }
     return values;
   }
@@ -100,8 +86,30 @@ public class GeoParquetTypeConversion {
         continue;
       }
       Field field = fields.get(i);
-      nested.put(field.name(), switch (field.type()) {
-        case BINARY -> group.getBinary(i).getBytes();
+      Object value = asValue(field, group, i);
+      nested.put(field.name(), value);
+    }
+    return nested;
+  }
+
+  public static Object asValue(Field field, GeoParquetGroup group, int i) {
+    if (field.cardinality() == GeoParquetGroup.Cardinality.REPEATED) {
+      return switch (field.type()) {
+        case BINARY -> group.getBinaryValues(i).stream().map(Binary::getBytes).toList();
+        case BOOLEAN -> group.getBooleanValues(i);
+        case INTEGER -> group.getIntegerValues(i);
+        case INT96, LONG -> group.getLongValues(i);
+        case FLOAT -> group.getFloatValues(i);
+        case DOUBLE -> group.getDoubleValues(i);
+        case STRING -> group.getStringValues(i);
+        case GEOMETRY -> group.getGeometryValues(i);
+        case ENVELOPE -> group.getEnvelopeValues(i);
+        case GROUP -> group.getGroupValues(i).stream().map(GeoParquetTypeConversion::asNested)
+            .toList();
+      };
+    } else {
+      return switch (field.type()) {
+        case BINARY -> group.getBinaryValue(i).getBytes();
         case BOOLEAN -> group.getBooleanValue(i);
         case INTEGER -> group.getIntegerValue(i);
         case INT96, LONG -> group.getLongValue(i);
@@ -111,9 +119,7 @@ public class GeoParquetTypeConversion {
         case GEOMETRY -> group.getGeometryValue(i);
         case ENVELOPE -> group.getEnvelopeValue(i);
         case GROUP -> asNested(group.getGroupValue(i));
-      });
+      };
     }
-    return nested;
   }
-
 }
