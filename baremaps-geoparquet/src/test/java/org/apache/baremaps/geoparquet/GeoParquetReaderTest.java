@@ -39,7 +39,7 @@ class GeoParquetReaderTest {
     } else {
       geoParquetGroupStream = geoParquetReader.read();
     }
-    geoParquetGroupStream.forEach(group -> groupCount.getAndIncrement());
+    geoParquetGroupStream.peek(System.out::println).forEach(group -> groupCount.getAndIncrement());
     assertEquals(expectedGroupCount, groupCount.get());
   }
 
