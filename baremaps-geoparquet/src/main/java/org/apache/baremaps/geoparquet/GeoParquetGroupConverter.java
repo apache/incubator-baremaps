@@ -45,7 +45,6 @@ class GeoParquetGroupConverter extends GroupConverter {
       } else {
         converters[i] = new GeoParquetGroupConverter(this, i, type.asGroupType());
       }
-
     }
   }
 

@@ -76,7 +76,7 @@ public class GeoParquetTypeConversion {
       }
       Field field = fields.get(i);
       switch (field.type()) {
-        case BINARY -> values.add(group.getBinaryValue(i).getBytes());
+        case BINARY -> values.add(group.getBinary(i).getBytes());
         case BOOLEAN -> values.add(group.getBooleanValue(i));
         case INTEGER -> values.add(group.getIntegerValue(i));
         case INT96, LONG -> values.add(group.getLongValue(i));
@@ -101,7 +101,7 @@ public class GeoParquetTypeConversion {
       }
       Field field = fields.get(i);
       nested.put(field.name(), switch (field.type()) {
-        case BINARY -> group.getBinaryValue(i).getBytes();
+        case BINARY -> group.getBinary(i).getBytes();
         case BOOLEAN -> group.getBooleanValue(i);
         case INTEGER -> group.getIntegerValue(i);
         case INT96, LONG -> group.getLongValue(i);
