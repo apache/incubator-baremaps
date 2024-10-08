@@ -83,44 +83,40 @@ public class GeoParquetGroup {
     }
   }
 
-  public String getValueToString(int fieldIndex, int index) {
-    return String.valueOf(getValue(fieldIndex, index));
-  }
-
   public String getString(int fieldIndex, int index) {
-    return ((BinaryValue) getValue(fieldIndex, index)).getString();
+    return getBinary(fieldIndex, index).toString();
   }
 
   public int getInteger(int fieldIndex, int index) {
-    return ((IntegerValue) getValue(fieldIndex, index)).getInteger();
+    return (int) getValue(fieldIndex, index);
   }
 
   public long getLong(int fieldIndex, int index) {
-    return ((LongValue) getValue(fieldIndex, index)).getLong();
+    return (long) getValue(fieldIndex, index);
   }
 
   public double getDouble(int fieldIndex, int index) {
-    return ((DoubleValue) getValue(fieldIndex, index)).getDouble();
+    return (double) getValue(fieldIndex, index);
   }
 
   public float getFloat(int fieldIndex, int index) {
-    return ((FloatValue) getValue(fieldIndex, index)).getFloat();
+    return (float) getValue(fieldIndex, index);
   }
 
   public boolean getBoolean(int fieldIndex, int index) {
-    return ((BooleanValue) getValue(fieldIndex, index)).getBoolean();
+    return (boolean) getValue(fieldIndex, index);
   }
 
   public Binary getBinary(int fieldIndex, int index) {
-    return ((BinaryValue) getValue(fieldIndex, index)).getBinary();
+    return (Binary) getValue(fieldIndex, index);
   }
 
   public Binary getInt96(int fieldIndex, int index) {
-    return ((Int96Value) getValue(fieldIndex, index)).getInt96();
+    return (Binary) getValue(fieldIndex, index);
   }
 
   public Geometry getGeometry(int fieldIndex, int index) {
-    byte[] bytes = ((BinaryValue) getValue(fieldIndex, index)).getBinary().getBytes();
+    byte[] bytes = getBinary(fieldIndex, index).getBytes();
     try {
       return new WKBReader().read(bytes);
     } catch (ParseException e) {
@@ -155,28 +151,28 @@ public class GeoParquetGroup {
   }
 
   public void add(int fieldIndex, int value) {
-    addValue(fieldIndex, new IntegerValue(value));
+    addValue(fieldIndex, value);
   }
 
   public void add(int fieldIndex, long value) {
-    addValue(fieldIndex, new LongValue(value));
+    addValue(fieldIndex, value);
   }
 
   public void add(int fieldIndex, String value) {
-    addValue(fieldIndex, new BinaryValue(Binary.fromString(value)));
+    addValue(fieldIndex, Binary.fromString(value));
   }
 
   public void add(int fieldIndex, boolean value) {
-    addValue(fieldIndex, new BooleanValue(value));
+    addValue(fieldIndex, value);
   }
 
   public void add(int fieldIndex, Binary value) {
     switch (getParquetSchema().getType(fieldIndex).asPrimitiveType().getPrimitiveTypeName()) {
       case BINARY, FIXED_LEN_BYTE_ARRAY:
-        addValue(fieldIndex, new BinaryValue(value));
+        addValue(fieldIndex, value);
         break;
       case INT96:
-        addValue(fieldIndex, new Int96Value(value));
+        addValue(fieldIndex, value);
         break;
       default:
         throw new UnsupportedOperationException(
@@ -185,11 +181,11 @@ public class GeoParquetGroup {
   }
 
   public void add(int fieldIndex, float value) {
-    addValue(fieldIndex, new FloatValue(value));
+    addValue(fieldIndex, value);
   }
 
   public void add(int fieldIndex, double value) {
-    addValue(fieldIndex, new DoubleValue(value));
+    addValue(fieldIndex, value);
   }
 
   public void add(int fieldIndex, GeoParquetGroup value) {
@@ -282,22 +278,22 @@ public class GeoParquetGroup {
     }
   }
 
-  private Primitive getValue(int fieldIndex) {
+  private Object getValue(int fieldIndex) {
     Field field = geoParquetSchema.fields().get(fieldIndex);
     if (field.cardinality() == Cardinality.REPEATED) {
       throw new IllegalStateException("Field " + fieldIndex + " (" + field.name()
           + ") is repeated. Use getValues() instead.");
     }
-    return (Primitive) data[fieldIndex];
+    return data[fieldIndex];
   }
 
-  public List<Primitive> getValues(int fieldIndex) {
+  public List<Object> getValues(int fieldIndex) {
     Field field = geoParquetSchema.fields().get(fieldIndex);
     if (field.cardinality() != Cardinality.REPEATED) {
       throw new IllegalStateException("Field " + fieldIndex + " (" + field.name()
           + ") is not repeated. Use getValue() instead.");
     }
-    return (List<Primitive>) data[fieldIndex];
+    return (List<Object>) data[fieldIndex];
   }
 
 
@@ -340,7 +336,7 @@ public class GeoParquetGroup {
   }
 
   public List<Binary> getBinaryValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+    return getValues(fieldIndex).stream().map(Binary.class::cast).toList();
   }
 
   public Boolean getBooleanValue(int fieldIndex) {
@@ -348,7 +344,7 @@ public class GeoParquetGroup {
   }
 
   public List<Boolean> getBooleanValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getBoolean).toList();
+    return getValues(fieldIndex).stream().map(Boolean.class::cast).toList();
   }
 
   public Double getDoubleValue(int fieldIndex) {
@@ -356,7 +352,7 @@ public class GeoParquetGroup {
   }
 
   public List<Double> getDoubleValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getDouble).toList();
+    return getValues(fieldIndex).stream().map(Double.class::cast).toList();
   }
 
   public Float getFloatValue(int fieldIndex) {
@@ -364,7 +360,7 @@ public class GeoParquetGroup {
   }
 
   public List<Float> getFloatValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getFloat).toList();
+    return getValues(fieldIndex).stream().map(Float.class::cast).toList();
   }
 
   public Integer getIntegerValue(int fieldIndex) {
@@ -372,7 +368,7 @@ public class GeoParquetGroup {
   }
 
   public List<Integer> getIntegerValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getInteger).toList();
+    return getValues(fieldIndex).stream().map(Integer.class::cast).toList();
   }
 
   public Binary getInt96Value(int fieldIndex) {
@@ -380,7 +376,7 @@ public class GeoParquetGroup {
   }
 
   public List<Binary> getInt96Values(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+    return getValues(fieldIndex).stream().map(Binary.class::cast).toList();
   }
 
   public Long getLongValue(int fieldIndex) {
@@ -388,7 +384,7 @@ public class GeoParquetGroup {
   }
 
   public List<Long> getLongValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getLong).toList();
+    return getValues(fieldIndex).stream().map(Long.class::cast).toList();
   }
 
   public String getStringValue(int fieldIndex) {
@@ -396,7 +392,7 @@ public class GeoParquetGroup {
   }
 
   public List<String> getStringValues(int fieldIndex) {
-    return getValues(fieldIndex).stream().map(Primitive::getString).toList();
+    return getValues(fieldIndex).stream().map(String.class::cast).toList();
   }
 
   public Geometry getGeometryValue(int fieldIndex) {
