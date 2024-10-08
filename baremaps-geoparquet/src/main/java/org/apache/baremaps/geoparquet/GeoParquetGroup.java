@@ -17,241 +17,708 @@
 
 package org.apache.baremaps.geoparquet;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.parquet.io.api.Binary;
+import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.GroupType;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-
-/**
- * A group of fields in a GeoParquet file.
- * 
- */
-public interface GeoParquetGroup {
-
-  /**
-   * Returns the Parquet schema of the group.
-   *
-   * @return the Parquet schema
-   */
-  GroupType getParquetSchema();
-
-  /**
-   * Returns the GeoParquet schema of the group built upon the Parquet schema and the GeoParquet
-   * metadata.
-   *
-   * @return the GeoParquet schema
-   */
-  Schema getGeoParquetSchema();
-
-  /**
-   * Returns the GeoParquet metadata of the group.
-   *
-   * @return the Parquet metadata
-   */
-  GeoParquetMetadata getGeoParquetMetadata();
-
-  /**
-   * Creates a new empty group in the group at the specified field index.
-   *
-   * @param fieldIndex the field index
-   * @return the new group
-   */
-  GeoParquetGroup createGroup(int fieldIndex);
-
-  List<Primitive> getValues(int fieldIndex);
-
-  Binary getBinaryValue(int fieldIndex);
-
-  List<Binary> getBinaryValues(int fieldIndex);
-
-  Boolean getBooleanValue(int fieldIndex);
-
-  List<Boolean> getBooleanValues(int fieldIndex);
-
-  Double getDoubleValue(int fieldIndex);
-
-  List<Double> getDoubleValues(int fieldIndex);
-
-  Float getFloatValue(int fieldIndex);
-
-  List<Float> getFloatValues(int fieldIndex);
-
-  Integer getIntegerValue(int fieldIndex);
-
-  List<Integer> getIntegerValues(int fieldIndex);
-
-  Binary getInt96Value(int fieldIndex);
-
-  List<Binary> getInt96Values(int fieldIndex);
-
-  Binary getNanoTimeValue(int fieldIndex);
-
-  List<Binary> getNanoTimeValues(int fieldIndex);
-
-  Long getLongValue(int fieldIndex);
-
-  List<Long> getLongValues(int fieldIndex);
-
-  String getStringValue(int fieldIndex);
-
-  List<String> getStringValues(int fieldIndex);
-
-  Geometry getGeometryValue(int fieldIndex);
-
-  List<Geometry> getGeometryValues(int fieldIndex);
-
-  Envelope getEnvelopeValue(int fieldIndex);
-
-  List<Envelope> getEnvelopeValues(int fieldIndex);
-
-  GeoParquetGroup getGroupValue(int fieldIndex);
-
-  List<GeoParquetGroup> getGroupValues(int fieldIndex);
-
-  Binary getBinaryValue(String fieldName);
-
-  List<Binary> getBinaryValues(String fieldName);
-
-  Boolean getBooleanValue(String fieldName);
-
-  List<Boolean> getBooleanValues(String fieldName);
-
-  Double getDoubleValue(String fieldName);
-
-  List<Double> getDoubleValues(String fieldName);
-
-  Float getFloatValue(String fieldName);
-
-  List<Float> getFloatValues(String fieldName);
-
-  Integer getIntegerValue(String fieldName);
-
-  List<Integer> getIntegerValues(String fieldName);
-
-  Binary getInt96Value(String fieldName);
-
-  List<Binary> getInt96Values(String fieldName);
-
-  Binary getNanoTimeValue(String fieldName);
-
-  List<Binary> getNanoTimeValues(String fieldName);
-
-  Long getLongValue(String fieldName);
-
-  List<Long> getLongValues(String fieldName);
-
-  String getStringValue(String fieldName);
-
-  List<String> getStringValues(String fieldName);
-
-  Geometry getGeometryValue(String fieldName);
-
-  List<Geometry> getGeometryValues(String fieldName);
-
-  Envelope getEnvelopeValue(String fieldName);
-
-  List<Envelope> getEnvelopeValues(String fieldName);
-
-  GeoParquetGroup getGroupValue(String fieldName);
-
-  List<GeoParquetGroup> getGroupValues(String fieldName);
-
-  void setBinaryValue(int fieldIndex, Binary binaryValue);
-
-  void setBinaryValues(int fieldIndex, List<Binary> binaryValues);
-
-  void setBooleanValue(int fieldIndex, Boolean booleanValue);
-
-  void setBooleanValues(int fieldIndex, List<Boolean> booleanValues);
-
-  void setDoubleValue(int fieldIndex, Double doubleValue);
-
-  void setDoubleValues(int fieldIndex, List<Double> doubleValues);
-
-  void setFloatValue(int fieldIndex, Float floatValue);
-
-  void setFloatValues(int fieldIndex, List<Float> floatValues);
-
-  void setIntegerValue(int fieldIndex, Integer integerValue);
-
-  void setIntegerValues(int fieldIndex, List<Integer> integerValues);
-
-  void setInt96Value(int fieldIndex, Binary int96Value);
-
-  void setInt96Values(int fieldIndex, List<Binary> int96Values);
-
-  void setNanoTimeValue(int fieldIndex, Binary nanoTimeValue);
-
-  void setNanoTimeValues(int fieldIndex, List<Binary> nanoTimeValues);
-
-  void setLongValue(int fieldIndex, Long longValue);
-
-  void setLongValues(int fieldIndex, List<Long> longValues);
-
-  void setStringValue(int fieldIndex, String stringValue);
-
-  void setStringValues(int fieldIndex, List<String> stringValues);
-
-  void setGeometryValue(int fieldIndex, Geometry geometryValue);
-
-  void setGeometryValues(int fieldIndex, List<Geometry> geometryValues);
-
-  void setEnvelopeValue(int fieldIndex, Envelope envelopeValue);
-
-  void setEnvelopeValues(int fieldIndex, List<Envelope> envelopeValues);
-
-  void setGroupValue(int fieldIndex, GeoParquetGroup groupValue);
-
-  void setGroupValues(int fieldIndex, List<GeoParquetGroup> groupValues);
-
-  void setBinaryValue(String fieldName, Binary binaryValue);
-
-  void setBinaryValues(String fieldName, List<Binary> binaryValues);
-
-  void setBooleanValue(String fieldName, Boolean booleanValue);
-
-  void setBooleanValues(String fieldName, List<Boolean> booleanValues);
-
-  void setDoubleValue(String fieldName, Double doubleValue);
-
-  void setDoubleValues(String fieldName, List<Double> doubleValues);
-
-  void setFloatValue(String fieldName, Float floatValue);
-
-  void setFloatValues(String fieldName, List<Float> floatValues);
-
-  void setIntegerValue(String fieldName, Integer integerValue);
-
-  void setIntegerValues(String fieldName, List<Integer> integerValues);
-
-  void setInt96Value(String fieldName, Binary int96Value);
-
-  void setInt96Values(String fieldName, List<Binary> int96Values);
-
-  void setNanoTimeValue(String fieldName, Binary nanoTimeValue);
-
-  void setNanoTimeValues(String fieldName, List<Binary> nanoTimeValues);
-
-  void setLongValue(String fieldName, Long longValue);
-
-  void setLongValues(String fieldName, List<Long> longValues);
-
-  void setStringValue(String fieldName, String stringValue);
-
-  void setStringValues(String fieldName, List<String> stringValues);
-
-  void setGeometryValue(String fieldName, Geometry geometryValue);
-
-  void setGeometryValues(String fieldName, List<Geometry> geometryValues);
-
-  void setEnvelopeValue(String fieldName, Envelope envelopeValue);
-
-  void setEnvelopeValues(String fieldName, List<Envelope> envelopeValues);
-
-  void setGroupValue(String fieldName, GeoParquetGroup groupValue);
-
-  void setGroupValues(String fieldName, List<GeoParquetGroup> groupValues);
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKBWriter;
+
+public class GeoParquetGroup {
+
+  private final GroupType schema;
+
+  private final GeoParquetMetadata metadata;
+
+  private final Schema geoParquetSchema;
+
+  private final List<?>[] data;
+
+  public GeoParquetGroup(
+      GroupType schema,
+      GeoParquetMetadata metadata,
+      Schema geoParquetSchema) {
+    this.schema = schema;
+    this.metadata = metadata;
+    this.geoParquetSchema = geoParquetSchema;
+    this.data = new List[schema.getFields().size()];
+    for (int i = 0; i < schema.getFieldCount(); i++) {
+      this.data[i] = new ArrayList<>();
+    }
+  }
+
+  public GeoParquetGroup addGroup(int fieldIndex) {
+    GeoParquetGroup group = createGroup(fieldIndex);
+    add(fieldIndex, group);
+    return group;
+  }
+
+  public GeoParquetGroup addGroup(String field) {
+    return addGroup(getParquetSchema().getFieldIndex(field));
+  }
+
+  public GeoParquetGroup getGroup(int fieldIndex, int index) {
+    return (GeoParquetGroup) getValue(fieldIndex, index);
+  }
+
+  public GeoParquetGroup getGroup(String field, int index) {
+    return getGroup(getParquetSchema().getFieldIndex(field), index);
+  }
+
+  public int getFieldRepetitionCount(int fieldIndex) {
+    List<?> list = data[fieldIndex];
+    return list == null ? 0 : list.size();
+  }
+
+  public String getValueToString(int fieldIndex, int index) {
+    return String.valueOf(getValue(fieldIndex, index));
+  }
+
+  public String getString(int fieldIndex, int index) {
+    return ((BinaryValue) getValue(fieldIndex, index)).getString();
+  }
+
+  public int getInteger(int fieldIndex, int index) {
+    return ((IntegerValue) getValue(fieldIndex, index)).getInteger();
+  }
+
+  public long getLong(int fieldIndex, int index) {
+    return ((LongValue) getValue(fieldIndex, index)).getLong();
+  }
+
+  public double getDouble(int fieldIndex, int index) {
+    return ((DoubleValue) getValue(fieldIndex, index)).getDouble();
+  }
+
+  public float getFloat(int fieldIndex, int index) {
+    return ((FloatValue) getValue(fieldIndex, index)).getFloat();
+  }
+
+  public boolean getBoolean(int fieldIndex, int index) {
+    return ((BooleanValue) getValue(fieldIndex, index)).getBoolean();
+  }
+
+  public Binary getBinary(int fieldIndex, int index) {
+    return ((BinaryValue) getValue(fieldIndex, index)).getBinary();
+  }
+
+  public Binary getInt96(int fieldIndex, int index) {
+    return ((Int96Value) getValue(fieldIndex, index)).getInt96();
+  }
+
+  public Geometry getGeometry(int fieldIndex, int index) {
+    byte[] bytes = ((BinaryValue) getValue(fieldIndex, index)).getBinary().getBytes();
+    try {
+      return new WKBReader().read(bytes);
+    } catch (ParseException e) {
+      throw new GeoParquetException("WKBReader failed to parse", e);
+    }
+  }
+
+  private Object getValue(int fieldIndex, int index) {
+    List<?> list = getObjects(fieldIndex);
+    try {
+      return list.get(index);
+    } catch (IndexOutOfBoundsException e) {
+      String elementText = String.format(" element number %d ", index);
+      throw createGeoParquetException(fieldIndex, elementText);
+    }
+  }
+
+  private List<?> getObjects(int fieldIndex) {
+    List<?> list;
+    if (fieldIndex < 0 || fieldIndex >= data.length) {
+      throw createGeoParquetException(fieldIndex, "");
+    }
+    list = data[fieldIndex];
+    return list;
+  }
+
+  private GeoParquetException createGeoParquetException(int fieldIndex, String elementText) {
+    String msg = String.format("Not found %d (%s)%s in group%n%s", fieldIndex,
+        schema.getFieldName(fieldIndex), elementText, this);
+    return new GeoParquetException(msg);
+  }
+
+  private void add(int fieldIndex, Primitive value) {
+    org.apache.parquet.schema.Type type = schema.getType(fieldIndex);
+    List list = getObjects(fieldIndex);
+    if (!type.isRepetition(org.apache.parquet.schema.Type.Repetition.REPEATED)
+        && !list.isEmpty()) {
+      throw new IllegalStateException("field " + fieldIndex + " (" + type.getName()
+          + ") can not have more than one value: " + list);
+    }
+    list.add(value);
+  }
+
+  public void add(int fieldIndex, int value) {
+    add(fieldIndex, new IntegerValue(value));
+  }
+
+  public void add(int fieldIndex, long value) {
+    add(fieldIndex, new LongValue(value));
+  }
+
+  public void add(int fieldIndex, String value) {
+    add(fieldIndex, new BinaryValue(Binary.fromString(value)));
+  }
+
+  public void add(int fieldIndex, boolean value) {
+    add(fieldIndex, new BooleanValue(value));
+  }
+
+  public void add(int fieldIndex, Binary value) {
+    switch (getParquetSchema().getType(fieldIndex).asPrimitiveType().getPrimitiveTypeName()) {
+      case BINARY, FIXED_LEN_BYTE_ARRAY:
+        add(fieldIndex, new BinaryValue(value));
+        break;
+      case INT96:
+        add(fieldIndex, new Int96Value(value));
+        break;
+      default:
+        throw new UnsupportedOperationException(
+            getParquetSchema().asPrimitiveType().getName() + " not supported for Binary");
+    }
+  }
+
+  public void add(int fieldIndex, float value) {
+    add(fieldIndex, new FloatValue(value));
+  }
+
+  public void add(int fieldIndex, double value) {
+    add(fieldIndex, new DoubleValue(value));
+  }
+
+  public void add(int fieldIndex, GeoParquetGroup value) {
+    List list = data[fieldIndex];
+    list.add(value);
+  }
+
+  public void add(int fieldIndex, Geometry geometry) {
+    byte[] bytes = new WKBWriter().write(geometry);
+    add(fieldIndex, Binary.fromConstantByteArray(bytes));
+  }
+
+  public void add(String field, int value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, long value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, float value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, double value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, String value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, boolean value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, Binary value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, GeoParquetGroup value) {
+    add(getParquetSchema().getFieldIndex(field), value);
+  }
+
+  public void add(String field, Geometry geometry) {
+    byte[] bytes = new WKBWriter().write(geometry);
+    add(getParquetSchema().getFieldIndex(field), Binary.fromConstantByteArray(bytes));
+  }
+
+  public void writeValue(int field, int index, RecordConsumer recordConsumer) {
+    ((Primitive) getValue(field, index)).writeValue(recordConsumer);
+  }
+
+  public String toString() {
+    return toString("");
+  }
+
+  public String toString(String indent) {
+    StringBuilder builder = new StringBuilder();
+    appendToString(builder, indent);
+    return builder.toString();
+  }
+
+  private void appendToString(StringBuilder builder, String indent) {
+    int i = 0;
+    for (org.apache.parquet.schema.Type field : schema.getFields()) {
+      String name = field.getName();
+      List<?> values = data[i];
+      ++i;
+      if (values != null && !values.isEmpty()) {
+        for (Object value : values) {
+          builder.append(indent).append(name);
+          if (value == null) {
+            builder.append(": NULL\n");
+          } else if (value instanceof GeoParquetGroup geoParquetGroup) {
+            builder.append('\n');
+            geoParquetGroup.appendToString(builder, indent + "  ");
+          } else {
+            builder.append(": ").append(value).append('\n');
+          }
+        }
+      }
+    }
+  }
+
+  public List<Primitive> getValues(int fieldIndex) {
+    return (List<Primitive>) data[fieldIndex];
+  }
+
+  private List<GeoParquetGroup> getGroups(int fieldIndex) {
+    return (List<GeoParquetGroup>) data[fieldIndex];
+  }
+
+  public Schema getGeoParquetSchema() {
+    return geoParquetSchema;
+  }
+
+  public GroupType getParquetSchema() {
+    return schema;
+  }
+
+  public GeoParquetMetadata getGeoParquetMetadata() {
+    return metadata;
+  }
+
+  public GeoParquetGroup createGroup(int fieldIndex) {
+    if (geoParquetSchema.fields().get(fieldIndex) instanceof EnvelopeField envelopeField) {
+      return new GeoParquetGroup(schema.getType(fieldIndex).asGroupType(), metadata,
+          envelopeField.schema());
+    }
+
+    if (geoParquetSchema.fields().get(fieldIndex) instanceof GroupField groupField) {
+      return new GeoParquetGroup(schema.getType(fieldIndex).asGroupType(), metadata,
+          groupField.schema());
+    }
+
+    GroupField field = ((GroupField) geoParquetSchema.fields().get(fieldIndex));
+    return new GeoParquetGroup(
+        schema.getType(fieldIndex).asGroupType(),
+        metadata,
+        field.schema());
+  }
+
+  public Binary getBinaryValue(int fieldIndex) {
+    return getBinaryValues(fieldIndex).get(0);
+  }
+
+  public List<Binary> getBinaryValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+  }
+
+  public Boolean getBooleanValue(int fieldIndex) {
+    return getBooleanValues(fieldIndex).get(0);
+  }
+
+  public List<Boolean> getBooleanValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBoolean).toList();
+  }
+
+  public Double getDoubleValue(int fieldIndex) {
+    return getDoubleValues(fieldIndex).get(0);
+  }
+
+  public List<Double> getDoubleValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getDouble).toList();
+  }
+
+  public Float getFloatValue(int fieldIndex) {
+    return getFloatValues(fieldIndex).get(0);
+  }
+
+  public List<Float> getFloatValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getFloat).toList();
+  }
+
+  public Integer getIntegerValue(int fieldIndex) {
+    return getIntegerValues(fieldIndex).get(0);
+  }
+
+  public List<Integer> getIntegerValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getInteger).toList();
+  }
+
+  public Binary getInt96Value(int fieldIndex) {
+    return getBinaryValues(fieldIndex).get(0);
+  }
+
+  public List<Binary> getInt96Values(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+  }
+
+  public Binary getNanoTimeValue(int fieldIndex) {
+    return getBinaryValues(fieldIndex).get(0);
+  }
+
+  public List<Binary> getNanoTimeValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getBinary).toList();
+  }
+
+  public Long getLongValue(int fieldIndex) {
+    return getLongValues(fieldIndex).get(0);
+  }
+
+  public List<Long> getLongValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getLong).toList();
+  }
+
+  public String getStringValue(int fieldIndex) {
+    return getStringValues(fieldIndex).get(0);
+  }
+
+  public List<String> getStringValues(int fieldIndex) {
+    return getValues(fieldIndex).stream().map(Primitive::getString).toList();
+  }
+
+  public Geometry getGeometryValue(int fieldIndex) {
+    return getGeometryValues(fieldIndex).get(0);
+  }
+
+  public List<Geometry> getGeometryValues(int fieldIndex) {
+    List<Geometry> geometries = new ArrayList<>();
+    for (Binary binary : getBinaryValues(fieldIndex)) {
+      try {
+        geometries.add(new WKBReader().read(binary.getBytes()));
+      } catch (ParseException e) {
+        throw new GeoParquetException("WKBReader failed to parse.", e);
+      }
+    }
+    return geometries;
+  }
+
+  public Envelope getEnvelopeValue(int fieldIndex) {
+    return getEnvelopeValues(fieldIndex).get(0);
+  }
+
+  public List<Envelope> getEnvelopeValues(int fieldIndex) {
+    return getGroupValues(fieldIndex).stream().map(group -> {
+      double xMin = group.getGeoParquetSchema().fields().get(0).type().equals(Type.FLOAT)
+          ? (double) group.getFloatValue(0)
+          : group.getDoubleValue(0);
+      double yMin = group.getGeoParquetSchema().fields().get(1).type().equals(Type.FLOAT)
+          ? (double) group.getFloatValue(1)
+          : group.getDoubleValue(1);
+      double xMax = group.getGeoParquetSchema().fields().get(2).type().equals(Type.FLOAT)
+          ? (double) group.getFloatValue(2)
+          : group.getDoubleValue(2);
+      double yMax = group.getGeoParquetSchema().fields().get(0).type().equals(Type.FLOAT)
+          ? (double) group.getFloatValue(3)
+          : group.getDoubleValue(3);
+      return new Envelope(xMin, xMax, yMin, yMax);
+    }).toList();
+  }
+
+  public GeoParquetGroup getGroupValue(int fieldIndex) {
+    return getGroupValues(fieldIndex).get(0);
+  }
+
+  public List<GeoParquetGroup> getGroupValues(int fieldIndex) {
+    return getGroups(fieldIndex);
+  }
+
+  public Binary getBinaryValue(String fieldName) {
+    return getBinaryValues(fieldName).get(0);
+  }
+
+  public List<Binary> getBinaryValues(String fieldName) {
+    return getBinaryValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Boolean getBooleanValue(String fieldName) {
+    return getBooleanValues(fieldName).get(0);
+  }
+
+  public List<Boolean> getBooleanValues(String fieldName) {
+    return getBooleanValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Double getDoubleValue(String fieldName) {
+    return getDoubleValues(fieldName).get(0);
+  }
+
+  public List<Double> getDoubleValues(String fieldName) {
+    return getDoubleValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Float getFloatValue(String fieldName) {
+    return getFloatValues(fieldName).get(0);
+  }
+
+  public List<Float> getFloatValues(String fieldName) {
+    return getFloatValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Integer getIntegerValue(String fieldName) {
+    return getIntegerValues(fieldName).get(0);
+  }
+
+  public List<Integer> getIntegerValues(String fieldName) {
+    return getIntegerValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Binary getInt96Value(String fieldName) {
+    return getBinaryValues(fieldName).get(0);
+  }
+
+  public List<Binary> getInt96Values(String fieldName) {
+    return getBinaryValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Binary getNanoTimeValue(String fieldName) {
+    return getBinaryValues(fieldName).get(0);
+  }
+
+  public List<Binary> getNanoTimeValues(String fieldName) {
+    return getBinaryValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Long getLongValue(String fieldName) {
+    return getLongValues(fieldName).get(0);
+  }
+
+  public List<Long> getLongValues(String fieldName) {
+    return getLongValues(schema.getFieldIndex(fieldName));
+  }
+
+  public String getStringValue(String fieldName) {
+    return getStringValues(fieldName).get(0);
+  }
+
+  public List<String> getStringValues(String fieldName) {
+    return getStringValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Geometry getGeometryValue(String fieldName) {
+    return getGeometryValues(fieldName).get(0);
+  }
+
+  public List<Geometry> getGeometryValues(String fieldName) {
+    return getGeometryValues(schema.getFieldIndex(fieldName));
+  }
+
+  public Envelope getEnvelopeValue(String fieldName) {
+    return getEnvelopeValues(fieldName).get(0);
+  }
+
+  public List<Envelope> getEnvelopeValues(String fieldName) {
+    return getEnvelopeValues(schema.getFieldIndex(fieldName));
+  }
+
+  public GeoParquetGroup getGroupValue(String fieldName) {
+    return getGroupValues(fieldName).get(0);
+  }
+
+  public List<GeoParquetGroup> getGroupValues(String fieldName) {
+    return getGroupValues(schema.getFieldIndex(fieldName));
+  }
+
+  public void setBinaryValue(int fieldIndex, Binary binaryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setBinaryValues(int fieldIndex, List<Binary> binaryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setBooleanValue(int fieldIndex, Boolean booleanValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setBooleanValues(int fieldIndex, List<Boolean> booleanValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setDoubleValue(int fieldIndex, Double doubleValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setDoubleValues(int fieldIndex, List<Double> doubleValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setFloatValue(int fieldIndex, Float floatValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setFloatValues(int fieldIndex, List<Float> floatValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setIntegerValue(int fieldIndex, Integer integerValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setIntegerValues(int fieldIndex, List<Integer> integerValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setInt96Value(int fieldIndex, Binary int96Value) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setInt96Values(int fieldIndex, List<Binary> int96Values) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setNanoTimeValue(int fieldIndex, Binary nanoTimeValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setNanoTimeValues(int fieldIndex, List<Binary> nanoTimeValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setLongValue(int fieldIndex, Long longValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setLongValues(int fieldIndex, List<Long> longValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setStringValue(int fieldIndex, String stringValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setStringValues(int fieldIndex, List<String> stringValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGeometryValue(int fieldIndex, Geometry geometryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGeometryValues(int fieldIndex, List<Geometry> geometryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setEnvelopeValue(int fieldIndex, Envelope envelopeValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setEnvelopeValues(int fieldIndex, List<Envelope> envelopeValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGroupValue(int fieldIndex, GeoParquetGroup groupValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGroupValues(int fieldIndex, List<GeoParquetGroup> groupValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setBinaryValue(String fieldName, Binary binaryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setBinaryValues(String fieldName, List<Binary> binaryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setBooleanValue(String fieldName, Boolean booleanValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setBooleanValues(String fieldName, List<Boolean> booleanValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setDoubleValue(String fieldName, Double doubleValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setDoubleValues(String fieldName, List<Double> doubleValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setFloatValue(String fieldName, Float floatValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setFloatValues(String fieldName, List<Float> floatValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setIntegerValue(String fieldName, Integer integerValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setIntegerValues(String fieldName, List<Integer> integerValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setInt96Value(String fieldName, Binary int96Value) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setInt96Values(String fieldName, List<Binary> int96Values) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setNanoTimeValue(String fieldName, Binary nanoTimeValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setNanoTimeValues(String fieldName, List<Binary> nanoTimeValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setLongValue(String fieldName, Long longValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setLongValues(String fieldName, List<Long> longValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setStringValue(String fieldName, String stringValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setStringValues(String fieldName, List<String> stringValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGeometryValue(String fieldName, Geometry geometryValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGeometryValues(String fieldName, List<Geometry> geometryValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setEnvelopeValue(String fieldName, Envelope envelopeValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setEnvelopeValues(String fieldName, List<Envelope> envelopeValues) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGroupValue(String fieldName, GeoParquetGroup groupValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  public void setGroupValues(String fieldName, List<GeoParquetGroup> groupValues) {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * A GeoParquet schema that describes the fields of a group and can easily be introspected.
@@ -259,7 +726,7 @@ public interface GeoParquetGroup {
    * @param name
    * @param fields the fields of the schema
    */
-  record Schema(String name, List<Field> fields) {
+  public record Schema(String name, List<Field> fields) {
 
   }
 
@@ -269,13 +736,13 @@ public interface GeoParquetGroup {
    * Sealed interfaces were introduced in Java 17 and can be used with pattern matching since Java
    * 21.
    */
-  sealed
+  sealed public
   interface Field {
-    String name();
+     String name();
 
-    Type type();
+     Type type();
 
-    Cardinality cardinality();
+     Cardinality cardinality();
   }
 
   record BinaryField(String name, Cardinality cardinality) implements Field {
@@ -353,12 +820,12 @@ public interface GeoParquetGroup {
   record EnvelopeField(String name, Cardinality cardinality, Schema schema) implements Field {
 
     @Override
-        public Type type() {
-        return Type.ENVELOPE;
-        }
+    public Type type() {
+      return Type.ENVELOPE;
+    }
   }
 
-  record GroupField(String name, Cardinality cardinality, Schema schema) implements Field {
+  public record GroupField(String name, Cardinality cardinality, Schema schema) implements Field {
 
     @Override
     public Type type() {
@@ -369,7 +836,7 @@ public interface GeoParquetGroup {
   /**
    * The type of a GeoParquet field.
    */
-  enum Type {
+  public enum Type {
     BINARY,
     BOOLEAN,
     DOUBLE,
@@ -386,7 +853,7 @@ public interface GeoParquetGroup {
   /**
    * The cardinality of a GeoParquet field.
    */
-  enum Cardinality {
+  public enum Cardinality {
     REQUIRED,
     OPTIONAL,
     REPEATED

@@ -94,8 +94,8 @@ class GeoParquetGroupFactory {
     return new GeoParquetGroup.Schema(schema.getName(), fields);
   }
 
-  public GeoParquetGroupImpl newGroup() {
-    return new GeoParquetGroupImpl(schema, metadata, geoParquetSchema);
+  public GeoParquetGroup newGroup() {
+    return new GeoParquetGroup(schema, metadata, geoParquetSchema);
   }
 
 }
