@@ -26,10 +26,12 @@ class GeoParquetGroupConverter extends GroupConverter {
 
   private final GeoParquetGroupConverter parent;
   private final int index;
-  protected GeoParquetGroupImpl current;
+  protected GeoParquetGroup current;
   private final Converter[] converters;
 
-  GeoParquetGroupConverter(GeoParquetGroupConverter parent, int index,
+  GeoParquetGroupConverter(
+      GeoParquetGroupConverter parent,
+      int index,
       GroupType schema) {
     this.parent = parent;
     this.index = index;
@@ -62,7 +64,7 @@ class GeoParquetGroupConverter extends GroupConverter {
     current = null;
   }
 
-  public GeoParquetGroupImpl getCurrentRecord() {
+  public GeoParquetGroup getCurrentRecord() {
     return current;
   }
 }

@@ -58,7 +58,7 @@ class GeoParquetGroupRecordMaterializer extends RecordMaterializer<GeoParquetGro
   }
 
   @Override
-  public GeoParquetGroupImpl getCurrentRecord() {
+  public GeoParquetGroup getCurrentRecord() {
     return root.getCurrentRecord();
   }
 
