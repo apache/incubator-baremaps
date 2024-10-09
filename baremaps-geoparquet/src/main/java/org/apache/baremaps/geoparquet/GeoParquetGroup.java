@@ -110,8 +110,8 @@ public class GeoParquetGroup {
 
   private void addValue(int fieldIndex, Object value) {
     Object currentValue = data[fieldIndex];
-    if (currentValue instanceof List<?>list) {
-      ((List<Object>) list).add(value);
+    if (currentValue instanceof List<?>) {
+      ((List<Object>) currentValue).add(value);
     } else {
       data[fieldIndex] = value;
     }

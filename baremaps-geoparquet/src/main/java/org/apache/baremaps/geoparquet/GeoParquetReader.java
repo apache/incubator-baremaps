@@ -157,7 +157,7 @@ public class GeoParquetReader {
   }
 
   private Stream<GeoParquetGroup> streamGeoParquetGroups(boolean inParallel) {
-    Spliterator<GeoParquetGroup> spliterator = new GeoParquetSpliterator(this, 0, files.size());
+    Spliterator<GeoParquetGroup> spliterator = new GeoParquetSpliterator(files, configuration, 0, files.size());
     return StreamSupport.stream(spliterator, inParallel);
   }
 
