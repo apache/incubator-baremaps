@@ -23,12 +23,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.parquet.column.page.PageReadStore;
 import org.apache.parquet.filter2.compat.FilterCompat;
 import org.apache.parquet.filter2.compat.FilterCompat.Filter;
+import org.apache.parquet.filter2.predicate.FilterApi;
+import org.apache.parquet.filter2.predicate.FilterPredicate;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.FileMetaData;
 import org.apache.parquet.hadoop.util.HadoopInputFile;
@@ -36,13 +37,17 @@ import org.apache.parquet.io.ColumnIOFactory;
 import org.apache.parquet.io.InputFile;
 import org.apache.parquet.io.MessageColumnIO;
 import org.apache.parquet.io.RecordReader;
+import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.MessageType;
+import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
+import org.apache.parquet.schema.Type;
 import org.locationtech.jts.geom.Envelope;
 
 class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
 
   private final List<FileStatus> files;
   private final Configuration configuration;
+  private final Envelope envelope;
 
   private ParquetFileReader fileReader;
   private int fileStartIndex;
@@ -56,12 +61,14 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
   private long rowsInCurrentGroup;
 
   GeoParquetSpliterator(
-      List<FileStatus> files,
-      Configuration configuration,
-      int fileStartIndex,
-      int fileEndIndex) {
+          List<FileStatus> files,
+          Envelope envelope,
+          Configuration configuration,
+          int fileStartIndex,
+          int fileEndIndex) {
     this.files = files;
     this.configuration = configuration;
+    this.envelope = envelope;
     this.fileStartIndex = fileStartIndex;
     this.fileEndIndex = fileEndIndex;
     setupReaderForNextFile();
@@ -97,6 +104,86 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
     }
   }
 
+  private FilterPredicate createEnvelopeFilter(MessageType schema, Envelope envelope) {
+    // Check whether the envelope is null or the world
+    if (envelope == null
+    || envelope.isNull()
+    || envelope.equals(new Envelope(-180, 180, -90, 90))) {
+      return null;
+    }
+
+    // Check whether the schema has a bbox field
+    Type type = schema.getType("bbox");
+    if (type == null) {
+      return null;
+    }
+
+    // Check whether the bbox has the xmin, ymin, xmax, ymax fields
+    GroupType bbox = type.asGroupType();
+    if (bbox.getFieldCount() != 4
+        || !bbox.containsField("xmin")
+        || !bbox.containsField("ymin")
+        || !bbox.containsField("xmax")
+        || !bbox.containsField("ymax")) {
+      return null;
+    }
+
+    // Check whether all fields are primitive types
+    List<Type> types = bbox.getFields();
+    if (types.stream().anyMatch(t -> !t.isPrimitive())) {
+      return null;
+    }
+
+    // Check whether all fields are of the same type
+    List<PrimitiveTypeName> typeNames = types.stream()
+        .map(t -> t.asPrimitiveType().getPrimitiveTypeName())
+        .toList();
+    PrimitiveTypeName typeName = typeNames.get(0);
+    if (!typeNames.stream().allMatch(typeName::equals)) {
+      return null;
+    }
+
+    // Check whether all fields are double
+    if (typeName == PrimitiveTypeName.DOUBLE) {
+      return FilterApi.and(
+          FilterApi.and(
+              FilterApi.gtEq(
+                  FilterApi.doubleColumn("bbox.xmin"),
+                  envelope.getMinX()),
+              FilterApi.ltEq(
+                  FilterApi.doubleColumn("bbox.xmax"),
+                  envelope.getMaxX())),
+          FilterApi.and(
+              FilterApi.gtEq(
+                  FilterApi.doubleColumn("bbox.ymin"),
+                  envelope.getMinY()),
+              FilterApi.ltEq(
+                  FilterApi.doubleColumn("bbox.ymax"),
+                  envelope.getMaxY())));
+    }
+
+    // Check whether all fields are float
+    if (typeName == PrimitiveTypeName.FLOAT) {
+      return FilterApi.and(
+          FilterApi.and(
+              FilterApi.gtEq(
+                  FilterApi.floatColumn("bbox.xmin"),
+                  (float) envelope.getMinX()),
+              FilterApi.ltEq(
+                  FilterApi.floatColumn("bbox.xmax"),
+                  (float) envelope.getMaxX())),
+          FilterApi.and(
+              FilterApi.gtEq(
+                  FilterApi.floatColumn("bbox.ymin"),
+                  (float) envelope.getMinY()),
+              FilterApi.ltEq(
+                  FilterApi.floatColumn("bbox.ymax"),
+                  (float) envelope.getMaxY())));
+    }
+
+    return null;
+  }
+
   private void advanceToNextRowGroup() throws IOException {
     if (currentRowGroup >= fileReader.getRowGroups().size()) {
       setupReaderForNextFile();
@@ -114,7 +201,11 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
 
     GeoParquetGroupRecordMaterializer materializer =
         new GeoParquetGroupRecordMaterializer(schema, metadata);
-    recordReader = columnIO.getRecordReader(pages, materializer, FilterCompat.NOOP);
+
+    FilterPredicate envelopeFilter = createEnvelopeFilter(schema, envelope);
+    Filter filter = envelopeFilter == null ? FilterCompat.NOOP : FilterCompat.get(envelopeFilter);
+
+    recordReader = columnIO.getRecordReader(pages, materializer, filter);
     currentRowGroup++;
   }
 
@@ -132,13 +223,11 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
         }
 
         GeoParquetGroup group = recordReader.read();
-        if (group == null) {
-          // Should not happen unless there is an error
-          throw new GeoParquetException("Unexpected null group read from recordReader.");
+        rowsReadInGroup++;
+        if (group != null) {
+          action.accept(group);
         }
 
-        rowsReadInGroup++;
-        action.accept(group);
         return true;
       }
     } catch (IOException e) {
@@ -166,7 +255,8 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
       return null;
     }
     int mid = fileStartIndex + remainingFiles / 2;
-    GeoParquetSpliterator split = new GeoParquetSpliterator(files, configuration, mid, fileEndIndex);
+    GeoParquetSpliterator split =
+        new GeoParquetSpliterator(files, envelope, configuration, mid, fileEndIndex);
     this.fileEndIndex = mid;
     return split;
   }

@@ -38,6 +38,7 @@ import org.apache.parquet.hadoop.metadata.BlockMetaData;
 import org.apache.parquet.hadoop.metadata.FileMetaData;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * This reader is based on the parquet example code located at: org.apache.parquet.example.data.*.
@@ -47,14 +48,20 @@ public class GeoParquetReader {
   protected final Configuration configuration;
   protected final List<FileStatus> files;
   private final AtomicLong groupCount = new AtomicLong(-1);
+  private final Envelope envelope;
 
   public GeoParquetReader(URI uri) {
-    this(uri, createDefaultConfiguration());
+    this(uri, null, createDefaultConfiguration());
   }
 
-  public GeoParquetReader(URI uri, Configuration configuration) {
+  public GeoParquetReader(URI uri, Envelope envelope) {
+    this(uri, envelope, createDefaultConfiguration());
+  }
+
+  public GeoParquetReader(URI uri, Envelope envelope, Configuration configuration) {
     this.configuration = configuration;
     this.files = initializeFiles(uri, configuration);
+    this.envelope = envelope;
   }
 
   private static List<FileStatus> initializeFiles(URI uri, Configuration configuration) {
@@ -157,7 +164,8 @@ public class GeoParquetReader {
   }
 
   private Stream<GeoParquetGroup> streamGeoParquetGroups(boolean inParallel) {
-    Spliterator<GeoParquetGroup> spliterator = new GeoParquetSpliterator(files, configuration, 0, files.size());
+    Spliterator<GeoParquetGroup> spliterator =
+        new GeoParquetSpliterator(files, envelope, configuration, 0, files.size());
     return StreamSupport.stream(spliterator, inParallel);
   }
 

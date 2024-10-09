@@ -26,12 +26,16 @@ import java.util.stream.Stream;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Envelope;
 
 class GeoParquetReaderTest {
 
-  private static void readGroups(URI geoParquet, boolean parallel,
-      int expectedGroupCount) {
-    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
+  private static void readGroups(
+          URI geoParquet,
+          Envelope envelope,
+          boolean parallel,
+                                 int expectedGroupCount) {
+    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet, envelope);
     final AtomicInteger groupCount = new AtomicInteger();
     Stream<GeoParquetGroup> geoParquetGroupStream;
     if (parallel) {
@@ -48,7 +52,15 @@ class GeoParquetReaderTest {
     URI geoParquet = TestFiles.GEOPARQUET.toUri();
     final boolean isParallel = false;
     final int expectedGroupCount = 5;
-    readGroups(geoParquet, isParallel, expectedGroupCount);
+    readGroups(geoParquet, null, isParallel, expectedGroupCount);
+  }
+
+  @Test
+  void readFiltered() {
+    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    final boolean isParallel = false;
+    final int expectedGroupCount = 1;
+    readGroups(geoParquet, new Envelope(-172, -65, 18, 72), isParallel, expectedGroupCount);
   }
 
   @Disabled("Requires access to the Internet")
@@ -59,7 +71,7 @@ class GeoParquetReaderTest {
     final boolean isParallel = true;
     final int expectedGroupCount = 974708;
 
-    readGroups(geoParquet, isParallel, expectedGroupCount);
+    readGroups(geoParquet, null, isParallel, expectedGroupCount);
   }
 
   @Disabled("Requires access to the Internet")
