@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.geoparquet.GeoParquetGroup.Schema;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -100,7 +99,7 @@ public class GeoParquetReader {
       MessageType messageType = fileMetaData.getSchema();
 
       GeoParquetMetadata geoParquetMetadata = null;
-      Schema geoParquetSchema = null;
+      GeoParquetSchema geoParquetSchema = null;
       if (keyValueMetadata.containsKey("geo")) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -131,7 +130,7 @@ public class GeoParquetReader {
         .metadata();
   }
 
-  public Schema getGeoParquetSchema() {
+  public GeoParquetSchema getGeoParquetSchema() {
     return files.stream()
         .findFirst()
         .map(this::getFileInfo)
@@ -192,7 +191,7 @@ public class GeoParquetReader {
       Map<String, String> keyValueMetadata,
       MessageType messageType,
       GeoParquetMetadata metadata,
-      Schema geoParquetSchema) {
+      GeoParquetSchema geoParquetSchema) {
 
   }
 

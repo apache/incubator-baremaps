@@ -19,6 +19,10 @@ package org.apache.baremaps.geoparquet;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.baremaps.geoparquet.GeoParquetSchema.EnvelopeField;
+import org.apache.baremaps.geoparquet.GeoParquetSchema.Field;
+import org.apache.baremaps.geoparquet.GeoParquetSchema.GroupField;
+import org.apache.baremaps.geoparquet.GeoParquetSchema.Type;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.GroupType;
 import org.locationtech.jts.geom.Envelope;
@@ -27,21 +31,32 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
+/**
+ * A group of fields in a GeoParquet file.
+ */
 public class GeoParquetGroup {
 
-  private final GroupType schema;
-  private final GeoParquetMetadata metadata;
-  private final Schema geoParquetSchema;
+  private final GroupType parquetSchema;
+  private final GeoParquetMetadata geoParquetMetadata;
+  private final GeoParquetSchema geoParquetSchema;
   private final Object[] data;
 
-  public GeoParquetGroup(GroupType schema, GeoParquetMetadata metadata, Schema geoParquetSchema) {
-    this.schema = schema;
-    this.metadata = metadata;
+  /**
+   * Constructs a new GeoParquetGroup with the specified schema, metadata and GeoParquet schema.
+   *
+   * @param parquetSchema
+   * @param geoParquetMetadata
+   * @param geoParquetSchema
+   */
+  public GeoParquetGroup(GroupType parquetSchema, GeoParquetMetadata geoParquetMetadata,
+      GeoParquetSchema geoParquetSchema) {
+    this.parquetSchema = parquetSchema;
+    this.geoParquetMetadata = geoParquetMetadata;
     this.geoParquetSchema = geoParquetSchema;
-    this.data = new Object[schema.getFields().size()];
-    for (int i = 0; i < schema.getFieldCount(); i++) {
+    this.data = new Object[parquetSchema.getFields().size()];
+    for (int i = 0; i < parquetSchema.getFieldCount(); i++) {
       Field field = geoParquetSchema.fields().get(i);
-      if (field.cardinality() == Cardinality.REPEATED) {
+      if (field.cardinality() == GeoParquetSchema.Cardinality.REPEATED) {
         this.data[i] = new ArrayList<>();
       } else {
         this.data[i] = null; // For REQUIRED or OPTIONAL fields
@@ -57,6 +72,20 @@ public class GeoParquetGroup {
 
   public GeoParquetGroup addGroup(String field) {
     return addGroup(getParquetSchema().getFieldIndex(field));
+  }
+
+  private GeoParquetGroup createGroup(int fieldIndex) {
+    Field field = geoParquetSchema.fields().get(fieldIndex);
+    if (field instanceof EnvelopeField envelopeField) {
+      return new GeoParquetGroup(parquetSchema.getType(fieldIndex).asGroupType(),
+          geoParquetMetadata,
+          envelopeField.schema());
+    } else if (field instanceof GroupField groupField) {
+      return new GeoParquetGroup(parquetSchema.getType(fieldIndex).asGroupType(),
+          geoParquetMetadata,
+          groupField.schema());
+    }
+    throw new GeoParquetException("Field at index " + fieldIndex + " is not a group");
   }
 
   public GeoParquetGroup getGroup(int fieldIndex, int index) {
@@ -89,7 +118,7 @@ public class GeoParquetGroup {
 
   private Object getValue(int fieldIndex) {
     Field field = geoParquetSchema.fields().get(fieldIndex);
-    if (field.cardinality() == Cardinality.REPEATED) {
+    if (field.cardinality() == GeoParquetSchema.Cardinality.REPEATED) {
       throw new IllegalStateException("Field " + fieldIndex + " (" + field.name()
           + ") is repeated. Use getValues() instead.");
     }
@@ -98,7 +127,7 @@ public class GeoParquetGroup {
 
   public List<Object> getValues(int fieldIndex) {
     Field field = geoParquetSchema.fields().get(fieldIndex);
-    if (field.cardinality() != Cardinality.REPEATED) {
+    if (field.cardinality() != GeoParquetSchema.Cardinality.REPEATED) {
       return List.of(getValue(fieldIndex));
     }
     return (List<Object>) data[fieldIndex];
@@ -192,7 +221,7 @@ public class GeoParquetGroup {
 
   private GeoParquetException createGeoParquetException(int fieldIndex, String elementText) {
     String msg = String.format("Not found %d (%s) %s in group%n%s", fieldIndex,
-        schema.getFieldName(fieldIndex), elementText, this);
+        parquetSchema.getFieldName(fieldIndex), elementText, this);
     return new GeoParquetException(msg);
   }
 
@@ -208,7 +237,7 @@ public class GeoParquetGroup {
 
   private void appendToString(StringBuilder builder, String indent) {
     int i = 0;
-    for (org.apache.parquet.schema.Type field : schema.getFields()) {
+    for (org.apache.parquet.schema.Type field : parquetSchema.getFields()) {
       String name = field.getName();
       Object object = data[i];
       ++i;
@@ -238,28 +267,16 @@ public class GeoParquetGroup {
     }
   }
 
-  public Schema getGeoParquetSchema() {
+  public GeoParquetSchema getGeoParquetSchema() {
     return geoParquetSchema;
   }
 
   public GroupType getParquetSchema() {
-    return schema;
+    return parquetSchema;
   }
 
   public GeoParquetMetadata getGeoParquetMetadata() {
-    return metadata;
-  }
-
-  public GeoParquetGroup createGroup(int fieldIndex) {
-    Field field = geoParquetSchema.fields().get(fieldIndex);
-    if (field instanceof EnvelopeField envelopeField) {
-      return new GeoParquetGroup(schema.getType(fieldIndex).asGroupType(), metadata,
-          envelopeField.schema());
-    } else if (field instanceof GroupField groupField) {
-      return new GeoParquetGroup(schema.getType(fieldIndex).asGroupType(), metadata,
-          groupField.schema());
-    }
-    throw new GeoParquetException("Field at index " + fieldIndex + " is not a group");
+    return geoParquetMetadata;
   }
 
   // Getter methods for different data types
@@ -385,7 +402,7 @@ public class GeoParquetGroup {
   }
 
   public List<GeoParquetGroup> getGroupValues(int fieldIndex) {
-    if (data[fieldIndex] instanceof List<?> list) {
+    if (data[fieldIndex] instanceof List<?>list) {
       return (List<GeoParquetGroup>) list;
     } else {
       return List.of((GeoParquetGroup) data[fieldIndex]);
@@ -418,222 +435,83 @@ public class GeoParquetGroup {
 
   // Methods to access fields by name
   public Binary getBinaryValue(String fieldName) {
-    return getBinaryValue(schema.getFieldIndex(fieldName));
+    return getBinaryValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Binary> getBinaryValues(String fieldName) {
-    return getBinaryValues(schema.getFieldIndex(fieldName));
+    return getBinaryValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public Boolean getBooleanValue(String fieldName) {
-    return getBooleanValue(schema.getFieldIndex(fieldName));
+    return getBooleanValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Boolean> getBooleanValues(String fieldName) {
-    return getBooleanValues(schema.getFieldIndex(fieldName));
+    return getBooleanValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public Double getDoubleValue(String fieldName) {
-    return getDoubleValue(schema.getFieldIndex(fieldName));
+    return getDoubleValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Double> getDoubleValues(String fieldName) {
-    return getDoubleValues(schema.getFieldIndex(fieldName));
+    return getDoubleValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public Float getFloatValue(String fieldName) {
-    return getFloatValue(schema.getFieldIndex(fieldName));
+    return getFloatValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Float> getFloatValues(String fieldName) {
-    return getFloatValues(schema.getFieldIndex(fieldName));
+    return getFloatValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public Integer getIntegerValue(String fieldName) {
-    return getIntegerValue(schema.getFieldIndex(fieldName));
+    return getIntegerValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Integer> getIntegerValues(String fieldName) {
-    return getIntegerValues(schema.getFieldIndex(fieldName));
+    return getIntegerValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public Long getLongValue(String fieldName) {
-    return getLongValue(schema.getFieldIndex(fieldName));
+    return getLongValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Long> getLongValues(String fieldName) {
-    return getLongValues(schema.getFieldIndex(fieldName));
+    return getLongValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public String getStringValue(String fieldName) {
-    return getStringValue(schema.getFieldIndex(fieldName));
+    return getStringValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<String> getStringValues(String fieldName) {
-    return getStringValues(schema.getFieldIndex(fieldName));
+    return getStringValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public Geometry getGeometryValue(String fieldName) {
-    return getGeometryValue(schema.getFieldIndex(fieldName));
+    return getGeometryValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Geometry> getGeometryValues(String fieldName) {
-    return getGeometryValues(schema.getFieldIndex(fieldName));
+    return getGeometryValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public GeoParquetGroup getGroupValue(String fieldName) {
-    return getGroupValue(schema.getFieldIndex(fieldName));
+    return getGroupValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<GeoParquetGroup> getGroupValues(String fieldName) {
-    return getGroupValues(schema.getFieldIndex(fieldName));
+    return getGroupValues(parquetSchema.getFieldIndex(fieldName));
   }
 
   public Envelope getEnvelopeValue(String fieldName) {
-    return getEnvelopeValue(schema.getFieldIndex(fieldName));
+    return getEnvelopeValue(parquetSchema.getFieldIndex(fieldName));
   }
 
   public List<Envelope> getEnvelopeValues(String fieldName) {
-    return getEnvelopeValues(schema.getFieldIndex(fieldName));
-  }
-
-  /**
-   * A GeoParquet schema that describes the fields of a group and can easily be introspected.
-   *
-   * @param name
-   * @param fields the fields of the schema
-   */
-  public record Schema(String name, List<Field> fields) {
-
-  }
-
-  /**
-   * A sealed inteface for the fields of a GeoParquet schema.
-   * <p>
-   * Sealed interfaces were introduced in Java 17 and can be used with pattern matching since Java
-   * 21.
-   */
-  sealed public
-  interface Field {
-     String name();
-
-     Type type();
-
-     Cardinality cardinality();
-  }
-
-  record BinaryField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.BINARY;
-    }
-  }
-
-  record BooleanField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.BOOLEAN;
-    }
-  }
-
-  record DoubleField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.DOUBLE;
-    }
-  }
-
-  record FloatField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.FLOAT;
-    }
-  }
-
-  record IntegerField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.INTEGER;
-    }
-  }
-
-  record Int96Field(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.INT96;
-    }
-  }
-
-  record LongField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.LONG;
-    }
-  }
-
-  record StringField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.STRING;
-    }
-  }
-
-  record GeometryField(String name, Cardinality cardinality) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.GEOMETRY;
-    }
-  }
-
-  record EnvelopeField(String name, Cardinality cardinality, Schema schema) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.ENVELOPE;
-    }
-  }
-
-  public record GroupField(String name, Cardinality cardinality, Schema schema) implements Field {
-
-    @Override
-    public Type type() {
-      return Type.GROUP;
-    }
-  }
-
-  /**
-   * The type of a GeoParquet field.
-   */
-  public enum Type {
-    BINARY,
-    BOOLEAN,
-    DOUBLE,
-    FLOAT,
-    INTEGER,
-    INT96,
-    LONG,
-    STRING,
-    GEOMETRY,
-    ENVELOPE,
-    GROUP
-  }
-
-  /**
-   * The cardinality of a GeoParquet field.
-   */
-  public enum Cardinality {
-    REQUIRED,
-    OPTIONAL,
-    REPEATED
+    return getEnvelopeValues(parquetSchema.getFieldIndex(fieldName));
   }
 
 }

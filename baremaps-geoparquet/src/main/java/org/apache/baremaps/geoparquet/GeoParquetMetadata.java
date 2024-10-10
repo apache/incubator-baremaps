@@ -19,125 +19,24 @@ package org.apache.baremaps.geoparquet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Objects;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class GeoParquetMetadata {
-
-  @JsonProperty("version")
-  private String version;
-
-  @JsonProperty("primary_column")
-  private String primaryColumn;
-
-  @JsonProperty("columns")
-  private Map<String, GeoParquetColumnMetadata> columns;
-
-  @JsonProperty("encoding")
-  private String encoding;
-
-  @JsonProperty("geometry_types")
-  private List<String> geometryTypes;
-
-  @JsonProperty("crs")
-  private Object crs;
-
-  @JsonProperty("edges")
-  private String edges;
-
-  @JsonProperty("bbox")
-  private List<Double> bbox;
-
-  @JsonProperty("epoch")
-  private String epoch;
-
-  @JsonProperty("covering")
-  private Object covering;
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
-  }
-
-  public String getPrimaryColumn() {
-    return primaryColumn;
-  }
-
-  public void setPrimaryColumn(String primaryColumn) {
-    this.primaryColumn = primaryColumn;
-  }
-
-  public Map<String, GeoParquetColumnMetadata> getColumns() {
-    return columns;
-  }
-
-  public void setColumns(Map<String, GeoParquetColumnMetadata> columns) {
-    this.columns = columns;
-  }
-
-  public String getEncoding() {
-    return encoding;
-  }
-
-  public void setEncoding(String encoding) {
-    this.encoding = encoding;
-  }
-
-  public List<String> getGeometryTypes() {
-    return geometryTypes;
-  }
-
-  public void setGeometryTypes(List<String> geometryTypes) {
-    this.geometryTypes = geometryTypes;
-  }
-
-  public Object getCrs() {
-    return crs;
-  }
-
-  public void setCrs(Object crs) {
-    this.crs = crs;
-  }
-
-  public String getEdges() {
-    return edges;
-  }
-
-  public void setEdges(String edges) {
-    this.edges = edges;
-  }
-
-  public List<Double> getBbox() {
-    return bbox;
-  }
-
-  public void setBbox(List<Double> bbox) {
-    this.bbox = bbox;
-  }
-
-  public String getEpoch() {
-    return epoch;
-  }
-
-  public void setEpoch(String epoch) {
-    this.epoch = epoch;
-  }
-
-  public Object getCovering() {
-    return covering;
-  }
-
-  public void setCovering(Object covering) {
-    this.covering = covering;
-  }
+public record GeoParquetMetadata(
+    @JsonProperty("version") String version,
+    @JsonProperty("primary_column") String primaryColumn,
+    @JsonProperty("columns") Map<String, Column> columns,
+    @JsonProperty("encoding") String encoding,
+    @JsonProperty("geometry_types") List<String> geometryTypes,
+    @JsonProperty("crs") Object crs,
+    @JsonProperty("edges") String edges,
+    @JsonProperty("bbox") List<Double> bbox,
+    @JsonProperty("epoch") String epoch,
+    @JsonProperty("covering") Object covering) {
 
   public int getSrid(String column) {
-    return Optional.ofNullable(getColumns().get(column).getCrs()).map(crs -> {
+    return Optional.ofNullable(columns.get(column).crs()).map(crs -> {
       JsonNode id = crs.get("id");
       return switch (id.get("authority").asText()) {
         case "OGC" -> switch (id.get("code").asText()) {
@@ -154,22 +53,12 @@ public class GeoParquetMetadata {
     return columns.containsKey(column);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    GeoParquetMetadata that = (GeoParquetMetadata) o;
-    return Objects.equal(version, that.version)
-        && Objects.equal(primaryColumn, that.primaryColumn)
-        && Objects.equal(columns, that.columns);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(version, primaryColumn, columns);
+  public record Column(
+      @JsonProperty("encoding") String encoding,
+      @JsonProperty("geometry_types") List<String> geometryTypes,
+      @JsonProperty("crs") JsonNode crs,
+      @JsonProperty("orientation") String orientation,
+      @JsonProperty("edges") String edges,
+      @JsonProperty("bbox") Double[] bbox) {
   }
 }
