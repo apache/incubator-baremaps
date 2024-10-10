@@ -31,10 +31,10 @@ import org.locationtech.jts.geom.Envelope;
 class GeoParquetReaderTest {
 
   private static void readGroups(
-          URI geoParquet,
-          Envelope envelope,
-          boolean parallel,
-                                 int expectedGroupCount) {
+      URI geoParquet,
+      Envelope envelope,
+      boolean parallel,
+      int expectedGroupCount) {
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet, envelope);
     final AtomicInteger groupCount = new AtomicInteger();
     Stream<GeoParquetGroup> geoParquetGroupStream;
@@ -43,7 +43,7 @@ class GeoParquetReaderTest {
     } else {
       geoParquetGroupStream = geoParquetReader.read();
     }
-    geoParquetGroupStream.peek(System.out::println).forEach(group -> groupCount.getAndIncrement());
+    geoParquetGroupStream.forEach(group -> groupCount.getAndIncrement());
     assertEquals(expectedGroupCount, groupCount.get());
   }
 

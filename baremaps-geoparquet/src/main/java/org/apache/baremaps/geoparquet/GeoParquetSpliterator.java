@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -61,11 +62,11 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
   private long rowsInCurrentGroup;
 
   GeoParquetSpliterator(
-          List<FileStatus> files,
-          Envelope envelope,
-          Configuration configuration,
-          int fileStartIndex,
-          int fileEndIndex) {
+      List<FileStatus> files,
+      Envelope envelope,
+      Configuration configuration,
+      int fileStartIndex,
+      int fileEndIndex) {
     this.files = files;
     this.configuration = configuration;
     this.envelope = envelope;
@@ -104,11 +105,36 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
     }
   }
 
+  private void advanceToNextRowGroup() throws IOException {
+    if (currentRowGroup >= fileReader.getRowGroups().size()) {
+      setupReaderForNextFile();
+      return;
+    }
+
+    PageReadStore pages = fileReader.readNextFilteredRowGroup();
+    if (pages == null) {
+      setupReaderForNextFile();
+      return;
+    }
+
+    rowsInCurrentGroup = pages.getRowCount();
+    rowsReadInGroup = 0;
+
+    GeoParquetGroupRecordMaterializer materializer =
+        new GeoParquetGroupRecordMaterializer(schema, metadata);
+
+    FilterPredicate envelopeFilter = createEnvelopeFilter(schema, envelope);
+    Filter filter = envelopeFilter == null ? FilterCompat.NOOP : FilterCompat.get(envelopeFilter);
+
+    recordReader = columnIO.getRecordReader(pages, materializer, filter);
+    currentRowGroup++;
+  }
+
   private FilterPredicate createEnvelopeFilter(MessageType schema, Envelope envelope) {
     // Check whether the envelope is null or the world
     if (envelope == null
-    || envelope.isNull()
-    || envelope.equals(new Envelope(-180, 180, -90, 90))) {
+        || envelope.isNull()
+        || envelope.equals(new Envelope(-180, 180, -90, 90))) {
       return null;
     }
 
@@ -143,70 +169,27 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
       return null;
     }
 
-    // Check whether all fields are double
-    if (typeName == PrimitiveTypeName.DOUBLE) {
-      return FilterApi.and(
-          FilterApi.and(
-              FilterApi.gtEq(
-                  FilterApi.doubleColumn("bbox.xmin"),
-                  envelope.getMinX()),
-              FilterApi.ltEq(
-                  FilterApi.doubleColumn("bbox.xmax"),
-                  envelope.getMaxX())),
-          FilterApi.and(
-              FilterApi.gtEq(
-                  FilterApi.doubleColumn("bbox.ymin"),
-                  envelope.getMinY()),
-              FilterApi.ltEq(
-                  FilterApi.doubleColumn("bbox.ymax"),
-                  envelope.getMaxY())));
+    // Check whether the type is a float or a double
+    if (typeName != PrimitiveTypeName.DOUBLE && typeName != PrimitiveTypeName.FLOAT) {
+      return null;
     }
 
-    // Check whether all fields are float
-    if (typeName == PrimitiveTypeName.FLOAT) {
-      return FilterApi.and(
-          FilterApi.and(
-              FilterApi.gtEq(
-                  FilterApi.floatColumn("bbox.xmin"),
-                  (float) envelope.getMinX()),
-              FilterApi.ltEq(
-                  FilterApi.floatColumn("bbox.xmax"),
-                  (float) envelope.getMaxX())),
-          FilterApi.and(
-              FilterApi.gtEq(
-                  FilterApi.floatColumn("bbox.ymin"),
-                  (float) envelope.getMinY()),
-              FilterApi.ltEq(
-                  FilterApi.floatColumn("bbox.ymax"),
-                  (float) envelope.getMaxY())));
-    }
+    // Initialize the filter predicate creator for the given type
+    BiFunction<String, Number, FilterPredicate> filterPredicateCreator =
+        (column, value) -> switch (typeName) {
+        case DOUBLE -> FilterApi.gtEq(FilterApi.doubleColumn(column), value.doubleValue());
+        case FLOAT -> FilterApi.gtEq(FilterApi.floatColumn(column), value.floatValue());
+        default -> throw new IllegalStateException("Unexpected value: " + typeName);
+        };
 
-    return null;
-  }
-
-  private void advanceToNextRowGroup() throws IOException {
-    if (currentRowGroup >= fileReader.getRowGroups().size()) {
-      setupReaderForNextFile();
-      return;
-    }
-
-    PageReadStore pages = fileReader.readNextFilteredRowGroup();
-    if (pages == null) {
-      setupReaderForNextFile();
-      return;
-    }
-
-    rowsInCurrentGroup = pages.getRowCount();
-    rowsReadInGroup = 0;
-
-    GeoParquetGroupRecordMaterializer materializer =
-        new GeoParquetGroupRecordMaterializer(schema, metadata);
-
-    FilterPredicate envelopeFilter = createEnvelopeFilter(schema, envelope);
-    Filter filter = envelopeFilter == null ? FilterCompat.NOOP : FilterCompat.get(envelopeFilter);
-
-    recordReader = columnIO.getRecordReader(pages, materializer, filter);
-    currentRowGroup++;
+    // Create the filter predicate
+    return FilterApi.and(
+        FilterApi.and(
+            filterPredicateCreator.apply("bbox.xmin", envelope.getMinX()),
+            filterPredicateCreator.apply("bbox.xmax", envelope.getMaxX())),
+        FilterApi.and(
+            filterPredicateCreator.apply("bbox.ymin", envelope.getMinY()),
+            filterPredicateCreator.apply("bbox.ymax", envelope.getMaxY())));
   }
 
   @Override
