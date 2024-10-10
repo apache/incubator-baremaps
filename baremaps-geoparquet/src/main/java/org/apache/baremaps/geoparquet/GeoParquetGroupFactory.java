@@ -18,7 +18,7 @@
 package org.apache.baremaps.geoparquet;
 
 import java.util.List;
-import org.apache.baremaps.geoparquet.GeoParquetGroup.Field;
+import org.apache.baremaps.geoparquet.GeoParquetSchema.*;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
@@ -29,7 +29,7 @@ class GeoParquetGroupFactory {
 
   private final GeoParquetMetadata metadata;
 
-  private final GeoParquetGroup.Schema geoParquetSchema;
+  private final GeoParquetSchema geoParquetSchema;
 
   public GeoParquetGroupFactory(GroupType schema, GeoParquetMetadata metadata) {
     this.schema = schema;
@@ -37,7 +37,7 @@ class GeoParquetGroupFactory {
     this.geoParquetSchema = createGeoParquetSchema(schema, metadata);
   }
 
-  public static GeoParquetGroup.Schema createGeoParquetSchema(
+  public static GeoParquetSchema createGeoParquetSchema(
       GroupType schema,
       GeoParquetMetadata metadata) {
 
@@ -45,29 +45,29 @@ class GeoParquetGroupFactory {
     List<Field> fields = schema.getFields().stream().map(field -> {
 
       // Map the column cardinality
-      GeoParquetGroup.Cardinality cardinality = switch (field.getRepetition()) {
-        case REQUIRED -> GeoParquetGroup.Cardinality.REQUIRED;
-        case OPTIONAL -> GeoParquetGroup.Cardinality.OPTIONAL;
-        case REPEATED -> GeoParquetGroup.Cardinality.REPEATED;
+      Cardinality cardinality = switch (field.getRepetition()) {
+        case REQUIRED -> GeoParquetSchema.Cardinality.REQUIRED;
+        case OPTIONAL -> GeoParquetSchema.Cardinality.OPTIONAL;
+        case REPEATED -> GeoParquetSchema.Cardinality.REPEATED;
       };
 
       // Handle geometry columns
       if (field.isPrimitive() && metadata.isGeometryColumn(field.getName())) {
-        return new GeoParquetGroup.GeometryField(field.getName(), cardinality);
+        return new GeometryField(field.getName(), cardinality);
       }
 
       // Handle envelope columns
       else if (!field.isPrimitive() && field.getName().equals("bbox")) {
         GroupType groupType = field.asGroupType();
-        GeoParquetGroup.Schema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
-        return new GeoParquetGroup.EnvelopeField(field.getName(), cardinality, geoParquetSchema);
+        GeoParquetSchema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
+        return new EnvelopeField(field.getName(), cardinality, geoParquetSchema);
       }
 
       // Handle group columns
       else if (!field.isPrimitive()) {
         GroupType groupType = field.asGroupType();
-        GeoParquetGroup.Schema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
-        return (Field) new GeoParquetGroup.GroupField(
+        GeoParquetSchema geoParquetSchema = createGeoParquetSchema(groupType, metadata);
+        return (Field) new GroupField(
             groupType.getName(),
             cardinality,
             geoParquetSchema);
@@ -79,19 +79,19 @@ class GeoParquetGroupFactory {
         PrimitiveTypeName primitiveTypeName = primitiveType.getPrimitiveTypeName();
         String columnName = primitiveType.getName();
         return switch (primitiveTypeName) {
-          case INT32 -> new GeoParquetGroup.IntegerField(columnName, cardinality);
-          case INT64 -> new GeoParquetGroup.LongField(columnName, cardinality);
-          case INT96 -> new GeoParquetGroup.Int96Field(columnName, cardinality);
-          case FLOAT -> new GeoParquetGroup.FloatField(columnName, cardinality);
-          case DOUBLE -> new GeoParquetGroup.DoubleField(columnName, cardinality);
-          case BOOLEAN -> new GeoParquetGroup.BooleanField(columnName, cardinality);
-          case BINARY -> new GeoParquetGroup.BinaryField(columnName, cardinality);
-          case FIXED_LEN_BYTE_ARRAY -> new GeoParquetGroup.BinaryField(columnName, cardinality);
+          case INT32 -> new IntegerField(columnName, cardinality);
+          case INT64 -> new LongField(columnName, cardinality);
+          case INT96 -> new Int96Field(columnName, cardinality);
+          case FLOAT -> new FloatField(columnName, cardinality);
+          case DOUBLE -> new DoubleField(columnName, cardinality);
+          case BOOLEAN -> new BooleanField(columnName, cardinality);
+          case BINARY -> new BinaryField(columnName, cardinality);
+          case FIXED_LEN_BYTE_ARRAY -> new BinaryField(columnName, cardinality);
         };
       }
     }).toList();
 
-    return new GeoParquetGroup.Schema(schema.getName(), fields);
+    return new GeoParquetSchema(schema.getName(), fields);
   }
 
   public GeoParquetGroup newGroup() {

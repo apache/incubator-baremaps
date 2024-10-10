@@ -17,11 +17,26 @@
 
 package org.apache.baremaps.geoparquet;
 
+/**
+ * Exception thrown when an error occurs during the processing of GeoParquet files.
+ */
 public class GeoParquetException extends RuntimeException {
+
+  /**
+   * Constructs a new GeoParquetException with the specified message.
+   *
+   * @param message the message
+   */
   public GeoParquetException(String message) {
     super(message);
   }
 
+  /**
+   * Constructs a new GeoParquetException with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
   public GeoParquetException(String message, Throwable cause) {
     super(message, cause);
   }

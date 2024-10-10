@@ -25,21 +25,21 @@ import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Cardinality;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.geoparquet.GeoParquetGroup;
-import org.apache.baremaps.geoparquet.GeoParquetGroup.Field;
-import org.apache.baremaps.geoparquet.GeoParquetGroup.GroupField;
-import org.apache.baremaps.geoparquet.GeoParquetGroup.Schema;
+import org.apache.baremaps.geoparquet.GeoParquetSchema;
+import org.apache.baremaps.geoparquet.GeoParquetSchema.Field;
+import org.apache.baremaps.geoparquet.GeoParquetSchema.GroupField;
 import org.apache.parquet.io.api.Binary;
 
 public class GeoParquetTypeConversion {
 
   private GeoParquetTypeConversion() {}
 
-  public static DataSchema asSchema(String table, Schema schema) {
+  public static DataSchema asSchema(String table, GeoParquetSchema schema) {
     List<DataColumn> columns = asDataColumns(schema);
     return new DataSchemaImpl(table, columns);
   }
 
-  private static List<DataColumn> asDataColumns(Schema field) {
+  private static List<DataColumn> asDataColumns(GeoParquetSchema field) {
     return field.fields().stream()
         .map(GeoParquetTypeConversion::asDataColumn)
         .toList();
@@ -67,7 +67,7 @@ public class GeoParquetTypeConversion {
   }
 
   public static List<Object> asRowValues(GeoParquetGroup group) {
-    Schema schema = group.getGeoParquetSchema();
+    GeoParquetSchema schema = group.getGeoParquetSchema();
     List<Field> fields = schema.fields();
     List<Object> values = new ArrayList<>();
     for (int i = 0; i < fields.size(); i++) {
@@ -79,7 +79,7 @@ public class GeoParquetTypeConversion {
 
   public static Map<String, Object> asNested(GeoParquetGroup group) {
     Map<String, Object> nested = new HashMap<>();
-    Schema schema = group.getGeoParquetSchema();
+    GeoParquetSchema schema = group.getGeoParquetSchema();
     List<Field> fields = schema.fields();
     for (int i = 0; i < fields.size(); i++) {
       if (group.getValues(i).isEmpty()) {
@@ -93,7 +93,7 @@ public class GeoParquetTypeConversion {
   }
 
   public static Object asValue(Field field, GeoParquetGroup group, int i) {
-    if (field.cardinality() == GeoParquetGroup.Cardinality.REPEATED) {
+    if (field.cardinality() == GeoParquetSchema.Cardinality.REPEATED) {
       return switch (field.type()) {
         case BINARY -> group.getBinaryValues(i).stream().map(Binary::getBytes).toList();
         case BOOLEAN -> group.getBooleanValues(i);
