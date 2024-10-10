@@ -65,7 +65,9 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
   private long rowsInCurrentGroup;
 
   /**
-   * Constructs a new {@code GeoParquetSpliterator} with the specified files, envelope, configuration, file start index and file end index.
+   * Constructs a new {@code GeoParquetSpliterator} with the specified files, envelope,
+   * configuration, file start index and file end index.
+   * 
    * @param files the files
    * @param envelope the envelope
    * @param configuration the configuration

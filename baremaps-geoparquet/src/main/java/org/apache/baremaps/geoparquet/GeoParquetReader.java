@@ -30,8 +30,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider;
-import org.apache.hadoop.fs.s3a.S3AFileSystem;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.BlockMetaData;
 import org.apache.parquet.hadoop.metadata.FileMetaData;
@@ -55,7 +53,7 @@ public class GeoParquetReader {
    * @param uri the URI
    */
   public GeoParquetReader(URI uri) {
-    this(uri, null, createDefaultConfiguration());
+    this(uri, null, new Configuration());
   }
 
   /**
@@ -65,7 +63,7 @@ public class GeoParquetReader {
    * @param envelope the envelope
    */
   public GeoParquetReader(URI uri, Envelope envelope) {
-    this(uri, envelope, createDefaultConfiguration());
+    this(uri, envelope, new Configuration());
   }
 
   /**
@@ -191,15 +189,6 @@ public class GeoParquetReader {
 
   public Stream<GeoParquetGroup> readParallel() {
     return streamGeoParquetGroups(true);
-  }
-
-  private static Configuration createDefaultConfiguration() {
-    Configuration conf = new Configuration();
-    conf.set("fs.s3a.endpoint", "s3.us-west-2.amazonaws.com");
-    conf.set("fs.s3a.aws.credentials.provider", AnonymousAWSCredentialsProvider.class.getName());
-    conf.set("fs.s3a.impl", S3AFileSystem.class.getName());
-    conf.set("fs.s3a.path.style.access", "true");
-    return conf;
   }
 
   private record FileInfo(
