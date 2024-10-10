@@ -20,11 +20,20 @@ package org.apache.baremaps.geoparquet;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.io.api.PrimitiveConverter;
 
+/**
+ * A {@link PrimitiveConverter} for {@link GeoParquetGroup}s.
+ */
 class GeoParquetPrimitiveConverter extends PrimitiveConverter {
 
   private final GeoParquetGroupConverter parent;
   private final int index;
 
+  /**
+   * Constructs a new {@code GeoParquetPrimitiveConverter} with the specified parent and index.
+   *
+   * @param parent the parent
+   * @param index the index
+   */
   GeoParquetPrimitiveConverter(GeoParquetGroupConverter parent, int index) {
     this.parent = parent;
     this.index = index;

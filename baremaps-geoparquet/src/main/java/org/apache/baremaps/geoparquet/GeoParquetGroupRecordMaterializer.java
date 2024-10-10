@@ -36,12 +36,22 @@ import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
 
+/**
+ * A {@link RecordMaterializer} for {@link GeoParquetGroup}s.
+ */
 class GeoParquetGroupRecordMaterializer extends RecordMaterializer<GeoParquetGroup> {
 
   private final GeoParquetGroupFactory groupFactory;
 
   private final GeoParquetGroupConverter root;
 
+  /**
+   * Constructs a new {@code GeoParquetGroupRecordMaterializer} with the specified schema and
+   * metadata.
+   *
+   * @param schema the schema
+   * @param metadata the metadata
+   */
   public GeoParquetGroupRecordMaterializer(MessageType schema, GeoParquetMetadata metadata) {
     this.groupFactory = new GeoParquetGroupFactory(schema, metadata);
     this.root = new GeoParquetGroupConverter(null, 0, schema) {
@@ -57,11 +67,17 @@ class GeoParquetGroupRecordMaterializer extends RecordMaterializer<GeoParquetGro
     };
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public GeoParquetGroup getCurrentRecord() {
     return root.getCurrentRecord();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public GroupConverter getRootConverter() {
     return root;

@@ -49,14 +49,31 @@ public class GeoParquetReader {
   private final AtomicLong groupCount = new AtomicLong(-1);
   private final Envelope envelope;
 
+  /**
+   * Constructs a new {@code GeoParquetReader}.
+   *
+   * @param uri the URI
+   */
   public GeoParquetReader(URI uri) {
     this(uri, null, createDefaultConfiguration());
   }
 
+  /**
+   * Constructs a new {@code GeoParquetReader}.
+   *
+   * @param uri the URI
+   * @param envelope the envelope
+   */
   public GeoParquetReader(URI uri, Envelope envelope) {
     this(uri, envelope, createDefaultConfiguration());
   }
 
+  /**
+   * Constructs a new {@code GeoParquetReader}.
+   *
+   * @param uri the URI
+   * @param configuration the configuration
+   */
   public GeoParquetReader(URI uri, Envelope envelope, Configuration configuration) {
     this.configuration = configuration;
     this.files = initializeFiles(uri, configuration);

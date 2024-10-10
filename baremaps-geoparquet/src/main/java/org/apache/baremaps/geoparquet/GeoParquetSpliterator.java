@@ -44,6 +44,9 @@ import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
 import org.apache.parquet.schema.Type;
 import org.locationtech.jts.geom.Envelope;
 
+/**
+ * A {@link Spliterator} for {@link GeoParquetGroup}s.
+ */
 class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
 
   private final List<FileStatus> files;
@@ -61,6 +64,14 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
   private long rowsReadInGroup;
   private long rowsInCurrentGroup;
 
+  /**
+   * Constructs a new {@code GeoParquetSpliterator} with the specified files, envelope, configuration, file start index and file end index.
+   * @param files the files
+   * @param envelope the envelope
+   * @param configuration the configuration
+   * @param fileStartIndex the file start index
+   * @param fileEndIndex the file end index
+   */
   GeoParquetSpliterator(
       List<FileStatus> files,
       Envelope envelope,
