@@ -35,18 +35,12 @@ public class GeoParquetDataTable implements DataTable {
 
   public GeoParquetDataTable(URI path) {
     this.path = path;
-  }
-
-  private GeoParquetReader reader() {
-    if (reader == null) {
-      reader = new GeoParquetReader(path);
-    }
-    return reader;
+    this.reader = new GeoParquetReader(path);
   }
 
   @Override
   public long size() {
-    return reader().size();
+    return reader.size();
   }
 
   @Override
@@ -66,8 +60,8 @@ public class GeoParquetDataTable implements DataTable {
 
   @Override
   public Stream<DataRow> parallelStream() {
-    return reader().readParallel().map(group -> new DataRowImpl(
-        GeoParquetTypeConversion.asSchema(path.toString(), group.getSchema()),
+    return reader.readParallel().map(group -> new DataRowImpl(
+        GeoParquetTypeConversion.asSchema(path.toString(), group.getGeoParquetSchema()),
         GeoParquetTypeConversion.asRowValues(group)));
   }
 
@@ -76,7 +70,6 @@ public class GeoParquetDataTable implements DataTable {
     if (reader != null) {
       reader = null;
     }
-
     if (schema != null) {
       schema = null;
     }
@@ -87,7 +80,7 @@ public class GeoParquetDataTable implements DataTable {
     if (schema == null) {
       this.schema = GeoParquetTypeConversion.asSchema(
           path.toString(),
-          reader().getGeoParquetSchema());
+          reader.getGeoParquetSchema());
       return this.schema;
     }
     return schema;
@@ -95,7 +88,7 @@ public class GeoParquetDataTable implements DataTable {
 
   public int srid(String column) {
     try {
-      return reader().getGeoParquetMetadata().getSrid(column);
+      return reader.getGeoParquetMetadata().getSrid(column);
     } catch (Exception e) {
       throw new GeoParquetException("Fail to read the SRID from the GeoParquet metadata", e);
     }

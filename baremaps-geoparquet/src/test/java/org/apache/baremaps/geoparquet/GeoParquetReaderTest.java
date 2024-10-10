@@ -23,25 +23,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Envelope;
 
 class GeoParquetReaderTest {
 
-  @Test
-  void read() {
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
-    final boolean isParallel = false;
-    final int expectedGroupCount = 5;
-
-    readGroups(geoParquet, isParallel, expectedGroupCount);
-  }
-
-  private static void readGroups(URI geoParquet, boolean parallel,
+  private static void readGroups(
+      URI geoParquet,
+      Envelope envelope,
+      boolean parallel,
       int expectedGroupCount) {
-    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
+    GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet, envelope);
     final AtomicInteger groupCount = new AtomicInteger();
     Stream<GeoParquetGroup> geoParquetGroupStream;
     if (parallel) {
@@ -50,8 +44,23 @@ class GeoParquetReaderTest {
       geoParquetGroupStream = geoParquetReader.read();
     }
     geoParquetGroupStream.forEach(group -> groupCount.getAndIncrement());
-
     assertEquals(expectedGroupCount, groupCount.get());
+  }
+
+  @Test
+  void read() {
+    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    final boolean isParallel = false;
+    final int expectedGroupCount = 5;
+    readGroups(geoParquet, null, isParallel, expectedGroupCount);
+  }
+
+  @Test
+  void readFiltered() {
+    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    final boolean isParallel = false;
+    final int expectedGroupCount = 1;
+    readGroups(geoParquet, new Envelope(-172, -65, 18, 72), isParallel, expectedGroupCount);
   }
 
   @Disabled("Requires access to the Internet")
@@ -62,7 +71,7 @@ class GeoParquetReaderTest {
     final boolean isParallel = true;
     final int expectedGroupCount = 974708;
 
-    readGroups(geoParquet, isParallel, expectedGroupCount);
+    readGroups(geoParquet, null, isParallel, expectedGroupCount);
   }
 
   @Disabled("Requires access to the Internet")

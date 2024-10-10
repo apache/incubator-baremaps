@@ -522,6 +522,11 @@ limitations under the License.
         <artifactId>s3</artifactId>
         <version>${version.lib.awssdk}</version>
       </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>s3-transfer-manager</artifactId>
+        <version>${version.lib.awssdk}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

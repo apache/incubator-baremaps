@@ -22,149 +22,183 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup.Schema;
-import org.apache.baremaps.geoparquet.data.GeoParquetGroupFactory;
-import org.apache.baremaps.geoparquet.data.GeoParquetMetadata;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider;
-import org.apache.hadoop.fs.s3a.S3AFileSystem;
 import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.metadata.BlockMetaData;
+import org.apache.parquet.hadoop.metadata.FileMetaData;
+import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
-
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * This reader is based on the parquet example code located at: org.apache.parquet.example.data.*.
  */
 public class GeoParquetReader {
 
-  private final URI uri;
-  final Configuration configuration;
-  private List<FileStatus> files;
-  private Long groupCount;
+  protected final Configuration configuration;
+  protected final List<FileStatus> files;
+  private final AtomicLong groupCount = new AtomicLong(-1);
+  private final Envelope envelope;
 
-  record FileInfo(FileStatus file, Long recordCount, Map<String, String> keyValueMetadata,
-      MessageType messageType, GeoParquetMetadata metadata,
-      GeoParquetGroup.Schema geoParquetSchema) {
-  }
-
+  /**
+   * Constructs a new {@code GeoParquetReader}.
+   *
+   * @param uri the URI
+   */
   public GeoParquetReader(URI uri) {
-    this(uri, createConfiguration());
+    this(uri, null, new Configuration());
   }
 
-  public GeoParquetReader(URI uri, Configuration configuration) {
-    this.uri = uri;
+  /**
+   * Constructs a new {@code GeoParquetReader}.
+   *
+   * @param uri the URI
+   * @param envelope the envelope
+   */
+  public GeoParquetReader(URI uri, Envelope envelope) {
+    this(uri, envelope, new Configuration());
+  }
+
+  /**
+   * Constructs a new {@code GeoParquetReader}.
+   *
+   * @param uri the URI
+   * @param configuration the configuration
+   */
+  public GeoParquetReader(URI uri, Envelope envelope, Configuration configuration) {
     this.configuration = configuration;
+    this.files = initializeFiles(uri, configuration);
+    this.envelope = envelope;
+  }
+
+  private static List<FileStatus> initializeFiles(URI uri, Configuration configuration) {
+    try {
+      Path globPath = new Path(uri.getPath());
+      FileSystem fileSystem = FileSystem.get(uri, configuration);
+      FileStatus[] fileStatuses = fileSystem.globStatus(globPath);
+      if (fileStatuses == null) {
+        throw new GeoParquetException("No files found at the specified URI.");
+      }
+      return Collections.unmodifiableList(Arrays.asList(fileStatuses));
+    } catch (IOException e) {
+      throw new GeoParquetException("IOException while attempting to list files.", e);
+    }
   }
 
   public MessageType getParquetSchema() {
-    return files().stream()
+    return files.stream()
         .findFirst()
         .map(this::getFileInfo)
-        .orElseThrow()
-        .messageType();
+        .orElseThrow(
+            () -> new GeoParquetException("No files available to read schema.")).messageType;
   }
 
   private FileInfo getFileInfo(FileStatus fileStatus) {
     try {
-      return buildFileInfo(fileStatus);
+      ParquetMetadata parquetMetadata =
+          ParquetFileReader.readFooter(configuration, fileStatus.getPath());
+
+      long recordCount = parquetMetadata.getBlocks().stream()
+          .mapToLong(BlockMetaData::getRowCount)
+          .sum();
+
+      FileMetaData fileMetaData = parquetMetadata.getFileMetaData();
+      Map<String, String> keyValueMetadata = fileMetaData.getKeyValueMetaData();
+      MessageType messageType = fileMetaData.getSchema();
+
+      GeoParquetMetadata geoParquetMetadata = null;
+      GeoParquetSchema geoParquetSchema = null;
+      if (keyValueMetadata.containsKey("geo")) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        geoParquetMetadata =
+            objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
+        geoParquetSchema =
+            GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
+      }
+
+      return new FileInfo(
+          fileStatus,
+          recordCount,
+          keyValueMetadata,
+          messageType,
+          geoParquetMetadata,
+          geoParquetSchema);
+
     } catch (IOException e) {
-      throw new GeoParquetException("Failed to build Info", e);
+      throw new GeoParquetException("Failed to build FileInfo for file: " + fileStatus, e);
     }
   }
 
   public GeoParquetMetadata getGeoParquetMetadata() {
-    return files().stream()
+    return files.stream()
         .findFirst()
         .map(this::getFileInfo)
-        .orElseThrow()
+        .orElseThrow(this::noParquetFilesAvailable)
         .metadata();
   }
 
-  public Schema getGeoParquetSchema() {
-    return files().stream()
+  public GeoParquetSchema getGeoParquetSchema() {
+    return files.stream()
         .findFirst()
         .map(this::getFileInfo)
-        .orElseThrow()
+        .orElseThrow(this::noParquetFilesAvailable)
         .geoParquetSchema();
   }
 
+  public GeoParquetException noParquetFilesAvailable() {
+    return new GeoParquetException("No parquet files available.");
+  }
+
   public boolean validateSchemasAreIdentical() {
-    // Verify that the files all have the same schema
-    final int messageTypeCount = files().stream().parallel().map(this::getFileInfo)
-        .map(FileInfo::messageType).collect(Collectors.toSet()).size();
-    return messageTypeCount == 1;
+    // Verify that all files have the same schema
+    Set<MessageType> schemas = files.parallelStream()
+        .map(this::getFileInfo)
+        .map(fileInfo -> fileInfo.messageType)
+        .collect(Collectors.toSet());
+    return schemas.size() == 1;
   }
 
   public long size() {
-    if (groupCount == null) {
-      groupCount = files().stream().parallel().map(this::getFileInfo).map(FileInfo::recordCount)
-          .reduce(0L, Long::sum);
+    if (groupCount.get() == -1) {
+      long totalCount = files.parallelStream()
+          .map(this::getFileInfo)
+          .mapToLong(fileInfo -> fileInfo.recordCount)
+          .sum();
+      groupCount.set(totalCount);
     }
-    return groupCount;
+    return groupCount.get();
   }
 
-  private synchronized List<FileStatus> files() {
-    try {
-      if (files == null) {
-        Path globPath = new Path(uri.getPath());
-        FileSystem fileSystem = FileSystem.get(uri, configuration);
-
-        files = new ArrayList<>(Arrays.asList(fileSystem.globStatus(globPath)));
-      }
-    } catch (IOException e) {
-      throw new GeoParquetException("IOException while attempting to list files.", e);
-    }
-    return files;
-  }
-
-  private FileInfo buildFileInfo(FileStatus file) throws IOException {
-    long recordCount;
-    MessageType messageType;
-    Map<String, String> keyValueMetadata;
-    try (ParquetFileReader reader = ParquetFileReader.open(configuration, file.getPath())) {
-      recordCount = reader.getRecordCount();
-      messageType = reader.getFileMetaData().getSchema();
-      keyValueMetadata = reader.getFileMetaData().getKeyValueMetaData();
-    }
-    GeoParquetMetadata geoParquetMetadata = null;
-    Schema geoParquetSchema = null;
-    if (keyValueMetadata.containsKey("geo")) {
-      ObjectMapper objectMapper = new ObjectMapper();
-      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      geoParquetMetadata =
-          objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
-      geoParquetSchema =
-          GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
-    }
-    return new FileInfo(file, recordCount, keyValueMetadata, messageType,
-        geoParquetMetadata, geoParquetSchema);
-  }
-
-  public Stream<GeoParquetGroup> readParallel() {
-    return retrieveGeoParquetGroups(true);
-  }
-
-  private Stream<GeoParquetGroup> retrieveGeoParquetGroups(boolean inParallel) {
-    return StreamSupport.stream(new GeoParquetGroupSpliterator(this, files()), inParallel);
+  private Stream<GeoParquetGroup> streamGeoParquetGroups(boolean inParallel) {
+    Spliterator<GeoParquetGroup> spliterator =
+        new GeoParquetSpliterator(files, envelope, configuration, 0, files.size());
+    return StreamSupport.stream(spliterator, inParallel);
   }
 
   public Stream<GeoParquetGroup> read() {
-    return retrieveGeoParquetGroups(false);
+    return streamGeoParquetGroups(false);
   }
 
-  private static Configuration createConfiguration() {
-    Configuration conf = new Configuration();
-    conf.set("fs.s3a.endpoint", "s3.us-west-2.amazonaws.com");
-    conf.set("fs.s3a.aws.credentials.provider", AnonymousAWSCredentialsProvider.class.getName());
-    conf.set("fs.s3a.impl", S3AFileSystem.class.getName());
-    conf.set("fs.s3a.path.style.access", "true");
-    return conf;
+  public Stream<GeoParquetGroup> readParallel() {
+    return streamGeoParquetGroups(true);
   }
+
+  private record FileInfo(
+      FileStatus file,
+      long recordCount,
+      Map<String, String> keyValueMetadata,
+      MessageType messageType,
+      GeoParquetMetadata metadata,
+      GeoParquetSchema geoParquetSchema) {
+
+  }
+
 }

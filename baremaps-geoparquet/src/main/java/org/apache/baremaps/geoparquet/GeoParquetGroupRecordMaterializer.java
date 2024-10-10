@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
@@ -36,13 +36,23 @@ import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.io.api.RecordMaterializer;
 import org.apache.parquet.schema.MessageType;
 
-public class GeoParquetGroupRecordConverter extends RecordMaterializer<GeoParquetGroup> {
+/**
+ * A {@link RecordMaterializer} for {@link GeoParquetGroup}s.
+ */
+class GeoParquetGroupRecordMaterializer extends RecordMaterializer<GeoParquetGroup> {
 
   private final GeoParquetGroupFactory groupFactory;
 
   private final GeoParquetGroupConverter root;
 
-  public GeoParquetGroupRecordConverter(MessageType schema, GeoParquetMetadata metadata) {
+  /**
+   * Constructs a new {@code GeoParquetGroupRecordMaterializer} with the specified schema and
+   * metadata.
+   *
+   * @param schema the schema
+   * @param metadata the metadata
+   */
+  public GeoParquetGroupRecordMaterializer(MessageType schema, GeoParquetMetadata metadata) {
     this.groupFactory = new GeoParquetGroupFactory(schema, metadata);
     this.root = new GeoParquetGroupConverter(null, 0, schema) {
       @Override
@@ -57,11 +67,17 @@ public class GeoParquetGroupRecordConverter extends RecordMaterializer<GeoParque
     };
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public GeoParquetGroupImpl getCurrentRecord() {
+  public GeoParquetGroup getCurrentRecord() {
     return root.getCurrentRecord();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public GroupConverter getRootConverter() {
     return root;
