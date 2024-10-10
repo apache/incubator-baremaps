@@ -21,8 +21,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+/**
+ * A representation of the metadata of a GeoParquet file encoded as JSON.
+ *
+ * @param version
+ * @param primaryColumn
+ * @param columns
+ * @param encoding
+ * @param geometryTypes
+ * @param crs
+ * @param edges
+ * @param bbox
+ * @param epoch
+ * @param covering
+ */
 public record GeoParquetMetadata(
     @JsonProperty("version") String version,
     @JsonProperty("primary_column") String primaryColumn,
@@ -35,24 +48,16 @@ public record GeoParquetMetadata(
     @JsonProperty("epoch") String epoch,
     @JsonProperty("covering") Object covering) {
 
-  public int getSrid(String column) {
-    return Optional.ofNullable(columns.get(column).crs()).map(crs -> {
-      JsonNode id = crs.get("id");
-      return switch (id.get("authority").asText()) {
-        case "OGC" -> switch (id.get("code").asText()) {
-            case "CRS84" -> 4326;
-            default -> 0;
-          };
-        case "EPSG" -> id.get("code").asInt();
-        default -> 0;
-      };
-    }).orElse(4326);
-  }
-
-  public boolean isGeometryColumn(String column) {
-    return columns.containsKey(column);
-  }
-
+  /**
+   * A representation of the metadata of a column encoded as JSON.
+   *
+   * @param encoding
+   * @param geometryTypes
+   * @param crs
+   * @param orientation
+   * @param edges
+   * @param bbox
+   */
   public record Column(
       @JsonProperty("encoding") String encoding,
       @JsonProperty("geometry_types") List<String> geometryTypes,
@@ -61,4 +66,71 @@ public record GeoParquetMetadata(
       @JsonProperty("edges") String edges,
       @JsonProperty("bbox") Double[] bbox) {
   }
+
+  /**
+   * Returns the SRID of the specified column.
+   *
+   * @param column the column
+   * @return the SRID, or 4326 if no valid SRID is found
+   */
+  public int getSrid(String column) {
+    // Retrieve the column metadata, return default SRID if not present
+    Column columnMetadata = columns.get(column);
+    if (columnMetadata == null || columnMetadata.crs() == null) {
+      return 4326; // Default to 4326 if no CRS is present
+    }
+
+    // Extract the CRS JsonNode
+    JsonNode crsNode = columnMetadata.crs();
+    JsonNode idNode = crsNode.get("id");
+
+    // Return default SRID if "id" field is not present
+    if (idNode == null || idNode.get("authority") == null || idNode.get("code") == null) {
+      return 4326;
+    }
+
+    // Extract authority and code values
+    String authority = idNode.get("authority").asText();
+    String code = idNode.get("code").asText();
+
+    // Determine SRID based on authority and code
+    switch (authority) {
+      case "OGC":
+        return getOgcSrid(code); // Handle OGC specific SRIDs
+      case "EPSG":
+        return getEpsgCode(code); // Handle EPSG SRIDs
+      default:
+        return 4326; // Default SRID if authority is unrecognized
+    }
+  }
+
+  /**
+   * Handle OGC-specific SRIDs.
+   *
+   * @param code the OGC code
+   * @return the SRID, or 0 if the code is unrecognized
+   */
+  private int getOgcSrid(String code) {
+    switch (code) {
+      case "CRS84":
+        return 4326;
+      default:
+        return 0; // Unrecognized OGC code
+    }
+  }
+
+  /**
+   * Parse EPSG SRID code as an integer.
+   *
+   * @param code the EPSG code
+   * @return the SRID as an integer, or 0 if the code is invalid
+   */
+  private int getEpsgCode(String code) {
+    try {
+      return Integer.parseInt(code);
+    } catch (NumberFormatException e) {
+      return 0; // Return 0 if the code is not a valid integer
+    }
+  }
+
 }

@@ -23,6 +23,9 @@ import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
 
+/**
+ * A factory for creating {@link GeoParquetGroup}s.
+ */
 class GeoParquetGroupFactory {
 
   private final GroupType schema;
@@ -31,12 +34,25 @@ class GeoParquetGroupFactory {
 
   private final GeoParquetSchema geoParquetSchema;
 
+  /**
+   * Constructs a new {@code GeoParquetGroupFactory} with the specified schema and metadata.
+   *
+   * @param schema the schema
+   * @param metadata the metadata
+   */
   public GeoParquetGroupFactory(GroupType schema, GeoParquetMetadata metadata) {
     this.schema = schema;
     this.metadata = metadata;
     this.geoParquetSchema = createGeoParquetSchema(schema, metadata);
   }
 
+  /**
+   * Creates a {@link GeoParquetSchema} from a {@link GroupType} and a {@link GeoParquetMetadata}.
+   *
+   * @param schema the schema
+   * @param metadata the metadata
+   * @return the schema
+   */
   public static GeoParquetSchema createGeoParquetSchema(
       GroupType schema,
       GeoParquetMetadata metadata) {
@@ -52,7 +68,7 @@ class GeoParquetGroupFactory {
       };
 
       // Handle geometry columns
-      if (field.isPrimitive() && metadata.isGeometryColumn(field.getName())) {
+      if (field.isPrimitive() && metadata.columns().containsKey(field.getName())) {
         return new GeometryField(field.getName(), cardinality);
       }
 
@@ -94,8 +110,12 @@ class GeoParquetGroupFactory {
     return new GeoParquetSchema(schema.getName(), fields);
   }
 
+  /**
+   * Creates a new {@link GeoParquetGroup}.
+   *
+   * @return the group
+   */
   public GeoParquetGroup newGroup() {
     return new GeoParquetGroup(schema, metadata, geoParquetSchema);
   }
-
 }
