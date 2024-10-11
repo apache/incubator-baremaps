@@ -23,6 +23,10 @@ import org.apache.hadoop.fs.s3a.S3AFileSystem;
 
 public class OvertureMaps {
 
+  private OvertureMaps() {
+    // Prevent instantiation
+  }
+
   public static Configuration configuration() {
     Configuration conf = new Configuration();
     conf.set("fs.s3a.endpoint", "s3.us-west-2.amazonaws.com");
