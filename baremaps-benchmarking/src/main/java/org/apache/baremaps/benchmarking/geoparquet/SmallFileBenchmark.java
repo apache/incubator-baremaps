@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.baremaps.benchmarking.geoparquet;
 
 
@@ -19,37 +36,39 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Measurement(iterations = 1)
 public class SmallFileBenchmark {
 
-    private Path source = Path.of("baremaps-testing/data/samples/example.parquet").toAbsolutePath();
-    private Path directory = Path.of("baremaps-benchmarking/small").toAbsolutePath();
+  private Path source = Path.of("baremaps-testing/data/samples/example.parquet").toAbsolutePath();
+  private Path directory = Path.of("baremaps-benchmarking/small").toAbsolutePath();
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(SmallFileBenchmark.class.getSimpleName())
-                .forks(1)
-                .build();
-        new Runner(opt).run();
-    }
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(SmallFileBenchmark.class.getSimpleName())
+        .forks(1)
+        .build();
+    new Runner(opt).run();
+  }
 
-    @Setup
-    public void setup() throws IOException {
-        if (!Files.exists(directory)) {
-            for (int i = 0; i < 1000; i++) {
-                Path target = directory.resolve(i + ".parquet");
-                Files.createDirectories(target.getParent());
-                Files.copy(source, target);
-            }
-        }
+  @Setup
+  public void setup() throws IOException {
+    if (!Files.exists(directory)) {
+      for (int i = 0; i < 1000; i++) {
+        Path target = directory.resolve(i + ".parquet");
+        Files.createDirectories(target.getParent());
+        Files.copy(source, target);
+      }
     }
+  }
 
-    @Benchmark
-    public void read() {
-        GeoParquetReader reader = new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
-        reader.read().count();
-    }
+  @Benchmark
+  public void read() {
+    GeoParquetReader reader =
+        new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
+    reader.read().count();
+  }
 
-    @Benchmark
-    public void readParallel() {
-        GeoParquetReader reader = new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
-        reader.readParallel().count();
-    }
+  @Benchmark
+  public void readParallel() {
+    GeoParquetReader reader =
+        new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
+    reader.readParallel().count();
+  }
 }

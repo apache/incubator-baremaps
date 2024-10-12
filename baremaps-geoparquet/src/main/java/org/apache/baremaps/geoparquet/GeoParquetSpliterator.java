@@ -101,15 +101,15 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
 
         schema = fileMetaData.getSchema();
         metadata = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .readValue(fileMetaData.getKeyValueMetaData().get("geo"), GeoParquetMetadata.class);
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .readValue(fileMetaData.getKeyValueMetaData().get("geo"), GeoParquetMetadata.class);
 
         // Check if file's bbox overlaps with the envelope
         if (envelope != null && metadata != null && metadata.bbox() != null) {
           List<Double> fileBBox = metadata.bbox();
           if (fileBBox.size() == 4) {
             Envelope fileEnvelope = new Envelope(
-                    fileBBox.get(0), fileBBox.get(2), fileBBox.get(1), fileBBox.get(3));
+                fileBBox.get(0), fileBBox.get(2), fileBBox.get(1), fileBBox.get(3));
             if (!fileEnvelope.intersects(envelope)) {
               // Skip this file and continue to the next one
               fileReader.close();
