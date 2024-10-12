@@ -62,13 +62,13 @@ public class SmallFileBenchmark {
   public void read() {
     GeoParquetReader reader =
         new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
-    reader.read().count();
+    long count = reader.read().count();
   }
 
   @Benchmark
   public void readParallel() {
     GeoParquetReader reader =
         new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
-    reader.readParallel().count();
+    long count = reader.readParallel().count();
   }
 }
