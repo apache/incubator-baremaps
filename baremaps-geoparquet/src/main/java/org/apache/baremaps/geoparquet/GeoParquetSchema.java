@@ -59,8 +59,8 @@ public record GeoParquetSchema(String name, List<Field> fields) {
    * Sealed interfaces were introduced in Java 17 and can be used with pattern matching since Java
    * 21.
    */
-  sealed
-  public interface Field {
+  public sealed
+  interface Field {
     String name();
 
     Type type();

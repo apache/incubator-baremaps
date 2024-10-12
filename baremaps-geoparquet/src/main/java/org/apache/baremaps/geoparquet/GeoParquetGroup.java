@@ -133,10 +133,6 @@ public class GeoParquetGroup {
     return (List<Object>) data[fieldIndex];
   }
 
-  private GeoParquetGroup getGroup(int fieldIndex) {
-    return (GeoParquetGroup) data[fieldIndex];
-  }
-
   private void addValue(int fieldIndex, Object value) {
     Object currentValue = data[fieldIndex];
     if (currentValue instanceof List<?>) {
@@ -225,48 +221,6 @@ public class GeoParquetGroup {
     return new GeoParquetException(msg);
   }
 
-  public String toString() {
-    return toString("");
-  }
-
-  public String toString(String indent) {
-    StringBuilder builder = new StringBuilder();
-    appendToString(builder, indent);
-    return builder.toString();
-  }
-
-  private void appendToString(StringBuilder builder, String indent) {
-    int i = 0;
-    for (org.apache.parquet.schema.Type field : parquetSchema.getFields()) {
-      String name = field.getName();
-      Object object = data[i];
-      ++i;
-      if (object != null) {
-        if (object instanceof List<?>values) {
-          for (Object value : values) {
-            builder.append(indent).append(name);
-            if (value == null) {
-              builder.append(": NULL\n");
-            } else if (value instanceof GeoParquetGroup group) {
-              builder.append('\n');
-              group.appendToString(builder, indent + "  ");
-            } else {
-              builder.append(": ").append(value).append('\n');
-            }
-          }
-        } else {
-          builder.append(indent).append(name);
-          if (object instanceof GeoParquetGroup group) {
-            builder.append('\n');
-            group.appendToString(builder, indent + "  ");
-          } else {
-            builder.append(": ").append(object).append('\n');
-          }
-        }
-      }
-    }
-  }
-
   public GeoParquetSchema getGeoParquetSchema() {
     return geoParquetSchema;
   }
@@ -280,28 +234,8 @@ public class GeoParquetGroup {
   }
 
   // Getter methods for different data types
-  public String getString(int fieldIndex, int index) {
+  public String getStringValue(int fieldIndex, int index) {
     return getBinaryValue(fieldIndex, index).toStringUsingUTF8();
-  }
-
-  public int getInteger(int fieldIndex, int index) {
-    return (int) getValue(fieldIndex, index);
-  }
-
-  public long getLong(int fieldIndex, int index) {
-    return (long) getValue(fieldIndex, index);
-  }
-
-  public double getDouble(int fieldIndex, int index) {
-    return (double) getValue(fieldIndex, index);
-  }
-
-  public float getFloat(int fieldIndex, int index) {
-    return (float) getValue(fieldIndex, index);
-  }
-
-  public boolean getBoolean(int fieldIndex, int index) {
-    return (boolean) getValue(fieldIndex, index);
   }
 
   public Binary getBinaryValue(int fieldIndex, int index) {
@@ -343,7 +277,7 @@ public class GeoParquetGroup {
   }
 
   public String getStringValue(int fieldIndex) {
-    return getString(fieldIndex, 0);
+    return getStringValue(fieldIndex, 0);
   }
 
   public Geometry getGeometryValue(int fieldIndex) {
@@ -512,6 +446,57 @@ public class GeoParquetGroup {
 
   public List<Envelope> getEnvelopeValues(String fieldName) {
     return getEnvelopeValues(parquetSchema.getFieldIndex(fieldName));
+  }
+
+  public String toString() {
+    return toString("");
+  }
+
+  private String toString(String indent) {
+    StringBuilder builder = new StringBuilder();
+    int fieldCount = parquetSchema.getFields().size();
+
+    for (int i = 0; i < fieldCount; i++) {
+      String fieldName = parquetSchema.getFieldName(i);
+      Object fieldValue = data[i];
+      if (fieldValue != null) {
+        appendFieldToString(builder, indent, fieldName, fieldValue);
+      }
+    }
+
+    return builder.toString();
+  }
+
+  private void appendFieldToString(StringBuilder builder, String indent, String fieldName,
+      Object fieldValue) {
+    if (fieldValue instanceof List<?>values) {
+      for (Object value : values) {
+        appendValueToString(builder, indent, fieldName, value);
+      }
+    } else {
+      appendValueToString(builder, indent, fieldName, fieldValue);
+    }
+  }
+
+  private void appendValueToString(StringBuilder builder, String indent, String fieldName,
+      Object value) {
+    builder.append(indent).append(fieldName);
+    if (value == null) {
+      builder.append(": NULL\n");
+    } else if (value instanceof GeoParquetGroup group) {
+      builder.append("\n").append(group.toString(indent + "  "));
+    } else {
+      String valueString = getValueAsString(value);
+      builder.append(": ").append(valueString).append("\n");
+    }
+  }
+
+  private String getValueAsString(Object value) {
+    if (value instanceof Binary binary) {
+      return binary.toStringUsingUTF8();
+    } else {
+      return value.toString();
+    }
   }
 
 }

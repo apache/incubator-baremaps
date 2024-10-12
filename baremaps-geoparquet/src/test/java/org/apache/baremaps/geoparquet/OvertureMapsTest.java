@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 
-public class OvertureMapsTest {
+class OvertureMapsTest {
 
   @Disabled("Requires access to the Internet")
   @Test

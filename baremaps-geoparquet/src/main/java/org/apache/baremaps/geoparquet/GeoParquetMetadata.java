@@ -64,7 +64,7 @@ public record GeoParquetMetadata(
       @JsonProperty("crs") JsonNode crs,
       @JsonProperty("orientation") String orientation,
       @JsonProperty("edges") String edges,
-      @JsonProperty("bbox") Double[] bbox) {
+      @JsonProperty("bbox") List<Double> bbox) {
   }
 
   /**
@@ -94,13 +94,12 @@ public record GeoParquetMetadata(
     String code = idNode.get("code").asText();
 
     // Determine SRID based on authority and code
-    switch (authority) {
-      case "OGC":
-        return getOgcSrid(code); // Handle OGC specific SRIDs
-      case "EPSG":
-        return getEpsgCode(code); // Handle EPSG SRIDs
-      default:
-        return 4326; // Default SRID if authority is unrecognized
+    if (authority.equals("EPSG")) {
+      return getEpsgCode(code);
+    } else if (authority.equals("OGC")) {
+      return getOgcSrid(code);
+    } else {
+      return 4326; // Default SRID if authority is unrecognized
     }
   }
 
@@ -111,11 +110,10 @@ public record GeoParquetMetadata(
    * @return the SRID, or 0 if the code is unrecognized
    */
   private int getOgcSrid(String code) {
-    switch (code) {
-      case "CRS84":
-        return 4326;
-      default:
-        return 0; // Unrecognized OGC code
+    if ("CRS84".equals(code)) {
+      return 4326;
+    } else {
+      return 0; // Unrecognized OGC code
     }
   }
 
