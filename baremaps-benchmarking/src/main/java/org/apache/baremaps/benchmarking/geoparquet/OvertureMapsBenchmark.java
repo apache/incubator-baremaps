@@ -40,7 +40,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 @Measurement(iterations = 1)
 public class OvertureMapsBenchmark {
 
-  private static Path directory = Path.of("baremaps-benchmarking/data");
+  private static Path directory = Path.of("baremaps-benchmarking/data/overturemaps");
 
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
@@ -80,15 +80,17 @@ public class OvertureMapsBenchmark {
     }
   }
 
+  @SuppressWarnings({"squid:S1481", "squid:S2201"})
   @Benchmark
   public void read() {
     GeoParquetReader reader = new GeoParquetReader(directory.toUri());
-    long count = reader.read().count();
+    reader.read().count();
   }
 
+  @SuppressWarnings({"squid:S1481", "squid:S2201"})
   @Benchmark
   public void readParallel() {
     GeoParquetReader reader = new GeoParquetReader(directory.toUri());
-    long count = reader.readParallel().count();
+    reader.readParallel().count();
   }
 }

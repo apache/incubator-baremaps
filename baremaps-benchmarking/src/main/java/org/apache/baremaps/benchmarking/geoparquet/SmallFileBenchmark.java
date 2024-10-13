@@ -37,7 +37,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 public class SmallFileBenchmark {
 
   private Path source = Path.of("baremaps-testing/data/samples/example.parquet").toAbsolutePath();
-  private Path directory = Path.of("baremaps-benchmarking/small").toAbsolutePath();
+  private Path directory = Path.of("baremaps-benchmarking/data/small").toAbsolutePath();
 
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
@@ -58,17 +58,19 @@ public class SmallFileBenchmark {
     }
   }
 
+  @SuppressWarnings({"squid:S1481", "squid:S2201"})
   @Benchmark
   public void read() {
     GeoParquetReader reader =
-        new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
-    long count = reader.read().count();
+        new GeoParquetReader(Path.of("baremaps-benchmarking/data/small/*.parquet").toUri());
+    reader.read().count();
   }
 
+  @SuppressWarnings({"squid:S1481", "squid:S2201"})
   @Benchmark
   public void readParallel() {
     GeoParquetReader reader =
-        new GeoParquetReader(Path.of("baremaps-benchmarking/small/*.parquet").toUri());
-    long count = reader.readParallel().count();
+        new GeoParquetReader(Path.of("baremaps-benchmarking/data/small/*.parquet").toUri());
+    reader.readParallel().count();
   }
 }
