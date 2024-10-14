@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.data;
+package org.apache.baremaps.geoparquet;
 
 import org.apache.parquet.io.api.Converter;
 import org.apache.parquet.io.api.GroupConverter;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.Type;
 
+/**
+ * A {@link GroupConverter} for {@link GeoParquetGroup}s.
+ */
 class GeoParquetGroupConverter extends GroupConverter {
 
   private final GeoParquetGroupConverter parent;
   private final int index;
-  protected GeoParquetGroupImpl current;
+  protected GeoParquetGroup current;
   private final Converter[] converters;
 
-  GeoParquetGroupConverter(GeoParquetGroupConverter parent, int index,
+  /**
+   * Constructs a new {@code GeoParquetGroupConverter} with the specified parent, index and schema.
+   *
+   * @param parent the parent
+   * @param index the index
+   * @param schema the schema
+   */
+  GeoParquetGroupConverter(
+      GeoParquetGroupConverter parent,
+      int index,
       GroupType schema) {
     this.parent = parent;
     this.index = index;
@@ -43,26 +55,39 @@ class GeoParquetGroupConverter extends GroupConverter {
       } else {
         converters[i] = new GeoParquetGroupConverter(this, i, type.asGroupType());
       }
-
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void start() {
     current = parent.getCurrentRecord().addGroup(index);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Converter getConverter(int fieldIndex) {
     return converters[fieldIndex];
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void end() {
     current = null;
   }
 
-  public GeoParquetGroupImpl getCurrentRecord() {
+  /**
+   * Returns the current record.
+   *
+   * @return the current record
+   */
+  public GeoParquetGroup getCurrentRecord() {
     return current;
   }
 }

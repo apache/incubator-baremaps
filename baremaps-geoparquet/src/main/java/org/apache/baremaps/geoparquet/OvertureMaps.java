@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet.hadoop;
+package org.apache.baremaps.geoparquet;
 
-import org.apache.baremaps.geoparquet.data.GeoParquetGroup;
-import org.apache.parquet.hadoop.ParquetInputFormat;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider;
+import org.apache.hadoop.fs.s3a.S3AFileSystem;
 
-/**
- * Example input format to read Parquet files
- *
- * This Input format uses a rather inefficient data model but works independently of higher level
- * abstractions.
- */
-public class GeoParquetInputFormat extends ParquetInputFormat<GeoParquetGroup> {
+public class OvertureMaps {
 
-  public GeoParquetInputFormat() {
-    super(GeoParquetGroupReadSupport.class);
+  private OvertureMaps() {
+    // Prevent instantiation
+  }
+
+  public static Configuration configuration() {
+    Configuration conf = new Configuration();
+    conf.set("fs.s3a.endpoint", "s3.us-west-2.amazonaws.com");
+    conf.set("fs.s3a.aws.credentials.provider", AnonymousAWSCredentialsProvider.class.getName());
+    conf.set("fs.s3a.impl", S3AFileSystem.class.getName());
+    conf.set("fs.s3a.path.style.access", "true");
+    return conf;
   }
 
 }
