@@ -45,7 +45,8 @@ import org.apache.parquet.schema.Type;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * A {@link Spliterator} for {@link GeoParquetGroup}s.
+ * A {@link Spliterator} for {@link GeoParquetGroup}s stored in Parquet files. The envelope is used
+ * to filter the records based on their bounding box.
  */
 class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
 

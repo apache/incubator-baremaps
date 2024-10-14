@@ -30,7 +30,7 @@ class GeoParquetReaderTest {
   void read() {
     URI geoParquet = TestFiles.GEOPARQUET.toUri();
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
-    assertEquals(5, geoParquetReader.read().peek(System.out::println).count());
+    assertEquals(5, geoParquetReader.read().count());
   }
 
   @Test

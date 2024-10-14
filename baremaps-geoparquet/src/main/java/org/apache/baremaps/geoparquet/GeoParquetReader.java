@@ -38,7 +38,10 @@ import org.apache.parquet.schema.MessageType;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * This reader is based on the parquet example code located at: org.apache.parquet.example.data.*.
+ * This reader enables reading of GeoParquet files from a specified URI with the stream API. The
+ * schema of the Parquet files and the corresponding geoparquet schema and metadata are
+ * automatically inferred from the files. The reader can be used to read the records in a sequential
+ * or parallel manner. It is also capable of filtering records based on an envelope.
  */
 public class GeoParquetReader {
 
@@ -50,7 +53,7 @@ public class GeoParquetReader {
   /**
    * Constructs a new {@code GeoParquetReader}.
    *
-   * @param uri the URI
+   * @param uri the URI to read from
    */
   public GeoParquetReader(URI uri) {
     this(uri, null, new Configuration());
@@ -59,8 +62,8 @@ public class GeoParquetReader {
   /**
    * Constructs a new {@code GeoParquetReader}.
    *
-   * @param uri the URI
-   * @param envelope the envelope
+   * @param uri the URI to read from
+   * @param envelope the envelope to filter records
    */
   public GeoParquetReader(URI uri, Envelope envelope) {
     this(uri, envelope, new Configuration());
@@ -69,27 +72,13 @@ public class GeoParquetReader {
   /**
    * Constructs a new {@code GeoParquetReader}.
    *
-   * @param uri the URI
+   * @param uri the URI to read from
    * @param configuration the configuration
    */
   public GeoParquetReader(URI uri, Envelope envelope, Configuration configuration) {
     this.configuration = configuration;
     this.files = initializeFiles(uri, configuration);
     this.envelope = envelope;
-  }
-
-  private static List<FileStatus> initializeFiles(URI uri, Configuration configuration) {
-    try {
-      Path globPath = new Path(uri.getPath());
-      FileSystem fileSystem = FileSystem.get(uri, configuration);
-      FileStatus[] fileStatuses = fileSystem.globStatus(globPath);
-      if (fileStatuses == null) {
-        throw new GeoParquetException("No files found at the specified URI.");
-      }
-      return Collections.unmodifiableList(Arrays.asList(fileStatuses));
-    } catch (IOException e) {
-      throw new GeoParquetException("IOException while attempting to list files.", e);
-    }
   }
 
   public MessageType getParquetSchema() {
@@ -100,42 +89,7 @@ public class GeoParquetReader {
             () -> new GeoParquetException("No files available to read schema.")).messageType;
   }
 
-  private FileInfo getFileInfo(FileStatus fileStatus) {
-    try {
-      ParquetMetadata parquetMetadata =
-          ParquetFileReader.readFooter(configuration, fileStatus.getPath());
 
-      long recordCount = parquetMetadata.getBlocks().stream()
-          .mapToLong(BlockMetaData::getRowCount)
-          .sum();
-
-      FileMetaData fileMetaData = parquetMetadata.getFileMetaData();
-      Map<String, String> keyValueMetadata = fileMetaData.getKeyValueMetaData();
-      MessageType messageType = fileMetaData.getSchema();
-
-      GeoParquetMetadata geoParquetMetadata = null;
-      GeoParquetSchema geoParquetSchema = null;
-      if (keyValueMetadata.containsKey("geo")) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        geoParquetMetadata =
-            objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
-        geoParquetSchema =
-            GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
-      }
-
-      return new FileInfo(
-          fileStatus,
-          recordCount,
-          keyValueMetadata,
-          messageType,
-          geoParquetMetadata,
-          geoParquetSchema);
-
-    } catch (IOException e) {
-      throw new GeoParquetException("Failed to build FileInfo for file: " + fileStatus, e);
-    }
-  }
 
   public GeoParquetMetadata getGeoParquetMetadata() {
     return files.stream()
@@ -175,6 +129,57 @@ public class GeoParquetReader {
       groupCount.set(totalCount);
     }
     return groupCount.get();
+  }
+
+  private FileInfo getFileInfo(FileStatus fileStatus) {
+    try {
+      ParquetMetadata parquetMetadata =
+          ParquetFileReader.readFooter(configuration, fileStatus.getPath());
+
+      long recordCount = parquetMetadata.getBlocks().stream()
+          .mapToLong(BlockMetaData::getRowCount)
+          .sum();
+
+      FileMetaData fileMetaData = parquetMetadata.getFileMetaData();
+      Map<String, String> keyValueMetadata = fileMetaData.getKeyValueMetaData();
+      MessageType messageType = fileMetaData.getSchema();
+
+      GeoParquetMetadata geoParquetMetadata = null;
+      GeoParquetSchema geoParquetSchema = null;
+      if (keyValueMetadata.containsKey("geo")) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        geoParquetMetadata =
+            objectMapper.readValue(keyValueMetadata.get("geo"), GeoParquetMetadata.class);
+        geoParquetSchema =
+            GeoParquetGroupFactory.createGeoParquetSchema(messageType, geoParquetMetadata);
+      }
+
+      return new FileInfo(
+          fileStatus,
+          recordCount,
+          keyValueMetadata,
+          messageType,
+          geoParquetMetadata,
+          geoParquetSchema);
+
+    } catch (IOException e) {
+      throw new GeoParquetException("Failed to build FileInfo for file: " + fileStatus, e);
+    }
+  }
+
+  private static List<FileStatus> initializeFiles(URI uri, Configuration configuration) {
+    try {
+      Path globPath = new Path(uri.getPath());
+      FileSystem fileSystem = FileSystem.get(uri, configuration);
+      FileStatus[] fileStatuses = fileSystem.globStatus(globPath);
+      if (fileStatuses == null) {
+        throw new GeoParquetException("No files found at the specified URI.");
+      }
+      return Collections.unmodifiableList(Arrays.asList(fileStatuses));
+    } catch (IOException e) {
+      throw new GeoParquetException("IOException while attempting to list files.", e);
+    }
   }
 
   private Stream<GeoParquetGroup> streamGeoParquetGroups(boolean inParallel) {
