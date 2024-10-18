@@ -25,6 +25,10 @@ limitations under the License.
 
   <artifactId>baremaps-server</artifactId>
 
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.aayushatharva.brotli4j</groupId>
