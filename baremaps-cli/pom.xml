@@ -30,6 +30,7 @@ limitations under the License.
   <properties>
     <license.directory>${project.build.directory}/generated-sources/license</license.directory>
     <license.filename>LICENSE</license.filename>
+    <maven.deploy.skip>true</maven.deploy.skip>
     <thirdparty.directory>${project.build.directory}/generated-sources/license</thirdparty.directory>
     <thirdparty.filename>THIRD-PARTY</thirdparty.filename>
   </properties>
