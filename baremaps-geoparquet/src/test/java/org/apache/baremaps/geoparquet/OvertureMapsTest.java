@@ -20,8 +20,7 @@ package org.apache.baremaps.geoparquet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.apache.hadoop.fs.Path;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -30,9 +29,9 @@ class OvertureMapsTest {
 
   @Disabled("Requires access to the Internet")
   @Test
-  void countAddresses() throws URISyntaxException {
-    URI geoParquet = new URI(
-        "s3a://overturemaps-us-west-2/release/2024-09-18.0/theme=addresses/**/*.parquet");
+  void countAddressesInSwitzerland() {
+    Path geoParquet =
+        new Path("s3a://overturemaps-us-west-2/release/2024-09-18.0/theme=addresses/**/*.parquet");
     Envelope switzerland = new Envelope(6.02260949059, 10.4427014502, 45.7769477403, 47.8308275417);
     GeoParquetReader geoParquetReader =
         new GeoParquetReader(geoParquet, switzerland, OvertureMaps.configuration());
@@ -41,20 +40,9 @@ class OvertureMapsTest {
 
   @Disabled("Requires access to the Internet")
   @Test
-  void countAddressesInSwitzerland() throws URISyntaxException {
-    URI geoParquet = new URI(
-        "s3a://overturemaps-us-west-2/release/2024-09-18.0/theme=addresses/**/*.parquet");
-    Envelope switzerland = new Envelope(6.02260949059, 10.4427014502, 45.7769477403, 47.8308275417);
-    GeoParquetReader geoParquetReader =
-        new GeoParquetReader(geoParquet, switzerland, OvertureMaps.configuration());
-    assertEquals(10397434, geoParquetReader.readParallel().count());
-  }
-
-  @Disabled("Requires access to the Internet")
-  @Test
-  void validateSchemas() throws URISyntaxException {
-    URI geoParquet = new URI(
-        "s3a://overturemaps-us-west-2/release/2024-09-18.0/theme=addresses/**/*.parquet");
+  void validateSchemas() {
+    Path geoParquet =
+        new Path("s3a://overturemaps-us-west-2/release/2024-09-18.0/theme=addresses/**/*.parquet");
     GeoParquetReader geoParquetReader =
         new GeoParquetReader(geoParquet, null, OvertureMaps.configuration());
     assertTrue(geoParquetReader.validateSchemasAreIdentical(), "Schemas are identical");
@@ -62,9 +50,9 @@ class OvertureMapsTest {
 
   @Disabled("Requires access to the Internet")
   @Test
-  void size() throws URISyntaxException {
-    URI geoParquet = new URI(
-        "s3a://overturemaps-us-west-2/release/2024-09-18.0/theme=addresses/**/*.parquet");
+  void size() {
+    Path geoParquet =
+        new Path("s3a://overturemaps-us-west-2/release/2024-09-18.0/theme=addresses/**/*.parquet");
     GeoParquetReader geoParquetReader =
         new GeoParquetReader(geoParquet, null, OvertureMaps.configuration());
     assertEquals(213535887L, geoParquetReader.size());

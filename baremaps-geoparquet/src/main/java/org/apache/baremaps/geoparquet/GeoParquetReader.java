@@ -20,7 +20,6 @@ package org.apache.baremaps.geoparquet;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -53,31 +52,31 @@ public class GeoParquetReader {
   /**
    * Constructs a new {@code GeoParquetReader}.
    *
-   * @param uri the URI to read from
+   * @param path the path to read from
    */
-  public GeoParquetReader(URI uri) {
-    this(uri, null, new Configuration());
+  public GeoParquetReader(Path path) {
+    this(path, null, new Configuration());
   }
 
   /**
    * Constructs a new {@code GeoParquetReader}.
    *
-   * @param uri the URI to read from
+   * @param path the path to read from
    * @param envelope the envelope to filter records
    */
-  public GeoParquetReader(URI uri, Envelope envelope) {
-    this(uri, envelope, new Configuration());
+  public GeoParquetReader(Path path, Envelope envelope) {
+    this(path, envelope, new Configuration());
   }
 
   /**
    * Constructs a new {@code GeoParquetReader}.
    *
-   * @param uri the URI to read from
+   * @param path the path to read from
    * @param configuration the configuration
    */
-  public GeoParquetReader(URI uri, Envelope envelope, Configuration configuration) {
+  public GeoParquetReader(Path path, Envelope envelope, Configuration configuration) {
     this.configuration = configuration;
-    this.files = initializeFiles(uri, configuration);
+    this.files = initializeFiles(path, configuration);
     this.envelope = envelope;
   }
 
@@ -168,11 +167,10 @@ public class GeoParquetReader {
     }
   }
 
-  private static List<FileStatus> initializeFiles(URI uri, Configuration configuration) {
+  private static List<FileStatus> initializeFiles(Path path, Configuration configuration) {
     try {
-      Path globPath = new Path(uri.getPath());
-      FileSystem fileSystem = FileSystem.get(uri, configuration);
-      FileStatus[] fileStatuses = fileSystem.globStatus(globPath);
+      FileSystem fileSystem = FileSystem.get(path.toUri(), configuration);
+      FileStatus[] fileStatuses = fileSystem.globStatus(path);
       if (fileStatuses == null) {
         throw new GeoParquetException("No files found at the specified URI.");
       }
