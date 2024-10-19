@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.geoparquet.GeoParquetException;
 import org.apache.baremaps.geoparquet.GeoParquetReader;
+import org.apache.hadoop.fs.Path;
 
 public class GeoParquetDataTable implements DataTable {
 
@@ -35,7 +36,7 @@ public class GeoParquetDataTable implements DataTable {
 
   public GeoParquetDataTable(URI path) {
     this.path = path;
-    this.reader = new GeoParquetReader(path);
+    this.reader = new GeoParquetReader(new Path(path));
   }
 
   @Override

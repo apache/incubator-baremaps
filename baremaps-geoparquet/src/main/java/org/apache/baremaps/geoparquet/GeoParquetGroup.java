@@ -105,7 +105,7 @@ public class GeoParquetGroup {
     }
   }
 
-  private Object getValue(int fieldIndex, int index) {
+  Object getValue(int fieldIndex, int index) {
     Object value = data[fieldIndex];
     if (value instanceof List<?>list) {
       return list.get(index);
