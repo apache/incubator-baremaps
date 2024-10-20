@@ -58,8 +58,8 @@ If you want to contribute to the code you can refer to the following developer g
 
 You can also contribute in the following ways.
 
-- [Create an issue](https://github.com/apache/incubator-baremaps/issues): Report a bug, submit a feature request, or submit a pull request in the incubator-baremaps repository.
-- [Improve the documentation](https://github.com/apache/incubator-baremaps-site/issues): Report documentation issue or submit a pull request in the incubator-baremaps-site repository.
+- Improve the code: Report [a bug or submit a feature request](https://github.com/apache/incubator-baremaps/issues), or [submit a pull request](https://github.com/apache/incubator-baremaps/pulls) in the [incubator-baremaps](https://github.com/apache/incubator-baremaps/) repository.
+- Improve the documentation: Report [documentation issue](https://github.com/apache/incubator-baremaps-site/issues) or [submit a pull request](https://github.com/apache/incubator-baremaps-site/pulls) in the [incubator-baremaps-site](https://github.com/apache/incubator-baremaps-site/) repository.
 - [Join the mailing list](https://lists.apache.org/list.html?dev@baremaps.apache.org): Initiate or participate in project discussions on the mailing list
 - Write a post: Write a post to share your use cases and experiences with Apache Baremaps
 
