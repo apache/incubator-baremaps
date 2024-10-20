@@ -28,13 +28,12 @@ There are several ways you can help us out. First of all code contributions and
 bug fixes are most welcome. However, even "minor" details such as fixing spelling
 errors, improving documentation and examples, or pointing out usability issues, are of great importance too.
 
-The Baremaps project uses the GitHub infrastructure (see the
-[project page](https://github.com/baremaps/baremaps)).
+You can contribute in the following ways.
+- Improve the code: Report [a bug or submit a feature request](https://github.com/apache/incubator-baremaps/issues), or [submit a pull request](https://github.com/apache/incubator-baremaps/pulls) in the [incubator-baremaps](https://github.com/apache/incubator-baremaps/) repository.
+- Improve the documentation: Report [documentation issue](https://github.com/apache/incubator-baremaps-site/issues) or [submit a pull request](https://github.com/apache/incubator-baremaps-site/pulls) in the [incubator-baremaps-site](https://github.com/apache/incubator-baremaps-site/) repository.
 
 If you want to find an area that currently needs improving have a look at the
-open issues listed at the
-[issues page](https://github.com/baremaps/baremaps/issues). This is also the place
-for discussing enhancement to Baremaps.
+open issues listed. This is also the place for discussing enhancement to Baremaps.
 
 If you are unsure what to do, please have a look at the issues, especially
 those tagged
