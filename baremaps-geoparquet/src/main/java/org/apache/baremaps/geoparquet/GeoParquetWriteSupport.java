@@ -127,7 +127,7 @@ public class GeoParquetWriteSupport extends WriteSupport<GeoParquetGroup> {
     try {
       return objectMapper.writeValueAsString(metadata);
     } catch (JsonProcessingException e) {
-      throw new RuntimeException("Failed to serialize GeoParquet metadata", e);
+      throw new GeoParquetException("Failed to serialize GeoParquet metadata", e);
     }
   }
 }

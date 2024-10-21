@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.baremaps.geoparquet.GeoParquetMetadata.Column;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
@@ -48,7 +49,7 @@ class GeoParquetWriterTest {
 
     try {
       // Define the Parquet schema
-      MessageType schema = Types.buildMessage()
+      MessageType type = Types.buildMessage()
           .required(PrimitiveTypeName.BINARY).as(LogicalTypeAnnotation.stringType()).named("name")
           .required(PrimitiveTypeName.BINARY).as(LogicalTypeAnnotation.stringType()).named("city")
           .optional(PrimitiveTypeName.BINARY).named("geometry")
@@ -81,12 +82,16 @@ class GeoParquetWriterTest {
       Point point = geometryFactory.createPoint(new Coordinate(1.0, 2.0));
 
       // Create the GeoParquetWriter
-      try (GeoParquetWriter writer = new GeoParquetWriter(outputPath, schema, metadata)) {
+      try (ParquetWriter<GeoParquetGroup> writer = GeoParquetWriter.builder(outputPath)
+          .withType(type)
+          .withMetadata(metadata)
+          .build()) {
+
         // Create a GeoParquetGroup and write it
         GeoParquetSchema geoParquetSchema =
-            GeoParquetGroupFactory.createGeoParquetSchema(schema, metadata);
+            GeoParquetGroupFactory.createGeoParquetSchema(type, metadata);
         GeoParquetGroup group =
-            new GeoParquetGroup(schema.asGroupType(), metadata, geoParquetSchema);
+            new GeoParquetGroup(type.asGroupType(), metadata, geoParquetSchema);
         group.add("name", "Test Point");
         group.add("city", "Test City");
         group.add("geometry", point);

@@ -17,58 +17,24 @@
 
 package org.apache.baremaps.geoparquet;
 
-import java.io.IOException;
-import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.conf.ParquetConfiguration;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.api.WriteSupport;
-import org.apache.parquet.hadoop.example.ExampleParquetWriter.Builder;
-import org.apache.parquet.io.OutputFile;
 import org.apache.parquet.schema.MessageType;
 
 /**
  * A writer for GeoParquet files that writes GeoParquetGroup instances to a Parquet file.
  */
-public class GeoParquetWriter implements AutoCloseable {
+public class GeoParquetWriter {
 
-  private final ParquetWriter<GeoParquetGroup> parquetWriter;
-
-  /**
-   * Constructs a new GeoParquetWriter.
-   *
-   * @param path the output file
-   * @param schema the Parquet schema
-   * @param metadata the GeoParquet metadata
-   * @throws IOException if an I/O error occurs
-   */
-  public GeoParquetWriter(Path path, MessageType schema, GeoParquetMetadata metadata)
-      throws IOException {
-    parquetWriter = new Builder(path)
-        .withType(schema)
-        .withMetadata(metadata)
-        .build();
+  private GeoParquetWriter() {
+    // Prevent instantiation
   }
 
-  /**
-   * Writes a GeoParquetGroup to the Parquet file.
-   *
-   * @param group the GeoParquetGroup to write
-   * @throws IOException if an I/O error occurs
-   */
-  public void write(GeoParquetGroup group) throws IOException {
-    parquetWriter.write(group);
-  }
-
-  /**
-   * Closes the writer and releases any system resources associated with it.
-   *
-   * @throws IOException if an I/O error occurs
-   */
-  @Override
-  public void close() throws IOException {
-    parquetWriter.close();
+  public static Builder builder(Path file) {
+    return new Builder(file);
   }
 
   public static class Builder
@@ -79,10 +45,6 @@ public class GeoParquetWriter implements AutoCloseable {
     private GeoParquetMetadata metadata = null;
 
     private Builder(Path file) {
-      super(file);
-    }
-
-    private Builder(OutputFile file) {
       super(file);
     }
 
@@ -97,11 +59,6 @@ public class GeoParquetWriter implements AutoCloseable {
     }
 
     @Override
-    protected GeoParquetWriter.Builder self() {
-      return this;
-    }
-
-    @Override
     protected WriteSupport<GeoParquetGroup> getWriteSupport(Configuration conf) {
       return getWriteSupport((ParquetConfiguration) null);
     }
@@ -112,8 +69,8 @@ public class GeoParquetWriter implements AutoCloseable {
     }
 
     @Override
-    public GeoParquetWriter.Builder withExtraMetaData(Map<String, String> extraMetaData) {
-      return super.withExtraMetaData(extraMetaData);
+    protected GeoParquetWriter.Builder self() {
+      return this;
     }
   }
 }
