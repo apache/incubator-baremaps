@@ -18,11 +18,14 @@
 package org.apache.baremaps.geoparquet;
 
 import java.io.IOException;
+import java.util.Map;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.parquet.column.ParquetProperties.WriterVersion;
+import org.apache.parquet.conf.ParquetConfiguration;
 import org.apache.parquet.hadoop.ParquetWriter;
-import org.apache.parquet.hadoop.metadata.CompressionCodecName;
+import org.apache.parquet.hadoop.api.WriteSupport;
+import org.apache.parquet.hadoop.example.ExampleParquetWriter.Builder;
+import org.apache.parquet.io.OutputFile;
 import org.apache.parquet.schema.MessageType;
 
 /**
@@ -35,24 +38,17 @@ public class GeoParquetWriter implements AutoCloseable {
   /**
    * Constructs a new GeoParquetWriter.
    *
-   * @param outputFile the output file
+   * @param path the output file
    * @param schema the Parquet schema
    * @param metadata the GeoParquet metadata
    * @throws IOException if an I/O error occurs
    */
-  public GeoParquetWriter(Path outputFile, MessageType schema, GeoParquetMetadata metadata)
+  public GeoParquetWriter(Path path, MessageType schema, GeoParquetMetadata metadata)
       throws IOException {
-    this.parquetWriter = new ParquetWriter<>(
-        outputFile,
-        new GeoParquetWriteSupport(schema, metadata),
-        CompressionCodecName.UNCOMPRESSED,
-        ParquetWriter.DEFAULT_BLOCK_SIZE,
-        ParquetWriter.DEFAULT_PAGE_SIZE,
-        ParquetWriter.DEFAULT_PAGE_SIZE,
-        ParquetWriter.DEFAULT_IS_DICTIONARY_ENABLED,
-        ParquetWriter.DEFAULT_IS_VALIDATING_ENABLED,
-        WriterVersion.PARQUET_2_0,
-        new Configuration());
+    parquetWriter = new Builder(path)
+        .withType(schema)
+        .withMetadata(metadata)
+        .build();
   }
 
   /**
@@ -70,7 +66,54 @@ public class GeoParquetWriter implements AutoCloseable {
    *
    * @throws IOException if an I/O error occurs
    */
+  @Override
   public void close() throws IOException {
     parquetWriter.close();
+  }
+
+  public static class Builder
+      extends ParquetWriter.Builder<GeoParquetGroup, GeoParquetWriter.Builder> {
+
+    private MessageType type = null;
+
+    private GeoParquetMetadata metadata = null;
+
+    private Builder(Path file) {
+      super(file);
+    }
+
+    private Builder(OutputFile file) {
+      super(file);
+    }
+
+    public GeoParquetWriter.Builder withType(MessageType type) {
+      this.type = type;
+      return this;
+    }
+
+    public GeoParquetWriter.Builder withMetadata(GeoParquetMetadata metadata) {
+      this.metadata = metadata;
+      return this;
+    }
+
+    @Override
+    protected GeoParquetWriter.Builder self() {
+      return this;
+    }
+
+    @Override
+    protected WriteSupport<GeoParquetGroup> getWriteSupport(Configuration conf) {
+      return getWriteSupport((ParquetConfiguration) null);
+    }
+
+    @Override
+    protected WriteSupport<GeoParquetGroup> getWriteSupport(ParquetConfiguration conf) {
+      return new GeoParquetWriteSupport(type, metadata);
+    }
+
+    @Override
+    public GeoParquetWriter.Builder withExtraMetaData(Map<String, String> extraMetaData) {
+      return super.withExtraMetaData(extraMetaData);
+    }
   }
 }
