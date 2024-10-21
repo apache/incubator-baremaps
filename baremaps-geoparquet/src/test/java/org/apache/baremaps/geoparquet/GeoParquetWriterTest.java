@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.geoparquet.GeoParquetMetadata.Column;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.MessageType;
-import org.apache.parquet.schema.OriginalType;
 import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
 import org.apache.parquet.schema.Types;
 import org.junit.jupiter.api.Tag;
@@ -49,8 +49,8 @@ class GeoParquetWriterTest {
     try {
       // Define the Parquet schema
       MessageType schema = Types.buildMessage()
-          .required(PrimitiveTypeName.BINARY).as(OriginalType.UTF8).named("name")
-          .required(PrimitiveTypeName.BINARY).as(OriginalType.UTF8).named("city")
+          .required(PrimitiveTypeName.BINARY).as(LogicalTypeAnnotation.stringType()).named("name")
+          .required(PrimitiveTypeName.BINARY).as(LogicalTypeAnnotation.stringType()).named("city")
           .optional(PrimitiveTypeName.BINARY).named("geometry")
           .named("GeoParquetSchema");
 
@@ -58,7 +58,7 @@ class GeoParquetWriterTest {
       Map<String, Column> columns = new HashMap<>();
       columns.put("geometry", new GeoParquetMetadata.Column(
           "WKB",
-          Arrays.asList("Point"),
+          List.of("Point"),
           null,
           null,
           null,
