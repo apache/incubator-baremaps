@@ -51,10 +51,8 @@ public class GeoParquetWriteSupport extends WriteSupport<GeoParquetGroup> {
   @Override
   public WriteContext init(Configuration configuration) {
     Map<String, String> extraMetadata = new HashMap<>();
-    // Serialize the GeoParquet metadata to JSON and add it to the file metadata
     String geoMetadataJson = serializeMetadata(metadata);
     extraMetadata.put("geo", geoMetadataJson);
-
     return new WriteContext(schema, extraMetadata);
   }
 
@@ -65,11 +63,15 @@ public class GeoParquetWriteSupport extends WriteSupport<GeoParquetGroup> {
 
   @Override
   public void write(GeoParquetGroup group) {
-    writeGroup(group, schema);
+    recordConsumer.startMessage();
+    writeGroup(group, schema, true);
+    recordConsumer.endMessage();
   }
 
-  private void writeGroup(GeoParquetGroup group, GroupType groupType) {
-    recordConsumer.startMessage();
+  private void writeGroup(GeoParquetGroup group, GroupType groupType, boolean isRoot) {
+    if (!isRoot) {
+      recordConsumer.startGroup();
+    }
     for (int i = 0; i < groupType.getFieldCount(); i++) {
       Type fieldType = groupType.getType(i);
       String fieldName = fieldType.getName();
@@ -84,12 +86,14 @@ public class GeoParquetWriteSupport extends WriteSupport<GeoParquetGroup> {
           writePrimitive(value, fieldType.asPrimitiveType());
         } else {
           GeoParquetGroup childGroup = group.getGroup(i, j);
-          writeGroup(childGroup, fieldType.asGroupType());
+          writeGroup(childGroup, fieldType.asGroupType(), false);
         }
         recordConsumer.endField(fieldName, i);
       }
     }
-    recordConsumer.endMessage();
+    if (!isRoot) {
+      recordConsumer.endGroup();
+    }
   }
 
   private void writePrimitive(Object value, PrimitiveType primitiveType) {

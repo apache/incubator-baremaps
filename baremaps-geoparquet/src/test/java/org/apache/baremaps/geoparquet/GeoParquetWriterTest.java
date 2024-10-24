@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.geoparquet.GeoParquetMetadata.Column;
+import org.apache.baremaps.testing.TestFiles;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.hadoop.ParquetWriter;
@@ -84,7 +85,7 @@ class GeoParquetWriterTest {
       // Create the GeoParquetWriter
       try (ParquetWriter<GeoParquetGroup> writer = GeoParquetWriter.builder(outputPath)
           .withType(type)
-          .withMetadata(metadata)
+          .withGeoParquetMetadata(metadata)
           .build()) {
 
         // Create a GeoParquetGroup and write it
@@ -113,6 +114,34 @@ class GeoParquetWriterTest {
       Point readPoint = (Point) readGroup.getGeometryValue("geometry");
       assertEquals(point.getX(), readPoint.getX(), 0.0001);
       assertEquals(point.getY(), readPoint.getY(), 0.0001);
+    } finally {
+      outputPath.getFileSystem(conf).delete(outputPath, false);
+    }
+  }
+
+  @Test
+  @Tag("integration")
+  void copy() throws IOException {
+    Path geoParquet = new Path(TestFiles.GEOPARQUET.toUri());
+
+    Configuration conf = new Configuration();
+    Path outputPath = new Path("target/test-output/geoparquet-copy.parquet");
+
+    try {
+      GeoParquetReader reader = new GeoParquetReader(geoParquet, null, conf);
+      GeoParquetWriter.Builder builder = GeoParquetWriter.builder(outputPath);
+      ParquetWriter<GeoParquetGroup> writer = builder.withType(reader.getParquetSchema())
+          .withGeoParquetMetadata(reader.getGeoParquetMetadata()).build();
+      reader.read().forEach(group -> {
+        System.out.println(group);
+        try {
+          writer.write(group);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      });
+    } catch (IOException e) {
+      e.printStackTrace();
     } finally {
       outputPath.getFileSystem(conf).delete(outputPath, false);
     }

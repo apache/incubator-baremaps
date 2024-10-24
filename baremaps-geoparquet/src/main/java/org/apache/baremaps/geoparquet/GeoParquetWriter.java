@@ -53,7 +53,7 @@ public class GeoParquetWriter {
       return this;
     }
 
-    public GeoParquetWriter.Builder withMetadata(GeoParquetMetadata metadata) {
+    public GeoParquetWriter.Builder withGeoParquetMetadata(GeoParquetMetadata metadata) {
       this.metadata = metadata;
       return this;
     }
