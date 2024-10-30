@@ -153,6 +153,9 @@ public class CsvDataTable implements DataTable {
     private Object parseValue(DataColumn column, String value) {
         DataColumn.Type type = column.type();
         try {
+            if (value == null || value.isEmpty()) {
+                return null;
+            }
             switch (type) {
                 case STRING:
                     return value;

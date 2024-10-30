@@ -76,6 +76,9 @@ public class TestFiles {
   public static final Path TILEJSON_JSON =
       resolve("baremaps-testing/data/tilesets/tilejson.json");
 
+  public static final Path GEONAMES_CSV =
+      resolve("baremaps-testing/data/geonames/sample.txt");
+
   /* The geometries of the osm-sample/sample.osm.xml file */
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
