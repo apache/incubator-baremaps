@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoderosm;
+package org.apache.baremaps.geocoder.openstreetmap;
 
 import static org.apache.baremaps.testing.TestFiles.SAMPLE_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +27,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.tasks.CreateGeocoderOpenStreetMap;
@@ -49,7 +50,7 @@ import org.junit.jupiter.api.Test;
 
 
 @Disabled("prototype implementation")
-public class OSMIndexTest {
+public class OpenStreetMapIndexTest {
 
   private static Path directory;
   private static IndexSearcher searcher;
@@ -76,7 +77,7 @@ public class OSMIndexTest {
   @Test
   void testCreateIndex() throws Exception {
     var query =
-        new GeocoderOsmQuery("vaduz").build();
+        new OpenStreetMapQuery("vaduz").build();
     var topDocs = searcher.search(query, 1);
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
     assertEquals("Vaduz", doc.getField("name").stringValue());

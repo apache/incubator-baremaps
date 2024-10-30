@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoder.geonames;
 
 
 
 import com.google.common.base.Strings;
 import java.text.ParseException;
 import java.util.Map;
+
+import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.expressions.Expression;
 import org.apache.lucene.expressions.SimpleBindings;

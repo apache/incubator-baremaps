@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoderosm;
+package org.apache.baremaps.geocoder.openstreetmap;
 
 import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.lucene.queryparser.classic.QueryParserBase;
@@ -24,11 +24,11 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 
-public class GeocoderOsmQuery {
+public class OpenStreetMapQuery {
 
   private final String query;
 
-  public GeocoderOsmQuery(String query) {
+  public OpenStreetMapQuery(String query) {
     this.query = query;
   }
 

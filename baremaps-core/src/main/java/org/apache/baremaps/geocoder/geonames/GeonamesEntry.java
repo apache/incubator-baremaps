@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoder.geonames;
 
 /**
  * A record from the Geonames database.

@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoder.openstreetmap;
 
-import static org.junit.jupiter.api.Assertions.*;
+public enum OsmTags {
+  NAME("name"),
+  PLACE("place"),
+  POPULATION("population"),
+  LATITUDE("latitude"),
+  LONGITUDE("longitude");
 
-import java.io.IOException;
-import java.nio.file.Files;
-import org.apache.baremaps.testing.TestFiles;
-import org.junit.jupiter.api.Test;
+  private final String key;
 
-class GeonamesReaderTest {
+  OsmTags(String key) {
+    this.key = key;
+  }
 
-  @Test
-  void read() throws IOException {
-    var data = TestFiles.resolve("baremaps-testing/data/geonames/sample.txt");
-    try (var inputStream = Files.newInputStream(data)) {
-      var reader = new GeonamesReader();
-      var stream = reader.stream(inputStream);
+  @Override
+  public String toString() {
+    return key;
+  }
 
-      var list = stream.toList();
-      assertEquals(5, list.size());
-
-      var entry = list.get(0);
-      assertEquals(1, entry.getGeonameid());
-      assertEquals("HEIG", entry.getAsciiname());
-    }
+  public String key() {
+    return key;
   }
 }

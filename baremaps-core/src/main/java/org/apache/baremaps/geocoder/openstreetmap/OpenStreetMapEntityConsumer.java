@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoderosm;
+package org.apache.baremaps.geocoder.openstreetmap;
 
 import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.Element;
@@ -24,14 +24,14 @@ import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GeocoderOsmConsumerEntity implements Consumer<Entity> {
+public class OpenStreetMapEntityConsumer implements Consumer<Entity> {
   private final IndexWriter indexWriter;
-  private final GeocoderOsmDocumentMapper geocoderOsmDocumentMapper =
-      new GeocoderOsmDocumentMapper();
+  private final OpenStreetMapDocumentMapper geocoderOsmDocumentMapper =
+      new OpenStreetMapDocumentMapper();
 
-  private static final Logger logger = LoggerFactory.getLogger(GeocoderOsmConsumerEntity.class);
+  private static final Logger logger = LoggerFactory.getLogger(OpenStreetMapEntityConsumer.class);
 
-  public GeocoderOsmConsumerEntity(IndexWriter indexWriter) {
+  public OpenStreetMapEntityConsumer(IndexWriter indexWriter) {
     this.indexWriter = indexWriter;
   }
 

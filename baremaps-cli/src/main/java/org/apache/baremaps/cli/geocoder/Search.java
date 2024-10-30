@@ -21,7 +21,7 @@ package org.apache.baremaps.cli.geocoder;
 
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
+import org.apache.baremaps.geocoder.geonames.GeonamesQueryBuilder;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
 import org.slf4j.Logger;
