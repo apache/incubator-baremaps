@@ -22,6 +22,8 @@ package org.apache.baremaps.geocoder;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema.ColumnType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
