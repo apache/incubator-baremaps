@@ -34,9 +34,27 @@ A PostgreSQL database with the PostGIS extension should be accessible with the f
 jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps
 ```
 
+If you plan on importing the whole planet, you will need a powerful machine with a lot of storage. You may also want to modify the `postgresql.conf` file to increase some of the default settings.
+
+```
+work_mem = 4GB
+shared_buffers = 4GB
+maintenance_work_mem = 16GB
+autovacuum_work_mem = 4GB
+max_worker_processes = 16
+max_parallel_workers_per_gather = 8
+max_parallel_workers = 16
+wal_level = minimal
+checkpoint_timeout = 10min
+max_wal_size = 20GB
+min_wal_size = 80MB
+checkpoint_completion_target = 0.9
+max_wal_senders = 0
+```
+
 ## Importing the data
 
-Assuming that the necessary requirements have been installed, the database can be populated with the following command.
+Assuming that the necessary requirements have been installed, the database can be populated with the following command. The import workflow will download openstreetmap (osm.pbf) and other data sources into the database.
 
 ```
 baremaps workflow execute --file import.js
@@ -44,7 +62,7 @@ baremaps workflow execute --file import.js
 
 ## Updating the data
 
-The data can be updated with the following command. The update workflow will download the latest changes from the OpenStreetMap API and apply them to the database.
+The data can periodically be updated with the following command. The update workflow will download the latest changes from OpenStreetMap (osc.xml) and apply them to the database.
 
 ```
 baremaps workflow execute --file update.js

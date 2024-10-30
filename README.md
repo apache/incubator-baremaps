@@ -33,35 +33,19 @@ limitations under the License.
 
 ## 📖 How do I use Apache Baremaps?
 
-You can find the documentation on the project's [website](https://baremaps.apache.org/). The following pages showcase the main uses of Apache Baremaps.
-
-- The [OpenStreetMap](https://baremaps.apache.org/documentation/examples/import-osm-into-postgis) example is a good introduction to Baremaps, it shows how to produce high resolution vector tiles.
-- The [NaturalEarth](https://baremaps.apache.org/documentation/examples/import-naturalearth-into-postgis) example shows how to produce low resolution vector tiles.
-- The [Contour](https://baremaps.apache.org/documentation/examples/import-contour-into-postgis) example shows how to produce contour lines from a digital elevation model.
-- The [IP to location](https://baremaps.apache.org/documentation/examples/ip-to-location) example shows how to create and serve an IP to location service in a simple web application.
-- The [Geocoding](https://baremaps.apache.org/documentation/examples/geocoding) example shows how to create and serve a geocoding service in a simple web application.
+You can find a [getting started](https://baremaps.apache.org/documentation/getting-started/) and [additional examples] on the project's [website](https://baremaps.apache.org/).
 
 ## 👩‍💻 How do I contribute?
 
-There are many places where you can contribute to Apache Baremaps such as the code, the documentation, the website or the examples.
+There are many places where you can contribute to Apache Baremaps and your contributions are more than welcome.
 
-The official documentation is located in a separate [repository](https://github.com/apache/incubator-baremaps-site).
+The [developer manual](https://baremaps.apache.org/documentation/additional-examples/) provides a good starting point on how to build and run the project from source.
 
-If you want to contribute to the code you can refer to the following developer guides available in the documentation.
-
-- [Project structure](https://baremaps.apache.org/documentation/developer-manual/project-structure)
-- [How to build with Maven](https://baremaps.apache.org/documentation/developer-manual/how-to-build-with-maven)
-- [Set up in IntelliJ IDEA](https://baremaps.apache.org/documentation/developer-manual/setup-in-intellij)
-- [Geocoder](https://baremaps.apache.org/documentation/developer-manual/geocoder)
-- [IP to location](https://baremaps.apache.org/documentation/developer-manual/ip-to-location)
-- [Basemap](https://baremaps.apache.org/documentation/developer-manual/basemap)
-
-You can also contribute in the following ways.
-
+You can contribute in the following ways:
 - Improve the code: Report [a bug or submit a feature request](https://github.com/apache/incubator-baremaps/issues), or [submit a pull request](https://github.com/apache/incubator-baremaps/pulls) in the [incubator-baremaps](https://github.com/apache/incubator-baremaps/) repository.
 - Improve the documentation: Report [documentation issue](https://github.com/apache/incubator-baremaps-site/issues) or [submit a pull request](https://github.com/apache/incubator-baremaps-site/pulls) in the [incubator-baremaps-site](https://github.com/apache/incubator-baremaps-site/) repository.
-- [Join the mailing list](https://lists.apache.org/list.html?dev@baremaps.apache.org): Initiate or participate in project discussions on the mailing list
-- Write a post: Write a post to share your use cases and experiences with Apache Baremaps
+- [Join the mailing list](https://lists.apache.org/list.html?dev@baremaps.apache.org): Initiate or participate in project discussions on the mailing list.
+- Write a post: Write a post to share your use cases and experiences with Apache Baremaps.
 
 Finally, check out [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
 
