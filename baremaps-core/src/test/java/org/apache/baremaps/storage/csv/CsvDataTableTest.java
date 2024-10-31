@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import org.apache.baremaps.data.storage.*;
 import org.junit.jupiter.api.AfterEach;
@@ -35,7 +36,8 @@ class CsvDataTableTest {
 
   @BeforeEach
   void setUp() throws IOException {
-    tempCsvFile = File.createTempFile("test", ".csv");
+    Path tempCsvFilePath = Files.createTempFile("test", ".csv");
+    tempCsvFile = tempCsvFilePath.toFile();
     tempCsvFile.deleteOnExit();
   }
 
@@ -156,6 +158,7 @@ class CsvDataTableTest {
     assertThrows(RuntimeException.class, () -> {
       for (DataRow row : dataTable) {
         // This line should throw an exception because abc is not a valid integer
+        row.values();
       }
     });
   }

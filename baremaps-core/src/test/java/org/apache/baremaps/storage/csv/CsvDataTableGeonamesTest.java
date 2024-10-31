@@ -70,23 +70,8 @@ class CsvDataTableGeonamesTest {
       // Extract values
       Integer id = (Integer) row.get("id");
       String name = (String) row.get("name");
-      String asciiname = (String) row.get("asciiname");
-      String alternatenames = (String) row.get("alternatenames");
       Double latitude = (Double) row.get("latitude");
       Double longitude = (Double) row.get("longitude");
-      String featureClass = (String) row.get("feature_class");
-      String featureCode = (String) row.get("feature_code");
-      String countryCode = (String) row.get("country_code");
-      String cc2 = (String) row.get("cc2");
-      String admin1Code = (String) row.get("admin1_code");
-      String admin2Code = (String) row.get("admin2_code");
-      String admin3Code = (String) row.get("admin3_code");
-      String admin4Code = (String) row.get("admin4_code");
-      Long population = (Long) row.get("population");
-      Integer elevation = (Integer) row.get("elevation");
-      Integer dem = (Integer) row.get("dem");
-      String timezone = (String) row.get("timezone");
-      String modificationDate = (String) row.get("modification_date");
 
       // Perform assertions for each row
       assertNotNull(id, "ID should not be null.");
