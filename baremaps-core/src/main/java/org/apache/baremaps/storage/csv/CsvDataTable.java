@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.data.storage.DataColumn;
-import org.apache.baremaps.data.storage.DataRow;
-import org.apache.baremaps.data.storage.DataSchema;
-import org.apache.baremaps.data.storage.DataTable;
+import org.apache.baremaps.data.storage.*;
 import org.locationtech.jts.io.WKTReader;
 
 /**
@@ -73,8 +70,7 @@ public class CsvDataTable implements DataTable {
     for (DataColumn column : dataSchema.columns()) {
       builder.addColumn(column.name());
     }
-    CsvSchema schema = builder.setUseHeader(hasHeader).setColumnSeparator(separator).build();
-    return schema;
+    return builder.setUseHeader(hasHeader).setColumnSeparator(separator).build();
   }
 
   /**
@@ -157,7 +153,7 @@ public class CsvDataTable implements DataTable {
       };
 
     } catch (IOException e) {
-      throw new RuntimeException("Error reading CSV file", e);
+      throw new DataStoreException("Error reading CSV file", e);
     }
   }
 
@@ -174,34 +170,22 @@ public class CsvDataTable implements DataTable {
       if (value == null || value.isEmpty()) {
         return null;
       }
-      switch (type) {
-        case STRING:
-          return value;
-        case INTEGER:
-          return Integer.parseInt(value);
-        case LONG:
-          return Long.parseLong(value);
-        case FLOAT:
-          return Float.parseFloat(value);
-        case DOUBLE:
-          return Double.parseDouble(value);
-        case BOOLEAN:
-          return Boolean.parseBoolean(value);
-        case GEOMETRY:
-        case POINT:
-        case LINESTRING:
-        case POLYGON:
-        case MULTIPOINT:
-        case MULTILINESTRING:
-        case MULTIPOLYGON:
-        case GEOMETRYCOLLECTION:
-          WKTReader reader = new WKTReader();
-          return reader.read(value);
-        default:
-          throw new IllegalArgumentException("Unsupported column type: " + type);
-      }
+        return switch (type) {
+            case STRING -> value;
+            case INTEGER -> Integer.parseInt(value);
+            case LONG -> Long.parseLong(value);
+            case FLOAT -> Float.parseFloat(value);
+            case DOUBLE -> Double.parseDouble(value);
+            case BOOLEAN -> Boolean.parseBoolean(value);
+            case GEOMETRY, POINT, LINESTRING, POLYGON, MULTIPOINT, MULTILINESTRING, MULTIPOLYGON,
+                 GEOMETRYCOLLECTION -> {
+                WKTReader reader = new WKTReader();
+                yield reader.read(value);
+            }
+            default -> throw new IllegalArgumentException("Unsupported column type: " + type);
+        };
     } catch (Exception e) {
-      throw new RuntimeException("Error parsing value for column " + column.name(), e);
+      throw new DataStoreException("Error parsing value for column " + column.name(), e);
     }
   }
 
