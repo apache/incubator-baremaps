@@ -83,14 +83,16 @@ public class OvertureMapsBenchmark {
   @SuppressWarnings({"squid:S1481", "squid:S2201"})
   @Benchmark
   public void read() {
-    GeoParquetReader reader = new GeoParquetReader(directory.toUri());
+    var path = new org.apache.hadoop.fs.Path(directory.toUri());
+    GeoParquetReader reader = new GeoParquetReader(path);
     reader.read().count();
   }
 
   @SuppressWarnings({"squid:S1481", "squid:S2201"})
   @Benchmark
   public void readParallel() {
-    GeoParquetReader reader = new GeoParquetReader(directory.toUri());
+    var path = new org.apache.hadoop.fs.Path(directory.toUri());
+    GeoParquetReader reader = new GeoParquetReader(path);
     reader.readParallel().count();
   }
 }

@@ -19,8 +19,8 @@ package org.apache.baremaps.geoparquet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.net.URI;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.hadoop.fs.Path;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 
@@ -28,14 +28,14 @@ class GeoParquetReaderTest {
 
   @Test
   void read() {
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    Path geoParquet = new Path(TestFiles.GEOPARQUET.toUri());
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     assertEquals(5, geoParquetReader.read().count());
   }
 
   @Test
   void readFiltered() {
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    Path geoParquet = new Path(TestFiles.GEOPARQUET.toUri());
     GeoParquetReader geoParquetReader =
         new GeoParquetReader(geoParquet, new Envelope(-172, -65, 18, 72));
     assertEquals(1, geoParquetReader.read().count());
@@ -43,21 +43,21 @@ class GeoParquetReaderTest {
 
   @Test
   void size() {
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    Path geoParquet = new Path(TestFiles.GEOPARQUET.toUri());
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     assertEquals(5, geoParquetReader.size());
   }
 
   @Test
   void count() {
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    Path geoParquet = new Path(TestFiles.GEOPARQUET.toUri());
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     assertEquals(5, geoParquetReader.read().count());
   }
 
   @Test
   void validateSchemas() {
-    URI geoParquet = TestFiles.GEOPARQUET.toUri();
+    Path geoParquet = new Path(TestFiles.GEOPARQUET.toUri());
     GeoParquetReader geoParquetReader = new GeoParquetReader(geoParquet);
     assertTrue(geoParquetReader.validateSchemasAreIdentical());
   }
