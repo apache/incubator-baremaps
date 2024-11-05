@@ -130,13 +130,4 @@ public class DataTableQueryBuilder {
     builder.add(termsQuery, BooleanClause.Occur.MUST);
     return builder.build();
   }
-
-  /**
-   * Get the analyzer.
-   *
-   * @return the analyzer
-   */
-  private static Analyzer getAnalyzer() {
-    return GeocoderConstants.ANALYZER;
-  }
 }

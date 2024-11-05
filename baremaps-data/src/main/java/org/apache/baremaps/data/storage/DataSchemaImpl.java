@@ -26,31 +26,6 @@ import java.util.List;
 public record DataSchemaImpl(String name, List<DataColumn> columns) implements DataSchema {
 
   /**
-   * Constructs a schema with the specified name and columns.
-   *
-   * @param name the name of the schema
-   * @param columns the columns of the schema
-   */
-  public DataSchemaImpl {
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String name() {
-    return name;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<DataColumn> columns() {
-    return columns;
-  }
-
-  /**
    * {@inheritDoc}
    */
   @Override
