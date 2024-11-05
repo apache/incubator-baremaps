@@ -55,6 +55,7 @@ public class DataRowMapper implements Function<DataRow, Document> {
     return doc;
   }
 
+  @SuppressWarnings("squid:S6541")
   private void applyValue(DataColumn column, Document doc, Object value) {
     String columnName = column.name();
     DataColumn.Type type = column.type();

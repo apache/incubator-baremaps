@@ -90,7 +90,7 @@ class GeoParquetGroupFactory {
             geoParquetSchema);
       }
 
-      // TODO: Handle logical types
+      // Handle logical types
       else if (field.getLogicalTypeAnnotation() != null
           && field.getLogicalTypeAnnotation().equals(LogicalTypeAnnotation.stringType())) {
         return new StringField(field.getName(), cardinality);
