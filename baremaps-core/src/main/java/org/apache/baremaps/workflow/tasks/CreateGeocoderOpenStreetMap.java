@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Experimental feature.
- *
- * @see org.apache.baremaps.geocoderosm
  */
 public class CreateGeocoderOpenStreetMap implements Task {
 
