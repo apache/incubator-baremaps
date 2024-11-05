@@ -32,9 +32,10 @@ import org.apache.parquet.schema.*;
  */
 public class GeoParquetWriteSupport extends WriteSupport<GeoParquetGroup> {
 
-  private RecordConsumer recordConsumer;
+  private Configuration configuration;
   private final MessageType schema;
   private final GeoParquetMetadata metadata;
+  private RecordConsumer recordConsumer;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   /**

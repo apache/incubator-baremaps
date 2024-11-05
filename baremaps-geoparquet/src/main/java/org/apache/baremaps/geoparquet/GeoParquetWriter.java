@@ -48,26 +48,48 @@ public class GeoParquetWriter {
       super(file);
     }
 
+    /**
+     * Replace the message type with the specified one.
+     *
+     * @param type the message type
+     * @return the builder
+     */
     public GeoParquetWriter.Builder withType(MessageType type) {
       this.type = type;
       return this;
     }
 
+    /**
+     * Replace the metadata with the specified one.
+     *
+     * @param metadata the metadata
+     * @return the builder
+     */
     public GeoParquetWriter.Builder withGeoParquetMetadata(GeoParquetMetadata metadata) {
       this.metadata = metadata;
       return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected WriteSupport<GeoParquetGroup> getWriteSupport(Configuration conf) {
+      // We don't need access to the hadoop configuration for now
       return getWriteSupport((ParquetConfiguration) null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected WriteSupport<GeoParquetGroup> getWriteSupport(ParquetConfiguration conf) {
       return new GeoParquetWriteSupport(type, metadata);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected GeoParquetWriter.Builder self() {
       return this;

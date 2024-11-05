@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.geoparquet.GeoParquetMetadata.Column;
@@ -121,30 +122,33 @@ class GeoParquetWriterTest {
 
   @Test
   @Tag("integration")
-  void copy() throws IOException {
+  void copyGeoParquetData() throws IOException {
     Path geoParquet = new Path(TestFiles.GEOPARQUET.toUri());
 
     Configuration conf = new Configuration();
     Path outputPath = new Path("target/test-output/geoparquet-copy.parquet");
 
     try {
+      // Write the GeoParquet file
       GeoParquetReader reader = new GeoParquetReader(geoParquet, null, conf);
       GeoParquetWriter.Builder builder = GeoParquetWriter.builder(outputPath);
       ParquetWriter<GeoParquetGroup> writer = builder.withType(reader.getParquetSchema())
           .withGeoParquetMetadata(reader.getGeoParquetMetadata()).build();
-      reader.read().forEach(group -> {
-        System.out.println(group);
-        try {
-          writer.write(group);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      });
-    } catch (IOException e) {
-      e.printStackTrace();
+      Iterator<GeoParquetGroup> iterator = reader.read().iterator();
+      while (iterator.hasNext()) {
+        writer.write(iterator.next());
+      }
+      writer.close();
+
+      // Read the copied file
+      GeoParquetReader copiedReader = new GeoParquetReader(outputPath, null, conf);
+      assertEquals(5, copiedReader.read().count());
     } finally {
       outputPath.getFileSystem(conf).delete(outputPath, false);
     }
+
+
+
   }
 
 }
