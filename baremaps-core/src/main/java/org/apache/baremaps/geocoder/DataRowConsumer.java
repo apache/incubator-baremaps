@@ -17,12 +17,11 @@
 
 package org.apache.baremaps.geocoder;
 
+import java.util.function.Consumer;
 import org.apache.baremaps.data.storage.DataRow;
 import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Consumer;
 
 public class DataRowConsumer implements Consumer<DataRow> {
 

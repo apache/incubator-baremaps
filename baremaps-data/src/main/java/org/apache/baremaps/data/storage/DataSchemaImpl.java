@@ -23,11 +23,7 @@ import java.util.List;
 /**
  * A {@link DataSchema} defines the structure of a table.
  */
-public class DataSchemaImpl implements DataSchema {
-
-  private final String name;
-
-  private final List<DataColumn> columns;
+public record DataSchemaImpl(String name, List<DataColumn> columns) implements DataSchema {
 
   /**
    * Constructs a schema with the specified name and columns.
@@ -35,9 +31,7 @@ public class DataSchemaImpl implements DataSchema {
    * @param name the name of the schema
    * @param columns the columns of the schema
    */
-  public DataSchemaImpl(String name, List<DataColumn> columns) {
-    this.name = name;
-    this.columns = columns;
+  public DataSchemaImpl {
   }
 
   /**

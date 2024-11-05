@@ -27,7 +27,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.tasks.CreateGeocoderOpenStreetMap;

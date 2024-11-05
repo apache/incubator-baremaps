@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoder.geonames;
+package org.apache.baremaps.geocoder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,10 +24,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import org.apache.baremaps.storage.geoparquet.GeoParquetDataTable;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.FileUtils;
-import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.baremaps.workflow.tasks.CreateGeonamesIndex;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
@@ -37,7 +39,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 
-public class GeonamesIndexTest {
+public class DataTableIndexTest {
 
   private static Path directory;
   private static IndexSearcher searcher;
@@ -48,10 +50,18 @@ public class GeonamesIndexTest {
     directory = Files.createTempDirectory(Paths.get("."), "geocoder_");
 
     // Create the geonames index
-    var data = TestFiles.resolve("baremaps-testing/data/geonames/sample.txt");
-    var task = new CreateGeonamesIndex(data, directory);
-    task.execute(new WorkflowContext());
     var dir = FSDirectory.open(directory);
+    var data = TestFiles.resolve("baremaps-testing/data/samples/example.parquet");
+    var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
+    try (var indexWriter = new IndexWriter(dir, config);
+        var inputStream = Files.newInputStream(data)) {
+      indexWriter.deleteAll();
+      var documents = new GeoParquetDataTable(data.toUri())
+          .stream()
+          .map(new DataRowMapper());
+      indexWriter.addDocuments((Iterable<Document>) documents::iterator);
+    }
+
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
     searcher = searcherManager.acquire();
   }
@@ -62,48 +72,22 @@ public class GeonamesIndexTest {
   }
 
   @Test
-  void testCreateIndex() throws Exception {
-    var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("yverdon").countryCode("CH").build();
-    var topDocs = searcher.search(geonamesQuery, 1);
-    var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
-    assertEquals("Yverdon-les-bains", doc.getField("name").stringValue());
-  }
-
-  @Test
-  void testOrQuery() throws Exception {
-    var geonamesQuery = new GeonamesQueryBuilder()
-        .queryText("bains cheseaux")
-        .countryCode("CH")
-        .build();
-    var topDocs = searcher.search(geonamesQuery, 2);
-    assertEquals(2, topDocs.totalHits.value);
-    var doc0 = searcher.doc(topDocs.scoreDocs[0].doc);
-    assertEquals("Yverdon-les-bains", doc0.getField("name").stringValue());
-    var doc1 = searcher.doc(topDocs.scoreDocs[1].doc);
-    assertEquals("Route de Cheseaux 1", doc1.getField("name").stringValue());
-  }
-
-  @Test
-  void testAndQueryNoHits() throws Exception {
-    var geonamesQuery = new GeonamesQueryBuilder()
-        .queryText("bains cheseaux")
-        .andOperator()
-        .countryCode("CH")
+  void testQueryNoHits() throws Exception {
+    var geonamesQuery = new DataTableQueryBuilder()
+        .query("test")
         .build();
     var topDocs = searcher.search(geonamesQuery, 1);
     assertEquals(0, topDocs.totalHits.value);
   }
 
   @Test
-  void testAndQuery() throws Exception {
-    var geonamesQuery =
-        new GeonamesQueryBuilder().queryText("yverdon bains")
-            .andOperator()
-            .countryCode("CH")
-            .build();
+  void testQuery() throws Exception {
+    var geonamesQuery = new DataTableQueryBuilder()
+        .column("continent", 1.0f)
+        .query("oceania")
+        .build();
     var topDocs = searcher.search(geonamesQuery, 1);
     var doc = searcher.doc(Arrays.stream(topDocs.scoreDocs).findFirst().get().doc);
-    assertEquals("Yverdon-les-bains", doc.getField("name").stringValue());
+    assertEquals("Oceania", doc.getField("continent").stringValue());
   }
 }
