@@ -53,8 +53,7 @@ public class DataTableIndexTest {
     var dir = FSDirectory.open(directory);
     var data = TestFiles.resolve("baremaps-testing/data/samples/example.parquet");
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
-    try (var indexWriter = new IndexWriter(dir, config);
-        var inputStream = Files.newInputStream(data)) {
+    try (var indexWriter = new IndexWriter(dir, config)) {
       indexWriter.deleteAll();
       var documents = new GeoParquetDataTable(data.toUri())
           .stream()
@@ -74,6 +73,7 @@ public class DataTableIndexTest {
   @Test
   void testQueryNoHits() throws Exception {
     var geonamesQuery = new DataTableQueryBuilder()
+        .column("continent", 1.0f)
         .query("test")
         .build();
     var topDocs = searcher.search(geonamesQuery, 1);
