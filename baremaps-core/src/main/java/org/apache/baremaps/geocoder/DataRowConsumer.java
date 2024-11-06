@@ -15,36 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoderosm;
+package org.apache.baremaps.geocoder;
 
 import java.util.function.Consumer;
-import org.apache.baremaps.openstreetmap.model.Element;
-import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.data.storage.DataRow;
 import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GeocoderOsmConsumerEntity implements Consumer<Entity> {
+public class DataRowConsumer implements Consumer<DataRow> {
+
+  private static final Logger logger = LoggerFactory.getLogger(DataRowConsumer.class);
+
   private final IndexWriter indexWriter;
-  private final GeocoderOsmDocumentMapper geocoderOsmDocumentMapper =
-      new GeocoderOsmDocumentMapper();
 
-  private static final Logger logger = LoggerFactory.getLogger(GeocoderOsmConsumerEntity.class);
+  private final DataRowMapper dataRowMapper = new DataRowMapper();
 
-  public GeocoderOsmConsumerEntity(IndexWriter indexWriter) {
+  public DataRowConsumer(IndexWriter indexWriter) {
     this.indexWriter = indexWriter;
   }
 
   @Override
-  public void accept(Entity entity) {
+  public void accept(DataRow row) {
     try {
-      if (entity instanceof Element element) {
-        var document = geocoderOsmDocumentMapper.apply(element);
-        indexWriter.addDocument(document);
-      }
+      var document = dataRowMapper.apply(row);
+      indexWriter.addDocument(document);
     } catch (Exception e) {
-      // Tolerate the failure of processing an element, partial data failure mode
-      logger.warn("The following OSM entity ({}) is not processed due to {}", entity, e);
+      logger.warn("The following row ({}) is not processed due to {}", row, e);
     }
   }
 }

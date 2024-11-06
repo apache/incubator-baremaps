@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoderosm;
+package org.apache.baremaps.geocoder.openstreetmap;
 
 
 
@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class GeocoderOsmDocumentMapper implements Function<Element, Document> {
-  private static final Logger logger = LoggerFactory.getLogger(GeocoderOsmDocumentMapper.class);
+public class OpenStreetMapDocumentMapper implements Function<Element, Document> {
+  private static final Logger logger = LoggerFactory.getLogger(OpenStreetMapDocumentMapper.class);
 
   @Override
   public Document apply(Element element) {

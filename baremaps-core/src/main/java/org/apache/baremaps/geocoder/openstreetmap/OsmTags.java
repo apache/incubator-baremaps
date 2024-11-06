@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geocoderosm;
+package org.apache.baremaps.geocoder.openstreetmap;
 
 public enum OsmTags {
   NAME("name"),

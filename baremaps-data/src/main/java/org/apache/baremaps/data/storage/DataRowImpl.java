@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.data.storage;
 
+
 import java.util.List;
 
 /**
@@ -67,5 +68,4 @@ public record DataRowImpl(DataSchema schema, List<Object> values) implements Dat
   public void set(int index, Object value) {
     values.set(index, value);
   }
-
 }

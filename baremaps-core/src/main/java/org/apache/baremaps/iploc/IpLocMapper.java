@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import net.ripe.ipresource.IpResourceRange;
-import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
+import org.apache.baremaps.geocoder.geonames.GeonamesQueryBuilder;
 import org.apache.baremaps.utils.IsoCountriesUtils;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;

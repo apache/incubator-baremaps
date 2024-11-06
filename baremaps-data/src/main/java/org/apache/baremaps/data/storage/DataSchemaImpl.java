@@ -23,38 +23,7 @@ import java.util.List;
 /**
  * A {@link DataSchema} defines the structure of a table.
  */
-public class DataSchemaImpl implements DataSchema {
-
-  private final String name;
-
-  private final List<DataColumn> columns;
-
-  /**
-   * Constructs a schema with the specified name and columns.
-   *
-   * @param name the name of the schema
-   * @param columns the columns of the schema
-   */
-  public DataSchemaImpl(String name, List<DataColumn> columns) {
-    this.name = name;
-    this.columns = columns;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public String name() {
-    return name;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<DataColumn> columns() {
-    return columns;
-  }
+public record DataSchemaImpl(String name, List<DataColumn> columns) implements DataSchema {
 
   /**
    * {@inheritDoc}

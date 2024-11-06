@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import org.apache.baremaps.geocoder.GeocoderConstants;
-import org.apache.baremaps.geocoderosm.GeocoderOsmConsumerEntity;
+import org.apache.baremaps.geocoder.openstreetmap.OpenStreetMapEntityConsumer;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Experimental feature.
- *
- * @see org.apache.baremaps.geocoderosm
  */
 public class CreateGeocoderOpenStreetMap implements Task {
 
@@ -75,7 +73,7 @@ public class CreateGeocoderOpenStreetMap implements Task {
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
 
     try (var indexWriter = new IndexWriter(directory, config)) {
-      var importer = new GeocoderOsmConsumerEntity(indexWriter);
+      var importer = new OpenStreetMapEntityConsumer(indexWriter);
       execute(
           path,
           coordinateMap,
@@ -88,7 +86,7 @@ public class CreateGeocoderOpenStreetMap implements Task {
       Path path,
       Map<Long, Coordinate> coordinateMap,
       Map<Long, List<Long>> referenceMap,
-      GeocoderOsmConsumerEntity importer) throws IOException {
+      OpenStreetMapEntityConsumer importer) throws IOException {
 
     // configure the block reader
     var reader = new PbfEntityReader()

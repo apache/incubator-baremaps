@@ -20,6 +20,7 @@ package org.apache.baremaps.geoparquet;
 import java.util.List;
 import org.apache.baremaps.geoparquet.GeoParquetSchema.*;
 import org.apache.parquet.schema.GroupType;
+import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName;
 
@@ -89,6 +90,12 @@ class GeoParquetGroupFactory {
             geoParquetSchema);
       }
 
+      // Handle logical types
+      else if (field.getLogicalTypeAnnotation() != null
+          && field.getLogicalTypeAnnotation().equals(LogicalTypeAnnotation.stringType())) {
+        return new StringField(field.getName(), cardinality);
+      }
+
       // Handle primitive columns
       else {
         PrimitiveType primitiveType = field.asPrimitiveType();
@@ -109,6 +116,8 @@ class GeoParquetGroupFactory {
 
     return new GeoParquetSchema(schema.getName(), fields);
   }
+
+
 
   /**
    * Creates a new {@link GeoParquetGroup}.
