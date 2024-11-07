@@ -35,7 +35,7 @@ import org.apache.baremaps.openstreetmap.model.Entity;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for parsing an OpenStreetMap XML file. */
-public class XmlEntityReader implements EntityReader<Stream<Entity>> {
+public class XmlEntityReader implements EntityReader<Entity> {
 
   private boolean geometry = false;
 

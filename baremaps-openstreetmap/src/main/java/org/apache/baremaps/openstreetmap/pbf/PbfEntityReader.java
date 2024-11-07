@@ -30,7 +30,7 @@ import org.apache.baremaps.openstreetmap.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for flattening the blocks streamed by a {@link PbfBlockReader}. */
-public class PbfEntityReader implements PbfReader<Stream<Entity>> {
+public class PbfEntityReader implements PbfReader<Entity> {
 
   private final PbfBlockReader reader;
 

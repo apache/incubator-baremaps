@@ -17,10 +17,10 @@
 
 package org.apache.baremaps.openstreetmap;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.openstreetmap.state.StateReader;
@@ -87,7 +87,7 @@ public class OpenStreetMap {
    */
   public interface Reader<T> {
 
-    T read(InputStream inputStream) throws IOException;
+    T read(InputStream inputStream);
 
   }
 
@@ -96,7 +96,7 @@ public class OpenStreetMap {
    *
    * @param <T> the type of the object
    */
-  public interface EntityReader<T> extends Reader<T> {
+  public interface EntityReader<T> extends Reader<Stream<T>> {
 
     /**
      * Gets the flag enabling the generation of geometries.

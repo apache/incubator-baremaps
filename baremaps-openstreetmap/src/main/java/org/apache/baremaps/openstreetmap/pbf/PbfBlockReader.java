@@ -28,7 +28,7 @@ import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for reading an OpenStreetMap pbf file. */
-public class PbfBlockReader implements PbfReader<Stream<Block>> {
+public class PbfBlockReader implements PbfReader<Block> {
 
   private int buffer = Runtime.getRuntime().availableProcessors();
 

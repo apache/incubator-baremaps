@@ -58,7 +58,7 @@ public interface DataCollection<E> extends Iterable<E> {
    */
   @Override
   default Spliterator<E> spliterator() {
-    return Spliterators.spliterator(iterator(), size(), Spliterator.ORDERED);
+    return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED);
   }
 
   /**
