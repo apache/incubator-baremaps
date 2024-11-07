@@ -21,10 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import org.apache.baremaps.data.storage.DataSchema;
-import org.apache.baremaps.data.storage.DataStore;
-import org.apache.baremaps.data.storage.DataStoreException;
-import org.apache.baremaps.data.storage.DataTable;
+import org.apache.baremaps.store.DataSchema;
+import org.apache.baremaps.store.DataStore;
+import org.apache.baremaps.store.DataStoreException;
+import org.apache.baremaps.store.DataTable;
 
 /**
  * A DataStore implementation that manages a single CSV file.

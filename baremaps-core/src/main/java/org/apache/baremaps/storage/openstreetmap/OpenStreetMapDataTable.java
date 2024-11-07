@@ -20,9 +20,9 @@ package org.apache.baremaps.storage.openstreetmap;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Stream;
-import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.openstreetmap.OpenStreetMap.EntityReader;
 import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.store.*;
 
 /**
  * A DataTable implementation for OpenStreetMap data.

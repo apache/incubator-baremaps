@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.data.storage.*;
-import org.apache.baremaps.data.storage.DataColumn.Cardinality;
-import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.geoparquet.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.GeoParquetSchema;
 import org.apache.baremaps.geoparquet.GeoParquetSchema.Field;
 import org.apache.baremaps.geoparquet.GeoParquetSchema.GroupField;
+import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.Type;
 import org.apache.parquet.io.api.Binary;
 
 public class GeoParquetTypeConversion {

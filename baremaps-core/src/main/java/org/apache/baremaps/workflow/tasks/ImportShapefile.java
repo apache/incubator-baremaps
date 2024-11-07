@@ -19,11 +19,11 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.data.storage.DataTableGeometryMapper;
-import org.apache.baremaps.data.storage.DataTableMapper;
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.storage.postgres.PostgresDataStore;
 import org.apache.baremaps.storage.shapefile.ShapefileDataTable;
+import org.apache.baremaps.store.DataTableGeometryMapper;
+import org.apache.baremaps.store.DataTableMapper;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;

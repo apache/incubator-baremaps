@@ -23,9 +23,9 @@ import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.data.storage.*;
-import org.apache.baremaps.data.storage.DataColumn.Cardinality;
-import org.apache.baremaps.data.storage.DataColumn.Type;
+import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.Type;
 import org.locationtech.jts.geom.*;
 
 /**

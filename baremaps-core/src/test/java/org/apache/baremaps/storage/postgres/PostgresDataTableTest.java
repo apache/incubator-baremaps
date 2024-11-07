@@ -21,9 +21,9 @@ import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import org.apache.baremaps.data.storage.DataRowImpl;
 import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.storage.MockDataTable;
+import org.apache.baremaps.store.DataRowImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.store.*;
 import org.locationtech.jts.io.WKTReader;
 
 /**

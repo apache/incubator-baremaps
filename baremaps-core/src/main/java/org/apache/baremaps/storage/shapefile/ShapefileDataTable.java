@@ -22,12 +22,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.data.storage.DataRow;
-import org.apache.baremaps.data.storage.DataSchema;
-import org.apache.baremaps.data.storage.DataStoreException;
-import org.apache.baremaps.data.storage.DataTable;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
+import org.apache.baremaps.store.DataRow;
+import org.apache.baremaps.store.DataSchema;
+import org.apache.baremaps.store.DataStoreException;
+import org.apache.baremaps.store.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

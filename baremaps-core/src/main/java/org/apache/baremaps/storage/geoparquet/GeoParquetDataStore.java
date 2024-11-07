@@ -20,9 +20,9 @@ package org.apache.baremaps.storage.geoparquet;
 
 import java.net.URI;
 import java.util.List;
-import org.apache.baremaps.data.storage.DataStore;
-import org.apache.baremaps.data.storage.DataStoreException;
-import org.apache.baremaps.data.storage.DataTable;
+import org.apache.baremaps.store.DataStore;
+import org.apache.baremaps.store.DataStoreException;
+import org.apache.baremaps.store.DataTable;
 
 /**
  * A {@link DataStore} corresponding to a GeoParquet file.

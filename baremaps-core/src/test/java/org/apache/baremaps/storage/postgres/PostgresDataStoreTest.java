@@ -19,9 +19,9 @@ package org.apache.baremaps.storage.postgres;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.baremaps.data.storage.DataStoreException;
 import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.storage.MockDataTable;
+import org.apache.baremaps.store.DataStoreException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

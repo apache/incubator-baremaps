@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
-import org.apache.baremaps.data.storage.*;
+import org.apache.baremaps.store.*;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Point;
 

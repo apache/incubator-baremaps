@@ -22,9 +22,9 @@ import java.nio.file.Path;
 import java.util.List;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.data.storage.DataStore;
-import org.apache.baremaps.data.storage.DataStoreException;
-import org.apache.baremaps.data.storage.DataTable;
+import org.apache.baremaps.store.DataStore;
+import org.apache.baremaps.store.DataStoreException;
+import org.apache.baremaps.store.DataTable;
 
 /**
  * A {@link DataStore} corresponding to a GeoPackage file.

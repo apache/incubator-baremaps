@@ -21,9 +21,9 @@ import static org.apache.baremaps.database.repository.Constants.GEOMETRY_FACTORY
 
 import java.util.Iterator;
 import java.util.List;
-import org.apache.baremaps.data.storage.*;
-import org.apache.baremaps.data.storage.DataColumn.Cardinality;
-import org.apache.baremaps.data.storage.DataColumn.Type;
+import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.Type;
 import org.locationtech.jts.geom.Coordinate;
 
 public class MockDataTable implements DataTable {

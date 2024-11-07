@@ -25,11 +25,12 @@ import java.util.Properties;
 import org.apache.baremaps.data.calcite.SqlDataTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
-import org.apache.baremaps.data.storage.*;
-import org.apache.baremaps.data.storage.DataColumn.Cardinality;
-import org.apache.baremaps.data.storage.DataColumn.Type;
+import org.apache.baremaps.data.store.BaremapsDataTable;
 import org.apache.baremaps.data.type.RowDataType;
 import org.apache.baremaps.maplibre.vectortile.VectorTileFunctions;
+import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.Type;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.model.ModelHandler;
 import org.apache.calcite.runtime.AccumOperation;
@@ -77,7 +78,7 @@ class CalciteTest {
           new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
           new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
           new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
-      DataTable cityDataTable = new DataTableImpl(
+      DataTable cityDataTable = new BaremapsDataTable(
           cityRowType,
           new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(cityRowType))));
       cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
@@ -91,7 +92,7 @@ class CalciteTest {
       DataSchema populationRowType = new DataSchemaImpl("population", List.of(
           new DataColumnFixed("city_id", Cardinality.OPTIONAL, Type.INTEGER),
           new DataColumnFixed("population", Cardinality.OPTIONAL, Type.INTEGER)));
-      DataTable populationDataTable = new DataTableImpl(
+      DataTable populationDataTable = new BaremapsDataTable(
           populationRowType,
           new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(populationRowType))));
       populationDataTable

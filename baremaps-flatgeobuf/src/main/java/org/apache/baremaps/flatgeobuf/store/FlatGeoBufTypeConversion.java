@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.flatgeobuf;
+package org.apache.baremaps.flatgeobuf.store;
 
 
 import java.util.*;

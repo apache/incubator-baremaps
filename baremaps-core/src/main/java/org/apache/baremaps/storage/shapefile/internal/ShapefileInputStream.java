@@ -23,8 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import org.apache.baremaps.data.storage.DataRow;
-import org.apache.baremaps.data.storage.DataSchema;
+import org.apache.baremaps.store.DataRow;
+import org.apache.baremaps.store.DataSchema;
 
 /**
  * Input Stream of features.
