@@ -15,6 +15,7 @@
     <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>
