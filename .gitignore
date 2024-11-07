@@ -51,6 +51,7 @@ examples/transformation/*.pbf
 
 # Benchmarking
 baremaps-benchmarking/data/
+baremaps-benchmarking/dependency-reduced-pom.xml
 
 # Docs
 .jekyll-cache/

@@ -59,7 +59,7 @@ public class DataTableMapper implements DataTable {
    * {@inheritDoc}
    */
   @Override
-  public Iterator iterator() {
+  public Iterator<DataRow> iterator() {
     return table.stream().map(this.transformer).iterator();
   }
 

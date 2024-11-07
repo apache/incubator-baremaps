@@ -26,7 +26,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.storage.*;
 import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
@@ -129,10 +128,10 @@ public class FlatGeoBufDataTable implements DataTable {
   /**
    * Writes a collection of rows to a flatgeobuf file.
    *
-   * @param features the collection of rows to write
+   * @param table the collection of rows to write
    * @throws IOException if an error occurs while writing the rows
    */
-  public void write(DataCollection<DataRow> features) throws IOException {
+  public void write(DataTable table) throws IOException {
     try (
         var writer = new FlatGeoBufWriter(
             FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
@@ -154,7 +153,7 @@ public class FlatGeoBufDataTable implements DataTable {
           false,
           false,
           FlatGeoBufTypeConversion.asColumns(schema.columns()),
-          features.size(),
+          table.size(),
           2,
           null,
           null,
@@ -168,7 +167,7 @@ public class FlatGeoBufDataTable implements DataTable {
 
       writer.writeIndexBuffer(ByteBuffer.allocate(indexSize).order(ByteOrder.LITTLE_ENDIAN));
 
-      var iterator = features.iterator();
+      var iterator = table.iterator();
       while (iterator.hasNext()) {
         var row = iterator.next();
         var feature = FlatGeoBufTypeConversion.asFeature(row);
