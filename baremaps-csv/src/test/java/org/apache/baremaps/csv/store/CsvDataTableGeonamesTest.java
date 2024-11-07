@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.csv;
+package org.apache.baremaps.csv.store;
 
-import static org.apache.baremaps.testing.TestFiles.GEONAMES_CSV;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 import org.apache.baremaps.store.*;
+import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Point;
 
@@ -59,7 +59,8 @@ class CsvDataTableGeonamesTest {
 
     boolean hasHeader = false;
     char separator = '\t';
-    DataTable dataTable = new CsvDataTable(schema, GEONAMES_CSV.toFile(), hasHeader, separator);
+    DataTable dataTable =
+        new CsvDataTable(schema, TestFiles.GEONAMES_CSV.toFile(), hasHeader, separator);
 
     assertEquals(5, dataTable.size(), "DataTable should have 5 rows.");
 

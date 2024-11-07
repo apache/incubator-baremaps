@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.csv;
+package org.apache.baremaps.csv.store;
 
 import static org.junit.jupiter.api.Assertions.*;
 

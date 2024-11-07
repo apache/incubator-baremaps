@@ -84,6 +84,10 @@ limitations under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-csv</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-data</artifactId>
     </dependency>
     <dependency>

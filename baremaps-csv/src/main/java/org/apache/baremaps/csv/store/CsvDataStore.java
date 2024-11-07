@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.csv;
+package org.apache.baremaps.csv.store;
 
 import java.io.File;
 import java.io.IOException;

@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.baremaps.flatgeobuf.format.FlatGeoBuf;
 import org.apache.baremaps.flatgeobuf.format.FlatGeoBufReader;
 import org.apache.baremaps.flatgeobuf.format.FlatGeoBufWriter;

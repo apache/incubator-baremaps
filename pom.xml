@@ -50,6 +50,7 @@ limitations under the License.
     <module>baremaps-benchmarking</module>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
+    <module>baremaps-csv</module>
     <module>baremaps-data</module>
     <module>baremaps-dem</module>
     <module>baremaps-flatgeobuf</module>
@@ -260,6 +261,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-core</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-csv</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
