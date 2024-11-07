@@ -67,10 +67,6 @@ limitations under the License.
       <artifactId>HikariCP</artifactId>
     </dependency>
     <dependency>
-      <groupId>de.bytefish</groupId>
-      <artifactId>pgbulkinsert</artifactId>
-    </dependency>
-    <dependency>
       <groupId>it.unimi.dsi</groupId>
       <artifactId>fastutil</artifactId>
     </dependency>
@@ -117,6 +113,10 @@ limitations under the License.
     <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-pmtiles</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-postgres</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.baremaps</groupId>
@@ -174,10 +174,6 @@ limitations under the License.
     <dependency>
       <groupId>org.locationtech.proj4j</groupId>
       <artifactId>proj4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
       <groupId>org.xerial</groupId>

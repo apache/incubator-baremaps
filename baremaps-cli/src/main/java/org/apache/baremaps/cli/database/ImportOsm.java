@@ -22,6 +22,7 @@ package org.apache.baremaps.cli.database;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
+import org.apache.baremaps.tasks.ImportOsmPbf;
 import org.apache.baremaps.workflow.WorkflowContext;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -50,7 +51,7 @@ public class ImportOsm implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new org.apache.baremaps.workflow.tasks.ImportOsmPbf(
+    new ImportOsmPbf(
         file.toAbsolutePath(),
         database,
         srid,

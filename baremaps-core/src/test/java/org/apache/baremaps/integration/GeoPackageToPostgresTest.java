@@ -17,9 +17,9 @@
 
 package org.apache.baremaps.integration;
 
-import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.geopackage.store.GeoPackageDataStore;
-import org.apache.baremaps.storage.postgres.PostgresDataStore;
+import org.apache.baremaps.postgres.store.PostgresDataStore;
+import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;

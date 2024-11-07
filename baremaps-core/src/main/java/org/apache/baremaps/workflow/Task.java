@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.apache.baremaps.workflow.tasks.*;
+import org.apache.baremaps.tasks.*;
 
 /**
  * A task is a unit of work executed in a step of a workflow.

@@ -21,8 +21,8 @@ package org.apache.baremaps.cli.database;
 
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
+import org.apache.baremaps.tasks.UpdateOsmDatabase;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.baremaps.workflow.tasks.UpdateOsmDatabase;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
