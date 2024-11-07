@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import static org.apache.baremaps.openstreetmap.stream.ConsumerUtils.consumeThenReturn;
+import static org.apache.baremaps.openstreetmap.format.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
 import java.nio.file.Files;
@@ -25,8 +25,8 @@ import java.nio.file.Path;
 import java.util.StringJoiner;
 import org.apache.baremaps.database.function.CopyChangeImporter;
 import org.apache.baremaps.database.postgres.*;
-import org.apache.baremaps.openstreetmap.function.*;
-import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
+import org.apache.baremaps.openstreetmap.format.function.*;
+import org.apache.baremaps.openstreetmap.format.xml.XmlChangeReader;
 import org.apache.baremaps.utils.Compression;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;

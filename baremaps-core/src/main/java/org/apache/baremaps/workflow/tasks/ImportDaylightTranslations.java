@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import org.apache.baremaps.database.postgres.*;
-import org.apache.baremaps.openstreetmap.model.Element;
+import org.apache.baremaps.openstreetmap.format.model.Element;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;

@@ -20,7 +20,7 @@ package org.apache.baremaps.workflow.tasks;
 import java.nio.file.Path;
 import java.util.StringJoiner;
 import org.apache.baremaps.geopackage.store.GeoPackageDataStore;
-import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.format.function.ProjectionTransformer;
 import org.apache.baremaps.storage.postgres.PostgresDataStore;
 import org.apache.baremaps.store.DataTableGeometryMapper;
 import org.apache.baremaps.store.DataTableMapper;

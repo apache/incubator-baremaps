@@ -19,7 +19,7 @@ package org.apache.baremaps.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.format.function.ProjectionTransformer;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;

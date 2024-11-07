@@ -20,8 +20,8 @@ package org.apache.baremaps.database.function;
 import java.util.function.Consumer;
 import org.apache.baremaps.database.postgres.Repository;
 import org.apache.baremaps.database.postgres.RepositoryException;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Element;
+import org.apache.baremaps.openstreetmap.format.model.Change;
+import org.apache.baremaps.openstreetmap.format.model.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

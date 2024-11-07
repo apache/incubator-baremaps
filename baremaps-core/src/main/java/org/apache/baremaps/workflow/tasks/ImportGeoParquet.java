@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.StringJoiner;
 import org.apache.baremaps.geoparquet.store.GeoParquetDataStore;
 import org.apache.baremaps.geoparquet.store.GeoParquetDataTable;
-import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.format.function.ProjectionTransformer;
 import org.apache.baremaps.storage.postgres.PostgresDataStore;
 import org.apache.baremaps.store.DataTableGeometryMapper;
 import org.apache.baremaps.store.DataTableMapper;

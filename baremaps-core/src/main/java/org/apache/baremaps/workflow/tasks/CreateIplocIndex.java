@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import org.apache.baremaps.iploc.IpLocReader;
 import org.apache.baremaps.iploc.IpLocRepository;
-import org.apache.baremaps.openstreetmap.stream.StreamException;
+import org.apache.baremaps.openstreetmap.format.stream.StreamException;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.search.SearcherFactory;

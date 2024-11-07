@@ -29,7 +29,7 @@ import javax.sql.DataSource;
 import org.apache.baremaps.database.PostgresContainerTest;
 import org.apache.baremaps.database.function.BlockImporter;
 import org.apache.baremaps.database.postgres.*;
-import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
+import org.apache.baremaps.openstreetmap.format.pbf.PbfBlockReader;
 import org.apache.baremaps.utils.PostgresUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
