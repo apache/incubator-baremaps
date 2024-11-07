@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.shapefile.internal;
+package org.apache.baremaps.shapefile.format;
 
 /**
  * Provides a simple DataType class.

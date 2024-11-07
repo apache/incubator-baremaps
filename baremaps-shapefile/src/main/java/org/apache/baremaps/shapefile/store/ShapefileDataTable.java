@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.shapefile;
+package org.apache.baremaps.shapefile.store;
 
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
-import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
+import org.apache.baremaps.shapefile.format.ShapefileInputStream;
+import org.apache.baremaps.shapefile.format.ShapefileReader;
 import org.apache.baremaps.store.DataRow;
 import org.apache.baremaps.store.DataSchema;
 import org.apache.baremaps.store.DataStoreException;

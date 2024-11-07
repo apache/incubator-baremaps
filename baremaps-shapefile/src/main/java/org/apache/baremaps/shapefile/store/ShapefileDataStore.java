@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.shapefile;
+package org.apache.baremaps.shapefile.store;
 
 
 
