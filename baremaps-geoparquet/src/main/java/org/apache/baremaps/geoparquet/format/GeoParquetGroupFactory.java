@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet;
+package org.apache.baremaps.geoparquet.format;
 
 import java.util.List;
-import org.apache.baremaps.geoparquet.GeoParquetSchema.*;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema.*;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.apache.parquet.schema.PrimitiveType;

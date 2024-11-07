@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet;
+package org.apache.baremaps.geoparquet.format;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license

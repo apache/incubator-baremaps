@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet;
+package org.apache.baremaps.geoparquet.format;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

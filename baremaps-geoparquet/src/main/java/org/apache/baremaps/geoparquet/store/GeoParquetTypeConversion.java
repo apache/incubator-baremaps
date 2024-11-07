@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.geoparquet;
+package org.apache.baremaps.geoparquet.store;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.geoparquet.GeoParquetGroup;
-import org.apache.baremaps.geoparquet.GeoParquetSchema;
-import org.apache.baremaps.geoparquet.GeoParquetSchema.Field;
-import org.apache.baremaps.geoparquet.GeoParquetSchema.GroupField;
+import org.apache.baremaps.geoparquet.format.GeoParquetGroup;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema.Field;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema.GroupField;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
 import org.apache.baremaps.store.DataColumn.Type;

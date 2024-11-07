@@ -15,37 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.geoparquet;
+package org.apache.baremaps.geoparquet.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.baremaps.database.PostgresContainerTest;
-import org.apache.baremaps.storage.postgres.PostgresDataStore;
 import org.apache.baremaps.testing.TestFiles;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class GeoParquetToPostgresTest extends PostgresContainerTest {
+class GeoParquetDataStoreTest {
 
   @Test
-  @Tag("integration")
-  void copyGeoParquetToPostgres() {
-    // Open the GeoParquet
+  void schema() {
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
-    var geoParquetSchema = new GeoParquetDataStore(uri);
-    var tables = geoParquetSchema.list();
-    var geoParquetTable = geoParquetSchema.get(tables.get(0));
-
-    // Copy the table to Postgres
-    var postgresStore = new PostgresDataStore(dataSource());
-    postgresStore.add("geoparquet", geoParquetTable);
-
-    // Check the table in Postgres
-    var postgresTable = postgresStore.get("geoparquet");
-
-    assertEquals("geoparquet", postgresTable.schema().name());
-    assertEquals(7, postgresTable.schema().columns().size());
-    assertEquals(5L, postgresTable.size());
-    assertEquals(5L, postgresTable.stream().count());
+    var geoParquetDataSchema = new GeoParquetDataStore(uri);
+    var table = geoParquetDataSchema.get(uri.toString());
+    var rowType = table.schema();
+    assertEquals(uri.toString(), rowType.name());
+    assertEquals(7, rowType.columns().size());
   }
+
+  @Test
+  void read() {
+    var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
+    var geoParquetDataSchema = new GeoParquetDataStore(uri);
+    var table = geoParquetDataSchema.get(uri.toString());
+    assertEquals(5, table.size());
+    assertEquals(5, table.stream().count());
+  }
+
 }

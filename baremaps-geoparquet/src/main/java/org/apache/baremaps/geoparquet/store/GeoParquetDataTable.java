@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.geoparquet;
+package org.apache.baremaps.geoparquet.store;
 
 import java.net.URI;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
-import org.apache.baremaps.geoparquet.GeoParquetException;
-import org.apache.baremaps.geoparquet.GeoParquetReader;
+import org.apache.baremaps.geoparquet.format.GeoParquetException;
+import org.apache.baremaps.geoparquet.format.GeoParquetReader;
 import org.apache.baremaps.store.DataRow;
 import org.apache.baremaps.store.DataRowImpl;
 import org.apache.baremaps.store.DataSchema;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.geoparquet;
+package org.apache.baremaps.geoparquet.store;
 
 
 import java.net.URI;

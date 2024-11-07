@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet;
+package org.apache.baremaps.geoparquet.format;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.baremaps.geoparquet.GeoParquetSchema.EnvelopeField;
-import org.apache.baremaps.geoparquet.GeoParquetSchema.Field;
-import org.apache.baremaps.geoparquet.GeoParquetSchema.GroupField;
-import org.apache.baremaps.geoparquet.GeoParquetSchema.Type;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema.EnvelopeField;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema.Field;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema.GroupField;
+import org.apache.baremaps.geoparquet.format.GeoParquetSchema.Type;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.GroupType;
 import org.locationtech.jts.geom.Envelope;

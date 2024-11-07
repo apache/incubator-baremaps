@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.geoparquet;
+package org.apache.baremaps.geoparquet.format;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.geoparquet.GeoParquetMetadata.Column;
+import org.apache.baremaps.geoparquet.format.GeoParquetMetadata.Column;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
