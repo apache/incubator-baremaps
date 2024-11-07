@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.storage.geopackage;
+package org.apache.baremaps.geopackage.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
