@@ -15,34 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.storage;
-
-import java.util.List;
+package org.apache.baremaps.store;
 
 /**
- * A {@link DataSchema} is a description of the structure of a row in a {@link DataTable}.
+ * A column in a table.
  */
-public interface DataSchema {
-
-  /**
-   * Returns the name of the schema.
-   * 
-   * @return the name of the schema
-   */
-  String name();
-
-  /**
-   * Returns the columns of the schema.
-   * 
-   * @return the columns of the schema
-   */
-  List<DataColumn> columns();
-
-  /**
-   * Creates a new row of the schema.
-   * 
-   * @return a new row of the schema
-   */
-  DataRow createRow();
+public record DataColumnFixed(String name, Cardinality cardinality,
+    Type type) implements DataColumn {
 
 }

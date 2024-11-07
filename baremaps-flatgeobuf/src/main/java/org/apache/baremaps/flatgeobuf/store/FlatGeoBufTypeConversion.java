@@ -19,12 +19,12 @@ package org.apache.baremaps.storage.flatgeobuf;
 
 
 import java.util.*;
-import org.apache.baremaps.data.storage.*;
-import org.apache.baremaps.data.storage.DataColumn.Cardinality;
-import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf.Feature;
 import org.apache.baremaps.flatgeobuf.generated.ColumnType;
+import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.Type;
 import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufTypeConversion {

@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.baremaps.data.storage.DataStore;
-import org.apache.baremaps.data.storage.DataStoreException;
-import org.apache.baremaps.data.storage.DataTable;
+import org.apache.baremaps.store.DataStore;
+import org.apache.baremaps.store.DataStoreException;
+import org.apache.baremaps.store.DataTable;
 
 /**
  * A {@link DataStore} corresponding to the flatgeobuf files of a directory.

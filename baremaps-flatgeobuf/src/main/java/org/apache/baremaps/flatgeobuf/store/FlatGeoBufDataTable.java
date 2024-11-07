@@ -26,12 +26,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import org.apache.baremaps.data.storage.*;
-import org.apache.baremaps.data.storage.DataColumn.Type;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
 import org.apache.baremaps.flatgeobuf.FlatGeoBufReader;
 import org.apache.baremaps.flatgeobuf.FlatGeoBufWriter;
 import org.apache.baremaps.flatgeobuf.PackedRTree;
+import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Type;
 
 /**
  * A {@link DataTable} that stores rows in a flatgeobuf file.

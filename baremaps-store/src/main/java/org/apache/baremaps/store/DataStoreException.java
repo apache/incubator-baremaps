@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.storage;
+package org.apache.baremaps.store;
 
 /** Signals that an exception occurred in a {@link DataStore}. */
 public class DataStoreException extends RuntimeException {

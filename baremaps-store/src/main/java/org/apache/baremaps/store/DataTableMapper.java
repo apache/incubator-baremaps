@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.storage;
+package org.apache.baremaps.store;
+
 
 import java.util.Iterator;
-import org.apache.baremaps.data.collection.DataCollection;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
- * A {@link DataTable} is a collection of rows respecting a {@link DataSchema}.
+ * A decorator for a {@link DataTable} that applies a transformation to each row.
  */
-public class DataTableImpl implements DataTable {
+public class DataTableMapper implements DataTable {
 
-  private final DataSchema schema;
+  private final DataTable table;
 
-  private final DataCollection<DataRow> rows;
+  private final Function<DataRow, DataRow> transformer;
 
   /**
-   * Constructs a {@link DataTable} with the specified row {@link DataSchema}.
+   * Constructs a new {@link DataTableMapper} with the specified table and row transformer.
    *
-   * @param schema the schema of the rows
-   * @param rows the rows
+   * @param table the table
+   * @param mapper the mapper
    */
-  public DataTableImpl(DataSchema schema, DataCollection<DataRow> rows) {
-    this.schema = schema;
-    this.rows = rows;
+  public DataTableMapper(DataTable table, UnaryOperator<DataRow> mapper) {
+    this.table = table;
+    this.transformer = mapper;
   }
 
   /**
@@ -45,31 +47,12 @@ public class DataTableImpl implements DataTable {
    */
   @Override
   public DataSchema schema() {
-    return schema;
+    return table.schema();
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean add(DataRow row) {
-    return rows.add(row);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void clear() {
-    rows.clear();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public long size() {
-    return rows.size();
+    return table.size();
   }
 
   /**
@@ -77,7 +60,12 @@ public class DataTableImpl implements DataTable {
    */
   @Override
   public Iterator<DataRow> iterator() {
-    return rows.iterator();
+    return table.stream().map(this.transformer).iterator();
+  }
+
+  @Override
+  public void clear() {
+    table.clear();
   }
 
 }

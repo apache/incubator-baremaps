@@ -58,6 +58,7 @@ limitations under the License.
     <module>baremaps-openstreetmap</module>
     <module>baremaps-pmtiles</module>
     <module>baremaps-server</module>
+    <module>baremaps-store</module>
     <module>baremaps-testing</module>
   </modules>
 
@@ -304,6 +305,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-server</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-store</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

@@ -10,6 +10,10 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-store</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
     </dependency>
     <dependency>

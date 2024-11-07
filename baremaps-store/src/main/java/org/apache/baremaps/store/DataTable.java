@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.storage;
+package org.apache.baremaps.store;
 
 import java.util.Iterator;
 import java.util.Spliterator;
