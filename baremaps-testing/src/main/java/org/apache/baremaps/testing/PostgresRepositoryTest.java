@@ -19,10 +19,9 @@ package org.apache.baremaps.testing;
 
 
 
-import com.google.common.io.Resources;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,9 +34,9 @@ public abstract class PostgresRepositoryTest extends PostgresContainerTest {
   public void initializeDatabase() throws SQLException, IOException {
     DataSource dataSource = dataSource();
     try (Connection connection = dataSource.getConnection()) {
-      executeResource(connection, "queries/osm_create_extensions.sql");
-      executeResource(connection, "queries/osm_drop_tables.sql");
-      executeResource(connection, "queries/osm_create_tables.sql");
+      execute(connection, "baremaps-postgres/src/test/resources/queries/osm_create_extensions.sql");
+      execute(connection, "baremaps-postgres/src/test/resources/queries/osm_drop_tables.sql");
+      execute(connection, "baremaps-postgres/src/test/resources/queries/osm_create_tables.sql");
     }
   }
 
@@ -45,14 +44,14 @@ public abstract class PostgresRepositoryTest extends PostgresContainerTest {
    * Executes the queries contained in a resource file.
    *
    * @param connection the JDBC connection
-   * @param resource the path of the resource file
+   * @param file the path of the resource file
    * @throws IOException if an I/O error occurs
    * @throws SQLException if a database access error occurs
    */
-  public static void executeResource(Connection connection, String resource)
+  public static void execute(Connection connection, String file)
       throws IOException, SQLException {
-    URL resourceURL = Resources.getResource(resource);
-    String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);
+    Path path = TestFiles.resolve(file);
+    String queries = Files.readString(path);
     try (Statement statement = connection.createStatement()) {
       statement.execute(queries);
     }
