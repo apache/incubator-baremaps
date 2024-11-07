@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.flatgeobuf;
+package org.apache.baremaps.flatgeobuf.format;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import java.util.Arrays;

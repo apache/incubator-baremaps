@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.flatgeobuf;
+package org.apache.baremaps.flatgeobuf.format;
 
 import java.io.IOException;
 import java.io.InputStream;

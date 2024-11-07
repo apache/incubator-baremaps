@@ -26,10 +26,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
-import org.apache.baremaps.flatgeobuf.FlatGeoBufReader;
-import org.apache.baremaps.flatgeobuf.FlatGeoBufWriter;
-import org.apache.baremaps.flatgeobuf.PackedRTree;
+import org.apache.baremaps.flatgeobuf.format.FlatGeoBuf;
+import org.apache.baremaps.flatgeobuf.format.FlatGeoBufReader;
+import org.apache.baremaps.flatgeobuf.format.FlatGeoBufWriter;
+import org.apache.baremaps.flatgeobuf.format.PackedRTree;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Type;
 

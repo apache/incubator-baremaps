@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.flatgeobuf;
+package org.apache.baremaps.flatgeobuf.format;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import java.io.IOException;

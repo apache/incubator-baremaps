@@ -19,8 +19,8 @@ package org.apache.baremaps.flatgeobuf.store;
 
 
 import java.util.*;
-import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
-import org.apache.baremaps.flatgeobuf.FlatGeoBuf.Feature;
+import org.apache.baremaps.flatgeobuf.format.FlatGeoBuf;
+import org.apache.baremaps.flatgeobuf.format.FlatGeoBuf.Feature;
 import org.apache.baremaps.flatgeobuf.generated.ColumnType;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
