@@ -86,9 +86,15 @@ public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> 
 
       // Use a default name if there is no netname
       var network = String.join(", ", attributes.getOrDefault("netname", List.of("unknown")));
-      var geoloc = String.join(", ", attributes.getOrDefault("geoloc", List.of()));
-      var country = String.join(", ", attributes.getOrDefault("country", List.of()));
-      var source = String.join(", ", attributes.getOrDefault("source", List.of()));
+      var geoloc = attributes.containsKey("geoloc")
+          ? String.join(", ", attributes.getOrDefault("geoloc", List.of()))
+          : null;
+      var country = attributes.containsKey("country")
+          ? String.join(", ", attributes.getOrDefault("country", List.of()))
+          : null;
+      var source = attributes.containsKey("source")
+          ? String.join(", ", attributes.getOrDefault("source", List.of()))
+          : null;
 
       // If there is a geoloc field, we use the latitude and longitude provided
       if (attributes.containsKey("geoloc")) {
@@ -115,8 +121,10 @@ public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> 
         // build a query text string out of the cherry-picked fields
         var queryTextBuilder = new StringBuilder();
         for (String field : searchedFields) {
-          var fieldValue = String.join(", ", attributes.get(field));
-          if (!Strings.isNullOrEmpty(fieldValue)) {
+          var value = attributes.containsKey(field)
+              ? String.join(", ", attributes.getOrDefault(field, List.of()))
+              : null;
+          if (!Strings.isNullOrEmpty(value)) {
             queryTextBuilder.append(attributes.get(field)).append(" ");
           }
         }

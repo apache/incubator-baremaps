@@ -51,7 +51,7 @@ import org.sqlite.SQLiteDataSource;
  */
 class IpLocObjectTest {
 
-  private static List<RpslObject> nicObjects;
+  private static List<RpslObject> rpslObjects;
   private static IpLocMapper ipLocMapper;
   private static List<IpLocObject> ipLocObjects;
   private static IpLocRepository iplocRepository;
@@ -63,7 +63,7 @@ class IpLocObjectTest {
     // Load the NIC sample objects
     var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
     try (var input = Files.newInputStream(file)) {
-      nicObjects = new RpslReader().read(input).toList();
+      rpslObjects = new RpslReader().read(input).toList();
     }
 
     // Init the geocoder service
@@ -78,7 +78,7 @@ class IpLocObjectTest {
     var dir = FSDirectory.open(directory);
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
     ipLocMapper = new IpLocMapper(searcherManager);
-    ipLocObjects = nicObjects.stream()
+    ipLocObjects = rpslObjects.stream()
         .map(ipLocMapper)
         .filter(Optional::isPresent)
         .map(Optional::get)
