@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
-import org.apache.baremaps.openstreetmap.format.stream.StreamUtils;
+import org.apache.baremaps.openstreetmap.stream.StreamUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

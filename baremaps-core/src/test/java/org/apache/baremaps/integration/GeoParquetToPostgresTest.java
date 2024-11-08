@@ -19,7 +19,7 @@ package org.apache.baremaps.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.baremaps.geoparquet.store.GeoParquetDataStore;
+import org.apache.baremaps.geoparquet.GeoParquetDataStore;
 import org.apache.baremaps.postgres.store.PostgresDataStore;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;

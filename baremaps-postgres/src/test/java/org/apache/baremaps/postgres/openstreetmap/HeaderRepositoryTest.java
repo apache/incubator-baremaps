@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.baremaps.openstreetmap.format.model.Header;
+import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.testing.PostgresRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;

@@ -19,9 +19,9 @@ package org.apache.baremaps.tasks;
 
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.format.function.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.postgres.store.PostgresDataStore;
-import org.apache.baremaps.shapefile.store.ShapefileDataTable;
+import org.apache.baremaps.shapefile.ShapefileDataTable;
 import org.apache.baremaps.store.DataTableGeometryMapper;
 import org.apache.baremaps.store.DataTableMapper;
 import org.apache.baremaps.workflow.Task;

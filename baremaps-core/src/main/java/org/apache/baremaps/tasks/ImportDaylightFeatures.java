@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.format.model.Element;
+import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.postgres.openstreetmap.*;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;

@@ -19,7 +19,9 @@ package org.apache.baremaps.store;
 
 import java.util.List;
 
-public record DataColumnNested(String name, Cardinality cardinality,
+public record DataColumnNested(
+    String name,
+    Cardinality cardinality,
     List<DataColumn> columns) implements DataColumn {
 
   @Override

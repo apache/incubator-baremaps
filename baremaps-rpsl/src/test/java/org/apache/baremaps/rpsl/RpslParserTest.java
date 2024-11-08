@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import org.apache.baremaps.rpsl.RpslObject.RpslAttribute;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 

@@ -17,14 +17,14 @@
 
 package org.apache.baremaps.tasks;
 
-import static org.apache.baremaps.openstreetmap.format.stream.ConsumerUtils.consumeThenReturn;
+import static org.apache.baremaps.openstreetmap.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.format.function.*;
-import org.apache.baremaps.openstreetmap.format.xml.XmlChangeReader;
+import org.apache.baremaps.openstreetmap.function.*;
+import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.postgres.openstreetmap.CopyChangeImporter;
 import org.apache.baremaps.postgres.openstreetmap.NodeRepository;
 import org.apache.baremaps.postgres.openstreetmap.RelationRepository;

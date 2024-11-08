@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import org.apache.baremaps.geoparquet.store.GeoParquetDataTable;
+import org.apache.baremaps.geoparquet.GeoParquetDataTable;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.lucene.document.Document;

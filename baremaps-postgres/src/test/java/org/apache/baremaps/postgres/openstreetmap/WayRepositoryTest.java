@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.baremaps.openstreetmap.format.model.Element;
-import org.apache.baremaps.openstreetmap.format.model.Way;
+import org.apache.baremaps.openstreetmap.model.Element;
+import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.postgres.Constants;
 import org.apache.baremaps.testing.PostgresRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;

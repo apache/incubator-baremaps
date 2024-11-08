@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
-import org.apache.baremaps.openstreetmap.format.model.Header;
+import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.postgres.copy.CopyWriter;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;

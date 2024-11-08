@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.integration;
 
-import org.apache.baremaps.geopackage.store.GeoPackageDataStore;
+import org.apache.baremaps.geopackage.GeoPackageDataStore;
 import org.apache.baremaps.postgres.store.PostgresDataStore;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;

@@ -19,9 +19,9 @@ package org.apache.baremaps.tasks;
 
 import java.net.URI;
 import java.util.StringJoiner;
-import org.apache.baremaps.geoparquet.store.GeoParquetDataStore;
-import org.apache.baremaps.geoparquet.store.GeoParquetDataTable;
-import org.apache.baremaps.openstreetmap.format.function.ProjectionTransformer;
+import org.apache.baremaps.geoparquet.GeoParquetDataStore;
+import org.apache.baremaps.geoparquet.GeoParquetDataTable;
+import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
 import org.apache.baremaps.postgres.store.PostgresDataStore;
 import org.apache.baremaps.store.DataTableGeometryMapper;
 import org.apache.baremaps.store.DataTableMapper;

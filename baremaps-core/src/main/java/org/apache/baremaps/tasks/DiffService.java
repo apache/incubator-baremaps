@@ -17,7 +17,7 @@
 
 package org.apache.baremaps.tasks;
 
-import static org.apache.baremaps.openstreetmap.format.stream.ConsumerUtils.consumeThenReturn;
+import static org.apache.baremaps.openstreetmap.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
 import java.net.MalformedURLException;
@@ -28,12 +28,12 @@ import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.openstreetmap.format.function.EntityGeometryBuilder;
-import org.apache.baremaps.openstreetmap.format.function.EntityToGeometryMapper;
-import org.apache.baremaps.openstreetmap.format.function.ProjectionTransformer;
-import org.apache.baremaps.openstreetmap.format.model.*;
-import org.apache.baremaps.openstreetmap.format.stream.StreamException;
-import org.apache.baremaps.openstreetmap.format.xml.XmlChangeReader;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
+import org.apache.baremaps.openstreetmap.function.EntityToGeometryMapper;
+import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.openstreetmap.stream.StreamException;
+import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.postgres.openstreetmap.HeaderRepository;
 import org.apache.baremaps.postgres.openstreetmap.Repository;
 import org.apache.baremaps.tilestore.TileCoord;

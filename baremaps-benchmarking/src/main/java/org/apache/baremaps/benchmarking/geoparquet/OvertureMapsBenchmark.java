@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
-import org.apache.baremaps.geoparquet.format.GeoParquetReader;
+import org.apache.baremaps.geoparquet.GeoParquetReader;
 import org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;

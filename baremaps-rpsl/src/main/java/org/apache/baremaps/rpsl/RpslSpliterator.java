@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import org.apache.baremaps.rpsl.RpslObject.RpslAttribute;
 
 class RpslSpliterator implements Spliterator<RpslObject> {
 
@@ -99,4 +100,3 @@ class RpslSpliterator implements Spliterator<RpslObject> {
     return lineSpliterator.characteristics();
   }
 }
-

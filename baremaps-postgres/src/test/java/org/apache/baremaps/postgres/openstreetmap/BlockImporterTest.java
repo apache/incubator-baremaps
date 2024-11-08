@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import org.apache.baremaps.openstreetmap.format.pbf.PbfBlockReader;
+import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.postgres.utils.PostgresUtils;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.junit.jupiter.api.BeforeEach;

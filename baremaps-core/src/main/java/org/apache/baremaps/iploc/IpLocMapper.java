@@ -85,19 +85,22 @@ public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> 
       var attributes = nicObject.asMap();
 
       // Use a default name if there is no netname
-      var network = attributes.getOrDefault("netname", "unknown");
+      var network = String.join(", ", attributes.getOrDefault("netname", List.of("unknown")));
+      var geoloc = String.join(", ", attributes.getOrDefault("geoloc", List.of()));
+      var country = String.join(", ", attributes.getOrDefault("country", List.of()));
+      var source = String.join(", ", attributes.getOrDefault("source", List.of()));
 
       // If there is a geoloc field, we use the latitude and longitude provided
       if (attributes.containsKey("geoloc")) {
-        var location = stringToCoordinate(attributes.get("geoloc"));
+        var location = stringToCoordinate(geoloc);
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
-              attributes.get("geoloc"),
+              geoloc,
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              attributes.get("source"),
+              country,
+              source,
               IpLocPrecision.GEOLOC));
         }
       }
@@ -112,36 +115,37 @@ public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> 
         // build a query text string out of the cherry-picked fields
         var queryTextBuilder = new StringBuilder();
         for (String field : searchedFields) {
-          if (!Strings.isNullOrEmpty(attributes.get(field))) {
+          var fieldValue = String.join(", ", attributes.get(field));
+          if (!Strings.isNullOrEmpty(fieldValue)) {
             queryTextBuilder.append(attributes.get(field)).append(" ");
           }
         }
 
         String queryText = queryTextBuilder.toString();
-        var location = findLocationInCountry(queryText, attributes.get("country"));
+        var location = findLocationInCountry(queryText, country);
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               queryText,
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              attributes.get("source"),
+              country,
+              source,
               IpLocPrecision.GEOCODER));
         }
       }
 
       // If there is a country get the location of country
       if (attributes.containsKey("country")) {
-        var location = findCountryLocation(attributes.get("country"));
+        var location = findCountryLocation(country);
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
-              attributes.get("country"),
+              country,
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              attributes.get("source"),
+              country,
+              source,
               IpLocPrecision.COUNTRY));
         }
       }
@@ -152,7 +156,7 @@ public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> 
           new Coordinate(),
           network,
           null,
-          attributes.get("source"),
+          source,
           IpLocPrecision.WORLD));
     } catch (Exception e) {
       logger.warn("Error while mapping nic object to ip loc object", e);

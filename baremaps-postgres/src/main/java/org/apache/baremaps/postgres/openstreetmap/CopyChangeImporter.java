@@ -20,7 +20,7 @@ package org.apache.baremaps.postgres.openstreetmap;
 
 import java.util.List;
 import java.util.function.Consumer;
-import org.apache.baremaps.openstreetmap.format.model.*;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

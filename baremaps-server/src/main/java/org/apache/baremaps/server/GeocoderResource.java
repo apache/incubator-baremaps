@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.geocoder.geonames.GeonamesQueryBuilder;
-import org.apache.baremaps.openstreetmap.format.stream.StreamException;
+import org.apache.baremaps.openstreetmap.stream.StreamException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
