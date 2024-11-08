@@ -122,9 +122,9 @@ public class FlatGeoBufDataTable implements DataTable {
   }
 
   /**
-   * Writes a collection of rows to a flatgeobuf file.
+   * Writes a table to a flatgeobuf file.
    *
-   * @param table the collection of rows to write
+   * @param table the table to write
    * @throws IOException if an error occurs while writing the rows
    */
   public void write(DataTable table) throws IOException {

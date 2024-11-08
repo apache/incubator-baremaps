@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,9 +59,9 @@ class CsvDataTableTest {
         """;
     Files.writeString(tempCsvFile.toPath(), csvContent);
     List<DataColumn> columns = List.of(
-        new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED, DataColumn.Type.INTEGER),
-        new DataColumnFixed("name", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.STRING),
-        new DataColumnFixed("geom", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.GEOMETRY));
+        new DataColumnFixed("id", Cardinality.REQUIRED, Type.INTEGER),
+        new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
+        new DataColumnFixed("geom", Cardinality.OPTIONAL, Type.GEOMETRY));
     DataSchema schema = new DataSchemaImpl("test_table", columns);
     DataTable dataTable = new CsvDataTable(schema, tempCsvFile, true, ',');
     assertEquals(2, dataTable.size());
@@ -86,9 +88,9 @@ class CsvDataTableTest {
         """;
     Files.writeString(tempCsvFile.toPath(), csvContent);
     List<DataColumn> columns = List.of(
-        new DataColumnFixed("column1", DataColumn.Cardinality.REQUIRED, DataColumn.Type.INTEGER),
-        new DataColumnFixed("column2", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.STRING),
-        new DataColumnFixed("column3", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.GEOMETRY));
+        new DataColumnFixed("column1", Cardinality.REQUIRED, Type.INTEGER),
+        new DataColumnFixed("column2", Cardinality.OPTIONAL, Type.STRING),
+        new DataColumnFixed("column3", Cardinality.OPTIONAL, Type.GEOMETRY));
     DataSchema schema = new DataSchemaImpl("test_table", columns);
     DataTable dataTable = new CsvDataTable(schema, tempCsvFile, false, ';');
     assertEquals(2, dataTable.size());
@@ -119,11 +121,10 @@ class CsvDataTableTest {
         """;
     Files.writeString(tempCsvFile.toPath(), csvContent);
     List<DataColumn> columns = List.of(
-        new DataColumnFixed("int_col", DataColumn.Cardinality.REQUIRED, DataColumn.Type.INTEGER),
-        new DataColumnFixed("double_col", DataColumn.Cardinality.REQUIRED, DataColumn.Type.DOUBLE),
-        new DataColumnFixed("bool_col", DataColumn.Cardinality.REQUIRED, DataColumn.Type.BOOLEAN),
-        new DataColumnFixed("string_col", DataColumn.Cardinality.REQUIRED,
-            DataColumn.Type.STRING));
+        new DataColumnFixed("int_col", Cardinality.REQUIRED, Type.INTEGER),
+        new DataColumnFixed("double_col", Cardinality.REQUIRED, Type.DOUBLE),
+        new DataColumnFixed("bool_col", Cardinality.REQUIRED, Type.BOOLEAN),
+        new DataColumnFixed("string_col", Cardinality.REQUIRED, Type.STRING));
     DataSchema schema = new DataSchemaImpl("test_table", columns);
     DataTable dataTable = new CsvDataTable(schema, tempCsvFile, true, ',');
     assertEquals(2, dataTable.size());
@@ -152,8 +153,8 @@ class CsvDataTableTest {
         """;
     Files.writeString(tempCsvFile.toPath(), csvContent);
     List<DataColumn> columns = List.of(
-        new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED, DataColumn.Type.INTEGER),
-        new DataColumnFixed("name", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.STRING));
+        new DataColumnFixed("id", Cardinality.REQUIRED, Type.INTEGER),
+        new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING));
     DataSchema schema = new DataSchemaImpl("test_table", columns);
     DataTable dataTable = new CsvDataTable(schema, tempCsvFile, true, ',');
     assertThrows(RuntimeException.class, () -> {
@@ -169,8 +170,8 @@ class CsvDataTableTest {
     String csvContent = "";
     Files.writeString(tempCsvFile.toPath(), csvContent);
     List<DataColumn> columns = List.of(
-        new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED, DataColumn.Type.INTEGER),
-        new DataColumnFixed("name", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.STRING));
+        new DataColumnFixed("id", Cardinality.REQUIRED, Type.INTEGER),
+        new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING));
     DataSchema schema = new DataSchemaImpl("test_table", columns);
     DataTable dataTable = new CsvDataTable(schema, tempCsvFile, true, ',');
     assertThrows(UnsupportedOperationException.class, () -> dataTable.add(null));
@@ -187,8 +188,8 @@ class CsvDataTableTest {
         """;
     Files.writeString(tempCsvFile.toPath(), csvContent);
     List<DataColumn> columns = List.of(
-        new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED, DataColumn.Type.INTEGER),
-        new DataColumnFixed("name", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.STRING));
+        new DataColumnFixed("id", Cardinality.REQUIRED, Type.INTEGER),
+        new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING));
     DataSchema schema = new DataSchemaImpl("test_table", columns);
     DataTable dataTable = new CsvDataTable(schema, tempCsvFile, true, ',');
     assertEquals(3, dataTable.size());

@@ -60,29 +60,29 @@ public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> 
    * Returns an {@code Optional} containing the {@code IpLocObject} associated with the specified
    * {@code NicObject} if it is an inetnum object, or an empty {@code Optional} otherwise.
    *
-   * @param nicObject the {@code NicObject}
+   * @param rpslObject the {@code NicObject}
    * @return an {@code Optional} containing the {@code IpLocObject} corresponding to the
    *         {@code NicObject}
    */
   @Override
   @SuppressWarnings({"squid:S3776", "squid:S1192"})
-  public Optional<IpLocObject> apply(RpslObject nicObject) {
+  public Optional<IpLocObject> apply(RpslObject rpslObject) {
     try {
-      if (nicObject.attributes().isEmpty()) {
+      if (rpslObject.attributes().isEmpty()) {
         return Optional.empty();
       }
 
-      if (!RpslUtils.isInetnum(nicObject)) {
+      if (!RpslUtils.isInetnum(rpslObject)) {
         return Optional.empty();
       }
 
-      var inetnum = nicObject.attributes().get(0);
+      var inetnum = rpslObject.attributes().get(0);
       var ipRange = IpResourceRange.parse(inetnum.value());
       var start = InetAddresses.forString(ipRange.getStart().toString());
       var end = InetAddresses.forString(ipRange.getEnd().toString());
       var inetRange = new InetRange(start, end);
 
-      var attributes = nicObject.asMap();
+      var attributes = rpslObject.asMap();
 
       // Use a default name if there is no netname
       var network = String.join(", ", attributes.getOrDefault("netname", List.of("unknown")));
@@ -167,9 +167,9 @@ public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> 
           source,
           IpLocPrecision.WORLD));
     } catch (Exception e) {
-      logger.warn("Error while mapping nic object to ip loc object", e);
-      logger.warn("Nic object attributes:");
-      nicObject.attributes().forEach(attribute -> {
+      logger.warn("Error while mapping RPSL object to IP loc object", e);
+      logger.warn("RPSL object attributes:");
+      rpslObject.attributes().forEach(attribute -> {
         var name = attribute.name();
         var value = attribute.value();
         if (value.length() > 100) {

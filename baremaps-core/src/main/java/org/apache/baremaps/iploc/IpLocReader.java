@@ -45,8 +45,8 @@ public class IpLocReader {
    * @return a {@link Stream} of IP location objects
    */
   public Stream<IpLocObject> read(InputStream inputStream) {
-    var nicReader = new RpslReader();
-    return nicReader.read(inputStream)
+    var rpslReader = new RpslReader();
+    return rpslReader.read(inputStream)
         .map(new IpLocMapper(searcherManager))
         .filter(Optional::isPresent)
         .map(Optional::get);
