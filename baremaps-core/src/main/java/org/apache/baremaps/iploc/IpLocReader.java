@@ -20,6 +20,7 @@ package org.apache.baremaps.iploc;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.apache.baremaps.rpsl.RpslReader;
 import org.apache.lucene.search.SearcherManager;
 
 /** A reader for IP location data. */
@@ -44,7 +45,7 @@ public class IpLocReader {
    * @return a {@link Stream} of IP location objects
    */
   public Stream<IpLocObject> read(InputStream inputStream) {
-    var nicReader = new NicReader();
+    var nicReader = new RpslReader();
     return nicReader.read(inputStream)
         .map(new IpLocMapper(searcherManager))
         .filter(Optional::isPresent)

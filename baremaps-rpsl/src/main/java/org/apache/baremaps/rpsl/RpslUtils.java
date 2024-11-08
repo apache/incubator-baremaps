@@ -15,42 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.iploc;
+package org.apache.baremaps.rpsl;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Utility methods for NIC objects.
+ * Utility methods for RPSL objects.
  */
-public class NicUtils {
+public class RpslUtils {
 
-  private NicUtils() {}
-
-  /**
-   * Returns true if the NIC object is an inetnum.
-   *
-   * @param nicObject
-   * @return
-   */
-  public static boolean isInetnum(NicObject nicObject) {
-    return "inetnum".equals(nicObject.type()) || "inet6num".equals(nicObject.type());
+  private RpslUtils() {
+    // Prevent instantiation
   }
 
   /**
-   * Writes a NIC object into a text file.
+   * Returns true if the RPSL object is an inetnum.
+   *
+   * @param object
+   * @return
+   */
+  public static boolean isInetnum(RpslObject object) {
+    return "inetnum".equals(object.type()) || "inet6num".equals(object.type());
+  }
+
+  /**
+   * Writes a RPSL object into a text file.
    *
    * @param path the path of a text file
    */
-  public static void writeToFile(Path path, NicObject nicObject) throws IOException {
+  public static void writeToFile(Path path, RpslObject object) throws IOException {
     if (Files.notExists(path)) {
       Files.createDirectories(path);
     }
-    var fileName = nicObject.type() + "-" + nicObject.id() + ".txt";
+    var fileName = object.type() + "-" + object.id() + ".txt";
     var fileOutputStream = new FileOutputStream(path + "/" + fileName);
     try (var outStream = new DataOutputStream(new BufferedOutputStream(fileOutputStream))) {
-      outStream.writeUTF(nicObject.toString());
+      outStream.writeUTF(object.toString());
     }
   }
 }

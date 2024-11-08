@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.iploc;
+package org.apache.baremaps.rpsl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
-class NicParserTest {
+import com.google.common.base.Charsets;
+import java.io.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-  @Test
-  void parseObjects() throws IOException {
-    List<NicObject> nicObjects = NicData.sample("baremaps-testing/data/ripe/sample.txt");
-    assertEquals(10, nicObjects.size());
+/** A parser for RPSL data. */
+public class RpslReader {
+
+  public RpslReader() {
+    // Default constructor
   }
 
-  @Test
-  void parseAttributes() throws IOException {
-    List<NicAttribute> nicAttributes =
-        NicData.sample("baremaps-testing/data/ripe/sample.txt").stream()
-            .map(NicObject::attributes).flatMap(List::stream).toList();
-    assertEquals(58, nicAttributes.size());
+  /**
+   * Creates an ordered stream of RPSL objects.
+   *
+   * @param inputStream a {@link InputStream} containing RPSL objects
+   * @return a {@link Stream} of RPSL Objects
+   */
+  public Stream<RpslObject> read(InputStream inputStream) {
+    var reader = new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
+    var spliterator = reader.lines().spliterator();
+    return StreamSupport.stream(new RpslSpliterator(spliterator), false);
   }
 }

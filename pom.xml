@@ -60,6 +60,7 @@ limitations under the License.
     <module>baremaps-openstreetmap</module>
     <module>baremaps-pmtiles</module>
     <module>baremaps-postgres</module>
+    <module>baremaps-rpsl</module>
     <module>baremaps-server</module>
     <module>baremaps-shapefile</module>
     <module>baremaps-store</module>
@@ -319,6 +320,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-postgres</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-rpsl</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

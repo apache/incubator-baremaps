@@ -15,58 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.iploc;
+package org.apache.baremaps.rpsl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** Represents a NIC Object. */
-public class NicObject {
-
-  private final List<NicAttribute> attributes;
+/**
+ * Represents a RPSL Object.
+ */
+public record RpslObject(List<RpslAttribute> attributes) {
 
   /**
-   * Constructs a NIC Object.
+   * Constructs a RPSL Object.
    *
-   * @param attributes a list of NIC attributes
+   * @param attributes a list of RPSL attributes
    */
-  public NicObject(List<NicAttribute> attributes) {
+  public RpslObject {
     checkNotNull(attributes);
     checkArgument(!attributes.isEmpty());
-    this.attributes = attributes;
   }
 
   /**
-   * Returns the type of the NIC object.
+   * Returns the type of the RPSL object.
    *
-   * @return the type of the NIC object
+   * @return the type of the RPSL object
    */
   public String type() {
     return attributes.get(0).name();
   }
 
   /**
-   * Returns the id of the NIC object.
+   * Returns the id of the RPSL object.
    *
-   * @return the id of the NIC object
+   * @return the id of the RPSL object
    */
   public String id() {
     return attributes.get(0).value();
-  }
-
-  /**
-   * Returns the attributes of the NIC object.
-   *
-   * @return the attributes of the NIC object
-   */
-  public List<NicAttribute> attributes() {
-    return Collections.unmodifiableList(attributes);
   }
 
   /**
@@ -78,7 +67,7 @@ public class NicObject {
   public Optional<String> first(String name) {
     return attributes.stream()
         .filter(attribute -> attribute.name().equals(name))
-        .map(NicAttribute::value)
+        .map(RpslAttribute::value)
         .findFirst();
   }
 
@@ -91,18 +80,18 @@ public class NicObject {
   public List<String> all(String name) {
     return attributes.stream()
         .filter(attribute -> attribute.name().equals(name))
-        .map(NicAttribute::value)
+        .map(RpslAttribute::value)
         .toList();
   }
 
   /**
-   * Return the attributes as a map
+   * Return the attributes as a map.
    *
-   * @return
+   * @return the attributes as a map
    */
-  public Map<String, String> toMap() {
+  public Map<String, String> asMap() {
     var map = new HashMap<String, String>();
-    for (NicAttribute attribute : attributes()) {
+    for (RpslAttribute attribute : attributes()) {
       map.put(attribute.name(),
           (map.containsKey(attribute.name()) ? map.get(attribute.name()) + ", " : "")
               + attribute.value());
@@ -110,11 +99,13 @@ public class NicObject {
     return map;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String toString() {
     var stringBuilder = new StringBuilder();
-    for (NicAttribute attribute : attributes()) {
+    for (RpslAttribute attribute : attributes()) {
       stringBuilder.append(attribute.name()).append(": ").append(attribute.value()).append("\n");
     }
     return stringBuilder.toString();

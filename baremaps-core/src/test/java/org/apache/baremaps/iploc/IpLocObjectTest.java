@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.ripe.ipresource.IpResourceRange;
+import org.apache.baremaps.rpsl.RpslObject;
+import org.apache.baremaps.rpsl.RpslReader;
 import org.apache.baremaps.tasks.CreateGeonamesIndex;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.FileUtils;
@@ -49,7 +51,7 @@ import org.sqlite.SQLiteDataSource;
  */
 class IpLocObjectTest {
 
-  private static List<NicObject> nicObjects;
+  private static List<RpslObject> nicObjects;
   private static IpLocMapper ipLocMapper;
   private static List<IpLocObject> ipLocObjects;
   private static IpLocRepository iplocRepository;
@@ -59,7 +61,10 @@ class IpLocObjectTest {
   @BeforeAll
   public static void beforeAll() throws Exception {
     // Load the NIC sample objects
-    nicObjects = NicData.sample("baremaps-testing/data/ripe/sample.txt");
+    var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
+    try (var input = Files.newInputStream(file)) {
+      nicObjects = new RpslReader().read(input).toList();
+    }
 
     // Init the geocoder service
     directory = Files.createTempDirectory(Paths.get("."), "geocoder_");

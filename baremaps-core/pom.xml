@@ -47,10 +47,6 @@ limitations under the License.
       <artifactId>fastutil</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.ripe.ipresource</groupId>
-      <artifactId>ipresource</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-csv</artifactId>
     </dependency>
@@ -89,6 +85,10 @@ limitations under the License.
     <dependency>
       <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-postgres</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-rpsl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.baremaps</groupId>

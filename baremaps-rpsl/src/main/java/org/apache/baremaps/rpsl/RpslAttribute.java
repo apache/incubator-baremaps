@@ -15,46 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.iploc;
+package org.apache.baremaps.rpsl;
 
-/** Represents a NIC attribute. */
-public class NicAttribute {
+/**
+ * Represents a RPSL attribute.
+ */
+public record RpslAttribute(String name, String value) {
 
-  private final String name;
-  private final String value;
-
-  /**
-   * Constructs a NIC attribute.
-   *
-   * @param name an attribute name
-   * @param value an attribute value
-   */
-  public NicAttribute(String name, String value) {
-    this.name = name;
-    this.value = value;
-  }
-
-  /**
-   * Returns the attribute name.
-   *
-   * @return the attribute name
-   */
-  public String name() {
-    return name;
-  }
-
-  /**
-   * Returns the attribute value.
-   *
-   * @return the attribute value
-   */
-  public String value() {
-    return value;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return name + ": " + value;
-  }
 }

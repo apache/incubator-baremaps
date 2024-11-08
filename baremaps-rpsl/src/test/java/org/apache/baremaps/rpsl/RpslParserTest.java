@@ -15,23 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.iploc;
+package org.apache.baremaps.rpsl;
 
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
 import org.apache.baremaps.testing.TestFiles;
+import org.junit.jupiter.api.Test;
 
-public class NicData {
+class RpslParserTest {
 
-  private static final String SAMPLE = "sample.txt";
+  @Test
+  void parseObjects() throws IOException {
+    var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
+    try (var input = Files.newInputStream(file)) {
+      List<RpslObject> objects = new RpslReader().read(input).toList();
+      assertEquals(10, objects.size());
+    }
+  }
 
-  public static List<NicObject> sample(String resource) throws IOException {
-    try (InputStream input = Files.newInputStream(TestFiles.resolve(resource))) {
-      return new NicReader().read(input).toList();
+  @Test
+  void parseAttributes() throws IOException {
+    var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
+    try (var input = Files.newInputStream(file)) {
+      List<RpslObject> objects = new RpslReader().read(input).toList();
+      List<RpslAttribute> attributes = objects.stream()
+          .map(RpslObject::attributes).flatMap(List::stream).toList();
+      assertEquals(58, attributes.size());
     }
   }
 }

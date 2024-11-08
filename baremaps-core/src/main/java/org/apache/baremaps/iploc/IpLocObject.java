@@ -28,9 +28,7 @@ public record IpLocObject(
     Coordinate coordinate,
     String network,
     String country,
-
     String source,
-
     IpLocPrecision precision) {
 
 }

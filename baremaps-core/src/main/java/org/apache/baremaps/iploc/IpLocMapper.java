@@ -28,6 +28,8 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import net.ripe.ipresource.IpResourceRange;
 import org.apache.baremaps.geocoder.geonames.GeonamesQueryBuilder;
+import org.apache.baremaps.rpsl.RpslObject;
+import org.apache.baremaps.rpsl.RpslUtils;
 import org.apache.baremaps.utils.IsoCountriesUtils;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;
@@ -36,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
-public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
+public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> {
 
   private static final Logger logger = LoggerFactory.getLogger(IpLocMapper.class);
 
@@ -64,13 +66,13 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
    */
   @Override
   @SuppressWarnings({"squid:S3776", "squid:S1192"})
-  public Optional<IpLocObject> apply(NicObject nicObject) {
+  public Optional<IpLocObject> apply(RpslObject nicObject) {
     try {
       if (nicObject.attributes().isEmpty()) {
         return Optional.empty();
       }
 
-      if (!NicUtils.isInetnum(nicObject)) {
+      if (!RpslUtils.isInetnum(nicObject)) {
         return Optional.empty();
       }
 
@@ -80,7 +82,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
       var end = InetAddresses.forString(ipRange.getEnd().toString());
       var inetRange = new InetRange(start, end);
 
-      var attributes = nicObject.toMap();
+      var attributes = nicObject.asMap();
 
       // Use a default name if there is no netname
       var network = attributes.getOrDefault("netname", "unknown");
