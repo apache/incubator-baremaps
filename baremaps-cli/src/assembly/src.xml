@@ -32,6 +32,7 @@ limitations under the License.
                 <include>**/src/**/*</include>
                 <include>baremaps-testing/data/**</include>
                 <include>codestyle.xml</include>
+                <include>DISCLAIMER</include>
                 <include>LICENSE.header</include>
                 <include>NOTICE</include>
             </includes>
