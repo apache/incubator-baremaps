@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.baremaps.openstreetmap.OpenStreetMap.Reader;
+import org.apache.baremaps.openstreetmap.OpenStreetMapFormat.Reader;
 import org.apache.baremaps.openstreetmap.model.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,19 +88,23 @@ public class StateReader implements Reader<State> {
    * @return the state
    */
   @Override
-  public State read(InputStream input) throws IOException {
-    InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
-    Map<String, String> map = new HashMap<>();
-    for (String line : CharStreams.readLines(reader)) {
-      String[] array = line.split("=");
-      if (array.length == 2) {
-        map.put(array[0], array[1]);
+  public State read(InputStream input) {
+    try {
+      InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
+      Map<String, String> map = new HashMap<>();
+      for (String line : CharStreams.readLines(reader)) {
+        String[] array = line.split("=");
+        if (array.length == 2) {
+          map.put(array[0], array[1]);
+        }
       }
+      long sequenceNumber = Long.parseLong(map.get("sequenceNumber"));
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
+      return new State(sequenceNumber, timestamp);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    long sequenceNumber = Long.parseLong(map.get("sequenceNumber"));
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
-    return new State(sequenceNumber, timestamp);
   }
 
   /**

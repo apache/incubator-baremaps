@@ -21,9 +21,12 @@ package org.apache.baremaps.data.type;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.baremaps.data.storage.*;
-import org.apache.baremaps.data.storage.DataColumn.Cardinality;
-import org.apache.baremaps.data.storage.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumnFixed;
+import org.apache.baremaps.store.DataRow;
+import org.apache.baremaps.store.DataSchema;
+import org.apache.baremaps.store.DataSchemaImpl;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
 

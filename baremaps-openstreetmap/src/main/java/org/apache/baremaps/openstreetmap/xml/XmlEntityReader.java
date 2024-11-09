@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.openstreetmap.OpenStreetMap.EntityReader;
+import org.apache.baremaps.openstreetmap.OpenStreetMapFormat.EntityReader;
 import org.apache.baremaps.openstreetmap.function.CoordinateMapBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
@@ -35,7 +35,7 @@ import org.apache.baremaps.openstreetmap.model.Entity;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for parsing an OpenStreetMap XML file. */
-public class XmlEntityReader implements EntityReader<Stream<Entity>> {
+public class XmlEntityReader implements EntityReader<Entity> {
 
   private boolean geometry = false;
 

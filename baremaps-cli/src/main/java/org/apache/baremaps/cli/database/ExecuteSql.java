@@ -50,7 +50,7 @@ public class ExecuteSql implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new org.apache.baremaps.workflow.tasks.ExecuteSql(database, file.toAbsolutePath(),
+    new org.apache.baremaps.tasks.ExecuteSql(database, file.toAbsolutePath(),
         parallel).execute(new WorkflowContext());
     return 0;
   }

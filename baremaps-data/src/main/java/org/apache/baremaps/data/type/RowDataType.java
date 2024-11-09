@@ -20,11 +20,11 @@ package org.apache.baremaps.data.type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import org.apache.baremaps.data.storage.DataColumn;
-import org.apache.baremaps.data.storage.DataColumn.Type;
-import org.apache.baremaps.data.storage.DataRow;
-import org.apache.baremaps.data.storage.DataRowImpl;
-import org.apache.baremaps.data.storage.DataSchema;
+import org.apache.baremaps.store.DataColumn;
+import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataRow;
+import org.apache.baremaps.store.DataRowImpl;
+import org.apache.baremaps.store.DataSchema;
 
 /**
  * A data type for rows.

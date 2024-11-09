@@ -19,7 +19,7 @@ package org.apache.baremaps.openstreetmap.pbf;
 
 
 
-import org.apache.baremaps.openstreetmap.OpenStreetMap.EntityReader;
+import org.apache.baremaps.openstreetmap.OpenStreetMapFormat.EntityReader;
 
 public interface PbfReader<T> extends EntityReader<T> {
 

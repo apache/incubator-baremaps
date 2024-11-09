@@ -28,6 +28,8 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import net.ripe.ipresource.IpResourceRange;
 import org.apache.baremaps.geocoder.geonames.GeonamesQueryBuilder;
+import org.apache.baremaps.rpsl.RpslObject;
+import org.apache.baremaps.rpsl.RpslUtils;
 import org.apache.baremaps.utils.IsoCountriesUtils;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherManager;
@@ -36,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
-public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
+public class IpLocMapper implements Function<RpslObject, Optional<IpLocObject>> {
 
   private static final Logger logger = LoggerFactory.getLogger(IpLocMapper.class);
 
@@ -58,44 +60,53 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
    * Returns an {@code Optional} containing the {@code IpLocObject} associated with the specified
    * {@code NicObject} if it is an inetnum object, or an empty {@code Optional} otherwise.
    *
-   * @param nicObject the {@code NicObject}
+   * @param rpslObject the {@code NicObject}
    * @return an {@code Optional} containing the {@code IpLocObject} corresponding to the
    *         {@code NicObject}
    */
   @Override
   @SuppressWarnings({"squid:S3776", "squid:S1192"})
-  public Optional<IpLocObject> apply(NicObject nicObject) {
+  public Optional<IpLocObject> apply(RpslObject rpslObject) {
     try {
-      if (nicObject.attributes().isEmpty()) {
+      if (rpslObject.attributes().isEmpty()) {
         return Optional.empty();
       }
 
-      if (!NicUtils.isInetnum(nicObject)) {
+      if (!RpslUtils.isInetnum(rpslObject)) {
         return Optional.empty();
       }
 
-      var inetnum = nicObject.attributes().get(0);
+      var inetnum = rpslObject.attributes().get(0);
       var ipRange = IpResourceRange.parse(inetnum.value());
       var start = InetAddresses.forString(ipRange.getStart().toString());
       var end = InetAddresses.forString(ipRange.getEnd().toString());
       var inetRange = new InetRange(start, end);
 
-      var attributes = nicObject.toMap();
+      var attributes = rpslObject.asMap();
 
       // Use a default name if there is no netname
-      var network = attributes.getOrDefault("netname", "unknown");
+      var network = String.join(", ", attributes.getOrDefault("netname", List.of("unknown")));
+      var geoloc = attributes.containsKey("geoloc")
+          ? String.join(", ", attributes.getOrDefault("geoloc", List.of()))
+          : null;
+      var country = attributes.containsKey("country")
+          ? String.join(", ", attributes.getOrDefault("country", List.of()))
+          : null;
+      var source = attributes.containsKey("source")
+          ? String.join(", ", attributes.getOrDefault("source", List.of()))
+          : null;
 
       // If there is a geoloc field, we use the latitude and longitude provided
       if (attributes.containsKey("geoloc")) {
-        var location = stringToCoordinate(attributes.get("geoloc"));
+        var location = stringToCoordinate(geoloc);
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
-              attributes.get("geoloc"),
+              geoloc,
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              attributes.get("source"),
+              country,
+              source,
               IpLocPrecision.GEOLOC));
         }
       }
@@ -110,36 +121,39 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         // build a query text string out of the cherry-picked fields
         var queryTextBuilder = new StringBuilder();
         for (String field : searchedFields) {
-          if (!Strings.isNullOrEmpty(attributes.get(field))) {
+          var value = attributes.containsKey(field)
+              ? String.join(", ", attributes.getOrDefault(field, List.of()))
+              : null;
+          if (!Strings.isNullOrEmpty(value)) {
             queryTextBuilder.append(attributes.get(field)).append(" ");
           }
         }
 
         String queryText = queryTextBuilder.toString();
-        var location = findLocationInCountry(queryText, attributes.get("country"));
+        var location = findLocationInCountry(queryText, country);
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               queryText,
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              attributes.get("source"),
+              country,
+              source,
               IpLocPrecision.GEOCODER));
         }
       }
 
       // If there is a country get the location of country
       if (attributes.containsKey("country")) {
-        var location = findCountryLocation(attributes.get("country"));
+        var location = findCountryLocation(country);
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
-              attributes.get("country"),
+              country,
               inetRange,
               location.get(),
               network,
-              attributes.get("country"),
-              attributes.get("source"),
+              country,
+              source,
               IpLocPrecision.COUNTRY));
         }
       }
@@ -150,12 +164,12 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
           new Coordinate(),
           network,
           null,
-          attributes.get("source"),
+          source,
           IpLocPrecision.WORLD));
     } catch (Exception e) {
-      logger.warn("Error while mapping nic object to ip loc object", e);
-      logger.warn("Nic object attributes:");
-      nicObject.attributes().forEach(attribute -> {
+      logger.warn("Error while mapping RPSL object to IP loc object", e);
+      logger.warn("RPSL object attributes:");
+      rpslObject.attributes().forEach(attribute -> {
         var name = attribute.name();
         var value = attribute.value();
         if (value.length() > 100) {

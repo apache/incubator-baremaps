@@ -22,7 +22,7 @@ package org.apache.baremaps.openstreetmap.xml;
 import java.io.InputStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.openstreetmap.OpenStreetMap.Reader;
+import org.apache.baremaps.openstreetmap.OpenStreetMapFormat.Reader;
 import org.apache.baremaps.openstreetmap.model.Change;
 
 /** A utility class for parsing an OpenStreetMap change file. */

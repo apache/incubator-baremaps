@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
-import org.apache.baremaps.workflow.tasks.DownloadUrl;
-import org.apache.baremaps.workflow.tasks.ImportOsmPbf;
+import org.apache.baremaps.tasks.DownloadUrl;
+import org.apache.baremaps.tasks.ImportOsmPbf;
 import org.junit.Test;
 
 public class ObjectMapperTest {
