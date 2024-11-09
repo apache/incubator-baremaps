@@ -43,11 +43,7 @@ public class HillShadeRenderer extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     // Load the image
-    originalImage = ImageIO.read(
-        Path.of("")
-            .toAbsolutePath()
-            .resolveSibling("baremaps/baremaps-dem/src/test/resources/fuji.png")
-            .toAbsolutePath().toFile());
+    originalImage = ImageIO.read(Path.of("dem.png").toFile());
     grid = ElevationUtils.imageToGrid(originalImage, ElevationUtils::rgbToElevation);
 
     // Create UI components

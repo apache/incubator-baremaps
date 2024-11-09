@@ -29,6 +29,12 @@ import org.apache.baremaps.data.type.PairDataType.Pair;
  * A {@link DataMap} that can hold a large number of variable-size data elements. The elements must
  * be sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
  * once inserted.
+ *
+ * <p>
+ * This code has been adapted from Planetiler (Apache license).
+ *
+ * <p>
+ * Copyright (c) Planetiler.
  */
 public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
 
