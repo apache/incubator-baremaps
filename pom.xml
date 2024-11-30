@@ -625,6 +625,20 @@ limitations under the License.
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <targetPath>META-INF</targetPath>
+        <filtering>true</filtering>
+        <directory>${user.dir}</directory>
+        <includes>
+          <include>LICENSE</include>
+          <include>NOTICE</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
@@ -699,16 +713,11 @@ limitations under the License.
           <archive>
             <manifestEntries>
               <Build-Date>${project.build.outputTimestamp}</Build-Date>
+              <Build-Version>${project.version}</Build-Version>
+              <Build-Jdk>${java.version}</Build-Jdk>
             </manifestEntries>
           </archive>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
