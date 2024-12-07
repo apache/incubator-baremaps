@@ -21,9 +21,10 @@ import static org.apache.baremaps.testing.GeometryAssertions.assertGeometryEqual
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Polygon;
@@ -45,20 +46,16 @@ class ContourTracerTest {
   }
 
   @Test
-  @DisplayName("Test Mount Fuji")
+  @DisplayName("Test with file")
+  @Disabled("This test must be reworked as it relied on an unlicensed file")
   void testMountFuji() throws IOException {
-    var fujiImage = ImageIO.read(
-        Path.of("")
-            .toAbsolutePath()
-            .resolveSibling("baremaps-dem/src/test/resources/fuji.png")
-            .toAbsolutePath().toFile());
-
-    var fujiGrid = ElevationUtils.imageToGrid(fujiImage, ElevationUtils::rgbToElevation);
-    var fujiContours =
-        new ContourTracer(fujiGrid, fujiImage.getWidth(), fujiImage.getHeight(), false, true)
+    var file = new File("dem.png");
+    var image = ImageIO.read(file);
+    var grid = ElevationUtils.imageToGrid(image, ElevationUtils::rgbToElevation);
+    var contours =
+        new ContourTracer(grid, image.getWidth(), image.getHeight(), false, true)
             .traceContours(500);
-
-    assertFalse(fujiContours.isEmpty());
+    assertFalse(contours.isEmpty());
   }
 
   @Test

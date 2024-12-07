@@ -22,17 +22,16 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class MartiniTest {
 
   @Test
+  @Disabled("This test must be reworked as it relied on an unlicensed file")
   void generateAMesh() throws IOException {
-    var png = ImageIO.read(
-        Path.of("")
-            .toAbsolutePath()
-            .resolveSibling("baremaps-dem/src/test/resources/fuji.png")
-            .toAbsolutePath().toFile());
+    var file = Path.of("dem.png").toFile();
+    var png = ImageIO.read(file);
     var terrainGrid = Martini.createGrid(png);
     var martini = new Martini(png.getWidth() + 1);
     var tile = martini.createTile(terrainGrid);

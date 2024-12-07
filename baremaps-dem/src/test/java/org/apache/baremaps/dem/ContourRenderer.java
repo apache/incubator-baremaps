@@ -35,11 +35,9 @@ public class ContourRenderer {
 
   public static void main(String[] args) throws IOException {
     // Load the image
-    var path = Path.of("")
-        .toAbsolutePath()
-        .resolveSibling("baremaps/baremaps-dem/src/test/resources/fuji.png")
-        .toAbsolutePath().toFile();
-    var image = ImageIO.read(path);
+
+    var file = Path.of("dem.png").toFile();
+    var image = ImageIO.read(file);
 
     // Convert the image to a grid
     double[] grid = ElevationUtils.imageToGrid(image, ElevationUtils::terrariumToElevation);
