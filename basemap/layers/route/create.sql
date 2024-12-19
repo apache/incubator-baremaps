@@ -13,4 +13,17 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-DROP VIEW IF EXISTS point CASCADE;
+CREATE MATERIALIZED VIEW osm_route AS
+SELECT id, tags, geom
+FROM (
+   SELECT
+       min(id) as id,
+       jsonb_build_object('route', tags -> 'route') as tags,
+       (st_dump(st_linemerge(st_collect(geom)))).geom as geom
+   FROM osm_ways
+   WHERE tags ->> 'route' IN ('light_rail', 'monorail', 'rail', 'subway', 'tram')
+   AND NOT tags ? 'service'
+   GROUP BY tags -> 'route'
+) AS mergedDirective;
+
+CREATE INDEX IF NOT EXISTS osm_route_geom_index ON osm_route USING SPGIST (geom);
