@@ -46,7 +46,7 @@ export default {
                                 ELSE 6
                             END) as tags,
                     geom
-                FROM osm_ways
+                FROM osm_way
                 WHERE (tags ? 'building' OR tags ? 'building:part') AND ((NOT tags ? 'layer') OR convert_to_number(tags ->> 'layer', 0) >= 0)`,
         },
         {
@@ -77,7 +77,7 @@ export default {
                                 ELSE 6
                             END) as tags,
                     geom
-                FROM osm_relations
+                FROM osm_relation
                 WHERE (tags ? 'building' OR tags ? 'building:part') AND ((NOT tags ? 'layer') OR convert_to_number(tags ->> 'layer', 0) >= 0)`,
         },
     ],

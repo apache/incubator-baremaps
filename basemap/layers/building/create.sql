@@ -1,4 +1,4 @@
-CREATE VIEW building AS
+CREATE VIEW osm_building AS
 SELECT
     id,
     tags

@@ -1,2 +1,2 @@
-CREATE VIEW aeroway AS
-SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aeroway'
+CREATE VIEW osm_aeroway AS
+SELECT id, tags, geom FROM osm_way WHERE tags ? 'aeroway'

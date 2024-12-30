@@ -33,6 +33,7 @@ SELECT
     st_clusterdbscan(geom, 0, 0) OVER(PARTITION BY natural_value) AS cluster
 FROM osm_natural_filtered
 WHERE geom IS NOT NULL;
+
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_geom_idx ON osm_natural_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_tags_idx ON osm_natural_clustered (natural_value);
 
@@ -61,5 +62,6 @@ SELECT
             jsonb_build_object('natural', natural_value) AS tags,
             geom
 FROM osm_natural_exploded;
+
 CREATE INDEX IF NOT EXISTS osm_natural_geom_idx ON osm_natural_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_tags_idx ON osm_natural_filtered USING GIN (natural_value);

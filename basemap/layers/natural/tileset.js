@@ -30,12 +30,12 @@ export default {
         {
             "minzoom": 13,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'natural' AND tags ->> 'natural' NOT IN ('coastline')"
+            "sql": "SELECT id, tags, geom FROM osm_way WHERE tags ? 'natural' AND tags ->> 'natural' NOT IN ('coastline')"
         },
         {
             "minzoom": 13,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'natural' AND tags ->> 'natural' NOT IN ('coastline')"
+            "sql": "SELECT id, tags, geom FROM osm_relation WHERE tags ? 'natural' AND tags ->> 'natural' NOT IN ('coastline')"
         }
     ]
 }

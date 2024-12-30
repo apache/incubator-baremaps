@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS osm_nodes
+CREATE TABLE IF NOT EXISTS osm_node
 (
     id        int8 PRIMARY KEY,
     version   int,

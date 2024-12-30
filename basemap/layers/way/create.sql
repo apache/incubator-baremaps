@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS osm_ways
+CREATE TABLE IF NOT EXISTS osm_way
 (
     id        int8 PRIMARY KEY,
     version   int,

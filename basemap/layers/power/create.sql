@@ -1,2 +1,2 @@
-CREATE VIEW power AS
-SELECT id, tags, geom FROM osm_ways WHERE tags ->> 'power' IN ('cable', 'line', 'minor_line', 'plant', 'substation');
+CREATE VIEW osm_power AS
+SELECT id, tags, geom FROM osm_way WHERE tags ->> 'power' IN ('cable', 'line', 'minor_line', 'plant', 'substation');

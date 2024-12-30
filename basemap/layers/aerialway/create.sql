@@ -1,2 +1,2 @@
-CREATE VIEW aerialway AS
-SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aerialway';
+CREATE VIEW osm_aerialway AS
+SELECT id, tags, geom FROM osm_way WHERE tags ? 'aerialway';

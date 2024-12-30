@@ -1,6 +1,6 @@
-CREATE VIEW point AS
+CREATE VIEW osm_point AS
 SELECT id, tags, geom
-FROM osm_nodes
+FROM osm_node
 WHERE tags != '{}';
 
 CREATE VIEW osm_point_z20 AS SELECT * FROM point;

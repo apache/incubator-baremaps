@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS osm_relations
+CREATE TABLE IF NOT EXISTS osm_relation
 (
     id           int8 PRIMARY KEY,
     version      int,

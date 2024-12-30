@@ -22,7 +22,7 @@ FROM (
        min(id) as id,
        jsonb_build_object('route', tags -> 'route') as tags,
        (st_dump(st_linemerge(st_collect(geom)))).geom as geom
-   FROM osm_ways
+   FROM osm_way
    WHERE tags ->> 'route' IN ('light_rail', 'monorail', 'rail', 'subway', 'tram')
    AND NOT tags ? 'service'
    GROUP BY tags -> 'route'

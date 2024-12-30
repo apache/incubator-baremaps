@@ -1,2 +1,2 @@
-CREATE VIEW boundary AS
-SELECT id, tags, geom FROM osm_ways WHERE tags ? 'boundary';
+CREATE VIEW osm_boundary AS
+SELECT id, tags, geom FROM osm_way WHERE tags ? 'boundary';
