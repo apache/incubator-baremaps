@@ -13,6 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DROP MATERIALIZED VIEW IF EXISTS osm_route CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_route AS
 SELECT id, tags, geom
 FROM (
@@ -24,6 +25,7 @@ FROM (
    WHERE tags ->> 'route' IN ('light_rail', 'monorail', 'rail', 'subway', 'tram')
    AND NOT tags ? 'service'
    GROUP BY tags -> 'route'
-) AS mergedDirective;
+) AS mergedDirective
+WITH NO DATA;
 
 CREATE INDEX IF NOT EXISTS osm_route_geom_index ON osm_route USING SPGIST (geom);

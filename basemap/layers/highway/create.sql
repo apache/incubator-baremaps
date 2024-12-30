@@ -12,6 +12,8 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+
+DROP MATERIALIZED VIEW IF EXISTS osm_highway CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_highway AS
 WITH
     -- Filter the linestrings
@@ -57,4 +59,5 @@ SELECT
             row_number() OVER () AS id,
             jsonb_build_object('highway', highway, 'construction', construction) AS tags,
             geom AS geom
-FROM exploded;
+FROM exploded
+WITH NO DATA;

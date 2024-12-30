@@ -13,8 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
--- ('grassland', 'heath', 'scrub', 'wood', 'bay', 'beach', 'glacier', 'mud', 'shingle', 'shoal', 'strait', 'water', 'wetland', 'bare_rock', 'sand', 'scree');
-
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_filtered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_filtered AS
 SELECT
     tags -> 'natural' AS natural_value,
@@ -28,6 +27,7 @@ WITH NO DATA;
 CREATE INDEX IF NOT EXISTS osm_natural_filtered_geom_idx ON osm_natural_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_filtered_tags_idx ON osm_natural_filtered (natural_value);
 
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_clustered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_clustered AS
 SELECT
     natural_value,
@@ -40,6 +40,7 @@ WITH NO DATA;
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_geom_idx ON osm_natural_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_tags_idx ON osm_natural_clustered (natural_value);
 
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_grouped CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS  osm_natural_grouped AS
 SELECT
     natural_value,
@@ -48,6 +49,7 @@ FROM osm_natural_clustered
 GROUP BY natural_value, cluster
 WITH NO DATA;
 
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_buffered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS  osm_natural_buffered AS
 SELECT
     natural_value,
@@ -55,6 +57,7 @@ SELECT
 FROM osm_natural_grouped
 WITH NO DATA;
 
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_exploded CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS  osm_natural_exploded AS
 SELECT
     natural_value,
@@ -62,6 +65,7 @@ SELECT
 FROM osm_natural_buffered
 WITH NO DATA;
 
+DROP MATERIALIZED VIEW IF EXISTS osm_natural CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural AS
 SELECT
             row_number() OVER () AS id,
@@ -70,5 +74,5 @@ SELECT
 FROM osm_natural_exploded
 WITH NO DATA;
 
-CREATE INDEX IF NOT EXISTS osm_natural_geom_idx ON osm_natural_filtered USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_tags_idx ON osm_natural_filtered USING GIN (natural_value);
+CREATE INDEX IF NOT EXISTS osm_natural_geom_idx ON osm_natural USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_tags_idx ON osm_natural USING GIN (tags);

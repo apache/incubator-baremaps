@@ -13,6 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway AS
 WITH
     -- Filter the linestrings
@@ -55,4 +56,5 @@ SELECT
             row_number() OVER () AS id,
             jsonb_build_object('waterway', waterway) AS tags,
             geom AS geom
-FROM exploded;
+FROM exploded
+WITH NO DATA;

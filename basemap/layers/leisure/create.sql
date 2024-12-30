@@ -13,6 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DROP MATERIALIZED VIEW IF EXISTS osm_leisure_filtered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_filtered AS
 SELECT
     tags -> 'leisure' AS leisure,
@@ -26,6 +27,7 @@ WITH NO DATA;
 CREATE INDEX IF NOT EXISTS osm_leisure_filtered_geom_idx ON osm_leisure_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_leisure_filtered_tags_idx ON osm_leisure_filtered (leisure);
 
+DROP MATERIALIZED VIEW IF EXISTS osm_leisure_clustered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_clustered AS
 SELECT
     leisure,
@@ -38,6 +40,7 @@ WITH NO DATA;
 CREATE INDEX IF NOT EXISTS osm_leisure_clustered_geom_idx ON osm_leisure_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_leisure_clustered_tags_idx ON osm_leisure_clustered (leisure);
 
+DROP MATERIALIZED VIEW IF EXISTS osm_leisure_grouped CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_grouped AS
 SELECT
     leisure,
@@ -46,6 +49,7 @@ FROM osm_leisure_clustered
 GROUP BY leisure, cluster
 WITH NO DATA;
 
+DROP MATERIALIZED VIEW IF EXISTS osm_leisure_buffered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_buffered AS
 SELECT
     leisure,
@@ -53,6 +57,7 @@ SELECT
 FROM osm_leisure_grouped
 WITH NO DATA;
 
+DROP MATERIALIZED VIEW IF EXISTS osm_leisure_exploded CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_exploded AS
 SELECT
     leisure,
@@ -60,6 +65,7 @@ SELECT
 FROM osm_leisure_buffered
 WITH NO DATA;
 
+DROP MATERIALIZED VIEW IF EXISTS osm_leisure CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure AS
 SELECT
             row_number() OVER () AS id,
@@ -67,3 +73,6 @@ SELECT
             geom
 FROM osm_leisure_exploded
 WITH NO DATA;
+
+CREATE INDEX IF NOT EXISTS osm_leisure_geom_idx ON osm_leisure USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_leisure_tags_idx ON osm_leisure USING GIN (tags);
