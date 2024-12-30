@@ -1,4 +1,4 @@
-CREATE MATERIALIZED VIEW osm_railway AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_railway AS
 SELECT id, tags, geom
 FROM (SELECT min(id)                                                                        as id,
              jsonb_build_object('railway', tags -> 'railway', 'service', tags -> 'service') as tags,

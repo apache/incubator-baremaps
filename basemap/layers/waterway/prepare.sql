@@ -15,7 +15,7 @@
 
 DROP MATERIALIZED VIEW IF EXISTS osm_waterway CASCADE;
 
-CREATE MATERIALIZED VIEW osm_waterway AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway AS
 WITH
     -- Filter the linestrings
     filtered AS (

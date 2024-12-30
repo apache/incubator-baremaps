@@ -13,7 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-CREATE MATERIALIZED VIEW osm_railway AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_railway AS
 SELECT id, tags, geom
 FROM (
    SELECT

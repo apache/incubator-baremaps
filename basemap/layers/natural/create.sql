@@ -15,53 +15,60 @@
 
 -- ('grassland', 'heath', 'scrub', 'wood', 'bay', 'beach', 'glacier', 'mud', 'shingle', 'shoal', 'strait', 'water', 'wetland', 'bare_rock', 'sand', 'scree');
 
-CREATE MATERIALIZED VIEW osm_natural_filtered AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_filtered AS
 SELECT
     tags -> 'natural' AS natural_value,
     st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom
 FROM osm_polygon
 WHERE geom IS NOT NULL
   AND st_area(geom) > 78270 / power(2, 12) * 100
-  AND tags ->> 'natural' IN ('grassland', 'heath', 'scrub', 'wood', 'bay', 'beach', 'glacier', 'mud', 'shingle', 'shoal', 'strait', 'water', 'wetland', 'bare_rock', 'sand', 'scree');
+  AND tags ->> 'natural' IN ('grassland', 'heath', 'scrub', 'wood', 'bay', 'beach', 'glacier', 'mud', 'shingle', 'shoal', 'strait', 'water', 'wetland', 'bare_rock', 'sand', 'scree')
+WITH NO DATA;
+
 CREATE INDEX IF NOT EXISTS osm_natural_filtered_geom_idx ON osm_natural_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_filtered_tags_idx ON osm_natural_filtered (natural_value);
 
-CREATE MATERIALIZED VIEW osm_natural_clustered AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_clustered AS
 SELECT
     natural_value,
     geom,
     st_clusterdbscan(geom, 0, 0) OVER(PARTITION BY natural_value) AS cluster
 FROM osm_natural_filtered
-WHERE geom IS NOT NULL;
+WHERE geom IS NOT NULL
+WITH NO DATA;
 
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_geom_idx ON osm_natural_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_tags_idx ON osm_natural_clustered (natural_value);
 
-CREATE MATERIALIZED VIEW osm_natural_grouped AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS  osm_natural_grouped AS
 SELECT
     natural_value,
     st_collect(geom) AS geom
 FROM osm_natural_clustered
-GROUP BY natural_value, cluster;
+GROUP BY natural_value, cluster
+WITH NO DATA;
 
-CREATE MATERIALIZED VIEW osm_natural_buffered AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS  osm_natural_buffered AS
 SELECT
     natural_value,
     st_buffer(geom, 0, 'join=mitre') AS geom
-FROM osm_natural_grouped;
+FROM osm_natural_grouped
+WITH NO DATA;
 
-CREATE MATERIALIZED VIEW osm_natural_exploded AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS  osm_natural_exploded AS
 SELECT
     natural_value,
     (st_dump(geom)).geom AS geom
-FROM osm_natural_buffered;
+FROM osm_natural_buffered
+WITH NO DATA;
 
-CREATE MATERIALIZED VIEW osm_natural AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural AS
 SELECT
             row_number() OVER () AS id,
             jsonb_build_object('natural', natural_value) AS tags,
             geom
-FROM osm_natural_exploded;
+FROM osm_natural_exploded
+WITH NO DATA;
 
 CREATE INDEX IF NOT EXISTS osm_natural_geom_idx ON osm_natural_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_tags_idx ON osm_natural_filtered USING GIN (natural_value);

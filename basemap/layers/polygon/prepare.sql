@@ -13,7 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-CREATE MATERIALIZED VIEW osm_polygon AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_polygon AS
 SELECT id, tags, geom
 FROM osm_way LEFT JOIN osm_member ON id = member_ref
 WHERE ST_GeometryType( osm_way.geom) = 'ST_Polygon'

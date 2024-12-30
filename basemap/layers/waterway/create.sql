@@ -13,7 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-CREATE MATERIALIZED VIEW osm_waterway AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway AS
 WITH
     -- Filter the linestrings
     filtered AS (

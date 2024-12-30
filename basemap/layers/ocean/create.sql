@@ -12,8 +12,10 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-CREATE MATERIALIZED VIEW osm_ocean AS
-SELECT row_number() OVER () as id, '{"ocean":"water"}'::jsonb as tags, st_setsrid(geometry, 3857) AS geom FROM water_polygons_shp;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_ocean AS
+SELECT row_number() OVER () as id, '{"ocean":"water"}'::jsonb as tags, st_setsrid(geometry, 3857) AS geom FROM water_polygons_shp
+WITH NO DATA;
 
-CREATE MATERIALIZED VIEW osm_ocean_simplified AS
-SELECT row_number() OVER () as id, '{"ocean":"water"}'::jsonb as tags, st_setsrid(geometry, 3857) AS geom FROM simplified_water_polygons_shp;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_ocean_simplified AS
+SELECT row_number() OVER () as id, '{"ocean":"water"}'::jsonb as tags, st_setsrid(geometry, 3857) AS geom FROM simplified_water_polygons_shp
+WITH NO DATA;

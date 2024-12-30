@@ -1,2 +1,2 @@
-CREATE VIEW osm_attraction AS
+CREATE OR REPLACE VIEW osm_attraction AS
 SELECT id, tags, geom FROM osm_way WHERE tags ? 'attraction';
