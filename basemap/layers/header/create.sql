@@ -13,6 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DROP TABLE IF EXISTS osm_headers;
 CREATE TABLE IF NOT EXISTS osm_headers
 (
     replication_sequence_number bigint PRIMARY KEY,

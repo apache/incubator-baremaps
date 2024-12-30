@@ -15,13 +15,14 @@
 
 DROP MATERIALIZED VIEW IF EXISTS osm_leisure_filtered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_filtered AS
-SELECT
-    tags -> 'leisure' AS leisure,
-    st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom
+SELECT tags -> 'leisure'                                       AS leisure,
+       st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom
 FROM osm_polygon
 WHERE geom IS NOT NULL
   AND st_area(geom) > 78270 / power(2, 12) * 100
-  AND tags ->> 'leisure' IN ('garden', 'golf_course', 'marina', 'nature_reserve', 'park', 'pitch', 'sport_center', 'stadium', 'swimming_pool', 'track')
+  AND tags ->> 'leisure' IN
+      ('garden', 'golf_course', 'marina', 'nature_reserve', 'park', 'pitch', 'sport_center', 'stadium', 'swimming_pool',
+       'track')
 WITH NO DATA;
 
 CREATE INDEX IF NOT EXISTS osm_leisure_filtered_geom_idx ON osm_leisure_filtered USING GIST (geom);
@@ -29,10 +30,9 @@ CREATE INDEX IF NOT EXISTS osm_leisure_filtered_tags_idx ON osm_leisure_filtered
 
 DROP MATERIALIZED VIEW IF EXISTS osm_leisure_clustered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_clustered AS
-SELECT
-    leisure,
-    geom,
-    st_clusterdbscan(geom, 0, 0) OVER(PARTITION BY leisure) AS cluster
+SELECT leisure,
+       geom,
+       st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY leisure) AS cluster
 FROM osm_leisure_filtered
 WHERE geom IS NOT NULL
 WITH NO DATA;
@@ -40,38 +40,22 @@ WITH NO DATA;
 CREATE INDEX IF NOT EXISTS osm_leisure_clustered_geom_idx ON osm_leisure_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_leisure_clustered_tags_idx ON osm_leisure_clustered (leisure);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_leisure_grouped CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_grouped AS
-SELECT
-    leisure,
-    st_collect(geom) AS geom
-FROM osm_leisure_clustered
-GROUP BY leisure, cluster
-WITH NO DATA;
-
-DROP MATERIALIZED VIEW IF EXISTS osm_leisure_buffered CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_buffered AS
-SELECT
-    leisure,
-    st_buffer(geom, 0, 'join=mitre') AS geom
-FROM osm_leisure_grouped
-WITH NO DATA;
-
-DROP MATERIALIZED VIEW IF EXISTS osm_leisure_exploded CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure_exploded AS
-SELECT
-    leisure,
-    (st_dump(geom)).geom AS geom
-FROM osm_leisure_buffered
-WITH NO DATA;
-
 DROP MATERIALIZED VIEW IF EXISTS osm_leisure CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_leisure AS
-SELECT
-            row_number() OVER () AS id,
-            jsonb_build_object('leisure', leisure) AS tags,
-            geom
-FROM osm_leisure_exploded
+WITH grouped AS (SELECT leisure,
+                        ST_Collect(geom) AS geom
+                 FROM osm_leisure_clustered
+                 GROUP BY leisure, cluster),
+     buffered AS (SELECT leisure,
+                         ST_Buffer(geom, 0, 'join=mitre') AS geom
+                  FROM grouped),
+     exploded AS (SELECT leisure,
+                         (ST_Dump(geom)).geom AS geom
+                  FROM buffered)
+SELECT ROW_NUMBER() OVER ()                   AS id,
+       JSONB_BUILD_OBJECT('leisure', leisure) AS tags,
+       geom
+FROM exploded
 WITH NO DATA;
 
 CREATE INDEX IF NOT EXISTS osm_leisure_geom_idx ON osm_leisure USING GIST (geom);
