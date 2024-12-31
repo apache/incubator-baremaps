@@ -13,4 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DROP INDEX IF EXISTS osm_polygon_geom_idx;
+DROP INDEX IF EXISTS osm_polygon_tags_idx;
 REFRESH MATERIALIZED VIEW osm_polygon;
+CREATE INDEX osm_polygon_geom_idx ON osm_polygon USING GIST (geom);
+CREATE INDEX osm_polygon_tags_idx ON osm_polygon USING GIN (tags);

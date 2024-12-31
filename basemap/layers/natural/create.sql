@@ -25,9 +25,6 @@ WHERE geom IS NOT NULL
        'wetland', 'bare_rock', 'sand', 'scree')
 WITH NO DATA;
 
-CREATE INDEX IF NOT EXISTS osm_natural_filtered_geom_idx ON osm_natural_filtered USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_filtered_tags_idx ON osm_natural_filtered (natural_value);
-
 DROP MATERIALIZED VIEW IF EXISTS osm_natural_clustered CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_clustered AS
 SELECT natural_value,
@@ -36,9 +33,6 @@ SELECT natural_value,
 FROM osm_natural_filtered
 WHERE geom IS NOT NULL
 WITH NO DATA;
-
-CREATE INDEX IF NOT EXISTS osm_natural_clustered_geom_idx ON osm_natural_clustered USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_clustered_tags_idx ON osm_natural_clustered (natural_value);
 
 DROP MATERIALIZED VIEW IF EXISTS osm_natural CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural AS
@@ -58,5 +52,111 @@ SELECT ROW_NUMBER() OVER ()                         AS id,
 FROM exploded
 WITH NO DATA;
 
-CREATE INDEX IF NOT EXISTS osm_natural_geom_idx ON osm_natural USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_tags_idx ON osm_natural USING GIN (tags);
+CREATE OR REPLACE VIEW osm_natural_z20 AS
+SELECT id, tags, geom FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z19 AS
+SELECT id, tags, geom FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z18 AS
+SELECT id, tags, geom FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z17 AS
+SELECT id, tags, geom FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z16 AS
+SELECT id, tags, geom FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z15 AS
+SELECT id, tags, geom FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z14 AS
+SELECT id, tags, geom FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z13 AS
+SELECT id, tags, geom FROM osm_natural;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z12;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z12 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 12), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z11;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z11 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 11)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 11), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z10;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z10 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 10)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 10), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z9;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z9 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 9)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 9), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z8;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z8 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 8)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 8), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z7;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z7 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 7)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 7), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z6;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z6 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 6)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 6), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z5;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z5 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 5)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 5), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z4;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z4 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 4)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 4), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z3;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z3 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 3)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 3), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z2;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z2 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 2)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 2), 2)
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z1;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z1 AS
+SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 1)) AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 1), 2)
+WITH NO DATA;
+

@@ -13,50 +13,77 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DROP INDEX IF EXISTS osm_landuse_filtered_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_filtered;
+CREATE INDEX IF NOT EXISTS osm_landuse_filtered_geom_idx
+    ON osm_landuse_filtered USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_clustered_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_clustered;
-REFRESH MATERIALIZED VIEW osm_landuse_grouped;
-REFRESH MATERIALIZED VIEW osm_landuse_buffered;
-REFRESH MATERIALIZED VIEW osm_landuse_exploded;
+CREATE INDEX IF NOT EXISTS osm_landuse_clustered_geom_idx
+    ON osm_landuse_clustered USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse;
+CREATE INDEX IF NOT EXISTS osm_landuse_geom_idx
+    ON osm_landuse USING GIST (geom);
 
-REFRESH MATERIALIZED VIEW osm_landuse_xl_filtered;
-REFRESH MATERIALIZED VIEW osm_landuse_xl_clustered;
-REFRESH MATERIALIZED VIEW osm_landuse_xl_grouped;
-REFRESH MATERIALIZED VIEW osm_landuse_xl_buffered;
-REFRESH MATERIALIZED VIEW osm_landuse_xl_exploded;
-REFRESH MATERIALIZED VIEW osm_landuse_xl;
-
-REFRESH MATERIALIZED VIEW osm_landuse_l_filtered;
-REFRESH MATERIALIZED VIEW osm_landuse_l_clustered;
-REFRESH MATERIALIZED VIEW osm_landuse_l_grouped;
-REFRESH MATERIALIZED VIEW osm_landuse_l_buffered;
-REFRESH MATERIALIZED VIEW osm_landuse_l_exploded;
-REFRESH MATERIALIZED VIEW osm_landuse_l;
-
-REFRESH MATERIALIZED VIEW osm_landuse_m_filtered;
-REFRESH MATERIALIZED VIEW osm_landuse_m_clustered;
-REFRESH MATERIALIZED VIEW osm_landuse_m_grouped;
-REFRESH MATERIALIZED VIEW osm_landuse_m_buffered;
-REFRESH MATERIALIZED VIEW osm_landuse_m_exploded;
-REFRESH MATERIALIZED VIEW osm_landuse_m;
-
-REFRESH MATERIALIZED VIEW osm_landuse_s_filtered;
-REFRESH MATERIALIZED VIEW osm_landuse_s_clustered;
-REFRESH MATERIALIZED VIEW osm_landuse_s_grouped;
-REFRESH MATERIALIZED VIEW osm_landuse_s_buffered;
-REFRESH MATERIALIZED VIEW osm_landuse_s_exploded;
-REFRESH MATERIALIZED VIEW osm_landuse_s;
-
+DROP INDEX IF EXISTS osm_landuse_z12_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z12;
+CREATE INDEX IF NOT EXISTS osm_landuse_z12_geom_idx
+    ON osm_landuse_z12 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z11_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z11;
+CREATE INDEX IF NOT EXISTS osm_landuse_z11_geom_idx
+    ON osm_landuse_z11 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z10_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z10;
+CREATE INDEX IF NOT EXISTS osm_landuse_z10_geom_idx
+    ON osm_landuse_z10 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z9_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z9;
+CREATE INDEX IF NOT EXISTS osm_landuse_z9_geom_idx
+    ON osm_landuse_z9 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z8_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z8;
+CREATE INDEX IF NOT EXISTS osm_landuse_z8_geom_idx
+    ON osm_landuse_z8 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z7_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z7;
+CREATE INDEX IF NOT EXISTS osm_landuse_z7_geom_idx
+    ON osm_landuse_z7 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z6_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z6;
+CREATE INDEX IF NOT EXISTS osm_landuse_z6_geom_idx
+    ON osm_landuse_z6 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z5_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z5;
+CREATE INDEX IF NOT EXISTS osm_landuse_z5_geom_idx
+    ON osm_landuse_z5 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z4_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z4;
+CREATE INDEX IF NOT EXISTS osm_landuse_z4_geom_idx
+    ON osm_landuse_z4 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z3_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z3;
+CREATE INDEX IF NOT EXISTS osm_landuse_z3_geom_idx
+    ON osm_landuse_z3 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z2_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z2;
+CREATE INDEX IF NOT EXISTS osm_landuse_z2_geom_idx
+    ON osm_landuse_z2 USING GIST (geom);
+
+DROP INDEX IF EXISTS osm_landuse_z1_geom_idx;
 REFRESH MATERIALIZED VIEW osm_landuse_z1;
+CREATE INDEX IF NOT EXISTS osm_landuse_z1_geom_idx
+    ON osm_landuse_z1 USING GIST (geom);

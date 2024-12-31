@@ -16,7 +16,6 @@
 DROP MATERIALIZED VIEW IF EXISTS osm_waterway CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway AS
 WITH
-    -- Filter the linestrings
     filtered AS (
         SELECT
                 tags -> 'waterway' AS waterway,
@@ -25,7 +24,6 @@ WITH
         WHERE tags ->> 'waterway' IN ('river', 'stream', 'canal', 'drain', 'ditch')
         AND NOT tags ? 'intermittent'
     ),
-    -- Cluster the linestrings
     clustered AS (
         SELECT
             waterway AS waterway,
@@ -34,7 +32,6 @@ WITH
         FROM
             filtered
     ),
-    -- Merge the linestrings into a single geometry per cluster
     merged AS (
         SELECT
             waterway AS waterway,
@@ -44,7 +41,6 @@ WITH
         GROUP BY
             waterway, cluster
     ),
-    -- Explode the merged linestrings into individual linestrings
     exploded AS (
         SELECT
             waterway AS waterway,
@@ -57,4 +53,112 @@ SELECT
             jsonb_build_object('waterway', waterway) AS tags,
             geom AS geom
 FROM exploded
+WITH NO DATA;
+
+CREATE OR REPLACE VIEW osm_waterway_z20 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+CREATE OR REPLACE VIEW osm_waterway_z19 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+CREATE OR REPLACE VIEW osm_waterway_z18 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+CREATE OR REPLACE VIEW osm_waterway_z17 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+CREATE OR REPLACE VIEW osm_waterway_z16 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+CREATE OR REPLACE VIEW osm_waterway_z15 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+CREATE OR REPLACE VIEW osm_waterway_z14 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+CREATE OR REPLACE VIEW osm_waterway_z13 AS
+SELECT id, tags, geom FROM osm_waterway;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z12 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z12 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 12)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z11 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z11 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 11)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 11)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z10 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z10 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 10)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 10)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z9 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z9 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 9)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 9)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z8 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z8 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 8)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 8)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z7 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z7 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 7)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 7)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z6 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z6 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 6)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 6)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z5 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z5 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 5)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 5)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z4 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z4 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 4)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 4)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z3 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z3 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 3)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 3)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z2 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z2 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 2)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 2)), 2))
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_waterway_z1 CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_waterway_z1 AS
+SELECT id, tags, geom
+FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 1)) AS geom FROM osm_waterway) AS osm_waterway
+WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 1)), 2))
 WITH NO DATA;
