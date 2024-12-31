@@ -13,5 +13,6 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-CREATE INDEX IF NOT EXISTS osm_linestring_tags_index ON osm_linestring USING gin (tags);
-CREATE INDEX IF NOT EXISTS osm_linestring_geom_index ON osm_linestring USING gist (geom);
+DROP INDEX IF EXISTS osm_member_idx;
+REFRESH MATERIALIZED VIEW osm_member;
+CREATE INDEX IF NOT EXISTS osm_member_idx ON osm_member (member_ref);

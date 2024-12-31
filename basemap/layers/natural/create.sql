@@ -159,4 +159,3 @@ SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 1)) AS geom
 FROM osm_natural
 WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 1), 2)
 WITH NO DATA;
-

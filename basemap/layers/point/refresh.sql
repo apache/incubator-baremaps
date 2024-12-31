@@ -26,3 +26,17 @@ REFRESH MATERIALIZED VIEW osm_point_z4;
 REFRESH MATERIALIZED VIEW osm_point_z3;
 REFRESH MATERIALIZED VIEW osm_point_z2;
 REFRESH MATERIALIZED VIEW osm_point_z1;
+
+CREATE INDEX IF NOT EXISTS osm_point_geom_z13_index ON osm_point_z13 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z12_index ON osm_point_z12 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z11_index ON osm_point_z11 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z10_index ON osm_point_z10 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z9_index ON osm_point_z9 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z8_index ON osm_point_z8 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z7_index ON osm_point_z7 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z6_index ON osm_point_z6 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z5_index ON osm_point_z5 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z4_index ON osm_point_z4 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z3_index ON osm_point_z3 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z2_index ON osm_point_z2 USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_point_geom_z1_index ON osm_point_z1 USING gist (geom);

@@ -13,15 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-DROP MATERIALIZED VIEW IF EXISTS osm_linestring CASCADE;
-
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_linestring AS
-SELECT id, tags, geom, changeset
-FROM osm_way
-LEFT JOIN osm_member ON id = member_ref
-WHERE ST_GeometryType( osm_way.geom) = 'ST_LineString'
-  AND tags != '{}'
-  AND member_ref IS NULL;
-
-CREATE INDEX IF NOT EXISTS osm_linestring_tags_index ON osm_linestring USING gin (tags);
+DROP INDEX IF EXISTS osm_linestring_geom_index;
+DROP INDEX IF EXISTS osm_linestring_tags_index;
+REFRESH MATERIALIZED VIEW osm_linestring;
 CREATE INDEX IF NOT EXISTS osm_linestring_geom_index ON osm_linestring USING gist (geom);
+CREATE INDEX IF NOT EXISTS osm_linestring_tags_index ON osm_linestring USING gin (tags);

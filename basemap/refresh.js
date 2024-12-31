@@ -19,125 +19,28 @@ import config from "./config.js";
 export default {
     "steps": [
         {
-            "id": "openstreetmap-member",
+            "id": "refresh",
             "needs": [],
             "tasks": [
-                {
+                "layers/member/refresh.sql",
+                "layers/linestring/refresh.sql",
+                "layers/polygon/refresh.sql",
+                "layers/highway/refresh.sql",
+                "layers/landuse/refresh.sql",
+                "layers/leisure/refresh.sql",
+                "layers/natural/refresh.sql",
+                //"layers/ocean/refresh.sql",
+                "layers/point/refresh.sql",
+                "layers/railway/refresh.sql",
+                "layers/route/refresh.sql",
+                "layers/waterway/refresh.sql",
+            ].map(file => {
+                return {
                     "type": "ExecuteSql",
-                    "file": "layers/member/refresh.sql",
+                    "file": file,
                     "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-point",
-            "needs": ["openstreetmap-member"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/point/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-linestring",
-            "needs": ["openstreetmap-member"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/linestring/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-polygon",
-            "needs": ["openstreetmap-member"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/polygon/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-highway",
-            "needs": ["openstreetmap-linestring"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/highway/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-railway",
-            "needs": ["openstreetmap-linestring"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/railway/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-route",
-            "needs": ["openstreetmap-linestring"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/route/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-waterway",
-            "needs": ["openstreetmap-linestring"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/waterway/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-natural",
-            "needs": ["openstreetmap-polygon"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/natural/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-landuse",
-            "needs": ["openstreetmap-polygon"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/landuse/refresh.sql",
-                    "database": config.database,
-                },
-            ]
-        },
-        {
-            "id": "openstreetmap-leisure",
-            "needs": ["openstreetmap-polygon"],
-            "tasks": [
-                {
-                    "type": "ExecuteSql",
-                    "file": "layers/leisure/refresh.sql",
-                    "database": config.database,
-                },
-            ]
+                }
+            })
         },
     ]
 }
