@@ -16,8 +16,10 @@
 DROP MATERIALIZED VIEW IF EXISTS osm_linestring CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_linestring AS
 SELECT id, tags, geom, changeset
-FROM osm_way LEFT JOIN osm_member ON id = member_ref
-WHERE ST_GeometryType( osm_way.geom) = 'ST_LineString'
+FROM osm_way
+         LEFT JOIN osm_member ON id = member_ref
+WHERE geom IS NOT NULL
+  AND ST_GeometryType(osm_way.geom) = 'ST_LineString'
   AND tags != '{}'
   AND member_ref IS NULL
 WITH NO DATA;

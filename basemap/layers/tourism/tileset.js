@@ -20,7 +20,7 @@ export default {
         {
             "minzoom": 14,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_relation_z$zoom WHERE tags ? 'tourism'"
+            "sql": "SELECT id, tags, geom FROM osm_tourism"
         }
     ]
 }
