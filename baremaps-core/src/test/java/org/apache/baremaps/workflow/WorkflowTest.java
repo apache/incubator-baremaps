@@ -103,7 +103,7 @@ class WorkflowTest extends PostgresContainerTest {
         new Step("import-osmpbf", List.of("fetch-osmpbf"),
             List.of(new ImportOsmPbf(Paths.get("downloads/liechtenstein.osm.pbf"),
                 jdbcUrl(),
-                3857, true))),
+                3857, true, true))),
         new Step("fetch-shapefile", List.of(), List.of(new DownloadUrl(
             "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
             Paths.get("downloads/simplified-water-polygons-split-3857.zip"), false))),

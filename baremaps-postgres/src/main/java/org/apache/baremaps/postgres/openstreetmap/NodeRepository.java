@@ -74,7 +74,7 @@ public class NodeRepository implements Repository<Long, Node> {
     this(
         dataSource,
         "public",
-        "osm_nodes",
+        "osm_node",
         "id",
         "version",
         "uid",

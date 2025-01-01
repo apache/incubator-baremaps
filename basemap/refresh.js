@@ -22,6 +22,9 @@ export default {
             "id": "refresh",
             "needs": [],
             "tasks": [
+                "layers/nodex/refresh.sql",
+                "layers/ways/refresh.sql",
+                "layers/relations/refresh.sql",
                 "layers/member/refresh.sql",
                 "layers/linestring/refresh.sql",
                 "layers/polygon/refresh.sql",

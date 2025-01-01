@@ -76,7 +76,7 @@ public class WayRepository implements Repository<Long, Way> {
   public WayRepository(DataSource dataSource) {
     this(dataSource,
         "public",
-        "osm_ways",
+        "osm_way",
         "id",
         "version",
         "uid",

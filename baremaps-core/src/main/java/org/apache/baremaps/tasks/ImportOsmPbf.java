@@ -62,11 +62,12 @@ public class ImportOsmPbf implements Task {
    * @param replaceExisting whether to replace the existing tables
    */
   public ImportOsmPbf(Path file, Object database,
-      Integer databaseSrid, Boolean replaceExisting) {
+      Integer databaseSrid, Boolean replaceExisting, Boolean truncateTables) {
     this.file = file;
     this.database = database;
     this.databaseSrid = databaseSrid;
     this.replaceExisting = replaceExisting;
+    this.truncateTables = truncateTables;
   }
 
   /**

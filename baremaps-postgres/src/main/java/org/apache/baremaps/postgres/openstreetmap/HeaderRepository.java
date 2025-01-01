@@ -67,7 +67,7 @@ public class HeaderRepository implements Repository<Long, Header> {
     this(
         dataSource,
         "public",
-        "osm_headers",
+        "osm_header",
         "replication_sequence_number",
         "replication_timestamp",
         "replication_url",

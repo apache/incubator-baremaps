@@ -18,22 +18,6 @@ import config from "./config.js";
 
 export default {
   "steps": [
-    {
-      "id": "initialize-database",
-        "needs": [],
-        "tasks": [
-          {
-            "type": "ExecuteSqlScript",
-            "file": "queries/assertions.sql",
-            "database": config.database,
-          },
-          {
-            "type": "ExecuteSqlScript",
-            "file": "queries/functions.sql",
-            "database": config.database,
-          },
-        ]
-    },
     // {
     //   "id": "openstreetmap-water-polygons",
     //   "needs": [],
@@ -110,23 +94,18 @@ export default {
       "id": "openstreetmap-data",
       "needs": [],
       "tasks": [
-        {
-          "type": "DownloadUrl",
-          "source": config.osmPbfUrl,
-          "target": "data/data.osm.pbf"
-        },
+        // {
+        //   "type": "DownloadUrl",
+        //   "source": config.osmPbfUrl,
+        //   "target": "data/data.osm.pbf"
+        // },
         {
           "type": "ImportOsmPbf",
           "file": "data/data.osm.pbf",
           "database": config.database,
           "databaseSrid": 3857,
-          "replaceExisting": true,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_entities.sql",
-          "database": config.database,
-          "parallel": false,
+          "replaceExisting": false,
+          "truncateExisting": true,
         },
       ]
     },

@@ -13,6 +13,20 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+DROP INDEX IF EXISTS osm_point_geom_z13_index;
+DROP INDEX IF EXISTS osm_point_geom_z12_index;
+DROP INDEX IF EXISTS osm_point_geom_z11_index;
+DROP INDEX IF EXISTS osm_point_geom_z10_index;
+DROP INDEX IF EXISTS osm_point_geom_z9_index;
+DROP INDEX IF EXISTS osm_point_geom_z8_index;
+DROP INDEX IF EXISTS osm_point_geom_z7_index;
+DROP INDEX IF EXISTS osm_point_geom_z6_index;
+DROP INDEX IF EXISTS osm_point_geom_z5_index;
+DROP INDEX IF EXISTS osm_point_geom_z4_index;
+DROP INDEX IF EXISTS osm_point_geom_z3_index;
+DROP INDEX IF EXISTS osm_point_geom_z2_index;
+DROP INDEX IF EXISTS osm_point_geom_z1_index;
+
 REFRESH MATERIALIZED VIEW osm_point_z13;
 REFRESH MATERIALIZED VIEW osm_point_z12;
 REFRESH MATERIALIZED VIEW osm_point_z11;

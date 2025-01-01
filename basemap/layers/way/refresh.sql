@@ -13,12 +13,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-DROP TABLE IF EXISTS osm_header;
-CREATE TABLE IF NOT EXISTS osm_header
-(
-    replication_sequence_number bigint PRIMARY KEY,
-    replication_timestamp       timestamp without time zone,
-    replication_url             text,
-    source                      text,
-    writing_program             text
-);
+DROP INDEX IF EXISTS osm_way_geom_index;
+DROP INDEX IF EXISTS osm_way_tags_index;
+
+CREATE INDEX IF NOT EXISTS osm_way_geom_index ON osm_way USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_way_tags_index ON osm_way USING GIN (tags);
