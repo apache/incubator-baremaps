@@ -20,15 +20,9 @@ export default {
     queries: [
         {
             minzoom: 4,
-            maxzoom: 14,
-            sql:
-                "SELECT id, tags, geom FROM osm_highway_z$zoom",
-        },
-        {
-            minzoom: 14,
             maxzoom: 20,
             sql:
-                "SELECT id, tags, geom FROM osm_way WHERE tags ? 'highway'",
+                "SELECT id, tags, geom FROM osm_highway_z$zoom",
         },
     ],
 }
