@@ -19,23 +19,8 @@ export default {
     "queries": [
         {
             "minzoom": 1,
-            "maxzoom": 8,
-            "sql": "SELECT id, tags, geom FROM osm_natural_z$zoom WHERE tags ->> 'natural' IN ('wood', 'scrub', 'heath', 'grassland', 'bare_rock', 'scree', 'shingle', 'sand', 'mud', 'water', 'wetland', 'glacier', 'beach')"
-        },
-        {
-            "minzoom": 8,
-            "maxzoom": 13,
-            "sql": "SELECT id, tags, geom FROM osm_natural_z$zoom WHERE tags ->> 'natural' IN ('wood', 'scrub', 'heath', 'grassland', 'bare_rock', 'scree', 'shingle', 'sand', 'mud', 'water', 'wetland', 'glacier', 'beach')"
-        },
-        {
-            "minzoom": 13,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_way WHERE tags ? 'natural' AND tags ->> 'natural' NOT IN ('coastline')"
+            "sql": "SELECT id, tags, geom FROM osm_natural_z$zoom"
         },
-        {
-            "minzoom": 13,
-            "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_relation WHERE tags ? 'natural' AND tags ->> 'natural' NOT IN ('coastline')"
-        }
     ]
 }

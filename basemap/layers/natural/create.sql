@@ -13,149 +13,453 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_filtered CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_filtered AS
-SELECT tags -> 'natural'                                       AS natural_value,
-       st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom
-FROM osm_polygon
+-- Zoom levels 20 to 13
+
+CREATE OR REPLACE VIEW osm_natural AS
+SELECT id, tags, geom
+FROM osm_way
+WHERE tags ? 'natural'
+UNION
+SELECT id, tags, geom
+FROM osm_relation
+WHERE tags ? 'natural';
+
+CREATE OR REPLACE VIEW osm_natural_z20 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z19 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z18 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z17 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z16 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z15 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z14 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+CREATE OR REPLACE VIEW osm_natural_z13 AS
+SELECT id, tags, geom
+FROM osm_natural;
+
+-- Zoom level 12
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z12_filtered CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z12_filtered AS
+SELECT tags -> 'natural' AS tag,
+       st_buffer(
+               st_simplifypreservetopology(
+                       geom,
+                       78270 / power(2, 12)
+               ),
+               78270 / power(2, 12) * 1.1,
+               'join=mitre'
+       )                 AS geom
+FROM osm_natural
 WHERE geom IS NOT NULL
-  AND st_area(geom) > 78270 / power(2, 12) * 100
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 12), 2) * 32
   AND tags ->> 'natural' IN
       ('grassland', 'heath', 'scrub', 'wood', 'bay', 'beach', 'glacier', 'mud', 'shingle', 'shoal', 'strait', 'water',
        'wetland', 'bare_rock', 'sand', 'scree')
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_clustered CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_clustered AS
-SELECT natural_value,
-       geom,
-       st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY natural_value) AS cluster
-FROM osm_natural_filtered
-WHERE geom IS NOT NULL
-WITH NO DATA;
-
-DROP MATERIALIZED VIEW IF EXISTS osm_natural CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural AS
-WITH grouped AS (SELECT natural_value,
-                        ST_Collect(geom) AS geom
-                 FROM osm_natural_clustered
-                 GROUP BY natural_value, cluster),
-     buffered AS (SELECT natural_value,
-                         ST_Buffer(geom, 0, 'join=mitre') AS geom
-                  FROM grouped),
-     exploded AS (SELECT natural_value,
-                         (ST_Dump(geom)).geom AS geom
-                  FROM buffered)
-SELECT ROW_NUMBER() OVER ()                         AS id,
-       JSONB_BUILD_OBJECT('natural', natural_value) AS tags,
-       geom
-FROM exploded
-WITH NO DATA;
-
-CREATE OR REPLACE VIEW osm_natural_z20 AS
-SELECT id, tags, geom FROM osm_natural;
-
-CREATE OR REPLACE VIEW osm_natural_z19 AS
-SELECT id, tags, geom FROM osm_natural;
-
-CREATE OR REPLACE VIEW osm_natural_z18 AS
-SELECT id, tags, geom FROM osm_natural;
-
-CREATE OR REPLACE VIEW osm_natural_z17 AS
-SELECT id, tags, geom FROM osm_natural;
-
-CREATE OR REPLACE VIEW osm_natural_z16 AS
-SELECT id, tags, geom FROM osm_natural;
-
-CREATE OR REPLACE VIEW osm_natural_z15 AS
-SELECT id, tags, geom FROM osm_natural;
-
-CREATE OR REPLACE VIEW osm_natural_z14 AS
-SELECT id, tags, geom FROM osm_natural;
-
-CREATE OR REPLACE VIEW osm_natural_z13 AS
-SELECT id, tags, geom FROM osm_natural;
-
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z12;
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z12 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z12 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 12), 2)
+WITH clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM osm_natural_z12_filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 12),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 12)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 12), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z11;
+-- Zoom level 11
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z11_filtered CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z11_filtered AS
+SELECT tags -> 'natural' AS tag,
+       st_buffer(
+               st_simplifypreservetopology(
+                       geom,
+                       78270 / power(2, 11)
+               ),
+               78270 / power(2, 11) * 1.1,
+               'join=mitre'
+       )                 AS geom
+FROM osm_natural_z12
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 11), 2) * 32
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z11 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z11 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 11)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 11), 2)
+WITH clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM osm_natural_z11_filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 11),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 11)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 11), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z10;
+-- Zoom level 10
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z10_filtered CASCADE;
+CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z10_filtered AS
+SELECT tags -> 'natural' AS tag,
+       st_buffer(
+               st_simplifypreservetopology(
+                       geom,
+                       78270 / power(2, 10)
+               ),
+               78270 / power(2, 10) * 1.1,
+               'join=mitre'
+       )                 AS geom
+FROM osm_natural_z11
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 10), 2) * 32
+WITH NO DATA;
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z10 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z10 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 10)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 10), 2)
+WITH clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM osm_natural_z10_filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 10),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 10)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 10), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z9;
+-- Zoom level 9
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z9 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z9 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 9)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 9), 2)
+WITH filtered AS (SELECT tags -> 'natural' AS tag,
+                         st_buffer(
+                                 st_simplifypreservetopology(
+                                         geom,
+                                         78270 / power(2, 9)
+                                 ),
+                                 78270 / power(2, 9) * 1.1,
+                                 'join=mitre'
+                         )                 AS geom
+                  FROM osm_natural_z10
+                  WHERE geom IS NOT NULL
+                    AND NOT ST_IsEmpty(geom)
+                    AND st_area(geom) > power(78270 / power(2, 9), 2) * 32),
+     clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 9),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 9)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 9), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z8;
+-- Zoom level 8
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z8 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z8 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 8)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 8), 2)
+WITH filtered AS (SELECT tags -> 'natural' AS tag,
+                         st_buffer(
+                                 st_simplifypreservetopology(
+                                         geom,
+                                         78270 / power(2, 8)
+                                 ),
+                                 78270 / power(2, 8) * 1.1,
+                                 'join=mitre'
+                         )                 AS geom
+                  FROM osm_natural_z9
+                  WHERE geom IS NOT NULL
+                    AND NOT ST_IsEmpty(geom)
+                    AND st_area(geom) > power(78270 / power(2, 8), 2) * 32),
+     clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 8),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 8)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 8), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z7;
+-- Zoom level 7
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z7 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z7 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 7)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 7), 2)
+WITH filtered AS (SELECT tags -> 'natural' AS tag,
+                         st_buffer(
+                                 st_simplifypreservetopology(
+                                         geom,
+                                         78270 / power(2, 7)
+                                 ),
+                                 78270 / power(2, 7) * 1.1,
+                                 'join=mitre'
+                         )                 AS geom
+                  FROM osm_natural_z8
+                  WHERE geom IS NOT NULL
+                    AND NOT ST_IsEmpty(geom)
+                    AND st_area(geom) > power(78270 / power(2, 7), 2) * 32),
+     clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 7),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 7)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 7), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z6;
+-- Zoom level 6
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z6 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z6 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 6)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 6), 2)
+WITH filtered AS (SELECT tags -> 'natural' AS tag,
+                         st_buffer(
+                                 st_simplifypreservetopology(
+                                         geom,
+                                         78270 / power(2, 6)
+                                 ),
+                                 78270 / power(2, 6) * 1.1,
+                                 'join=mitre'
+                         )                 AS geom
+                  FROM osm_natural_z7
+                  WHERE geom IS NOT NULL
+                    AND NOT ST_IsEmpty(geom)
+                    AND st_area(geom) > power(78270 / power(2, 6), 2) * 32),
+     clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 6),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 6)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 6), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z5;
+-- Zoom level 5
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z5 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z5 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 5)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 5), 2)
+WITH filtered AS (SELECT tags -> 'natural' AS tag,
+                         st_buffer(
+                                 st_simplifypreservetopology(
+                                         geom,
+                                         78270 / power(2, 5)
+                                 ),
+                                 78270 / power(2, 5) * 1.1,
+                                 'join=mitre'
+                         )                 AS geom
+                  FROM osm_natural_z6
+                  WHERE geom IS NOT NULL
+                    AND NOT ST_IsEmpty(geom)
+                    AND st_area(geom) > power(78270 / power(2, 5), 2) * 32),
+     clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 5),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 5)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 5), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z4;
+-- Zoom level 4
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z4 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z4 AS
-SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 4)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 4), 2)
+WITH filtered AS (SELECT tags -> 'natural' AS tag,
+                         st_buffer(
+                                 st_simplifypreservetopology(
+                                         geom,
+                                         78270 / power(2, 4)
+                                 ),
+                                 78270 / power(2, 4) * 1.1,
+                                 'join=mitre'
+                         )                 AS geom
+                  FROM osm_natural_z6
+                  WHERE geom IS NOT NULL
+                    AND NOT ST_IsEmpty(geom)
+                    AND st_area(geom) > power(78270 / power(2, 4), 2) * 32),
+     clustered AS (SELECT tag,
+                          geom,
+                          st_clusterdbscan(geom, 0, 0) OVER (PARTITION BY tag) AS cluster
+                   FROM filtered)
+SELECT row_number() OVER ()               AS id,
+       jsonb_build_object('natural', tag) AS tags,
+       st_simplifypreservetopology(
+               (st_dump(
+                       st_buffer(
+                               st_collect(geom),
+                               -78270 / power(2, 4),
+                               'join=mitre'
+                       )
+                )).geom,
+               78270 / power(2, 4)
+       )                                  AS geom
+FROM clustered
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 4), 2) * 32
+GROUP BY tag, cluster
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z3;
+-- Zoom level 3
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z3 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z3 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 3)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 3), 2)
+FROM osm_natural_z4
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 3), 2) * 16
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z2;
+-- Zoom level 2
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z2 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z2 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 2)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 2), 2)
+FROM osm_natural_z4
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 2), 2) * 16
 WITH NO DATA;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_z1;
+-- Zoom level 1
+
+DROP MATERIALIZED VIEW IF EXISTS osm_natural_z1 CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_natural_z1 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 1)) AS geom
-FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 1), 2)
+FROM osm_natural_z4
+WHERE geom IS NOT NULL
+  AND NOT ST_IsEmpty(geom)
+  AND st_area(geom) > power(78270 / power(2, 1), 2) * 16
 WITH NO DATA;
