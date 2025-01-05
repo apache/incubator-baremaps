@@ -20,19 +20,9 @@ export default {
     queries: [
         {
             minzoom: 1,
-            maxzoom: 13,
+            maxzoom: 20,
             sql:
-                "SELECT id, tags, geom FROM osm_landuse_z$zoom WHERE tags ? 'landuse'",
+                "SELECT id, tags, geom FROM osm_landuse_z$zoom",
         },
-        {
-            minzoom: 13,
-            maxzoom: 20,
-            sql: "SELECT id, tags, geom FROM osm_way WHERE tags ? 'landuse'"
-        },
-        {
-            minzoom: 13,
-            maxzoom: 20,
-            sql: "SELECT id, tags, geom FROM osm_relation WHERE tags ? 'landuse'"
-        }
     ],
 }
