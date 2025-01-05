@@ -25,6 +25,11 @@ DROP INDEX IF EXISTS osm_highway_simplified_geom;
 REFRESH MATERIALIZED VIEW osm_highway_simplified;
 CREATE INDEX IF NOT EXISTS osm_highway_simplified_geom ON osm_highway_simplified USING GIST (geom);
 
+DROP INDEX IF EXISTS osm_highway_z12_geom_idx;
+REFRESH MATERIALIZED VIEW osm_highway_z12;
+CREATE INDEX IF NOT EXISTS osm_highway_z12_geom_idx
+    ON osm_highway_z12 USING GIST (geom);
+
 DROP INDEX IF EXISTS osm_highway_z11_geom_idx;
 REFRESH MATERIALIZED VIEW osm_highway_z11;
 CREATE INDEX IF NOT EXISTS osm_highway_z11_geom_idx
