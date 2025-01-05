@@ -30,7 +30,6 @@ let directives = [
             ],
         ],
         'fill-color': theme.amenityParkingOverlayFillColor,
-        'fill-outline-color': theme.amenityParkingOverlayOutlineColor
     },
 ];
 

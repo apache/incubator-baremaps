@@ -18,9 +18,9 @@ export default {
     id: 'amenity',
     queries: [
         {
-            minzoom: 13,
+            minzoom: 1,
             maxzoom: 20,
-            sql: "SELECT id, tags, geom FROM osm_amenity",
+            sql: "SELECT id, tags, geom FROM osm_amenity_z$zoom",
         },
     ],
 }
