@@ -16,11 +16,17 @@
 -- Zoom levels 20 to 13
 
 CREATE OR REPLACE VIEW osm_leisure AS
-SELECT id, tags, geom
+SELECT
+    id,
+    jsonb_build_object('leisure', tags -> 'leisure') AS tags,
+    geom
 FROM osm_way
 WHERE tags ? 'leisure'
 UNION
-SELECT id, tags, geom
+SELECT
+    id,
+    jsonb_build_object('leisure', tags -> 'leisure') AS tags,
+    geom
 FROM osm_relation
 WHERE tags ? 'leisure';
 

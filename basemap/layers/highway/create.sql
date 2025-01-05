@@ -16,7 +16,21 @@
 -- Zoom levels 20-13
 
 CREATE OR REPLACE VIEW osm_highway AS
-SELECT id, tags, geom
+SELECT id,
+       jsonb_build_object(
+               'highway', tags -> 'highway',
+                'footway', tags -> 'footway',
+               'sidewalk', tags -> 'sidewalk',
+               'cycleway', tags -> 'cycleway',
+               'bridge', tags -> 'bridge',
+               'tunnel', tags -> 'tunnel',
+               'access', tags -> 'access',
+               'area', tags -> 'area',
+               'bicycle', tags -> 'bicycle',
+               'construction', tags -> 'construction',
+               'name', tags -> 'name'
+       ) AS tags,
+       geom
 FROM osm_way
 WHERE osm_way.geom IS NOT NULL
   AND tags ? 'highway';

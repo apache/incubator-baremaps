@@ -14,7 +14,12 @@
 -- limitations under the License.
 
 CREATE OR REPLACE VIEW osm_aeroway AS
-SELECT id, tags, geom
+SELECT
+    id,
+    jsonb_build_object(
+            'aeroway', tags -> 'aeroway'
+    ) AS tags,
+    geom
 FROM osm_way
 WHERE geom IS NOT NULL
   AND tags ? 'aeroway';

@@ -16,7 +16,10 @@
 -- Zoom levels 20 to 13
 
 CREATE OR REPLACE VIEW osm_landuse AS
-SELECT id, tags, geom
+SELECT
+    id,
+    jsonb_build_object('landuse', tags -> 'landuse') AS tags,
+    geom
 FROM osm_way
 WHERE tags ? 'landuse'
 UNION

@@ -14,7 +14,12 @@
 -- limitations under the License.
 
 CREATE OR REPLACE VIEW osm_barrier AS
-SELECT id, tags, geom
+SELECT
+    id,
+    jsonb_build_object(
+            'barrier', tags -> 'barrier'
+    ) AS tags,
+    geom
 FROM osm_way
 WHERE geom IS NOT NULL
   AND tags ? 'barrier';

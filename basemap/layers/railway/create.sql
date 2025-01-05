@@ -16,12 +16,16 @@
 DROP MATERIALIZED VIEW IF EXISTS osm_railway CASCADE;
 CREATE MATERIALIZED VIEW IF NOT EXISTS osm_railway AS
 SELECT id, tags, geom
-FROM (SELECT min(id)                                                                        as id,
-             jsonb_build_object('railway', tags -> 'railway', 'service', tags -> 'service') as tags,
-             (st_dump(st_linemerge(st_collect(geom)))).geom                                 as geom
+FROM (SELECT min(id)                                        as id,
+             jsonb_build_object(
+                     'railway', tags -> 'railway',
+                     'service', tags -> 'service',
+                     'tunnel', tags -> 'tunnel'
+             )                                              as tags,
+             (st_dump(st_linemerge(st_collect(geom)))).geom as geom
       FROM osm_way
       WHERE tags ->> 'railway' IN ('light_rail', 'monorail', 'rail', 'subway', 'tram')
-      GROUP BY tags -> 'railway', tags -> 'service') AS mergedDirective
+      GROUP BY tags -> 'railway', tags -> 'service', tags -> 'tunnel') AS mergedDirective
 WITH NO DATA;
 
 CREATE OR REPLACE VIEW osm_railway_z20 AS

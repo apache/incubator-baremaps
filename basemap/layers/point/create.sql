@@ -1,8 +1,43 @@
 CREATE OR REPLACE VIEW osm_point AS
-SELECT id, tags, geom
+SELECT id,
+       jsonb_build_object(
+               'amenity', tags -> 'amenity',
+               'leisure', tags -> 'leisure',
+               'tourism', tags -> 'tourism',
+               'historic', tags -> 'historic',
+               'man_made', tags -> 'man_made',
+               'shop', tags -> 'shop',
+               'sport', tags -> 'sport',
+               'natural', tags -> 'natural',
+               'waterway', tags -> 'waterway',
+               'power', tags -> 'power',
+               'office', tags -> 'office',
+               'diplomatic', tags -> 'diplomatic',
+               'religion', tags -> 'religion',
+               'place', tags -> 'place',
+               'capital', tags -> 'capital',
+               'barrier', tags -> 'barrier',
+               'highway', tags -> 'highway',
+               'railway', tags -> 'railway',
+               'emergency', tags -> 'emergency',
+               'aeroway', tags -> 'aeroway',
+               'military', tags -> 'military',
+               'generator:source', tags -> 'generator:source',
+               'generator:method', tags -> 'generator:method',
+               'tower:type', tags -> 'tower:type',
+               'tower:construction', tags -> 'tower:construction',
+               'castle_type', tags -> 'castle_type',
+               'artwork_type', tags -> 'artwork_type',
+               'memorial', tags -> 'memorial',
+               'diplomatic', tags -> 'diplomatic',
+               'name', tags -> 'name',
+               'population', tags -> 'population'
+       ) AS tags,
+       geom
 FROM osm_node
 WHERE geom IS NOT NULL
   AND tags != '{}';
+
 
 CREATE OR REPLACE VIEW osm_point_z20 AS
 SELECT *
