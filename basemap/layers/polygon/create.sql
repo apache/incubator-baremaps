@@ -12,26 +12,42 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_polygon CASCADE;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_polygon CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_polygon AS
-SELECT id, tags, geom
-FROM osm_way
-         LEFT JOIN osm_member ON id = member_ref
-WHERE geom IS NOT NULL
-  AND ST_GeometryType(osm_way.geom) = 'ST_Polygon'
-  AND tags != '{}'
-  AND member_ref IS NULL
-UNION
-SELECT id, tags, geom
-FROM osm_relation
-WHERE geom IS NOT NULL
-  AND ST_GeometryType(osm_relation.geom) = 'ST_Polygon'
-  AND tags != '{}'
-UNION
-SELECT id, tags, (st_dump(geom)).geom as geom
-FROM osm_relation
-WHERE geom IS NOT NULL
-  AND ST_GeometryType(osm_relation.geom) = 'ST_MultiPolygon'
-  AND tags != '{}'
-WITH NO DATA;
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_polygon AS SELECT
+        id,
+        tags,
+        geom
+    FROM
+        osm_way
+    LEFT JOIN osm_member ON
+        id = member_ref
+    WHERE
+        geom IS NOT NULL
+        AND ST_GeometryType(osm_way.geom)= 'ST_Polygon'
+        AND tags != '{}'
+        AND member_ref IS NULL
+UNION SELECT
+        id,
+        tags,
+        geom
+    FROM
+        osm_relation
+    WHERE
+        geom IS NOT NULL
+        AND ST_GeometryType(osm_relation.geom)= 'ST_Polygon'
+        AND tags != '{}'
+UNION SELECT
+        id,
+        tags,
+        (
+            st_dump(geom)
+        ).geom AS geom
+    FROM
+        osm_relation
+    WHERE
+        geom IS NOT NULL
+        AND ST_GeometryType(osm_relation.geom)= 'ST_MultiPolygon'
+        AND tags != '{}' WITH NO DATA;

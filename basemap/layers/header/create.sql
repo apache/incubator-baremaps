@@ -12,13 +12,16 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    TABLE
+        IF EXISTS osm_header;
 
-DROP TABLE IF EXISTS osm_header;
-CREATE TABLE IF NOT EXISTS osm_header
-(
-    replication_sequence_number bigint PRIMARY KEY,
-    replication_timestamp       timestamp without time zone,
-    replication_url             text,
-    source                      text,
-    writing_program             text
-);
+CREATE
+    TABLE
+        IF NOT EXISTS osm_header(
+            replication_sequence_number BIGINT PRIMARY KEY,
+            replication_timestamp TIMESTAMP WITHOUT TIME ZONE,
+            replication_url text,
+            SOURCE text,
+            writing_program text
+        );

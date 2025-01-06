@@ -12,9 +12,20 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    INDEX IF EXISTS osm_linestring_geom_index;
 
-DROP INDEX IF EXISTS osm_linestring_geom_index;
-DROP INDEX IF EXISTS osm_linestring_tags_index;
+DROP
+    INDEX IF EXISTS osm_linestring_tags_index;
+
 REFRESH MATERIALIZED VIEW osm_linestring;
-CREATE INDEX IF NOT EXISTS osm_linestring_geom_index ON osm_linestring USING gist (geom);
-CREATE INDEX IF NOT EXISTS osm_linestring_tags_index ON osm_linestring USING gin (tags);
+
+CREATE
+    INDEX IF NOT EXISTS osm_linestring_geom_index ON
+    osm_linestring
+        USING gist(geom);
+
+CREATE
+    INDEX IF NOT EXISTS osm_linestring_tags_index ON
+    osm_linestring
+        USING gin(tags);

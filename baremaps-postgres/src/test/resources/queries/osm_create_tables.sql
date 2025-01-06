@@ -12,47 +12,54 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-CREATE TABLE IF NOT EXISTS osm_headers
-(
-    replication_sequence_number bigint PRIMARY KEY,
-    replication_timestamp       timestamp without time zone,
-    replication_url             text,
-    source                      text,
-    writing_program             text
-);
-CREATE TABLE osm_nodes
-(
-    id        bigint PRIMARY KEY,
-    version   int,
-    uid       int,
-    timestamp timestamp without time zone,
-    changeset bigint,
-    tags      jsonb,
-    lon       float,
-    lat       float,
-    geom      geometry(point)
-);
-CREATE TABLE osm_ways
-(
-    id        bigint PRIMARY KEY,
-    version   int,
-    uid       int,
-    timestamp timestamp without time zone,
-    changeset bigint,
-    tags      jsonb,
-    nodes     bigint[],
-    geom      geometry
-);
-CREATE TABLE osm_relations
-(
-    id           bigint PRIMARY KEY,
-    version      int,
-    uid          int,
-    timestamp    timestamp without time zone,
-    changeset    bigint,
-    tags         jsonb,
-    member_refs  bigint[],
-    member_types int[],
-    member_roles text[],
-    geom         geometry
-);
+CREATE
+    TABLE
+        IF NOT EXISTS osm_headers(
+            replication_sequence_number BIGINT PRIMARY KEY,
+            replication_timestamp TIMESTAMP WITHOUT TIME ZONE,
+            replication_url text,
+            SOURCE text,
+            writing_program text
+        );
+
+CREATE
+    TABLE
+        osm_nodes(
+            id BIGINT PRIMARY KEY,
+            version INT,
+            uid INT,
+            TIMESTAMP TIMESTAMP WITHOUT TIME ZONE,
+            changeset BIGINT,
+            tags jsonb,
+            lon FLOAT,
+            lat FLOAT,
+            geom geometry(point)
+        );
+
+CREATE
+    TABLE
+        osm_ways(
+            id BIGINT PRIMARY KEY,
+            version INT,
+            uid INT,
+            TIMESTAMP TIMESTAMP WITHOUT TIME ZONE,
+            changeset BIGINT,
+            tags jsonb,
+            nodes BIGINT [],
+            geom geometry
+        );
+
+CREATE
+    TABLE
+        osm_relations(
+            id BIGINT PRIMARY KEY,
+            version INT,
+            uid INT,
+            TIMESTAMP TIMESTAMP WITHOUT TIME ZONE,
+            changeset BIGINT,
+            tags jsonb,
+            member_refs BIGINT [],
+            member_types INT [],
+            member_roles text [],
+            geom geometry
+        );

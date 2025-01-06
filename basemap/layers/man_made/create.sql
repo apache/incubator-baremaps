@@ -12,12 +12,16 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-
-CREATE OR REPLACE VIEW osm_man_made AS
-SELECT
-    id,
-    jsonb_build_object('man_made', tags -> 'man_made') AS tags,
-    geom
-FROM osm_way
-WHERE geom IS NOT NULL
-  AND tags ? 'man_made'
+CREATE
+    OR REPLACE VIEW osm_man_made AS SELECT
+        id,
+        jsonb_build_object(
+            'man_made',
+            tags -> 'man_made'
+        ) AS tags,
+        geom
+    FROM
+        osm_way
+    WHERE
+        geom IS NOT NULL
+        AND tags ? 'man_made'

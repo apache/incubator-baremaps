@@ -12,14 +12,27 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-
-CREATE VIEW osm_entities AS (
-    SELECT 'node' as type, id, tags, geom
-    FROM osm_nodes
-    UNION
-    SELECT 'way' as type, id, tags, geom
-    FROM osm_ways
-    UNION
-    SELECT 'relation' as type, id, tags, geom
-    FROM osm_relations
-);
+CREATE
+    VIEW osm_entities AS(
+        SELECT
+            'node' AS TYPE,
+            id,
+            tags,
+            geom
+        FROM
+            osm_nodes
+    UNION SELECT
+            'way' AS TYPE,
+            id,
+            tags,
+            geom
+        FROM
+            osm_ways
+    UNION SELECT
+            'relation' AS TYPE,
+            id,
+            tags,
+            geom
+        FROM
+            osm_relations
+    );

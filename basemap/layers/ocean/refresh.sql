@@ -12,11 +12,22 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    INDEX IF EXISTS osm_ocean_geometry_index;
 
-DROP INDEX IF EXISTS osm_ocean_geometry_index;
 REFRESH MATERIALIZED VIEW osm_ocean;
-CREATE INDEX IF NOT EXISTS osm_ocean_geometry_index ON osm_ocean USING gist(geom);
 
-DROP INDEX IF EXISTS osm_ocean_simplified_geometry_index;
+CREATE
+    INDEX IF NOT EXISTS osm_ocean_geometry_index ON
+    osm_ocean
+        USING gist(geom);
+
+DROP
+    INDEX IF EXISTS osm_ocean_simplified_geometry_index;
+
 REFRESH MATERIALIZED VIEW osm_ocean_simplified;
-CREATE INDEX IF NOT EXISTS osm_ocean_simplified_geometry_index ON osm_ocean_simplified USING gist(geom);
+
+CREATE
+    INDEX IF NOT EXISTS osm_ocean_simplified_geometry_index ON
+    osm_ocean_simplified
+        USING gist(geom);

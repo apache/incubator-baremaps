@@ -12,7 +12,18 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-DROP TABLE IF EXISTS osm_headers;
-DROP TABLE IF EXISTS osm_nodes;
-DROP TABLE IF EXISTS osm_ways;
-DROP TABLE IF EXISTS osm_relations;
+DROP
+    TABLE
+        IF EXISTS osm_headers;
+
+DROP
+    TABLE
+        IF EXISTS osm_nodes;
+
+DROP
+    TABLE
+        IF EXISTS osm_ways;
+
+DROP
+    TABLE
+        IF EXISTS osm_relations;

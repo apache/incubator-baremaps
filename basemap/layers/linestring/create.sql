@@ -12,14 +12,21 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_linestring CASCADE;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_linestring CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_linestring AS
-SELECT id, tags, geom, changeset
-FROM osm_way
-         LEFT JOIN osm_member ON id = member_ref
-WHERE geom IS NOT NULL
-  AND ST_GeometryType(osm_way.geom) = 'ST_LineString'
-  AND tags != '{}'
-  AND member_ref IS NULL
-WITH NO DATA;
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_linestring AS SELECT
+        id,
+        tags,
+        geom,
+        changeset
+    FROM
+        osm_way
+    LEFT JOIN osm_member ON
+        id = member_ref
+    WHERE
+        geom IS NOT NULL
+        AND ST_GeometryType(osm_way.geom)= 'ST_LineString'
+        AND tags != '{}'
+        AND member_ref IS NULL WITH NO DATA;

@@ -12,16 +12,19 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    TABLE
+        IF EXISTS osm_way CASCADE;
 
-DROP TABLE IF EXISTS osm_way CASCADE;
-CREATE TABLE IF NOT EXISTS osm_way
-(
-    id        int8 PRIMARY KEY,
-    version   int,
-    uid       int,
-    timestamp timestamp without time zone,
-    changeset int8,
-    tags      jsonb,
-    nodes     int8[],
-    geom      geometry
-);
+CREATE
+    TABLE
+        IF NOT EXISTS osm_way(
+            id int8 PRIMARY KEY,
+            version INT,
+            uid INT,
+            TIMESTAMP TIMESTAMP WITHOUT TIME ZONE,
+            changeset int8,
+            tags jsonb,
+            nodes int8 [],
+            geom geometry
+        );

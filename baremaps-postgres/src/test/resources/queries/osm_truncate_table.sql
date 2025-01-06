@@ -12,7 +12,15 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-TRUNCATE TABLE osm_headers;
-TRUNCATE TABLE osm_nodes;
-TRUNCATE TABLE osm_ways;
-TRUNCATE TABLE osm_relations;
+
+TRUNCATE TABLE
+    osm_headers;
+
+TRUNCATE TABLE
+    osm_nodes;
+
+TRUNCATE TABLE
+    osm_ways;
+
+TRUNCATE TABLE
+    osm_relations;

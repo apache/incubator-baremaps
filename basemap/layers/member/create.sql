@@ -12,14 +12,23 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_member CASCADE;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_member CASCADE;
-CREATE MATERIALIZED VIEW IF NOT EXISTS osm_member AS
-SELECT DISTINCT member_ref as member_ref
-FROM osm_relation,
-     unnest(member_types, member_refs) AS way(member_type, member_ref)
-WHERE geom IS NOT NULL
-  AND member_type = 1
-  AND tags ->> 'type' = 'multipolygon'
-  AND NOT tags ->> 'natural' = 'coastline'
-WITH NO DATA;
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_member AS SELECT
+        DISTINCT member_ref AS member_ref
+    FROM
+        osm_relation,
+        UNNEST(
+            member_types,
+            member_refs
+        ) AS way(
+            member_type,
+            member_ref
+        )
+    WHERE
+        geom IS NOT NULL
+        AND member_type = 1
+        AND tags ->> 'type' = 'multipolygon'
+        AND NOT tags ->> 'natural' = 'coastline' WITH NO DATA;

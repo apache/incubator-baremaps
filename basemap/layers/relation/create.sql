@@ -12,18 +12,21 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    TABLE
+        IF EXISTS osm_relation CASCADE;
 
-DROP TABLE IF EXISTS osm_relation CASCADE;
-CREATE TABLE IF NOT EXISTS osm_relation
-(
-    id           int8 PRIMARY KEY,
-    version      int,
-    uid          int,
-    timestamp    timestamp without time zone,
-    changeset    int8,
-    tags         jsonb,
-    member_refs  bigint[],
-    member_types int[],
-    member_roles text[],
-    geom         geometry
-);
+CREATE
+    TABLE
+        IF NOT EXISTS osm_relation(
+            id int8 PRIMARY KEY,
+            version INT,
+            uid INT,
+            TIMESTAMP TIMESTAMP WITHOUT TIME ZONE,
+            changeset int8,
+            tags jsonb,
+            member_refs BIGINT [],
+            member_types INT [],
+            member_roles text [],
+            geom geometry
+        );

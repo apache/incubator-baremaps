@@ -7,11 +7,21 @@
 -- is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 -- or implied. See the License for the specific language governing permissions and limitations under
 -- the License.
+DROP
+    MATERIALIZED VIEW IF EXISTS esa_landcover CASCADE;
 
-DROP MATERIALIZED VIEW IF EXISTS esa_landcover CASCADE;
+CREATE
+    MATERIALIZED VIEW esa_landcover AS SELECT
+        id AS id,
+        jsonb_build_object(
+            'landcover',
+            class
+        ) AS tags,
+        geometry AS geom
+    FROM
+        low_shp;
 
-CREATE MATERIALIZED VIEW esa_landcover AS
-SELECT id as id, jsonb_build_object('landcover', class) as tags, geometry as geom
-FROM low_shp;
-
-CREATE INDEX IF NOT EXISTS esa_landcover_index ON esa_landcover USING SPGIST (geom);
+CREATE
+    INDEX IF NOT EXISTS esa_landcover_index ON
+    esa_landcover
+        USING SPGIST(geom);

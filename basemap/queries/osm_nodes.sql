@@ -12,7 +12,15 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+CREATE
+    INDEX IF NOT EXISTS osm_nodes_geom_index ON
+    osm_nodes
+        USING gist(geom);
 
-CREATE INDEX IF NOT EXISTS osm_nodes_geom_index ON osm_nodes USING gist (geom);
-CREATE INDEX IF NOT EXISTS osm_nodes_tags_index ON osm_nodes USING gin (tags);
+CREATE
+    INDEX IF NOT EXISTS osm_nodes_tags_index ON
+    osm_nodes
+        USING gin(tags);
+
 -- CREATE INDEX IF NOT EXISTS osm_nodes_tags_tsvector_index ON osm_nodes USING gin (to_tsvector('english', tags));
+

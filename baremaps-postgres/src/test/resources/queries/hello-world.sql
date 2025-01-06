@@ -13,8 +13,5 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-DO $$
-    BEGIN
-        PERFORM 'Hello, World!';
-    END
-$$;
+DO $$ BEGIN PERFORM 'Hello, World!';
+END $$;
