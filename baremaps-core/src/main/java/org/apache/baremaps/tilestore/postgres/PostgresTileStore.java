@@ -165,8 +165,8 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
               .replace("$zoom", String.valueOf(zoom));
           var querySqlWithParams = String.format(
               "SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags - 'id' AS tags, t.id AS id "
-                  + "FROM (%s) AS t WHERE t.geom IS NOT NULL "
-                  + "AND t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))",
+                  + "FROM ((%s) AS t1 WHERE t1.geom IS NOT NULL "
+                  + "AND t1.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) as t",
               querySql);
           layerSql.append(querySqlWithParams);
 
