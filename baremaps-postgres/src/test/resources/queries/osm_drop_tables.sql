@@ -14,16 +14,16 @@
 -- limitations under the License.
 DROP
     TABLE
-        IF EXISTS osm_headers;
+        IF EXISTS osm_header;
 
 DROP
     TABLE
-        IF EXISTS osm_nodes;
+        IF EXISTS osm_node;
 
 DROP
     TABLE
-        IF EXISTS osm_ways;
+        IF EXISTS osm_way;
 
 DROP
     TABLE
-        IF EXISTS osm_relations;
+        IF EXISTS osm_relation;

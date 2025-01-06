@@ -26,8 +26,6 @@ export default {
                 // "layers/way/refresh.sql",
                 // "layers/relation/refresh.sql",
                 // "layers/member/refresh.sql",
-                // "layers/linestring/refresh.sql",
-                // "layers/polygon/refresh.sql",
                 // "layers/highway/refresh.sql",
                 // "layers/landuse/refresh.sql",
                 // "layers/leisure/refresh.sql",

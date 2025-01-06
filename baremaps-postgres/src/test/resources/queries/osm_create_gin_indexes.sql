@@ -13,11 +13,11 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 CREATE
-    INDEX CONCURRENTLY IF NOT EXISTS osm_ways_gin ON
-    osm_ways
+    INDEX IF NOT EXISTS osm_way_gin ON
+    osm_way
         USING gin(nodes);
 
 CREATE
-    INDEX CONCURRENTLY IF NOT EXISTS osm_relations_gin ON
-    osm_relations
+    INDEX IF NOT EXISTS osm_relation_gin ON
+    osm_relation
         USING gin(member_refs);

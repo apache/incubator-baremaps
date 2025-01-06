@@ -14,7 +14,7 @@
 -- limitations under the License.
 CREATE
     TABLE
-        IF NOT EXISTS osm_headers(
+        IF NOT EXISTS osm_header(
             replication_sequence_number BIGINT PRIMARY KEY,
             replication_timestamp TIMESTAMP WITHOUT TIME ZONE,
             replication_url text,
@@ -24,7 +24,7 @@ CREATE
 
 CREATE
     TABLE
-        osm_nodes(
+        osm_node(
             id BIGINT PRIMARY KEY,
             version INT,
             uid INT,
@@ -38,7 +38,7 @@ CREATE
 
 CREATE
     TABLE
-        osm_ways(
+        osm_way(
             id BIGINT PRIMARY KEY,
             version INT,
             uid INT,
@@ -51,7 +51,7 @@ CREATE
 
 CREATE
     TABLE
-        osm_relations(
+        osm_relation(
             id BIGINT PRIMARY KEY,
             version INT,
             uid INT,

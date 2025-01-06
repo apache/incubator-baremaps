@@ -14,13 +14,13 @@
 -- limitations under the License.
 
 TRUNCATE TABLE
-    osm_headers;
+    osm_header;
 
 TRUNCATE TABLE
-    osm_nodes;
+    osm_node;
 
 TRUNCATE TABLE
-    osm_ways;
+    osm_way;
 
 TRUNCATE TABLE
-    osm_relations;
+    osm_relation;
