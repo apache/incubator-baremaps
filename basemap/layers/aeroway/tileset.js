@@ -21,7 +21,7 @@ export default {
             minzoom: 13,
             maxzoom: 20,
             sql:
-                "SELECT id, tags, geom FROM osm_aerialway",
+                "SELECT id, tags, geom FROM osm_aeroway",
         },
     ],
 }

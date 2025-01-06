@@ -22,13 +22,13 @@ let directives = [
     {
         'filter': ['==', ['get', 'aeroway'], 'runway'],
         'line-color': theme.aerowayRunwayLineColor,
-        'line-width': 1,
+        'line-width-stops': theme.aerowayRunwayLineWidth,
     },
     {
 
         'filter': ['==', ['get', 'aeroway'], 'taxiway'],
         'line-color': theme.aerowayTaxiwayLineColor,
-        'line-width': 1,
+        'line-width-stops': theme.aerowayTaxiwayLineWidth,
     },
 ];
 
