@@ -16,8 +16,7 @@ CREATE
     OR REPLACE VIEW osm_linestring AS SELECT
         id,
         tags,
-        geom,
-        changeset
+        geom
     FROM
         osm_way
     LEFT JOIN osm_member ON
@@ -26,4 +25,26 @@ CREATE
         geom IS NOT NULL
         AND ST_GeometryType(osm_way.geom)= 'ST_LineString'
         AND tags != '{}'
-        AND member_ref IS NULL;
+        AND member_ref IS NULL
+UNION SELECT
+        id,
+        tags,
+        geom
+    FROM
+        osm_relation
+    WHERE
+        geom IS NOT NULL
+        AND ST_GeometryType(osm_relation.geom)= 'ST_LineString'
+        AND tags != '{}'
+UNION SELECT
+        id,
+        tags,
+        (
+            st_dump(geom)
+        ).geom AS geom
+    FROM
+        osm_relation
+    WHERE
+        geom IS NOT NULL
+        AND ST_GeometryType(osm_relation.geom)= 'ST_MultiLineString'
+        AND tags != '{}';

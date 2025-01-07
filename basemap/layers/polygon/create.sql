@@ -12,11 +12,8 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-DROP
-    MATERIALIZED VIEW IF EXISTS osm_polygon CASCADE;
-
 CREATE
-    MATERIALIZED VIEW IF NOT EXISTS osm_polygon AS SELECT
+    OR REPLACE VIEW osm_polygon AS SELECT
         id,
         tags,
         geom
@@ -50,4 +47,4 @@ UNION SELECT
     WHERE
         geom IS NOT NULL
         AND ST_GeometryType(osm_relation.geom)= 'ST_MultiPolygon'
-        AND tags != '{}' WITH NO DATA;
+        AND tags != '{}';
