@@ -15,10 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_power AS SELECT
         id,
-        jsonb_build_object(
-            'power',
-            tags -> 'power'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

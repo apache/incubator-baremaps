@@ -15,9 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_building AS SELECT
         id,
-        jsonb_build_object(
-            'addr:housenumber',
-            tags -> 'addr:housenumber',
+        tags || jsonb_build_object(
             'extrusion:base',
             CASE
                 WHEN tags ? 'min_height' THEN convert_to_number(
@@ -70,9 +68,7 @@ CREATE
         )
 UNION SELECT
         id,
-        jsonb_build_object(
-            'aaddr:housenumber',
-            tags -> 'addr:housenumber',
+        tags || jsonb_build_object(
             'extrusion:base',
             CASE
                 WHEN tags ? 'min_height' THEN convert_to_number(

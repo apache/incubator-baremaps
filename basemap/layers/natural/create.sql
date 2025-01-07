@@ -16,14 +16,7 @@
 CREATE
     OR REPLACE VIEW osm_natural AS SELECT
         id,
-        jsonb_build_object(
-            'natural',
-            tags -> 'natural',
-            'surface',
-            tags -> 'surface',
-            'lake',
-            tags -> 'lake'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

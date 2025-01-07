@@ -15,10 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_attraction AS SELECT
         id,
-        jsonb_build_object(
-            'attraction',
-            tags -> 'attraction'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

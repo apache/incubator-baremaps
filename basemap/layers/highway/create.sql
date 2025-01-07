@@ -16,30 +16,7 @@
 CREATE
     OR REPLACE VIEW osm_highway AS SELECT
         id,
-        jsonb_build_object(
-            'highway',
-            tags -> 'highway',
-            'footway',
-            tags -> 'footway',
-            'sidewalk',
-            tags -> 'sidewalk',
-            'cycleway',
-            tags -> 'cycleway',
-            'bridge',
-            tags -> 'bridge',
-            'tunnel',
-            tags -> 'tunnel',
-            'access',
-            tags -> 'access',
-            'area',
-            tags -> 'area',
-            'bicycle',
-            tags -> 'bicycle',
-            'construction',
-            tags -> 'construction',
-            'name',
-            tags -> 'name'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

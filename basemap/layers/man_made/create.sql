@@ -15,10 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_man_made AS SELECT
         id,
-        jsonb_build_object(
-            'man_made',
-            tags -> 'man_made'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

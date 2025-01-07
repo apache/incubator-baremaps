@@ -16,10 +16,7 @@
 CREATE
     OR REPLACE VIEW osm_amenity AS SELECT
         id,
-        jsonb_build_object(
-            'amenity',
-            tags -> 'amenity'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

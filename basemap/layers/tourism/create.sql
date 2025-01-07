@@ -15,10 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_tourism AS SELECT
         id,
-        jsonb_build_object(
-            'tourism',
-            tags -> 'tourism'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_relation

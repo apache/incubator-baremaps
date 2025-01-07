@@ -15,10 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_aeroway AS SELECT
         id,
-        jsonb_build_object(
-            'aeroway',
-            tags -> 'aeroway'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

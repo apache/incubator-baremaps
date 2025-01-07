@@ -15,12 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_boundary AS SELECT
         id,
-        jsonb_build_object(
-            'boudary',
-            tags -> 'boudary',
-            'admin_level',
-            tags -> 'admin_level'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

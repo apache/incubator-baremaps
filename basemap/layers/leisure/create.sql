@@ -16,10 +16,7 @@
 CREATE
     OR REPLACE VIEW osm_leisure AS SELECT
         id,
-        jsonb_build_object(
-            'leisure',
-            tags -> 'leisure'
-        ) AS tags,
+         tags,
         geom
     FROM
         osm_way
@@ -27,10 +24,7 @@ CREATE
         tags ? 'leisure'
 UNION SELECT
         id,
-        jsonb_build_object(
-            'leisure',
-            tags -> 'leisure'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_relation

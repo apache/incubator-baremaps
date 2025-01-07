@@ -16,10 +16,7 @@
 CREATE
     OR REPLACE VIEW osm_landuse AS SELECT
         id,
-        jsonb_build_object(
-            'landuse',
-            tags -> 'landuse'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way

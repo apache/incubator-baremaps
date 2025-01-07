@@ -15,10 +15,7 @@
 CREATE
     OR REPLACE VIEW osm_barrier AS SELECT
         id,
-        jsonb_build_object(
-            'barrier',
-            tags -> 'barrier'
-        ) AS tags,
+        tags,
         geom
     FROM
         osm_way
