@@ -13,151 +13,151 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 DROP
-    INDEX IF EXISTS osm_highway_filtered_geom;
+    INDEX IF EXISTS osm_railway_filtered_geom;
 
-REFRESH MATERIALIZED VIEW osm_highway_filtered;
+REFRESH MATERIALIZED VIEW osm_railway_filtered;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_filtered_geom ON
-    osm_highway_filtered
+    INDEX IF NOT EXISTS osm_railway_filtered_geom ON
+    osm_railway_filtered
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_clustered_geom;
+    INDEX IF EXISTS osm_railway_clustered_geom;
 
-REFRESH MATERIALIZED VIEW osm_highway_clustered;
+REFRESH MATERIALIZED VIEW osm_railway_clustered;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_clustered_geom ON
-    osm_highway_clustered
+    INDEX IF NOT EXISTS osm_railway_clustered_geom ON
+    osm_railway_clustered
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_simplified_geom;
+    INDEX IF EXISTS osm_railway_simplified_geom;
 
-REFRESH MATERIALIZED VIEW osm_highway_simplified;
+REFRESH MATERIALIZED VIEW osm_railway_simplified;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_simplified_geom ON
-    osm_highway_simplified
+    INDEX IF NOT EXISTS osm_railway_simplified_geom ON
+    osm_railway_simplified
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z12_geom_idx;
+    INDEX IF EXISTS osm_railway_z12_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z12;
+REFRESH MATERIALIZED VIEW osm_railway_z12;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z12_geom_idx ON
-    osm_highway_z12
+    INDEX IF NOT EXISTS osm_railway_z12_geom_idx ON
+    osm_railway_z12
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z11_geom_idx;
+    INDEX IF EXISTS osm_railway_z11_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z11;
+REFRESH MATERIALIZED VIEW osm_railway_z11;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z11_geom_idx ON
-    osm_highway_z11
+    INDEX IF NOT EXISTS osm_railway_z11_geom_idx ON
+    osm_railway_z11
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z10_geom_idx;
+    INDEX IF EXISTS osm_railway_z10_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z10;
+REFRESH MATERIALIZED VIEW osm_railway_z10;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z10_geom_idx ON
-    osm_highway_z10
+    INDEX IF NOT EXISTS osm_railway_z10_geom_idx ON
+    osm_railway_z10
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z9_geom_idx;
+    INDEX IF EXISTS osm_railway_z9_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z9;
+REFRESH MATERIALIZED VIEW osm_railway_z9;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z9_geom_idx ON
-    osm_highway_z9
+    INDEX IF NOT EXISTS osm_railway_z9_geom_idx ON
+    osm_railway_z9
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z8_geom_idx;
+    INDEX IF EXISTS osm_railway_z8_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z8;
+REFRESH MATERIALIZED VIEW osm_railway_z8;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z8_geom_idx ON
-    osm_highway_z8
+    INDEX IF NOT EXISTS osm_railway_z8_geom_idx ON
+    osm_railway_z8
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z7_geom_idx;
+    INDEX IF EXISTS osm_railway_z7_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z7;
+REFRESH MATERIALIZED VIEW osm_railway_z7;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z7_geom_idx ON
-    osm_highway_z7
+    INDEX IF NOT EXISTS osm_railway_z7_geom_idx ON
+    osm_railway_z7
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z6_geom_idx;
+    INDEX IF EXISTS osm_railway_z6_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z6;
+REFRESH MATERIALIZED VIEW osm_railway_z6;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z6_geom_idx ON
-    osm_highway_z6
+    INDEX IF NOT EXISTS osm_railway_z6_geom_idx ON
+    osm_railway_z6
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z5_geom_idx;
+    INDEX IF EXISTS osm_railway_z5_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z5;
+REFRESH MATERIALIZED VIEW osm_railway_z5;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z5_geom_idx ON
-    osm_highway_z5
+    INDEX IF NOT EXISTS osm_railway_z5_geom_idx ON
+    osm_railway_z5
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z4_geom_idx;
+    INDEX IF EXISTS osm_railway_z4_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z4;
+REFRESH MATERIALIZED VIEW osm_railway_z4;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z4_geom_idx ON
-    osm_highway_z4
+    INDEX IF NOT EXISTS osm_railway_z4_geom_idx ON
+    osm_railway_z4
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z3_geom_idx;
+    INDEX IF EXISTS osm_railway_z3_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z3;
+REFRESH MATERIALIZED VIEW osm_railway_z3;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z3_geom_idx ON
-    osm_highway_z3
+    INDEX IF NOT EXISTS osm_railway_z3_geom_idx ON
+    osm_railway_z3
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z2_geom_idx;
+    INDEX IF EXISTS osm_railway_z2_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z2;
+REFRESH MATERIALIZED VIEW osm_railway_z2;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z2_geom_idx ON
-    osm_highway_z2
+    INDEX IF NOT EXISTS osm_railway_z2_geom_idx ON
+    osm_railway_z2
         USING GIST(geom);
 
 DROP
-    INDEX IF EXISTS osm_highway_z1_geom_idx;
+    INDEX IF EXISTS osm_railway_z1_geom_idx;
 
-REFRESH MATERIALIZED VIEW osm_highway_z1;
+REFRESH MATERIALIZED VIEW osm_railway_z1;
 
 CREATE
-    INDEX IF NOT EXISTS osm_highway_z1_geom_idx ON
-    osm_highway_z1
+    INDEX IF NOT EXISTS osm_railway_z1_geom_idx ON
+    osm_railway_z1
         USING GIST(geom);

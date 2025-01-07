@@ -187,7 +187,7 @@ CREATE
         st_simplifypreservetopology(
             geom,
             78270 / POWER( 2, 11 )
-        ) AS geo
+        ) AS geom
     FROM
         osm_railway_simplified
     WHERE
