@@ -18,10 +18,9 @@ CREATE
         tags,
         geom
     FROM
-        osm_way
+        osm_linestring
     WHERE
-        geom IS NOT NULL
-        AND tags ? 'route';
+        tags ? 'route';
 
 CREATE
     OR REPLACE VIEW osm_route_z20 AS SELECT
@@ -87,46 +86,84 @@ CREATE
     FROM
         osm_route;
 
+------------------
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_route_filtered CASCADE;
+
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_route_filtered AS SELECT
+        tags -> 'route' AS route,
+        geom AS geom
+    FROM
+        osm_route
+    WHERE
+        tags ->> 'route' IN(
+            'road',
+            'bus',
+            'trolleybus',
+            'route',
+            'ferry',
+            'train',
+            'subway',
+            'light_rail',
+            'railway',
+            'tram',
+            'funicular'
+        ) WITH NO DATA;
+
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_route_clustered CASCADE;
+
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_route_clustered AS SELECT
+        route AS route,
+        geom AS geom,
+        ST_ClusterDBSCAN(
+            geom,
+            0,
+            1
+        ) OVER(
+            PARTITION BY route
+        ) AS cluster
+    FROM
+        osm_route_filtered WITH NO DATA;
+
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_simplified CASCADE;
 
 CREATE
-    MATERIALIZED VIEW IF NOT EXISTS osm_route_simplified AS SELECT
-        id,
-        tags,
-        geom
+    MATERIALIZED VIEW IF NOT EXISTS osm_route_simplified AS WITH merged AS(
+        SELECT
+            route AS route,
+            ST_LineMerge(
+                ST_Collect(geom)
+            ) AS geom
+        FROM
+            osm_route_clustered
+        GROUP BY
+            route,
+            cluster
+    ),
+    exploded AS(
+        SELECT
+            route AS route,
+            (
+                ST_Dump(geom)
+            ).geom AS geom
+        FROM
+            merged
+    ) SELECT
+        ROW_NUMBER() OVER() AS id,
+        jsonb_build_object(
+            'route',
+            route
+        ) AS tags,
+        geom AS geom
     FROM
-        (
-            SELECT
-                MIN( id ) AS id,
-                jsonb_build_object(
-                    'route',
-                    tags -> 'route'
-                ) AS tags,
-                (
-                    st_dump(
-                        st_linemerge(
-                            st_collect(geom)
-                        )
-                    )
-                ).geom AS geom
-            FROM
-                osm_way
-            WHERE
-                tags ->> 'route' IN(
-                    'light_rail',
-                    'monorail',
-                    'rail',
-                    'subway',
-                    'tram'
-                )
-                AND NOT tags ? 'service'
-            GROUP BY
-                tags -> 'route'
-        ) AS mergedDirective WITH NO DATA;
+        exploded WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z12;
+    MATERIALIZED VIEW IF EXISTS osm_route_z12 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z12 AS SELECT
@@ -147,7 +184,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z11;
+    MATERIALIZED VIEW IF EXISTS osm_route_z11 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z11 AS SELECT
@@ -168,7 +205,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z10;
+    MATERIALIZED VIEW IF EXISTS osm_route_z10 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z10 AS SELECT
@@ -189,7 +226,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z9;
+    MATERIALIZED VIEW IF EXISTS osm_route_z9 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z9 AS SELECT
@@ -210,7 +247,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z8;
+    MATERIALIZED VIEW IF EXISTS osm_route_z8 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z8 AS SELECT
@@ -231,7 +268,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z7;
+    MATERIALIZED VIEW IF EXISTS osm_route_z7 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z7 AS SELECT
@@ -252,7 +289,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z6;
+    MATERIALIZED VIEW IF EXISTS osm_route_z6 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z6 AS SELECT
@@ -273,7 +310,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z5;
+    MATERIALIZED VIEW IF EXISTS osm_route_z5 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z5 AS SELECT
@@ -294,7 +331,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z4;
+    MATERIALIZED VIEW IF EXISTS osm_route_z4 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z4 AS SELECT
@@ -315,7 +352,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z3;
+    MATERIALIZED VIEW IF EXISTS osm_route_z3 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z3 AS SELECT
@@ -336,7 +373,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z2;
+    MATERIALIZED VIEW IF EXISTS osm_route_z2 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z2 AS SELECT
@@ -357,7 +394,7 @@ CREATE
         ) WITH NO DATA;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z1;
+    MATERIALIZED VIEW IF EXISTS osm_route_z1 CASCADE;
 
 CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z1 AS SELECT

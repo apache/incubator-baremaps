@@ -156,7 +156,6 @@ CREATE
     FROM
         exploded WITH NO DATA;
 
--------------------
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z12 CASCADE;
 
