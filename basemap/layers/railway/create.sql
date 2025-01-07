@@ -12,48 +12,15 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-DROP
-    MATERIALIZED VIEW IF EXISTS osm_railway CASCADE;
-
 CREATE
-    MATERIALIZED VIEW IF NOT EXISTS osm_railway AS SELECT
+    OR REPLACE VIEW osm_railway AS SELECT
         id,
         tags,
         geom
     FROM
-        (
-            SELECT
-                MIN( id ) AS id,
-                jsonb_build_object(
-                    'railway',
-                    tags -> 'railway',
-                    'service',
-                    tags -> 'service',
-                    'tunnel',
-                    tags -> 'tunnel'
-                ) AS tags,
-                (
-                    st_dump(
-                        st_linemerge(
-                            st_collect(geom)
-                        )
-                    )
-                ).geom AS geom
-            FROM
-                osm_way
-            WHERE
-                tags ->> 'railway' IN(
-                    'light_rail',
-                    'monorail',
-                    'rail',
-                    'subway',
-                    'tram'
-                )
-            GROUP BY
-                tags -> 'railway',
-                tags -> 'service',
-                tags -> 'tunnel'
-        ) AS mergedDirective WITH NO DATA;
+        osm_way
+    WHERE
+        tags ? 'railway';
 
 CREATE
     OR REPLACE VIEW osm_railway_z20 AS SELECT
@@ -119,6 +86,77 @@ CREATE
     FROM
         osm_railway;
 
+------------------
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_railway_filtered CASCADE;
+
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_railway_filtered AS SELECT
+        tags -> 'railway' AS railway,
+        geom AS geom
+    FROM
+        osm_railway
+    WHERE
+        tags ->> 'railway' IN(
+            'light_rail',
+            'monorail',
+            'rail',
+            'subway',
+            'tram'
+        ) WITH NO DATA;
+
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_railway_clustered CASCADE;
+
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_railway_clustered AS SELECT
+        railway AS railway,
+        geom AS geom,
+        ST_ClusterDBSCAN(
+            geom,
+            0,
+            1
+        ) OVER(
+            PARTITION BY railway
+        ) AS cluster
+    FROM
+        osm_railway_filtered WITH NO DATA;
+
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_railway_simplified CASCADE;
+
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_railway_simplified AS WITH merged AS(
+        SELECT
+            railway AS railway,
+            ST_LineMerge(
+                ST_Collect(geom)
+            ) AS geom
+        FROM
+            osm_railway_clustered
+        GROUP BY
+            railway,
+            cluster
+    ),
+    exploded AS(
+        SELECT
+            railway AS railway,
+            (
+                ST_Dump(geom)
+            ).geom AS geom
+        FROM
+            merged
+    ) SELECT
+        ROW_NUMBER() OVER() AS id,
+        jsonb_build_object(
+            'railway',
+            railway
+        ) AS tags,
+        geom AS geom
+    FROM
+        exploded WITH NO DATA;
+
+-------------------
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z12 CASCADE;
 
@@ -126,19 +164,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z12 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 12 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 12 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -154,19 +185,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z11 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 11 )
+        ) AS geo
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 11 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -182,19 +206,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z10 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 10 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 10 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -210,19 +227,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z9 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 9 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 9 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -238,19 +248,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z8 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 8 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 8 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -266,19 +269,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z7 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 7 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 7 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -294,19 +290,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z6 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 6 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 6 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -322,19 +311,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z5 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 5 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 5 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -350,19 +332,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z4 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 4 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 4 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -378,19 +353,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z3 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 3 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 3 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -406,19 +374,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z2 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 2 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 2 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -434,19 +395,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_railway_z1 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 1 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 1 )
-                ) AS geom
-            FROM
-                osm_railway
-        ) AS osm_railway
+        osm_railway_simplified
     WHERE
         geom IS NOT NULL
         AND(
