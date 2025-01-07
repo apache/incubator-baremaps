@@ -13,14 +13,14 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 CREATE
-    INDEX IF NOT EXISTS osm_nodes_geom_index ON
-    osm_nodes
+    INDEX IF NOT EXISTS osm_node_geom_index ON
+    osm_node
         USING gist(geom);
 
 CREATE
-    INDEX IF NOT EXISTS osm_nodes_tags_index ON
-    osm_nodes
+    INDEX IF NOT EXISTS osm_node_tags_index ON
+    osm_node
         USING gin(tags);
 
--- CREATE INDEX IF NOT EXISTS osm_nodes_tags_tsvector_index ON osm_nodes USING gin (to_tsvector('english', tags));
+-- CREATE INDEX IF NOT EXISTS osm_node_tags_tsvector_index ON osm_node USING gin (to_tsvector('english', tags));
 

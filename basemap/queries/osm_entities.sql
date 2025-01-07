@@ -20,19 +20,19 @@ CREATE
             tags,
             geom
         FROM
-            osm_nodes
+            osm_node
     UNION SELECT
             'way' AS TYPE,
             id,
             tags,
             geom
         FROM
-            osm_ways
+            osm_way
     UNION SELECT
             'relation' AS TYPE,
             id,
             tags,
             geom
         FROM
-            osm_relations
+            osm_relation
     );

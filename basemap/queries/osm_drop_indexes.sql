@@ -13,28 +13,28 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 DROP
-    INDEX IF EXISTS osm_nodes_tags_index;
+    INDEX IF EXISTS osm_node_tags_index;
 
 DROP
-    INDEX IF EXISTS osm_nodes_tags_tsvector_index;
+    INDEX IF EXISTS osm_node_tags_tsvector_index;
 
 DROP
-    INDEX IF EXISTS osm_nodes_geom_index;
+    INDEX IF EXISTS osm_node_geom_index;
 
 DROP
-    INDEX IF EXISTS osm_ways_tags_index;
+    INDEX IF EXISTS osm_way_tags_index;
 
 DROP
-    INDEX IF EXISTS osm_ways_tags_tsvector_index;
+    INDEX IF EXISTS osm_way_tags_tsvector_index;
 
 DROP
-    INDEX IF EXISTS osm_ways_geom_index;
+    INDEX IF EXISTS osm_way_geom_index;
 
 DROP
-    INDEX IF EXISTS osm_relations_tags_index;
+    INDEX IF EXISTS osm_relation_tags_index;
 
 DROP
-    INDEX IF EXISTS osm_relations_tags_tsvector_index;
+    INDEX IF EXISTS osm_relation_tags_tsvector_index;
 
 DROP
-    INDEX IF EXISTS osm_relations_geom_index;
+    INDEX IF EXISTS osm_relation_geom_index;

@@ -55,7 +55,7 @@ public class ReferenceMap extends PostgresMap<Long, List<Long>> {
    * Constructs a {@code PostgresReferenceMap}.
    */
   public ReferenceMap(DataSource dataSource) {
-    this(dataSource, "public", "osm_ways");
+    this(dataSource, "public", "osm_way");
   }
 
   /**
