@@ -16,7 +16,7 @@
 CREATE
     OR REPLACE VIEW osm_leisure AS SELECT
         id,
-         tags,
+        tags,
         geom
     FROM
         osm_way

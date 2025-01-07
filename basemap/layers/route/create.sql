@@ -12,43 +12,16 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-DROP
-    MATERIALIZED VIEW IF EXISTS osm_route CASCADE;
-
 CREATE
-    MATERIALIZED VIEW IF NOT EXISTS osm_route AS SELECT
+    OR REPLACE VIEW osm_route AS SELECT
         id,
         tags,
         geom
     FROM
-        (
-            SELECT
-                MIN( id ) AS id,
-                jsonb_build_object(
-                    'route',
-                    tags -> 'route'
-                ) AS tags,
-                (
-                    st_dump(
-                        st_linemerge(
-                            st_collect(geom)
-                        )
-                    )
-                ).geom AS geom
-            FROM
-                osm_way
-            WHERE
-                tags ->> 'route' IN(
-                    'light_rail',
-                    'monorail',
-                    'rail',
-                    'subway',
-                    'tram'
-                )
-                AND NOT tags ? 'service'
-            GROUP BY
-                tags -> 'route'
-        ) AS mergedDirective WITH NO DATA;
+        osm_way
+    WHERE
+        geom IS NOT NULL
+        AND tags ? 'route';
 
 CREATE
     OR REPLACE VIEW osm_route_z20 AS SELECT
@@ -115,25 +88,56 @@ CREATE
         osm_route;
 
 DROP
-    MATERIALIZED VIEW IF EXISTS osm_route_z12;
+    MATERIALIZED VIEW IF EXISTS osm_route_simplified CASCADE;
 
 CREATE
-    MATERIALIZED VIEW IF NOT EXISTS osm_route_z12 AS SELECT
+    MATERIALIZED VIEW IF NOT EXISTS osm_route_simplified AS SELECT
         id,
         tags,
         geom
     FROM
         (
             SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 12 )
-                ) AS geom
+                MIN( id ) AS id,
+                jsonb_build_object(
+                    'route',
+                    tags -> 'route'
+                ) AS tags,
+                (
+                    st_dump(
+                        st_linemerge(
+                            st_collect(geom)
+                        )
+                    )
+                ).geom AS geom
             FROM
-                osm_route
-        ) AS osm_route
+                osm_way
+            WHERE
+                tags ->> 'route' IN(
+                    'light_rail',
+                    'monorail',
+                    'rail',
+                    'subway',
+                    'tram'
+                )
+                AND NOT tags ? 'service'
+            GROUP BY
+                tags -> 'route'
+        ) AS mergedDirective WITH NO DATA;
+
+DROP
+    MATERIALIZED VIEW IF EXISTS osm_route_z12;
+
+CREATE
+    MATERIALIZED VIEW IF NOT EXISTS osm_route_z12 AS SELECT
+        id,
+        tags,
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 12 )
+        ) AS geom
+    FROM
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -149,19 +153,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z11 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 11 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 11 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -177,19 +174,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z10 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 10 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 10 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -205,19 +195,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z9 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 9 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 9 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -233,19 +216,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z8 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 8 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 8 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -261,19 +237,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z7 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 7 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 7 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -289,19 +258,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z6 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 6 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 6 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -317,19 +279,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z5 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 5 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 5 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -345,19 +300,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z4 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 4 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 4 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -373,19 +321,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z3 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 3 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 3 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -401,19 +342,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z2 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 2 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 2 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
@@ -429,19 +363,12 @@ CREATE
     MATERIALIZED VIEW IF NOT EXISTS osm_route_z1 AS SELECT
         id,
         tags,
-        geom
+        st_simplifypreservetopology(
+            geom,
+            78270 / POWER( 2, 1 )
+        ) AS geom
     FROM
-        (
-            SELECT
-                id,
-                tags,
-                st_simplifypreservetopology(
-                    geom,
-                    78270 / POWER( 2, 1 )
-                ) AS geom
-            FROM
-                osm_route
-        ) AS osm_route
+        osm_route_simplified
     WHERE
         geom IS NOT NULL
         AND(
