@@ -18,14 +18,9 @@ export default {
     "id": "railway",
     "queries": [
         {
-            "minzoom": 9,
-            "maxzoom": 13,
-            "sql": "SELECT id, tags, geom FROM osm_railway_z$zoom"
-        },
-        {
-            "minzoom": 13,
+            "minzoom": 7,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_way WHERE tags ? 'railway'"
+            "sql": "SELECT id, tags, geom FROM osm_railway_z$zoom"
         }
     ]
 }

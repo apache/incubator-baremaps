@@ -326,7 +326,7 @@ export default {
     manMadeIconColor: 'rgb(85, 85, 85)',
     manMadePierFillColor: 'rgb(184, 184, 184)',
     manMadePierLineColor: 'rgb(242, 239, 233)',
-    manMadePierLineWidth: [5, 0.5, 16, 3],
+    manMadePierLineWidth: [5, 0.5, 16, 2],
     manMadePierTextHaloColor: 'rgba(255,255,255,0.8)',
     manMadeWasteWaterPlantFillColor: 'rgb(235, 219, 231)',
     naturalBareRockBackgroundFillColor: 'rgb(217, 212, 206)',

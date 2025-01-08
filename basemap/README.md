@@ -16,9 +16,7 @@ limitations under the License.
 -->
 # OpenStreetMap Vecto
 
-🚧 🚧 Work in progress 🚧 🚧
-
-This directory contains the configuration files for a general-purpose map.
+This directory contains the configuration files for a general-purpose map based on OpenStreetMap data.
 It is used to generate vector tiles and to produce a Mapbox style inspired by [OpenStreetMap Carto](https://github.com/gravitystorm/openstreetmap-carto).
 
 ## Requirements
@@ -52,25 +50,39 @@ checkpoint_completion_target = 0.9
 max_wal_senders = 0
 ```
 
-## Importing the data
+## Initializing the database
 
-Assuming that the necessary requirements have been installed, the database can be populated with the following command. The import workflow will download openstreetmap (osm.pbf) and other data sources into the database.
+Assuming that the necessary requirements have been installed, the database can be populated with the following commands.
 
 ```
+// This command creates the database schema
+baremaps workflow execute --file create.js
+
+// This command imports the data into the database
 baremaps workflow execute --file import.js
+
+// This command refreshes the materialized views
+baremaps workflow execute --file refresh.js
 ```
 
-## Updating the data
+## Updating the database
 
-The data can periodically be updated with the following command. The update workflow will download the latest changes from OpenStreetMap (osc.xml) and apply them to the database.
+The database can periodically be updated with the following commands. 
+The update workflow will download the latest changes from OpenStreetMap (osc.xml) and apply them to the database.
+Refreshing the materialized views is costly and only necessary if the low zoom levels need to be updated, therefore it is optional.
 
 ```
+// This command updates the database
 baremaps workflow execute --file update.js
+
+// This command refreshes the materialized views (optional)
+baremaps workflow execute --file refresh.js
 ```
 
 ## Serving the tiles and the style in dev mode
 
 The development server can be started with the following command.
+The dev mode automatically reloads the map when the configuration files are modified, which is useful for development and testing.
 
 ```
 baremaps map dev --log-level DEBUG \
@@ -106,8 +118,14 @@ Simply put, it adds in the ability to describe the `vector_tiles` and their cont
 
 ## Editing the style
 
-The configuration format used in the `line.js` file follows the [Mapbox style specification](https://github.com/mapbox/mapbox-gl-js).
-Baremaps integrates [Maputnik](https://maputnik.github.io/) and most of the modifications will take place in the browser.
+The configuration format used in the `style.js` file follows the [Mapbox style specification](https://github.com/mapbox/mapbox-gl-js).
+
+## JavaScript as a configuration language
+
+All the configuration files are written in JavaScript instead of JSON.
+This allows for more flexibility and the use of JavaScript functions to generate the configuration.
+Additionally, it allows for imports and comments, which are not supported in JSON.
+As the configuration files got bigger and more complex, this choice became more and more beneficial.
 
 ## Tools
 

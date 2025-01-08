@@ -103,7 +103,8 @@ CREATE
             'rail',
             'subway',
             'tram'
-        ) WITH NO DATA;
+        )
+        AND NOT tags ? 'service' WITH NO DATA;
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_clustered CASCADE;
