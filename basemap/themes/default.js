@@ -319,6 +319,8 @@ export default {
     leisureSwimmingPoolOverlayOutlineColor: 'rgb(120, 183, 202)',
     leisureTrackBackgroundFillColor: 'rgb(196, 224, 203)',
     leisureTrackBackgroundFillOutlineColor: 'rgba(101, 206, 166, 1.0)',
+    leisureTrackLineColor: "rgb(196, 224, 203)",
+    leisureTrackLineWidth: [5, 0.5, 16, 2],
     manMadeBridgeFillColor: 'rgb(184, 184, 184)',
     manMadeGroyneFillColor: 'rgb(184, 184, 184)',
     manMadeIconColor: 'rgb(85, 85, 85)',
@@ -416,4 +418,5 @@ export default {
     waterwayTextColor: 'rgba(26, 109, 187, 1)',
     waterwayTextHaloColor: 'rgba(255, 255, 255, 0.8)',
     waterwayTunnelColor: 'rgb(216,237,250)',
+
 };

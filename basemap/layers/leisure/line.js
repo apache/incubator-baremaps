@@ -24,6 +24,11 @@ export let directives = [
         'line-color': theme.leisureNatureReserveLineColor,
         'line-width': 2,
     },
+    {
+        filter: ['==', ['get', 'leisure'], 'track'],
+        'line-color': theme.leisureTrackLineColor,
+        'line-width-stops': theme.leisureTrackLineWidth,
+    },
 ];
 
 export default asLayerObject(withSortKeys(directives), {
@@ -36,4 +41,5 @@ export default asLayerObject(withSortKeys(directives), {
         'line-cap': 'round',
         'line-join': 'round',
     },
+    'filter': ['==', ['geometry-type'], 'LineString'],
 });
