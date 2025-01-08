@@ -40,7 +40,7 @@ class PostgresTileStoreTest {
             List.of(new TilesetQuery(0, 20, "SELECT id, tags, geom FROM table")))));
     var query = PostgresTileStore.prepareQuery(tileset, 10);
     assertEquals(
-        "SELECT (SELECT ST_AsMVT(mvtGeom.*, 'a') FROM (SELECT tile.id AS id, tile.tags - 'id' AS tags, ST_AsMVTGeom(tile.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM ( SELECT data.id AS id, data.tags AS tags, data.geom AS geom FROM (SELECT id, tags, geom FROM table) AS data WHERE data.geom IS NOT NULL AND data.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) AS tile ) AS mvtGeom) || (SELECT ST_AsMVT(mvtGeom.*, 'b') FROM (SELECT tile.id AS id, tile.tags - 'id' AS tags, ST_AsMVTGeom(tile.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM ( SELECT data.id AS id, data.tags AS tags, data.geom AS geom FROM (SELECT id, tags, geom FROM table) AS data WHERE data.geom IS NOT NULL AND data.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) AS tile ) AS mvtGeom) AS mvtTile",
+        "SELECT (SELECT ST_AsMVT(mvtGeom.*, 'a') FROM (SELECT tile.id AS id, tile.tags - 'id' AS tags, ST_AsMVTGeom(tile.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM (SELECT id, tags, geom FROM table WHERE geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) as tile ) AS mvtGeom) || (SELECT ST_AsMVT(mvtGeom.*, 'b') FROM (SELECT tile.id AS id, tile.tags - 'id' AS tags, ST_AsMVTGeom(tile.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM (SELECT id, tags, geom FROM table WHERE geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) as tile ) AS mvtGeom) AS mvtTile",
         query.sql());
   }
 }

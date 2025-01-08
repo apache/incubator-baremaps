@@ -21,7 +21,7 @@ package org.apache.baremaps.tilestore.postgres;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
@@ -163,20 +163,25 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
               .replace(";", "")
               .replace("?", "??")
               .replace("$zoom", String.valueOf(zoom));
+
+          // Append a new condition or a where clause
+          if (querySql.toLowerCase().contains("where")) {
+            querySql += " AND ";
+          } else {
+            querySql += " WHERE ";
+          }
+
+          // Append the condition to the query sql
+          querySql +=
+              "geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))";
+
           var querySqlWithParams = String.format(
               """
                   SELECT
                     tile.id AS id,
                     tile.tags - 'id' AS tags,
                     ST_AsMVTGeom(tile.geom, ST_TileEnvelope(?, ?, ?)) AS geom
-                  FROM (
-                    SELECT
-                      data.id AS id,
-                      data.tags AS tags,
-                      data.geom AS geom
-                    FROM (%s) AS data
-                    WHERE data.geom IS NOT NULL
-                      AND data.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) AS tile
+                  FROM (%s) as tile
                   """,
               querySql);
           layerSql.append(querySqlWithParams);
