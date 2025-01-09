@@ -21,7 +21,7 @@ package org.apache.baremaps.tilestore.postgres;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
@@ -64,7 +64,7 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
 
   /**
    * A record that holds the sql of a prepared statement and the number of parameters.
-   * 
+   *
    * @param sql
    * @param parameters
    */
@@ -163,10 +163,26 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
               .replace(";", "")
               .replace("?", "??")
               .replace("$zoom", String.valueOf(zoom));
+
+          // Append a new condition or a where clause
+          if (querySql.toLowerCase().contains("where")) {
+            querySql += " AND ";
+          } else {
+            querySql += " WHERE ";
+          }
+
+          // Append the condition to the query sql
+          querySql +=
+              "geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))";
+
           var querySqlWithParams = String.format(
-              "SELECT ST_AsMVTGeom(t.geom, ST_TileEnvelope(?, ?, ?)) AS geom, t.tags - 'id' AS tags, t.id AS id "
-                  + "FROM (%s) AS t WHERE t.geom IS NOT NULL "
-                  + "AND t.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))",
+              """
+                  SELECT
+                    tile.id AS id,
+                    tile.tags - 'id' AS tags,
+                    ST_AsMVTGeom(tile.geom, ST_TileEnvelope(?, ?, ?)) AS geom
+                  FROM (%s) as tile
+                  """,
               querySql);
           layerSql.append(querySqlWithParams);
 
@@ -201,7 +217,7 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
     tileSql.append(tileQueryTail);
 
     // Format the sql query
-    var sql = tileSql.toString().replace("\n", " ");
+    var sql = tileSql.toString().replaceAll("\\s+", " ");
 
     return new Query(sql, paramCount);
   }
