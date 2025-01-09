@@ -19,22 +19,23 @@ import config from "./config.js";
 export default {
     "steps": [
         {
-            "id": "refresh",
+            "id": "refresh-node",
             "needs": [],
             "tasks": [
                 "layers/node/refresh.sql",
                 "layers/way/refresh.sql",
                 "layers/relation/refresh.sql",
                 "layers/member/refresh.sql",
+                "layers/amenity/refresh.sql",
+                "layers/ocean/refresh.sql",
                 "layers/highway/refresh.sql",
                 "layers/landuse/refresh.sql",
                 "layers/leisure/refresh.sql",
                 "layers/natural/refresh.sql",
-                // "layers/ocean/refresh.sql",
                 "layers/point/refresh.sql",
                 "layers/railway/refresh.sql",
                 "layers/route/refresh.sql",
-                "layers/waterway/refresh.sql",
+                "layers/waterway/refresh.sql"
             ].map(file => {
                 return {
                     "type": "ExecuteSql",

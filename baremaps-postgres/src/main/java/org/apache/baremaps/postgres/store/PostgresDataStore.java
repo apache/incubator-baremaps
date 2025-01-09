@@ -121,18 +121,18 @@ public class PostgresDataStore implements DataStore {
 
       var schema = new DataSchemaImpl(name, properties);
 
-      // Drop the table if it exists
-      var dropQuery = dropTable(schema);
-      logger.debug(dropQuery);
-      try (var dropStatement = connection.prepareStatement(dropQuery)) {
-        dropStatement.execute();
-      }
-
       // Create the table
       var createQuery = createTable(schema);
       logger.debug(createQuery);
       try (var createStatement = connection.prepareStatement(createQuery)) {
         createStatement.execute();
+      }
+
+      // Truncate the table
+      var truncateQuery = truncateTable(schema);
+      logger.debug(truncateQuery);
+      try (var truncateStatement = connection.prepareStatement(truncateQuery)) {
+        truncateStatement.execute();
       }
 
       // Copy the data
@@ -207,6 +207,16 @@ public class PostgresDataStore implements DataStore {
   }
 
   /**
+   * Generate a truncate table query.
+   *
+   * @param schema the schema
+   * @return the query
+   */
+  protected String truncateTable(DataSchema schema) {
+    return String.format("TRUNCATE TABLE \"%s\" CASCADE", schema.name());
+  }
+
+  /**
    * Generate a create table query.
    *
    * @param schema the schema
@@ -214,7 +224,7 @@ public class PostgresDataStore implements DataStore {
    */
   protected String createTable(DataSchema schema) {
     StringBuilder builder = new StringBuilder();
-    builder.append("CREATE TABLE \"");
+    builder.append("CREATE TABLE IF NOT EXISTS \"");
     builder.append(schema.name());
     builder.append("\" (");
     builder.append(schema.columns().stream()

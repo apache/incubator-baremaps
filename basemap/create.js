@@ -22,6 +22,11 @@ export default {
             "id": "openstreetmap-water-polygons",
             "needs": [],
             "tasks": [
+                // Initialization
+                "queries/initialize.sql",
+                "queries/functions.sql",
+
+                // OpenStreetMap
                 "layers/header/create.sql",
                 "layers/node/create.sql",
                 "layers/way/create.sql",
@@ -41,16 +46,16 @@ export default {
                 "layers/leisure/create.sql",
                 "layers/man_made/create.sql",
                 "layers/natural/create.sql",
-                //"layers/ocean/create.sql",
                 "layers/point/create.sql",
                 "layers/power/create.sql",
                 "layers/railway/create.sql",
                 "layers/route/create.sql",
                 "layers/tourism/create.sql",
                 "layers/waterway/create.sql",
+                "layers/ocean/create.sql",
             ].map(file => {
                 return {
-                    "type": "ExecuteSql",
+                    "type": "ExecuteSqlScript",
                     "file": file,
                     "database": config.database,
                 }

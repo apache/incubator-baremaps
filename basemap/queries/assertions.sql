@@ -61,3 +61,58 @@ SELECT
         'SELECT assert_equals(1, 2)',
         'Assertion Failed: Expected 2, but was 1'
     );
+
+-- Test cases for the convert_to_number function
+SELECT
+    assert_equals(
+        convert_to_number(
+            '1',
+            0
+        ),
+        1
+    );
+
+SELECT
+    assert_equals(
+        convert_to_number(
+            '2.3',
+            0
+        ),
+        2.3
+    );
+
+SELECT
+    assert_equals(
+        convert_to_number(
+            '3,4',
+            0
+        ),
+        3.4
+    );
+
+SELECT
+    assert_equals(
+        convert_to_number(
+            '1.5m',
+            0
+        ),
+        1.5
+    );
+
+SELECT
+    assert_equals(
+        convert_to_number(
+            '6.6 m',
+            0
+        ),
+        6.6
+    );
+
+SELECT
+    assert_equals(
+        convert_to_number(
+            'abc',
+            0
+        ),
+        0
+    );

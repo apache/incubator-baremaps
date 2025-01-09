@@ -13,6 +13,18 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 DROP
+    TABLE
+        IF EXISTS water_polygons_shp CASCADE;
+
+CREATE
+    TABLE
+        IF NOT EXISTS water_polygons_shp(
+            x BIGINT,
+            y BIGINT,
+            geometry geometry
+        );
+
+DROP
     MATERIALIZED VIEW IF EXISTS osm_ocean CASCADE;
 
 CREATE
@@ -25,6 +37,18 @@ CREATE
         ) AS geom
     FROM
         water_polygons_shp WITH NO DATA;
+
+DROP
+    TABLE
+        IF EXISTS simplified_water_polygons_shp CASCADE;
+
+CREATE
+    TABLE
+        IF NOT EXISTS simplified_water_polygons_shp(
+            x BIGINT,
+            y BIGINT,
+            geometry geometry
+        );
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_ocean_simplified CASCADE;

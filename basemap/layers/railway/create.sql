@@ -86,7 +86,6 @@ CREATE
     FROM
         osm_railway;
 
-------------------
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_filtered CASCADE;
 
