@@ -87,6 +87,7 @@ public class Dev implements Callable<Integer> {
     var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
+    var postgresVersion = PostgresUtils.getPostgresVersion(datasource);
 
     var tilesetSupplier = (Supplier<Tileset>) () -> {
       try {
@@ -99,7 +100,7 @@ public class Dev implements Callable<Integer> {
 
     var tileStoreSupplier = (Supplier<TileStore<ByteBuffer>>) () -> {
       var tileJSON = tilesetSupplier.get();
-      return new PostgresTileStore(datasource, tileJSON);
+      return new PostgresTileStore(datasource, tileJSON, postgresVersion);
     };
 
     var styleSupplier = (Supplier<Style>) () -> {

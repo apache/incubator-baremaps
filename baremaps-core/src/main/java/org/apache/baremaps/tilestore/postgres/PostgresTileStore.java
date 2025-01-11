@@ -22,8 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.sql.ResultSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 import javax.sql.DataSource;
 import org.apache.baremaps.maplibre.tileset.Tileset;
@@ -46,21 +44,19 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
 
   private final Tileset tileset;
 
+  private final int postgresVersion;
+
   /**
    * Constructs a {@code PostgresTileStore}.
    *
    * @param datasource the datasource
    * @param tileset the tileset
    */
-  public PostgresTileStore(DataSource datasource, Tileset tileset) {
+  public PostgresTileStore(DataSource datasource, Tileset tileset, int postgresVersion) {
     this.datasource = datasource;
     this.tileset = tileset;
+    this.postgresVersion = postgresVersion;
   }
-
-  /**
-   * A cache of queries.
-   */
-  private final Map<Integer, Query> cache = new ConcurrentHashMap<>();
 
   /**
    * A record that holds the sql of a prepared statement and the number of parameters.
@@ -76,7 +72,7 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
     var start = System.currentTimeMillis();
 
     // Prepare and cache the query
-    var query = cache.computeIfAbsent(tileCoord.z(), z -> prepareQuery(tileset, z));
+    var query = prepareQuery(tileCoord);
 
     // Fetch and compress the tile data
     try (var connection = datasource.getConnection();
@@ -119,14 +115,13 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
   }
 
   /**
-   * Prepare the sql query for a given tileset and zoom level.
+   * Prepare the sql query for a given zoom level.
    *
-   * @param tileset the tileset
-   * @param zoom the zoom level
-   * @return
+   * @param tileCoord the tile coordinate
+   * @return the prepared query
    */
   @SuppressWarnings("squid:S3776")
-  protected static Query prepareQuery(Tileset tileset, int zoom) {
+  protected Query prepareQuery(TileCoord tileCoord) {
     // Initialize a builder for the tile sql
     var tileSql = new StringBuilder();
     tileSql.append("SELECT ");
@@ -150,7 +145,7 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
       for (var query : queries) {
 
         // Only include the sql if the zoom level is in the range
-        if (query.getMinzoom() <= zoom && zoom < query.getMaxzoom()) {
+        if (query.getMinzoom() <= tileCoord.z() && tileCoord.z() < query.getMaxzoom()) {
 
           // Add a union between queries
           if (queryCount > 0) {
@@ -162,28 +157,14 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
               .replaceAll("\\s+", " ")
               .replace(";", "")
               .replace("?", "??")
-              .replace("$zoom", String.valueOf(zoom));
+              .replace("$zoom", String.valueOf(tileCoord.z()))
+              .replace("$z", String.valueOf(tileCoord.z()))
+              .replace("$x", String.valueOf(tileCoord.x()))
+              .replace("$y", String.valueOf(tileCoord.y()));
 
-          // Append a new condition or a where clause
-          if (querySql.toLowerCase().contains("where")) {
-            querySql += " AND ";
-          } else {
-            querySql += " WHERE ";
-          }
+          var querySqlWithParams =
+              postgresVersion >= 16 ? prepareNewQuery(querySql) : prepareLegacyQuery(querySql);
 
-          // Append the condition to the query sql
-          querySql +=
-              "geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))";
-
-          var querySqlWithParams = String.format(
-              """
-                  SELECT
-                    tile.id AS id,
-                    tile.tags - 'id' AS tags,
-                    ST_AsMVTGeom(tile.geom, ST_TileEnvelope(?, ?, ?)) AS geom
-                  FROM (%s) as tile
-                  """,
-              querySql);
           layerSql.append(querySqlWithParams);
 
           // Increase the parameter count (e.g. ?) and sql count
@@ -220,6 +201,65 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
     var sql = tileSql.toString().replaceAll("\\s+", " ");
 
     return new Query(sql, paramCount);
+  }
+
+  /**
+   * Prepare the sql query for the new versions of postgresql (>= 16).
+   * <p>
+   * Recent versions of the postgresql database better optimize subqueries. Using subqueries is more
+   * robust and allows for more complex queries.
+   *
+   * @param sql the sql query
+   * @return the prepared query
+   */
+  @SuppressWarnings("squid:S3776")
+  private String prepareNewQuery(final String sql) {
+    return String.format(
+        """
+            SELECT
+            mvtData.id AS id,
+            mvtData.tags - 'id' AS tags,
+            ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom
+            FROM (%s) AS mvtData
+            WHERE mvtData.geom IS NOT NULL
+            AND mvtData.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))
+            """,
+        sql);
+  }
+
+  /**
+   * Prepare the sql query for the legacy versions of postgresql (< 16).
+   * <p>
+   * Older versions of the postgresql database do not optimize subqueries. Therefore, the conditions
+   * are appended to the sql query, which is less robust and error-prone.
+   *
+   * @param sql the sql query
+   * @return the prepared query
+   */
+  @SuppressWarnings("squid:S3776")
+  private String prepareLegacyQuery(final String sql) {
+    String query = sql;
+
+    // Append a new condition or a where clause
+    if (sql.toLowerCase().contains("where")) {
+      query += " AND ";
+    } else {
+      query += " WHERE ";
+    }
+
+    // Append the condition to the query sql
+    query +=
+        "geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))";
+
+    return String.format(
+        """
+            SELECT
+              mvtData.id AS id,
+              mvtData.tags - 'id' AS tags,
+              ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom
+            FROM (%s) as mvtData
+            """,
+        query);
   }
 
   /**
