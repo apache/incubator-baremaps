@@ -53,7 +53,7 @@ public class CoordinateMap extends PostgresMap<Long, Coordinate> {
    * Constructs a {@link CoordinateMap}.
    */
   public CoordinateMap(DataSource dataSource) {
-    this(dataSource, "public", "osm_nodes");
+    this(dataSource, "public", "osm_node");
   }
 
   /**

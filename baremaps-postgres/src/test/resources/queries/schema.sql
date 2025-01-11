@@ -1,5 +1,4 @@
 -- mbtiles schema
-
 -- Licensed to the Apache Software Foundation (ASF) under one or more
 -- contributor license agreements.  See the NOTICE file distributed with
 -- this work for additional information regarding copyright ownership.
@@ -14,12 +13,41 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-
 BEGIN;
 
-CREATE TABLE indexdata (name text, value text);
-CREATE TABLE tiles (zoom_level integer, tile_column integer, tile_row integer, tile_data blob);
-CREATE TABLE grids (zoom_level integer, tile_column integer, tile_row integer, grid blob);
-CREATE TABLE grid_data (zoom_level integer, tile_column integer, tile_row integer, key_name text, key_json text);
+CREATE
+    TABLE
+        indexdata(
+            name text,
+            value text
+        );
+
+CREATE
+    TABLE
+        tiles(
+            zoom_level INTEGER,
+            tile_column INTEGER,
+            tile_row INTEGER,
+            tile_data BLOB
+        );
+
+CREATE
+    TABLE
+        grids(
+            zoom_level INTEGER,
+            tile_column INTEGER,
+            tile_row INTEGER,
+            grid BLOB
+        );
+
+CREATE
+    TABLE
+        grid_data(
+            zoom_level INTEGER,
+            tile_column INTEGER,
+            tile_row INTEGER,
+            key_name text,
+            key_json text
+        );
 
 COMMIT;

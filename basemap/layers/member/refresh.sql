@@ -12,5 +12,11 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
+DROP
+    INDEX IF EXISTS osm_member_idx;
 
 REFRESH MATERIALIZED VIEW osm_member;
+
+CREATE
+    INDEX IF NOT EXISTS osm_member_idx ON
+    osm_member(member_ref);

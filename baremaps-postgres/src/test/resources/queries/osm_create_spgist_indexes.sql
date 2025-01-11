@@ -12,6 +12,17 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
-CREATE INDEX CONCURRENTLY IF NOT EXISTS osm_nodes_gix ON osm_nodes USING SPGIST (geom);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS osm_ways_gix ON osm_ways USING SPGIST (geom);
-CREATE INDEX CONCURRENTLY IF NOT EXISTS osm_relations_gix ON osm_relations USING SPGIST (geom);
+CREATE
+    INDEX IF NOT EXISTS osm_node_gix ON
+    osm_node
+        USING SPGIST(geom);
+
+CREATE
+    INDEX IF NOT EXISTS osm_way_gix ON
+    osm_way
+        USING SPGIST(geom);
+
+CREATE
+    INDEX IF NOT EXISTS osm_relation_gix ON
+    osm_relation
+        USING SPGIST(geom);

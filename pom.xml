@@ -680,6 +680,12 @@ limitations under the License.
               <include>**/StateReader.java</include>
             </excludes>
           </java>
+          <sql>
+            <includes>
+              <include>**/*.sql</include>
+            </includes>
+            <dbeaver />
+          </sql>
         </configuration>
         <executions>
           <execution>

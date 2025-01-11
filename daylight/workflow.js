@@ -144,7 +144,7 @@ export default {
             "tasks": [
                 {
                     "type": "ExecuteSql",
-                    "file": "../basemap/queries/osm_nodes.sql",
+                    "file": "../basemap/queries/osm_node.sql",
                     "database": config.database,
                     "parallel": true,
                 },
@@ -156,7 +156,7 @@ export default {
             "tasks": [
                 {
                     "type": "ExecuteSql",
-                    "file": "../basemap/queries/osm_ways.sql",
+                    "file": "../basemap/queries/osm_way.sql",
                     "database": config.database,
                     "parallel": true,
                 },
@@ -168,7 +168,7 @@ export default {
             "tasks": [
                 {
                     "type": "ExecuteSql",
-                    "file": "../basemap/queries/osm_relations.sql",
+                    "file": "../basemap/queries/osm_relation.sql",
                     "database": config.database,
                     "parallel": true,
                 },

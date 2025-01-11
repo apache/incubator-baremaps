@@ -68,7 +68,7 @@ public class RelationRepository implements Repository<Long, Relation> {
     this(
         dataSource,
         "public",
-        "osm_relations",
+        "osm_relation",
         "id",
         "version",
         "uid",

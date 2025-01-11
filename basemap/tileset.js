@@ -40,7 +40,7 @@ export default {
   "center": [...config.center, config.zoom],
   "bounds": [...config.bounds],
   "minzoom": 0.0,
-  "maxzoom": 14.0,
+  "maxzoom": 16.0,
   "tiles": [
     `${config.host}/tiles/{z}/{x}/{y}.mvt`
   ],

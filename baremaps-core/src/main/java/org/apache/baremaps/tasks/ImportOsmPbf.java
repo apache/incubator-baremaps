@@ -44,6 +44,7 @@ public class ImportOsmPbf implements Task {
   private Object database;
   private Integer databaseSrid;
   private Boolean replaceExisting;
+  private Boolean truncateTables;
 
   /**
    * Constructs a {@code ImportOsmPbf}.
@@ -61,11 +62,12 @@ public class ImportOsmPbf implements Task {
    * @param replaceExisting whether to replace the existing tables
    */
   public ImportOsmPbf(Path file, Object database,
-      Integer databaseSrid, Boolean replaceExisting) {
+      Integer databaseSrid, Boolean replaceExisting, Boolean truncateTables) {
     this.file = file;
     this.database = database;
     this.databaseSrid = databaseSrid;
     this.replaceExisting = replaceExisting;
+    this.truncateTables = truncateTables;
   }
 
   /**
@@ -82,8 +84,8 @@ public class ImportOsmPbf implements Task {
     var wayRepository = new WayRepository(datasource);
     var relationRepository = new RelationRepository(datasource);
 
+    // Drop the existing tables
     if (TRUE.equals(replaceExisting)) {
-      // Drop the existing tables
       headerRepository.drop();
       nodeRepository.drop();
       wayRepository.drop();
@@ -94,6 +96,14 @@ public class ImportOsmPbf implements Task {
       nodeRepository.create();
       wayRepository.create();
       relationRepository.create();
+    }
+
+    // Truncate the existing tables
+    if (TRUE.equals(truncateTables)) {
+      headerRepository.truncate();
+      nodeRepository.truncate();
+      wayRepository.truncate();
+      relationRepository.truncate();
     }
 
     var coordinateMap = context.getCoordinateMap();

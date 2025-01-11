@@ -43,7 +43,7 @@ public class ObjectMapperTest {
             new Step("import", List.of("download"),
                 List.of(new ImportOsmPbf(Paths.get("liechtenstein-latest.osm.pbf"),
                     "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-                    3857, true)))));
+                    3857, true, true)))));
     var json = mapper.writeValueAsString(workflow1);
     assertTrue(json.contains(DownloadUrl.class.getSimpleName()));
     assertTrue(json.contains(ImportOsmPbf.class.getSimpleName()));

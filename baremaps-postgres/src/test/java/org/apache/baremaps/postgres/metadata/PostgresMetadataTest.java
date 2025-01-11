@@ -40,10 +40,10 @@ class PostgresMetadataTest extends PostgresContainerTest {
       PostgresUtils.executeResource(connection, "queries/osm_drop_tables.sql");
       PostgresUtils.executeResource(connection, "queries/osm_drop_tables.sql");
       PostgresUtils.executeResource(connection, "queries/osm_create_tables.sql");
-      assertTrue(tableExists("osm_headers"));
-      assertTrue(tableExists("osm_nodes"));
-      assertTrue(tableExists("osm_ways"));
-      assertTrue(tableExists("osm_relations"));
+      assertTrue(tableExists("osm_header"));
+      assertTrue(tableExists("osm_node"));
+      assertTrue(tableExists("osm_way"));
+      assertTrue(tableExists("osm_relation"));
     }
   }
 

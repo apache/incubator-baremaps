@@ -26,6 +26,7 @@ basemap/cache_*/
 basemap/local.*
 basemap/tiles.mbtiles
 basemap/tiles/
+basemap/cache/
 
 # Examples
 examples/ip-to-location/archives/

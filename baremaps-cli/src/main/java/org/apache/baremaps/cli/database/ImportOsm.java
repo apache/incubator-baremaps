@@ -18,7 +18,6 @@
 package org.apache.baremaps.cli.database;
 
 
-
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
@@ -55,6 +54,7 @@ public class ImportOsm implements Callable<Integer> {
         file.toAbsolutePath(),
         database,
         srid,
+        true,
         true).execute(new WorkflowContext());
     return 0;
   }

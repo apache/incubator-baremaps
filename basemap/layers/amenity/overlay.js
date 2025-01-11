@@ -25,12 +25,19 @@ let directives = [
             ['any',
                 ['==', ['get', 'amenity'], 'bicycle_parking'],
                 ['==', ['get', 'amenity'], 'motorcycle_parking'],
-                ['==', ['get', 'amenity'], 'parking_space'],
                 ['==', ['get', 'amenity'], 'parking'],
             ],
         ],
         'fill-color': theme.amenityParkingOverlayFillColor,
-        'fill-outline-color': theme.amenityParkingOverlayOutlineColor
+    },
+    {
+        filter: [
+            'all',
+            ['!=', ['get', 'layer'], '-1'],
+            ['==', ['get', 'amenity'], 'parking_space'],
+        ],
+        'fill-color': theme.amenityParkingOverlayFillColor,
+        'fill-outline-color': theme.amenityParkingOverlayOutlineColor,
     },
 ];
 
