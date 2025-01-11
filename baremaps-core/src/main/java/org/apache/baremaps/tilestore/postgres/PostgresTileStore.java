@@ -22,8 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.sql.ResultSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 import javax.sql.DataSource;
 import org.apache.baremaps.maplibre.tileset.Tileset;
@@ -61,11 +59,6 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
   }
 
   /**
-   * A cache of queries.
-   */
-  private final Map<Integer, Query> cache = new ConcurrentHashMap<>();
-
-  /**
    * A record that holds the sql of a prepared statement and the number of parameters.
    *
    * @param sql
@@ -79,7 +72,7 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
     var start = System.currentTimeMillis();
 
     // Prepare and cache the query
-    var query = cache.computeIfAbsent(tileCoord.z(), this::prepareQuery);
+    var query = prepareQuery(tileCoord);
 
     // Fetch and compress the tile data
     try (var connection = datasource.getConnection();
@@ -124,25 +117,11 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
   /**
    * Prepare the sql query for a given zoom level.
    *
-   * @param zoom the zoom level
-   * @return the prepared query
-   */
-  protected Query prepareQuery(int zoom) {
-    if (postgresVersion >= 16) {
-      return prepareNewQuery(zoom);
-    } else {
-      return prepareLegacyQuery(zoom);
-    }
-  }
-
-  /**
-   * Prepare the sql query for a given zoom level that uses the new version of postgresql (>= 16).
-   *
-   * @param zoom the zoom level
+   * @param tileCoord the tile coordinate
    * @return the prepared query
    */
   @SuppressWarnings("squid:S3776")
-  private Query prepareNewQuery(int zoom) {
+  protected Query prepareQuery(TileCoord tileCoord) {
     // Initialize a builder for the tile sql
     var tileSql = new StringBuilder();
     tileSql.append("SELECT ");
@@ -166,7 +145,7 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
       for (var query : queries) {
 
         // Only include the sql if the zoom level is in the range
-        if (query.getMinzoom() <= zoom && zoom < query.getMaxzoom()) {
+        if (query.getMinzoom() <= tileCoord.z() && tileCoord.z() < query.getMaxzoom()) {
 
           // Add a union between queries
           if (queryCount > 0) {
@@ -178,122 +157,14 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
               .replaceAll("\\s+", " ")
               .replace(";", "")
               .replace("?", "??")
-              .replace("$zoom", String.valueOf(zoom));
-          var querySqlWithParams = String.format(
-              """
-                  SELECT
-                  mvtData.id AS id,
-                  mvtData.tags - 'id' AS tags,
-                  ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom
-                  FROM (%s) AS mvtData
-                  WHERE mvtData.geom IS NOT NULL
-                  AND mvtData.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))
-                  """,
-              querySql);
-          layerSql.append(querySqlWithParams);
+              .replace("$zoom", String.valueOf(tileCoord.z()))
+              .replace("$z", String.valueOf(tileCoord.z()))
+              .replace("$x", String.valueOf(tileCoord.x()))
+              .replace("$y", String.valueOf(tileCoord.y()));
 
-          // Increase the parameter count (e.g. ?) and sql count
-          paramCount += 6;
-          queryCount++;
-        }
-      }
+          var querySqlWithParams =
+              postgresVersion >= 16 ? prepareNewQuery(querySql) : prepareLegacyQuery(querySql);
 
-      // Add the tail of the layer sql
-      var layerQueryTail = ") AS mvtGeom)";
-      layerSql.append(layerQueryTail);
-
-      // Only include the layer sql if queries were included for this layer
-      if (queryCount > 0) {
-
-        // Add the concatenation between layer queries
-        if (layerCount > 0) {
-          tileSql.append(" || ");
-        }
-
-        // Add the layer sql to the mvt sql
-        tileSql.append(layerSql);
-
-        // Increase the layer count
-        layerCount++;
-      }
-    }
-
-    // Add the tail of the tile sql
-    var tileQueryTail = " AS mvtTile";
-    tileSql.append(tileQueryTail);
-
-    // Format the sql query
-    var sql = tileSql.toString().replace("\n", " ");
-
-    return new Query(sql, paramCount);
-  }
-
-  /**
-   * Prepare the sql query for a given zoom level that uses the legacy versions of postgresql (<
-   * 16).
-   *
-   * @param zoom the zoom level
-   * @return the prepared query
-   */
-  @SuppressWarnings("squid:S3776")
-  private Query prepareLegacyQuery(int zoom) {
-    // Initialize a builder for the tile sql
-    var tileSql = new StringBuilder();
-    tileSql.append("SELECT ");
-
-    // Iterate over the layers and keep track of the number of layers and parameters included in the
-    // final sql
-    var layers = tileset.getVectorLayers();
-    var layerCount = 0;
-    var paramCount = 0;
-    for (var layer : layers) {
-
-      // Initialize a builder for the layer sql
-      var layerSql = new StringBuilder();
-      var layerHead = String.format("(SELECT ST_AsMVT(mvtGeom.*, '%s') FROM (", layer.getId());
-      layerSql.append(layerHead);
-
-      // Iterate over the queries and keep track of the number of queries included in the final
-      // sql
-      var queries = layer.getQueries();
-      var queryCount = 0;
-      for (var query : queries) {
-
-        // Only include the sql if the zoom level is in the range
-        if (query.getMinzoom() <= zoom && zoom < query.getMaxzoom()) {
-
-          // Add a union between queries
-          if (queryCount > 0) {
-            layerSql.append("UNION ALL ");
-          }
-
-          // Add the sql to the layer sql
-          var querySql = query.getSql().trim()
-              .replaceAll("\\s+", " ")
-              .replace(";", "")
-              .replace("?", "??")
-              .replace("$zoom", String.valueOf(zoom));
-
-          // Append a new condition or a where clause
-          if (querySql.toLowerCase().contains("where")) {
-            querySql += " AND ";
-          } else {
-            querySql += " WHERE ";
-          }
-
-          // Append the condition to the query sql
-          querySql +=
-              "geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))";
-
-          var querySqlWithParams = String.format(
-              """
-                  SELECT
-                    mvtData.id AS id,
-                    mvtData.tags - 'id' AS tags,
-                    ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom
-                  FROM (%s) as mvtData
-                  """,
-              querySql);
           layerSql.append(querySqlWithParams);
 
           // Increase the parameter count (e.g. ?) and sql count
@@ -330,6 +201,65 @@ public class PostgresTileStore implements TileStore<ByteBuffer> {
     var sql = tileSql.toString().replaceAll("\\s+", " ");
 
     return new Query(sql, paramCount);
+  }
+
+  /**
+   * Prepare the sql query for the new versions of postgresql (>= 16).
+   * <p>
+   * Recent versions of the postgresql database better optimize subqueries. Using subqueries is more
+   * robust and allows for more complex queries.
+   *
+   * @param sql the sql query
+   * @return the prepared query
+   */
+  @SuppressWarnings("squid:S3776")
+  private String prepareNewQuery(final String sql) {
+    return String.format(
+        """
+            SELECT
+            mvtData.id AS id,
+            mvtData.tags - 'id' AS tags,
+            ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom
+            FROM (%s) AS mvtData
+            WHERE mvtData.geom IS NOT NULL
+            AND mvtData.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))
+            """,
+        sql);
+  }
+
+  /**
+   * Prepare the sql query for the legacy versions of postgresql (< 16).
+   * <p>
+   * Older versions of the postgresql database do not optimize subqueries. Therefore, the conditions
+   * are appended to the sql query, which is less robust and error-prone.
+   *
+   * @param sql the sql query
+   * @return the prepared query
+   */
+  @SuppressWarnings("squid:S3776")
+  private String prepareLegacyQuery(final String sql) {
+    String query = sql;
+
+    // Append a new condition or a where clause
+    if (sql.toLowerCase().contains("where")) {
+      query += " AND ";
+    } else {
+      query += " WHERE ";
+    }
+
+    // Append the condition to the query sql
+    query +=
+        "geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))";
+
+    return String.format(
+        """
+            SELECT
+              mvtData.id AS id,
+              mvtData.tags - 'id' AS tags,
+              ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom
+            FROM (%s) as mvtData
+            """,
+        query);
   }
 
   /**

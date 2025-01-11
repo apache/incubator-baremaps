@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.baremaps.maplibre.tileset.Tileset;
 import org.apache.baremaps.maplibre.tileset.TilesetLayer;
 import org.apache.baremaps.maplibre.tileset.TilesetQuery;
+import org.apache.baremaps.tilestore.TileCoord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +48,7 @@ class PostgresTileStoreTest {
   @Test
   void prepareNewQuery() {
     var postgresTileStore = new PostgresTileStore(null, tileset, 16);
-    var query = postgresTileStore.prepareQuery(10);
+    var query = postgresTileStore.prepareQuery(new TileCoord(1, 1, 10));
     assertEquals(
         "SELECT (SELECT ST_AsMVT(mvtGeom.*, 'a') FROM (SELECT mvtData.id AS id, mvtData.tags - 'id' AS tags, ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM (SELECT id, tags, geom FROM table) AS mvtData WHERE mvtData.geom IS NOT NULL AND mvtData.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096)) ) AS mvtGeom) || (SELECT ST_AsMVT(mvtGeom.*, 'b') FROM (SELECT mvtData.id AS id, mvtData.tags - 'id' AS tags, ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM (SELECT id, tags, geom FROM table) AS mvtData WHERE mvtData.geom IS NOT NULL AND mvtData.geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096)) ) AS mvtGeom) AS mvtTile",
         query.sql());
@@ -56,7 +57,7 @@ class PostgresTileStoreTest {
   @Test
   void prepareLegacyQuery() {
     var postgresTileStore = new PostgresTileStore(null, tileset, 15);
-    var query = postgresTileStore.prepareQuery(10);
+    var query = postgresTileStore.prepareQuery(new TileCoord(1, 1, 10));
     assertEquals(
         "SELECT (SELECT ST_AsMVT(mvtGeom.*, 'a') FROM (SELECT mvtData.id AS id, mvtData.tags - 'id' AS tags, ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM (SELECT id, tags, geom FROM table WHERE geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) as mvtData ) AS mvtGeom) || (SELECT ST_AsMVT(mvtGeom.*, 'b') FROM (SELECT mvtData.id AS id, mvtData.tags - 'id' AS tags, ST_AsMVTGeom(mvtData.geom, ST_TileEnvelope(?, ?, ?)) AS geom FROM (SELECT id, tags, geom FROM table WHERE geom IS NOT NULL AND geom && ST_TileEnvelope(?, ?, ?, margin => (64.0/4096))) as mvtData ) AS mvtGeom) AS mvtTile",
         query.sql());
