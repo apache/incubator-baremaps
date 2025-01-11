@@ -22,9 +22,11 @@ import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
@@ -34,6 +36,7 @@ import org.apache.baremaps.maplibre.tileset.Tileset;
 import org.apache.baremaps.maplibre.tileset.TilesetQuery;
 import org.apache.baremaps.openstreetmap.stream.ProgressLogger;
 import org.apache.baremaps.openstreetmap.stream.StreamUtils;
+import org.apache.baremaps.postgres.utils.PostgresUtils;
 import org.apache.baremaps.tilestore.*;
 import org.apache.baremaps.tilestore.file.FileTileStore;
 import org.apache.baremaps.tilestore.mbtiles.MBTilesStore;
@@ -146,7 +149,7 @@ public class ExportVectorTiles implements Task {
 
       var bufferedTileEntryStream = StreamUtils.bufferInCompletionOrder(tileCoordStream, tile -> {
         try {
-          return new TileEntry(tile, sourceTileStore.read(tile));
+          return new TileEntry<>(tile, sourceTileStore.read(tile));
         } catch (TileStoreException e) {
           throw new WorkflowException(e);
         }
@@ -166,11 +169,14 @@ public class ExportVectorTiles implements Task {
     }
   }
 
-  private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
-    return new PostgresTileStore(datasource, tileset);
+  private TileStore<ByteBuffer> sourceTileStore(Tileset tileset, DataSource datasource)
+      throws SQLException {
+    var postgresVersion = PostgresUtils.getPostgresVersion(datasource);
+    return new PostgresTileStore(datasource, tileset, postgresVersion);
   }
 
-  private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
+  private TileStore<ByteBuffer> targetTileStore(Tileset source)
+      throws TileStoreException, IOException {
     switch (format) {
       case FILE:
         return new FileTileStore(repository.resolve("tiles"));

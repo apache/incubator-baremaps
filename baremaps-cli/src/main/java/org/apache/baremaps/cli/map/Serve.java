@@ -93,9 +93,10 @@ public class Serve implements Callable<Integer> {
     var caffeineSpec = CaffeineSpec.parse(cache);
     var tileset = objectMapper.readValue(configReader.read(tilesetPath), Tileset.class);
     var datasource = PostgresUtils.createDataSourceFromObject(tileset.getDatabase());
+    var postgresVersion = PostgresUtils.getPostgresVersion(datasource);
 
     try (
-        var tileStore = new PostgresTileStore(datasource, tileset);
+        var tileStore = new PostgresTileStore(datasource, tileset, postgresVersion);
         var tileCache = new VectorTileCache(tileStore, caffeineSpec)) {
 
       var tileStoreSupplier = (Supplier<TileStore<ByteBuffer>>) () -> tileCache;
