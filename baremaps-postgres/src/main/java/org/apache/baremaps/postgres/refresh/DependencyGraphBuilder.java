@@ -45,7 +45,9 @@ public class DependencyGraphBuilder {
    * Builds a directed graph using Guava for the given list of objects, then populates edges from
    * system catalogs.
    *
-   * @return a MutableGraph<DatabaseObject>
+   * @param objects a list of database objects
+   * @param dependencies a list of database dependencies
+   * @return a directed graph of database objects and dependencies
    */
   public static MutableGraph<DatabaseObject> buildGraph(
       List<DatabaseObject> objects,
@@ -69,6 +71,9 @@ public class DependencyGraphBuilder {
   /**
    * Performs a topological sort of the given graph using Kahn's algorithm, so that dependencies
    * appear before their dependents.
+   *
+   * @param graph a directed graph of database objects
+   * @return a list of database objects in topological order
    */
   public static List<DatabaseObject> topologicalSort(MutableGraph<DatabaseObject> graph) {
     var inDegree = new HashMap<DatabaseObject, Integer>();
