@@ -103,7 +103,15 @@ CREATE
             'subway',
             'tram'
         )
-        AND NOT tags ? 'service' WITH NO DATA;
+        AND NOT tags ? 'service';
+
+DROP
+    INDEX IF EXISTS osm_railway_filtered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_filtered_geom ON
+    osm_railway_filtered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_clustered CASCADE;
@@ -120,7 +128,15 @@ CREATE
             PARTITION BY railway
         ) AS cluster
     FROM
-        osm_railway_filtered WITH NO DATA;
+        osm_railway_filtered;
+
+DROP
+    INDEX IF EXISTS osm_railway_clustered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_clustered_geom ON
+    osm_railway_clustered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_simplified CASCADE;
@@ -154,7 +170,15 @@ CREATE
         ) AS tags,
         geom AS geom
     FROM
-        exploded WITH NO DATA;
+        exploded;
+
+DROP
+    INDEX IF EXISTS osm_railway_simplified_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_simplified_geom ON
+    osm_railway_simplified
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z12 CASCADE;
@@ -175,7 +199,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 12 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z12_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z12_geom_idx ON
+    osm_railway_z12
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z11 CASCADE;
@@ -196,7 +228,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 11 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z11_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z11_geom_idx ON
+    osm_railway_z11
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z10 CASCADE;
@@ -217,7 +257,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 10 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z10_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z10_geom_idx ON
+    osm_railway_z10
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z9 CASCADE;
@@ -238,7 +286,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 9 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z9_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z9_geom_idx ON
+    osm_railway_z9
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z8 CASCADE;
@@ -259,7 +315,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 8 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z8_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z8_geom_idx ON
+    osm_railway_z8
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z7 CASCADE;
@@ -280,7 +344,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 7 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z7_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z7_geom_idx ON
+    osm_railway_z7
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z6 CASCADE;
@@ -301,7 +373,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 6 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z6_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z6_geom_idx ON
+    osm_railway_z6
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z5 CASCADE;
@@ -322,7 +402,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 5 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z5_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z5_geom_idx ON
+    osm_railway_z5
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z4 CASCADE;
@@ -343,7 +431,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 4 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z4_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z4_geom_idx ON
+    osm_railway_z4
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z3 CASCADE;
@@ -364,7 +460,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 3 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z3_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z3_geom_idx ON
+    osm_railway_z3
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z2 CASCADE;
@@ -385,7 +489,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 2 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z2_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z2_geom_idx ON
+    osm_railway_z2
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_railway_z1 CASCADE;
@@ -406,4 +518,12 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 1 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_railway_z1_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_railway_z1_geom_idx ON
+    osm_railway_z1
+        USING GIST(geom);

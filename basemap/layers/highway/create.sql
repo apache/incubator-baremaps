@@ -126,7 +126,15 @@ CREATE
             'tertiary_link',
             'unclassified',
             'residential'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_filtered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_filtered_geom ON
+    osm_highway_filtered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_clustered CASCADE;
@@ -143,7 +151,15 @@ CREATE
             PARTITION BY highway
         ) AS cluster
     FROM
-        osm_highway_filtered WITH NO DATA;
+        osm_highway_filtered;
+
+DROP
+    INDEX IF EXISTS osm_highway_clustered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_clustered_geom ON
+    osm_highway_clustered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_simplified CASCADE;
@@ -177,7 +193,15 @@ CREATE
         ) AS tags,
         geom AS geom
     FROM
-        exploded WITH NO DATA;
+        exploded;
+
+DROP
+    INDEX IF EXISTS osm_highway_simplified_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_simplified_geom ON
+    osm_highway_simplified
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z12 CASCADE;
@@ -199,7 +223,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 12 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_z12_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z12_geom_idx ON
+    osm_highway_z12
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z11 CASCADE;
@@ -235,7 +267,15 @@ CREATE
             'tertiary_link',
             'unclassified',
             'residential'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_z11_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z11_geom_idx ON
+    osm_highway_z11
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z10 CASCADE;
@@ -269,7 +309,15 @@ CREATE
             'secondary_link',
             'tertiary',
             'tertiary_link'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_z10_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z10_geom_idx ON
+    osm_highway_z10
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z9 CASCADE;
@@ -301,7 +349,15 @@ CREATE
             'primary_link',
             'secondary',
             'secondary_link'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_z9_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z9_geom_idx ON
+    osm_highway_z9
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z8 CASCADE;
@@ -328,7 +384,15 @@ CREATE
             'motorway',
             'trunk',
             'primary'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_z8_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z8_geom_idx ON
+    osm_highway_z8
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z7 CASCADE;
@@ -355,7 +419,15 @@ CREATE
             'motorway',
             'trunk',
             'primary'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_z7_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z7_geom_idx ON
+    osm_highway_z7
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z6 CASCADE;
@@ -382,7 +454,15 @@ CREATE
             'motorway',
             'trunk',
             'primary'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_highway_z6_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z6_geom_idx ON
+    osm_highway_z6
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z5 CASCADE;
@@ -405,7 +485,15 @@ CREATE
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 5 )), 2 )
         )
-        AND tags ->> 'highway' IN('motorway') WITH NO DATA;
+        AND tags ->> 'highway' IN('motorway');
+
+DROP
+    INDEX IF EXISTS osm_highway_z5_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z5_geom_idx ON
+    osm_highway_z5
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z4 CASCADE;
@@ -428,7 +516,15 @@ CREATE
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 4 )), 2 )
         )
-        AND tags ->> 'highway' IN('motorway') WITH NO DATA;
+        AND tags ->> 'highway' IN('motorway');
+
+DROP
+    INDEX IF EXISTS osm_highway_z4_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z4_geom_idx ON
+    osm_highway_z4
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z3 CASCADE;
@@ -451,7 +547,15 @@ CREATE
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 3 )), 2 )
         )
-        AND tags ->> 'highway' IN('motorway') WITH NO DATA;
+        AND tags ->> 'highway' IN('motorway');
+
+DROP
+    INDEX IF EXISTS osm_highway_z3_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z3_geom_idx ON
+    osm_highway_z3
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z2 CASCADE;
@@ -474,7 +578,15 @@ CREATE
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 2 )), 2 )
         )
-        AND tags ->> 'highway' IN('motorway') WITH NO DATA;
+        AND tags ->> 'highway' IN('motorway');
+
+DROP
+    INDEX IF EXISTS osm_highway_z2_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z2_geom_idx ON
+    osm_highway_z2
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_highway_z1 CASCADE;
@@ -497,4 +609,12 @@ CREATE
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 1 )), 2 )
         )
-        AND tags ->> 'highway' IN('motorway') WITH NO DATA;
+        AND tags ->> 'highway' IN('motorway');
+
+DROP
+    INDEX IF EXISTS osm_highway_z1_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_highway_z1_geom_idx ON
+    osm_highway_z1
+        USING GIST(geom);

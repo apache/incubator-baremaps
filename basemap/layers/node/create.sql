@@ -29,3 +29,19 @@ CREATE
             lat FLOAT,
             geom geometry(point)
         );
+
+DROP
+    INDEX IF EXISTS osm_node_geom_index;
+
+DROP
+    INDEX IF EXISTS osm_node_tags_index;
+
+CREATE
+    INDEX IF NOT EXISTS osm_node_geom_index ON
+    osm_node
+        USING GIST(geom);
+
+CREATE
+    INDEX IF NOT EXISTS osm_node_tags_index ON
+    osm_node
+        USING GIN(tags);
