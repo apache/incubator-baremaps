@@ -86,7 +86,7 @@ limitations under the License.
     <version.lib.awssdk>2.27.17</version.lib.awssdk>
     <version.lib.brotli4j>1.16.0</version.lib.brotli4j>
     <version.lib.caffeine>3.1.8</version.lib.caffeine>
-    <version.lib.calcite>1.37.0</version.lib.calcite>
+    <version.lib.calcite>1.38.0</version.lib.calcite>
     <version.lib.commons-compress>1.27.1</version.lib.commons-compress>
     <version.lib.fastutil>8.5.14</version.lib.fastutil>
     <version.lib.flatgeobuf>3.26.2</version.lib.flatgeobuf>
@@ -344,6 +344,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.calcite</groupId>
         <artifactId>calcite-core</artifactId>
+        <version>${version.lib.calcite}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.calcite</groupId>
+        <artifactId>calcite-server</artifactId>
         <version>${version.lib.calcite}</version>
       </dependency>
       <dependency>
