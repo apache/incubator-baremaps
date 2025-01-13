@@ -33,15 +33,12 @@ public class RefreshMaterializedViews implements Task {
 
   private Object database;
 
-  private String schema = "public";
-
   public RefreshMaterializedViews() {
     // Default constructor
   }
 
-  public RefreshMaterializedViews(Object database, String schema) {
+  public RefreshMaterializedViews(Object database) {
     this.database = database;
-    this.schema = schema;
   }
 
   @Override
@@ -50,19 +47,22 @@ public class RefreshMaterializedViews implements Task {
     try (var connection = dataSource.getConnection()) {
       LOGGER.info("Connected to PostgreSQL database.");
 
-      // 1. Retrieve database objects (tables, views, materialized views).
+      // Get the schema of the database.
+      var schema = connection.getSchema();
+
+      // Retrieve database objects (tables, views, materialized views).
       var objects = DatabaseMetadataRetriever.getObjects(connection, schema);
 
-      // 2. Retrieve dependencies between database objects.
+      // Retrieve dependencies between database objects.
       var dependencies = DatabaseMetadataRetriever.getDependencies(connection, schema, objects);
 
-      // 3. Build a directed graph of dependencies between the database objects.
-      var graph = DependencyGraphBuilder.buildGraph(connection, schema, objects, dependencies);
+      // Build a directed graph of dependencies between the database objects.
+      var graph = DependencyGraphBuilder.buildGraph(objects, dependencies);
 
-      // 4. Perform a topological sort so that dependencies come before dependents.
+      // Perform a topological sort so that dependencies come before dependents.
       var sorted = DependencyGraphBuilder.topologicalSort(graph);
 
-      // 5. Refresh materialized views, dropping and recreating indexes if present.
+      // Refresh materialized views, dropping and recreating indexes if present.
       MaterializedViewRefresher.refreshMaterializedViews(connection, sorted);
 
       LOGGER.info("Done refreshing materialized views.");

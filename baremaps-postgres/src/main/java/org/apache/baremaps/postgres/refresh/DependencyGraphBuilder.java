@@ -19,7 +19,6 @@ package org.apache.baremaps.postgres.refresh;
 
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,8 +48,6 @@ public class DependencyGraphBuilder {
    * @return a MutableGraph<DatabaseObject>
    */
   public static MutableGraph<DatabaseObject> buildGraph(
-      Connection connection,
-      String schema,
       List<DatabaseObject> objects,
       List<DatabaseDependency> dependencies) throws SQLException {
 

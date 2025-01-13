@@ -202,14 +202,12 @@ public class DatabaseMetadataRetriever {
       String schemaName,
       String objectName,
       ObjectType objectType) {
-
   }
 
   /**
    * Record representing a dependency between two database objects.
    */
   public record DatabaseDependency(DatabaseObject source, DatabaseObject dependent) {
-
   }
 
 

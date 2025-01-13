@@ -67,7 +67,9 @@ public class MaterializedViewRefresher {
     for (var idx : indexes) {
       LOGGER.info("Dropping index: " + idx.indexName());
       try (var st = connection.createStatement()) {
-        var dropSql = "DROP INDEX IF EXISTS " + idx.indexName();
+        var dropSql = String.format(
+            "DROP INDEX IF EXISTS %s",
+            idx.indexName());
         st.execute(dropSql);
       }
     }
@@ -75,8 +77,9 @@ public class MaterializedViewRefresher {
 
   private static void refreshMaterializedView(Connection connection, DatabaseObject mv)
       throws SQLException {
-    var refreshSql =
-        "REFRESH MATERIALIZED VIEW " + mv.schemaName() + "." + mv.objectName() + " WITH DATA";
+    var refreshSql = String.format(
+        "REFRESH MATERIALIZED VIEW %s WITH DATA",
+        mv.objectName());
     try (var st = connection.createStatement()) {
       st.execute(refreshSql);
     }
