@@ -719,11 +719,11 @@ limitations under the License.
           <archive>
             <manifestEntries>
               <Build-Date>${project.build.outputTimestamp}</Build-Date>
-                <Build-Version>${project.version}</Build-Version>
-                <Build-Jdk>${java.version}</Build-Jdk>
-                <Specification-Title>Apache Baremaps CSV (incubating)</Specification-Title>
-                <Specification-Vendor>Apache Software Foundation</Specification-Vendor>
-                <Implementation-Vendor>Apache Software Foundation</Implementation-Vendor>
+              <Build-Version>${project.version}</Build-Version>
+              <Build-Jdk>${java.version}</Build-Jdk>
+              <Specification-Title>Apache Baremaps CSV (incubating)</Specification-Title>
+              <Specification-Vendor>Apache Software Foundation</Specification-Vendor>
+              <Implementation-Vendor>Apache Software Foundation</Implementation-Vendor>
             </manifestEntries>
           </archive>
         </configuration>
