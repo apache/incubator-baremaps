@@ -956,8 +956,6 @@ DROP
 DROP
     INDEX IF EXISTS osm_landuse_z2_tags_idx;
 
-
-
 CREATE
     INDEX IF NOT EXISTS osm_landuse_z2_geom_idx ON
     osm_landuse_z2

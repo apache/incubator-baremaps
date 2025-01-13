@@ -153,7 +153,6 @@ CREATE
     FROM
         osm_highway_filtered;
 
-
 DROP
     INDEX IF EXISTS osm_highway_clustered_geom;
 
@@ -270,7 +269,6 @@ CREATE
             'residential'
         );
 
-
 DROP
     INDEX IF EXISTS osm_highway_z11_geom_idx;
 
@@ -312,6 +310,7 @@ CREATE
             'tertiary',
             'tertiary_link'
         );
+
 DROP
     INDEX IF EXISTS osm_highway_z10_geom_idx;
 

@@ -487,7 +487,6 @@ CREATE
     osm_natural_z9
         USING GIN(tags);
 
-
 -- Zoom level 8
 DROP
     MATERIALIZED VIEW IF EXISTS osm_natural_z8 CASCADE;

@@ -135,7 +135,6 @@ CREATE
     INDEX IF NOT EXISTS osm_amenity_z12_filtered_tags_idx ON
     osm_amenity_z12_filtered(tag);
 
-
 DROP
     MATERIALIZED VIEW IF EXISTS osm_amenity_z12 CASCADE;
 
@@ -219,13 +218,11 @@ CREATE
         AND NOT ST_IsEmpty(geom)
         AND st_area(geom)> POWER( 78270 / POWER( 2, 11 ), 2 )* 32;
 
-
 DROP
     INDEX IF EXISTS osm_amenity_z11_filtered_geom_idx;
 
 DROP
     INDEX IF EXISTS osm_amenity_z11_filtered_tags_idx;
-
 
 CREATE
     INDEX IF NOT EXISTS osm_amenity_z11_filtered_geom_idx ON
@@ -235,7 +232,6 @@ CREATE
 CREATE
     INDEX IF NOT EXISTS osm_amenity_z11_filtered_tags_idx ON
     osm_amenity_z11_filtered(tag);
-
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_amenity_z11 CASCADE;
@@ -980,4 +976,3 @@ CREATE
     INDEX IF NOT EXISTS osm_amenity_z1_tags_idx ON
     osm_amenity_z1
         USING GIN(tags);
-
