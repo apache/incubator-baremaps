@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.postgres.graph;
+package org.apache.baremaps.postgres.refresh;
 
 import java.sql.Connection;
 import java.sql.SQLException;

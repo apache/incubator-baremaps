@@ -19,9 +19,9 @@ package org.apache.baremaps.tasks;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import org.apache.baremaps.postgres.graph.DatabaseMetadataRetriever;
-import org.apache.baremaps.postgres.graph.DependencyGraphBuilder;
-import org.apache.baremaps.postgres.graph.MaterializedViewRefresher;
+import org.apache.baremaps.postgres.refresh.DatabaseMetadataRetriever;
+import org.apache.baremaps.postgres.refresh.DependencyGraphBuilder;
+import org.apache.baremaps.postgres.refresh.MaterializedViewRefresher;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -33,12 +33,15 @@ public class RefreshMaterializedViews implements Task {
 
   private Object database;
 
+  private String schema = "public";
+
   public RefreshMaterializedViews() {
     // Default constructor
   }
 
-  public RefreshMaterializedViews(Object database) {
+  public RefreshMaterializedViews(Object database, String schema) {
     this.database = database;
+    this.schema = schema;
   }
 
   @Override
@@ -46,7 +49,6 @@ public class RefreshMaterializedViews implements Task {
     DataSource dataSource = context.getDataSource(database);
     try (var connection = dataSource.getConnection()) {
       LOGGER.info("Connected to PostgreSQL database.");
-      var schema = "public";
 
       // 1. Retrieve database objects (tables, views, materialized views).
       var objects = DatabaseMetadataRetriever.getObjects(connection, schema);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.postgres.graph;
+package org.apache.baremaps.postgres.refresh;
 
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.baremaps.postgres.graph.DatabaseMetadataRetriever.DatabaseDependency;
-import org.apache.baremaps.postgres.graph.DatabaseMetadataRetriever.DatabaseObject;
+import org.apache.baremaps.postgres.refresh.DatabaseMetadataRetriever.DatabaseDependency;
+import org.apache.baremaps.postgres.refresh.DatabaseMetadataRetriever.DatabaseObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

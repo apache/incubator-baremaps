@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.postgres.graph;
+package org.apache.baremaps.postgres.refresh;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import org.apache.baremaps.postgres.graph.DatabaseMetadataRetriever.DatabaseIndex;
-import org.apache.baremaps.postgres.graph.DatabaseMetadataRetriever.DatabaseObject;
-import org.apache.baremaps.postgres.graph.DatabaseMetadataRetriever.ObjectType;
+import org.apache.baremaps.postgres.refresh.DatabaseMetadataRetriever.DatabaseIndex;
+import org.apache.baremaps.postgres.refresh.DatabaseMetadataRetriever.DatabaseObject;
+import org.apache.baremaps.postgres.refresh.DatabaseMetadataRetriever.ObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
