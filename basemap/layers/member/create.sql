@@ -31,4 +31,11 @@ CREATE
         geom IS NOT NULL
         AND member_type = 1
         AND tags ->> 'type' = 'multipolygon'
-        AND NOT tags ->> 'natural' = 'coastline' WITH NO DATA;
+        AND NOT tags ->> 'natural' = 'coastline';
+
+DROP
+    INDEX IF EXISTS osm_member_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_member_idx ON
+    osm_member(member_ref);

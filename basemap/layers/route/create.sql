@@ -109,7 +109,15 @@ CREATE
             'railway',
             'tram',
             'funicular'
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_filtered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_filtered_geom ON
+    osm_route_filtered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_clustered CASCADE;
@@ -126,7 +134,15 @@ CREATE
             PARTITION BY route
         ) AS cluster
     FROM
-        osm_route_filtered WITH NO DATA;
+        osm_route_filtered;
+
+DROP
+    INDEX IF EXISTS osm_route_clustered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_clustered_geom ON
+    osm_route_clustered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_simplified CASCADE;
@@ -160,7 +176,15 @@ CREATE
         ) AS tags,
         geom AS geom
     FROM
-        exploded WITH NO DATA;
+        exploded;
+
+DROP
+    INDEX IF EXISTS osm_route_simplified_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_simplified_geom ON
+    osm_route_simplified
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z12 CASCADE;
@@ -181,7 +205,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 12 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z12_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z12_geom_idx ON
+    osm_route_z12
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z11 CASCADE;
@@ -202,7 +234,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 11 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z11_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z11_geom_idx ON
+    osm_route_z11
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z10 CASCADE;
@@ -223,7 +263,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 10 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z10_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z10_geom_idx ON
+    osm_route_z10
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z9 CASCADE;
@@ -244,7 +292,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 9 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z9_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z9_geom_idx ON
+    osm_route_z9
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z8 CASCADE;
@@ -265,7 +321,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 8 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z8_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z8_geom_idx ON
+    osm_route_z8
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z7 CASCADE;
@@ -286,7 +350,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 7 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z7_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z7_geom_idx ON
+    osm_route_z7
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z6 CASCADE;
@@ -307,7 +379,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 6 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z6_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z6_geom_idx ON
+    osm_route_z6
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z5 CASCADE;
@@ -328,7 +408,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 5 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z5_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z5_geom_idx ON
+    osm_route_z5
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z4 CASCADE;
@@ -349,7 +437,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 4 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z4_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z4_geom_idx ON
+    osm_route_z4
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z3 CASCADE;
@@ -370,7 +466,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 3 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z3_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z3_geom_idx ON
+    osm_route_z3
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z2 CASCADE;
@@ -391,7 +495,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 2 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z2_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z2_geom_idx ON
+    osm_route_z2
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_route_z1 CASCADE;
@@ -412,4 +524,12 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 1 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_route_z1_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_route_z1_geom_idx ON
+    osm_route_z1
+        USING GIST(geom);

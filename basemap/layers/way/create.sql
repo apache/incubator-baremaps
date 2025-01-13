@@ -28,3 +28,19 @@ CREATE
             nodes int8 [],
             geom geometry
         );
+
+DROP
+    INDEX IF EXISTS osm_way_geom_index;
+
+DROP
+    INDEX IF EXISTS osm_way_tags_index;
+
+CREATE
+    INDEX IF NOT EXISTS osm_way_geom_index ON
+    osm_way
+        USING GIST(geom);
+
+CREATE
+    INDEX IF NOT EXISTS osm_way_tags_index ON
+    osm_way
+        USING GIN(tags);

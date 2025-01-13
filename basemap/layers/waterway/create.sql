@@ -104,7 +104,15 @@ CREATE
             'drain',
             'ditch'
         )
-        AND NOT tags ? 'intermittent' WITH NO DATA;
+        AND NOT tags ? 'intermittent';
+
+DROP
+    INDEX IF EXISTS osm_waterway_filtered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_filtered_geom ON
+    osm_waterway_filtered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_clustered CASCADE;
@@ -121,7 +129,15 @@ CREATE
             PARTITION BY waterway
         ) AS cluster
     FROM
-        osm_waterway_filtered WITH NO DATA;
+        osm_waterway_filtered;
+
+DROP
+    INDEX IF EXISTS osm_waterway_clustered_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_clustered_geom ON
+    osm_waterway_clustered
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_simplified CASCADE;
@@ -155,7 +171,15 @@ CREATE
         ) AS tags,
         geom AS geom
     FROM
-        exploded WITH NO DATA;
+        exploded;
+
+DROP
+    INDEX IF EXISTS osm_waterway_simplified_geom;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_simplified_geom ON
+    osm_waterway_simplified
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z12 CASCADE;
@@ -176,7 +200,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 12 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z12_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z12_geom_idx ON
+    osm_waterway_z12
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z11 CASCADE;
@@ -197,7 +229,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 11 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z11_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z11_geom_idx ON
+    osm_waterway_z11
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z10 CASCADE;
@@ -218,7 +258,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 10 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z10_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z10_geom_idx ON
+    osm_waterway_z10
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z9 CASCADE;
@@ -239,7 +287,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 9 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z9_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z9_geom_idx ON
+    osm_waterway_z9
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z8 CASCADE;
@@ -260,7 +316,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 8 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z8_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z8_geom_idx ON
+    osm_waterway_z8
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z7 CASCADE;
@@ -281,7 +345,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 7 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z7_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z7_geom_idx ON
+    osm_waterway_z7
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z6 CASCADE;
@@ -302,7 +374,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 6 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z6_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z6_geom_idx ON
+    osm_waterway_z6
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z5 CASCADE;
@@ -323,7 +403,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 5 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z5_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z5_geom_idx ON
+    osm_waterway_z5
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z4 CASCADE;
@@ -344,7 +432,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 4 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z4_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z4_geom_idx ON
+    osm_waterway_z4
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z3 CASCADE;
@@ -365,7 +461,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 3 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z3_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z3_geom_idx ON
+    osm_waterway_z3
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z2 CASCADE;
@@ -386,7 +490,15 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 2 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z2_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z2_geom_idx ON
+    osm_waterway_z2
+        USING GIST(geom);
 
 DROP
     MATERIALIZED VIEW IF EXISTS osm_waterway_z1 CASCADE;
@@ -407,4 +519,12 @@ CREATE
             st_area(
                 st_envelope(geom)
             )> POWER(( 78270 / POWER( 2, 1 )), 2 )
-        ) WITH NO DATA;
+        );
+
+DROP
+    INDEX IF EXISTS osm_waterway_z1_geom_idx;
+
+CREATE
+    INDEX IF NOT EXISTS osm_waterway_z1_geom_idx ON
+    osm_waterway_z1
+        USING GIST(geom);

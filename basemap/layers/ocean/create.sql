@@ -36,7 +36,15 @@ CREATE
             3857
         ) AS geom
     FROM
-        water_polygons_shp WITH NO DATA;
+        water_polygons_shp;
+
+DROP
+    INDEX IF EXISTS osm_ocean_geometry_index;
+
+CREATE
+    INDEX IF NOT EXISTS osm_ocean_geometry_index ON
+    osm_ocean
+        USING gist(geom);
 
 DROP
     TABLE
@@ -62,4 +70,12 @@ CREATE
             3857
         ) AS geom
     FROM
-        simplified_water_polygons_shp WITH NO DATA;
+        simplified_water_polygons_shp;
+
+DROP
+    INDEX IF EXISTS osm_ocean_simplified_geometry_index;
+
+CREATE
+    INDEX IF NOT EXISTS osm_ocean_simplified_geometry_index ON
+    osm_ocean_simplified
+        USING gist(geom);

@@ -30,3 +30,19 @@ CREATE
             member_roles text [],
             geom geometry
         );
+
+DROP
+    INDEX IF EXISTS osm_relation_geom_index;
+
+DROP
+    INDEX IF EXISTS osm_relation_tags_index;
+
+CREATE
+    INDEX IF NOT EXISTS osm_relation_geom_index ON
+    osm_relation
+        USING GIST(geom);
+
+CREATE
+    INDEX IF NOT EXISTS osm_relation_tags_index ON
+    osm_relation
+        USING GIN(tags);

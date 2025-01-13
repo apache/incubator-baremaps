@@ -19,7 +19,7 @@ import config from "./config.js";
 export default {
     "steps": [
         {
-            "id": "openstreetmap-water-polygons",
+            "id": "create",
             "needs": [],
             "tasks": [
                 // Initialization
