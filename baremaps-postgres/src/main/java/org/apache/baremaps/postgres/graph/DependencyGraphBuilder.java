@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class to build a directed dependency graph among DatabaseObject items.
  */
-class DependencyGraphBuilder {
+public class DependencyGraphBuilder {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DependencyGraphBuilder.class.getName());

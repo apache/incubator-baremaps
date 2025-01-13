@@ -52,6 +52,7 @@ import org.apache.baremaps.tasks.*;
     @Type(value = ImportOsmPbf.class, name = "ImportOsmPbf"),
     @Type(value = ImportShapefile.class, name = "ImportShapefile"),
     @Type(value = LogMessage.class, name = "LogMessage"),
+    @Type(value = RefreshMaterializedViews.class, name = "RefreshMaterializedViews"),
     @Type(value = UpdateOsmDatabase.class, name = "UpdateOsmDatabase"),
 })
 public interface Task {

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class to retrieve metadata about tables, views, and materialized views.
  */
-class DatabaseMetadataRetriever {
+public class DatabaseMetadataRetriever {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DatabaseMetadataRetriever.class.getName());
@@ -208,7 +208,7 @@ class DatabaseMetadataRetriever {
   /**
    * Record representing a dependency between two database objects.
    */
-  record DatabaseDependency(DatabaseObject source, DatabaseObject dependent) {
+  public record DatabaseDependency(DatabaseObject source, DatabaseObject dependent) {
 
   }
 
@@ -216,7 +216,7 @@ class DatabaseMetadataRetriever {
   /**
    * Record representing a database index.
    */
-  record DatabaseIndex(String indexName, String indexDef) {
+  public record DatabaseIndex(String indexName, String indexDef) {
   }
 
 }

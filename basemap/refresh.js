@@ -19,30 +19,14 @@ import config from "./config.js";
 export default {
     "steps": [
         {
-            "id": "refresh-node",
+            "id": "refresh-materialized-views",
             "needs": [],
             "tasks": [
-                "layers/node/refresh.sql",
-                "layers/way/refresh.sql",
-                "layers/relation/refresh.sql",
-                "layers/member/refresh.sql",
-                "layers/amenity/refresh.sql",
-                "layers/ocean/refresh.sql",
-                "layers/highway/refresh.sql",
-                "layers/landuse/refresh.sql",
-                "layers/leisure/refresh.sql",
-                "layers/natural/refresh.sql",
-                "layers/point/refresh.sql",
-                "layers/railway/refresh.sql",
-                "layers/route/refresh.sql",
-                "layers/waterway/refresh.sql"
-            ].map(file => {
-                return {
-                    "type": "ExecuteSql",
-                    "file": file,
+                {
+                    "type": "RefreshMaterializedViews",
                     "database": config.database,
                 }
-            })
-        },
+            ]
+        }
     ]
 }

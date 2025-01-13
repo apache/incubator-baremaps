@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Utility class to refresh materialized views in topological order: 1) drop indexes, 2) refresh MV,
  * 3) recreate indexes.
  */
-class MaterializedViewRefresher {
+public class MaterializedViewRefresher {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(MaterializedViewRefresher.class.getName());
