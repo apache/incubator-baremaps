@@ -24,6 +24,7 @@ limitations under the License.
   </parent>
 
   <artifactId>baremaps-server</artifactId>
+  <name>Apache Baremaps Server</name>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>

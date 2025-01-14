@@ -23,6 +23,7 @@ limitations under the License.
     <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-flatgeobuf</artifactId>
+  <name>Apache Baremaps FlatGeobuf</name>
   <dependencies>
     <dependency>
       <groupId>com.google.flatbuffers</groupId>

@@ -23,6 +23,7 @@ limitations under the License.
     <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-maplibre</artifactId>
+  <name>Apache Baremaps MapLibre</name>
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

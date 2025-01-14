@@ -25,7 +25,7 @@ limitations under the License.
   </parent>
 
   <artifactId>baremaps-cli</artifactId>
-  <name>baremaps-cli</name>
+  <name>Apache Baremaps CLI</name>
 
   <properties>
     <license.directory>${project.build.directory}/generated-sources/license</license.directory>

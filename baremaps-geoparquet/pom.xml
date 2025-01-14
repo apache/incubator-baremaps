@@ -23,6 +23,7 @@ limitations under the License.
     <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-geoparquet</artifactId>
+  <name>Apache Baremaps GeoParquet</name>
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

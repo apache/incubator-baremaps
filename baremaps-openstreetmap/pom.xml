@@ -23,6 +23,7 @@ limitations under the License.
     <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-openstreetmap</artifactId>
+  <name>Apache Baremaps OpenStreetMap</name>
 
   <dependencies>
     <dependency>

@@ -28,7 +28,7 @@ limitations under the License.
   <artifactId>baremaps</artifactId>
   <version>0.8.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>baremaps</name>
+  <name>Apache Baremaps</name>
   <description>Apache Baremaps (incubating) is a toolkit and a set of infrastructure components for creating,
         publishing, and operating online maps.</description>
   <url>https://github.com/apache/baremaps</url>
@@ -721,6 +721,9 @@ limitations under the License.
               <Build-Date>${project.build.outputTimestamp}</Build-Date>
               <Build-Version>${project.version}</Build-Version>
               <Build-Jdk>${java.version}</Build-Jdk>
+              <Specification-Title>${project.name}</Specification-Title>
+              <Specification-Vendor>Apache Software Foundation</Specification-Vendor>
+              <Implementation-Vendor>Apache Software Foundation</Implementation-Vendor>
             </manifestEntries>
           </archive>
         </configuration>

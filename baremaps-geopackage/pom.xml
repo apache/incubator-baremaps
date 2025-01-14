@@ -23,6 +23,7 @@ limitations under the License.
     <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-geopackage</artifactId>
+  <name>Apache Baremaps GeoPackage</name>
   <dependencies>
     <dependency>
       <groupId>mil.nga.geopackage</groupId>
