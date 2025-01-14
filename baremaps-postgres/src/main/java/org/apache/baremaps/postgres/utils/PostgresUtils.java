@@ -178,4 +178,17 @@ public final class PostgresUtils {
       statement.execute(queries);
     }
   }
+
+  /**
+   * Gets the version of the Postgres database.
+   *
+   * @param datasource the data source
+   * @return the version of the Postgres database
+   * @throws SQLException if a database access error occurs
+   */
+  public static int getPostgresVersion(DataSource datasource) throws SQLException {
+    try (Connection connection = datasource.getConnection()) {
+      return connection.getMetaData().getDatabaseMajorVersion();
+    }
+  }
 }
