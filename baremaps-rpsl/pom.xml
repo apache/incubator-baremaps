@@ -23,6 +23,7 @@ limitations under the License.
     <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-rpsl</artifactId>
+  <name>Apache Baremaps RPSL</name>
   <dependencies>
     <dependency>
       <groupId>net.ripe.ipresource</groupId>

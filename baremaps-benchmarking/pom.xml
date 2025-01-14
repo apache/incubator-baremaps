@@ -24,6 +24,7 @@ limitations under the License.
   </parent>
 
   <artifactId>baremaps-benchmarking</artifactId>
+  <name>Apache Baremaps Benchmarking</name>
 
   <properties>
     <jmh.version>1.37</jmh.version>

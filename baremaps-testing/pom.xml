@@ -23,6 +23,7 @@ limitations under the License.
     <version>0.8.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-testing</artifactId>
+  <name>Apache Baremaps Testing</name>
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
   </properties>

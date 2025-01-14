@@ -24,6 +24,7 @@ limitations under the License.
   </parent>
 
   <artifactId>baremaps-postgres</artifactId>
+  <name>Apache Baremaps Postgres</name>
 
   <dependencies>
     <dependency>
