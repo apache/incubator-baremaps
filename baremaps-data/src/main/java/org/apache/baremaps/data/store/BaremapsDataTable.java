@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.calcite;
+package org.apache.baremaps.data.store;
 
 import java.util.Iterator;
 import org.apache.baremaps.data.collection.DataCollection;
