@@ -29,9 +29,9 @@ import org.apache.baremaps.store.DataTable;
 /**
  * A {@link DataStore} corresponding to a GeoPackage file.
  */
-public class GeoPackageDataStore implements DataStore, AutoCloseable {
+public class GeoPackageDataStore implements DataStore {
 
-  private final GeoPackage geoPackage;
+  private final Path file;
 
   /**
    * Constructs a {@link GeoPackageDataStore} from a GeoPackage file.
@@ -39,15 +39,7 @@ public class GeoPackageDataStore implements DataStore, AutoCloseable {
    * @param file the path to the GeoPackage file
    */
   public GeoPackageDataStore(Path file) {
-    this.geoPackage = GeoPackageManager.open(file.toFile());
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void close() throws Exception {
-    geoPackage.close();
+    this.file = file;
   }
 
   /**
@@ -55,7 +47,11 @@ public class GeoPackageDataStore implements DataStore, AutoCloseable {
    */
   @Override
   public List<String> list() throws DataStoreException {
-    return geoPackage.getFeatureTables();
+    try (GeoPackage geoPackage = GeoPackageManager.open(file.toFile())) {
+      return geoPackage.getFeatureTables();
+    } catch (Exception e) {
+      throw new DataStoreException(e);
+    }
   }
 
   /**
@@ -63,7 +59,7 @@ public class GeoPackageDataStore implements DataStore, AutoCloseable {
    */
   @Override
   public DataTable get(String name) throws DataStoreException {
-    return new GeoPackageDataTable(geoPackage.getFeatureDao(name));
+    return new GeoPackageDataTable(file, name);
   }
 
   /**

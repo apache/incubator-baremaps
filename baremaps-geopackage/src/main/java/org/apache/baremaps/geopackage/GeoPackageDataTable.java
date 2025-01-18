@@ -18,7 +18,10 @@
 package org.apache.baremaps.geopackage;
 
 
+import java.nio.file.Path;
 import java.util.*;
+import mil.nga.geopackage.GeoPackage;
+import mil.nga.geopackage.GeoPackageManager;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
@@ -33,6 +36,12 @@ import org.locationtech.jts.geom.*;
  */
 public class GeoPackageDataTable implements DataTable {
 
+  private final Path file;
+
+  private final String name;
+
+    private final GeoPackage geoPackage;
+
   private final FeatureDao featureDao;
 
   private final DataSchema schema;
@@ -42,11 +51,14 @@ public class GeoPackageDataTable implements DataTable {
   /**
    * Constructs a {@link DataTable} from a feature DAO.
    *
-   * @param featureDao the feature DAO
+   * @param file the path to the GeoPackage file
+   * @param name the name of the data table
    */
-  public GeoPackageDataTable(FeatureDao featureDao) {
-    this.featureDao = featureDao;
-    var name = featureDao.getTableName();
+  public GeoPackageDataTable(Path file, String name) {
+    this.file = file;
+    this.name = name;
+    this.geoPackage = GeoPackageManager.open(file.toFile());
+    this.featureDao = geoPackage.getFeatureDao(name);
     var columns = new ArrayList<DataColumn>();
     for (FeatureColumn column : featureDao.getColumns()) {
       var propertyName = column.getName();
