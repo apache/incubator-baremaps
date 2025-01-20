@@ -748,6 +748,8 @@ limitations under the License.
             <exclude>**/.run/</exclude>
             <exclude>**/.github/</exclude>
             <exclude>**/.mvn/</exclude>
+            <exclude>**/target/</exclude>
+            <exclude>**/dependency-reduced-pom.xml</exclude>
 
             <!-- Files with undetected headers -->
             <exclude>**/vector_tile.proto</exclude>
