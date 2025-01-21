@@ -25,7 +25,7 @@ public record DataColumnNested(
     List<DataColumn> columns) implements DataColumn {
 
   @Override
-  public Type type() {
-    return Type.NESTED;
+  public ColumnType type() {
+    return ColumnType.NESTED;
   }
 }

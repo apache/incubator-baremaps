@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import org.apache.baremaps.store.*;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 
 /**
  * A {@link DataTable} that stores rows in a flatgeobuf file.
@@ -37,6 +37,8 @@ public class FlatGeoBufDataTable implements DataTable {
   private final Path file;
 
   private final DataSchema schema;
+
+  private RowIterator iterator;
 
   /**
    * Constructs a table from a flatgeobuf file (used for reading).
@@ -88,13 +90,7 @@ public class FlatGeoBufDataTable implements DataTable {
   @Override
   public Iterator<DataRow> iterator() {
     try {
-      var reader = new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ));
-
-      var header = reader.readHeader();
-      reader.skipIndex();
-
-      // create the feature stream
-      return new RowIterator(reader, header, schema);
+      return (iterator = new RowIterator(file, schema));
     } catch (IOException e) {
       throw new DataStoreException(e);
     }
@@ -135,7 +131,7 @@ public class FlatGeoBufDataTable implements DataTable {
       schema.columns().stream()
           .filter(c -> c.cardinality() == DataColumn.Cardinality.REQUIRED)
           .forEach(c -> {
-            if (Objects.requireNonNull(c.type()) == Type.BINARY) {
+            if (Objects.requireNonNull(c.type()) == ColumnType.BINARY) {
               throw new UnsupportedOperationException();
             }
           });
@@ -172,10 +168,17 @@ public class FlatGeoBufDataTable implements DataTable {
     }
   }
 
+  @Override
+  public void close() throws Exception {
+    if (iterator != null) {
+      iterator.close();
+    }
+  }
+
   /**
    * An iterator over rows in a flatgeobuf file.
    */
-  public static class RowIterator implements Iterator<DataRow> {
+  public static class RowIterator implements Iterator<DataRow>, AutoCloseable {
 
     private final FlatGeoBuf.Header header;
 
@@ -188,17 +191,16 @@ public class FlatGeoBufDataTable implements DataTable {
     /**
      * Constructs a row iterator.
      *
-     * @param reader the channel to read from
-     * @param header the header of the file
+     * @param file the path to the flatgeobuf file
      * @param schema the schema of the table
      */
     public RowIterator(
-        FlatGeoBufReader reader,
-        FlatGeoBuf.Header header,
-        DataSchema schema) {
-      this.reader = reader;
-      this.header = header;
+        Path file,
+        DataSchema schema) throws IOException {
+      this.reader = new FlatGeoBufReader(FileChannel.open(file, StandardOpenOption.READ));
+      this.header = reader.readHeader();
       this.schema = schema;
+      reader.skipIndex();
     }
 
     /**
@@ -221,6 +223,11 @@ public class FlatGeoBufDataTable implements DataTable {
       } catch (IOException e) {
         throw new NoSuchElementException(e);
       }
+    }
+
+    @Override
+    public void close() throws Exception {
+      reader.close();
     }
   }
 }

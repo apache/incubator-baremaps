@@ -19,6 +19,7 @@ package org.apache.baremaps.data.collection;
 
 
 
+import java.io.IOException;
 import org.apache.baremaps.data.type.LongDataType;
 
 /**

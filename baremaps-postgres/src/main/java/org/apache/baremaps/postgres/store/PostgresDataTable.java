@@ -242,6 +242,11 @@ public class PostgresDataTable implements DataTable {
     return String.format("TRUNCATE TABLE \"%s\"", schema.name());
   }
 
+  @Override
+  public void close() throws Exception {
+    // Do nothing
+  }
+
   /**
    * An iterator that iterates over the rows of a table.
    */

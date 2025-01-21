@@ -48,6 +48,7 @@ limitations under the License.
 
   <modules>
     <module>baremaps-benchmarking</module>
+    <module>baremaps-calcite</module>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-csv</module>

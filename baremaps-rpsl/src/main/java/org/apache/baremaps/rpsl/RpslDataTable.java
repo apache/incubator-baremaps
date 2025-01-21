@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.*;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 
 /**
  * A DataTable implementation that reads RPSL data using RpslReader.
@@ -49,20 +49,20 @@ public class RpslDataTable implements DataTable {
    */
   private DataSchema createSchema() {
     List<DataColumn> columns = new ArrayList<>();
-    columns.add(new DataColumnFixed("type", Cardinality.REQUIRED, Type.STRING));
-    columns.add(new DataColumnFixed("id", Cardinality.REQUIRED, Type.STRING));
-    columns.add(new DataColumnFixed("inetnum", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("inet6num", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("netname", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("descr", Cardinality.REPEATED, Type.STRING));
-    columns.add(new DataColumnFixed("country", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("admin-c", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("tech-c", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("status", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("mnt-by", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("created", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("last-modified", Cardinality.OPTIONAL, Type.STRING));
-    columns.add(new DataColumnFixed("changed", Cardinality.REPEATED, Type.STRING));
+    columns.add(new DataColumnFixed("type", Cardinality.REQUIRED, ColumnType.STRING));
+    columns.add(new DataColumnFixed("id", Cardinality.REQUIRED, ColumnType.STRING));
+    columns.add(new DataColumnFixed("inetnum", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("inet6num", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("netname", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("descr", Cardinality.REPEATED, ColumnType.STRING));
+    columns.add(new DataColumnFixed("country", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("admin-c", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("tech-c", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("status", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("mnt-by", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("created", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("last-modified", Cardinality.OPTIONAL, ColumnType.STRING));
+    columns.add(new DataColumnFixed("changed", Cardinality.REPEATED, ColumnType.STRING));
     return new DataSchemaImpl("RpslObject", columns);
   }
 
@@ -85,5 +85,10 @@ public class RpslDataTable implements DataTable {
   @Override
   public void clear() {
     throw new UnsupportedOperationException("Clear operation is not supported.");
+  }
+
+  @Override
+  public void close() throws Exception {
+    inputStream.close();
   }
 }

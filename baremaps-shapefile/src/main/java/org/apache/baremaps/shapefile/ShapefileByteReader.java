@@ -26,7 +26,7 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -131,29 +131,29 @@ public class ShapefileByteReader extends CommonByteReader {
       var fieldDescriptor = this.databaseFieldsDescriptors.get(i);
       var columnName = fieldDescriptor.getName();
       var columnType = switch (fieldDescriptor.getType()) {
-        case CHARACTER -> Type.STRING;
-        case NUMBER -> fieldDescriptor.getDecimalCount() == 0 ? Type.LONG : Type.DOUBLE;
-        case CURRENCY -> Type.DOUBLE;
-        case DOUBLE -> Type.DOUBLE;
-        case INTEGER -> Type.INTEGER;
-        case AUTO_INCREMENT -> Type.INTEGER;
+        case CHARACTER -> ColumnType.STRING;
+        case NUMBER -> fieldDescriptor.getDecimalCount() == 0 ? ColumnType.LONG : ColumnType.DOUBLE;
+        case CURRENCY -> ColumnType.DOUBLE;
+        case DOUBLE -> ColumnType.DOUBLE;
+        case INTEGER -> ColumnType.INTEGER;
+        case AUTO_INCREMENT -> ColumnType.INTEGER;
 
         // TODO: Implement the following types
-        case LOGICAL -> Type.STRING;
-        case DATE -> Type.STRING;
-        case MEMO -> Type.STRING;
-        case FLOATING_POINT -> Type.STRING;
-        case PICTURE -> Type.STRING;
-        case VARI_FIELD -> Type.STRING;
-        case VARIANT -> Type.STRING;
-        case TIMESTAMP -> Type.STRING;
-        case DATE_TIME -> Type.STRING;
+        case LOGICAL -> ColumnType.STRING;
+        case DATE -> ColumnType.STRING;
+        case MEMO -> ColumnType.STRING;
+        case FLOATING_POINT -> ColumnType.STRING;
+        case PICTURE -> ColumnType.STRING;
+        case VARI_FIELD -> ColumnType.STRING;
+        case VARIANT -> ColumnType.STRING;
+        case TIMESTAMP -> ColumnType.STRING;
+        case DATE_TIME -> ColumnType.STRING;
       };
       columns.add(new DataColumnFixed(columnName, Cardinality.OPTIONAL, columnType));
     }
 
     // Add geometry column.
-    columns.add(new DataColumnFixed(GEOMETRY_NAME, Cardinality.OPTIONAL, Type.GEOMETRY));
+    columns.add(new DataColumnFixed(GEOMETRY_NAME, Cardinality.OPTIONAL, ColumnType.GEOMETRY));
 
     return new DataSchemaImpl(name, columns);
   }

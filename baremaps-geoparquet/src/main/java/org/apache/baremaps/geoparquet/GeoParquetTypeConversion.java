@@ -25,7 +25,7 @@ import org.apache.baremaps.geoparquet.GeoParquetSchema.Field;
 import org.apache.baremaps.geoparquet.GeoParquetSchema.GroupField;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.apache.parquet.io.api.Binary;
 
 public class GeoParquetTypeConversion {
@@ -50,15 +50,15 @@ public class GeoParquetTypeConversion {
       case REPEATED -> Cardinality.REPEATED;
     };
     return switch (field.type()) {
-      case BINARY -> new DataColumnFixed(field.name(), cardinality, Type.BINARY);
-      case BOOLEAN -> new DataColumnFixed(field.name(), cardinality, Type.BOOLEAN);
-      case INTEGER -> new DataColumnFixed(field.name(), cardinality, Type.INTEGER);
-      case INT96, LONG -> new DataColumnFixed(field.name(), cardinality, Type.LONG);
-      case FLOAT -> new DataColumnFixed(field.name(), cardinality, Type.FLOAT);
-      case DOUBLE -> new DataColumnFixed(field.name(), cardinality, Type.DOUBLE);
-      case STRING -> new DataColumnFixed(field.name(), cardinality, Type.STRING);
-      case GEOMETRY -> new DataColumnFixed(field.name(), cardinality, Type.GEOMETRY);
-      case ENVELOPE -> new DataColumnFixed(field.name(), cardinality, Type.ENVELOPE);
+      case BINARY -> new DataColumnFixed(field.name(), cardinality, ColumnType.BINARY);
+      case BOOLEAN -> new DataColumnFixed(field.name(), cardinality, ColumnType.BOOLEAN);
+      case INTEGER -> new DataColumnFixed(field.name(), cardinality, ColumnType.INTEGER);
+      case INT96, LONG -> new DataColumnFixed(field.name(), cardinality, ColumnType.LONG);
+      case FLOAT -> new DataColumnFixed(field.name(), cardinality, ColumnType.FLOAT);
+      case DOUBLE -> new DataColumnFixed(field.name(), cardinality, ColumnType.DOUBLE);
+      case STRING -> new DataColumnFixed(field.name(), cardinality, ColumnType.STRING);
+      case GEOMETRY -> new DataColumnFixed(field.name(), cardinality, ColumnType.GEOMETRY);
+      case ENVELOPE -> new DataColumnFixed(field.name(), cardinality, ColumnType.ENVELOPE);
       case GROUP -> new DataColumnNested(field.name(), cardinality,
           asDataColumns(((GroupField) field).schema()));
     };

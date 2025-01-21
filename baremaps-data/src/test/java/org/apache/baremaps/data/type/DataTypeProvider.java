@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.apache.baremaps.store.DataColumnFixed;
 import org.apache.baremaps.store.DataRow;
 import org.apache.baremaps.store.DataSchema;
@@ -35,23 +35,24 @@ public class DataTypeProvider {
   private static final GeometryFactory geometryFactory = new GeometryFactory();
 
   private static final DataSchema DATA_SCHEMA = new DataSchemaImpl("row", List.of(
-      new DataColumnFixed("byte", Cardinality.OPTIONAL, Type.BYTE),
-      new DataColumnFixed("boolean", Cardinality.OPTIONAL, Type.BOOLEAN),
-      new DataColumnFixed("short", Cardinality.OPTIONAL, Type.SHORT),
-      new DataColumnFixed("integer", Cardinality.OPTIONAL, Type.INTEGER),
-      new DataColumnFixed("long", Cardinality.OPTIONAL, Type.LONG),
-      new DataColumnFixed("float", Cardinality.OPTIONAL, Type.FLOAT),
-      new DataColumnFixed("double", Cardinality.OPTIONAL, Type.DOUBLE),
-      new DataColumnFixed("string", Cardinality.OPTIONAL, Type.STRING),
-      new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY),
-      new DataColumnFixed("point", Cardinality.OPTIONAL, Type.POINT),
-      new DataColumnFixed("linestring", Cardinality.OPTIONAL, Type.LINESTRING),
-      new DataColumnFixed("polygon", Cardinality.OPTIONAL, Type.POLYGON),
-      new DataColumnFixed("multipoint", Cardinality.OPTIONAL, Type.MULTIPOINT),
-      new DataColumnFixed("multilinestring", Cardinality.OPTIONAL, Type.MULTILINESTRING),
-      new DataColumnFixed("multipolygon", Cardinality.OPTIONAL, Type.MULTIPOLYGON),
-      new DataColumnFixed("geometrycollection", Cardinality.OPTIONAL, Type.GEOMETRYCOLLECTION),
-      new DataColumnFixed("coordinate", Cardinality.OPTIONAL, Type.COORDINATE)));
+      new DataColumnFixed("byte", Cardinality.OPTIONAL, ColumnType.BYTE),
+      new DataColumnFixed("boolean", Cardinality.OPTIONAL, ColumnType.BOOLEAN),
+      new DataColumnFixed("short", Cardinality.OPTIONAL, ColumnType.SHORT),
+      new DataColumnFixed("integer", Cardinality.OPTIONAL, ColumnType.INTEGER),
+      new DataColumnFixed("long", Cardinality.OPTIONAL, ColumnType.LONG),
+      new DataColumnFixed("float", Cardinality.OPTIONAL, ColumnType.FLOAT),
+      new DataColumnFixed("double", Cardinality.OPTIONAL, ColumnType.DOUBLE),
+      new DataColumnFixed("string", Cardinality.OPTIONAL, ColumnType.STRING),
+      new DataColumnFixed("geometry", Cardinality.OPTIONAL, ColumnType.GEOMETRY),
+      new DataColumnFixed("point", Cardinality.OPTIONAL, ColumnType.POINT),
+      new DataColumnFixed("linestring", Cardinality.OPTIONAL, ColumnType.LINESTRING),
+      new DataColumnFixed("polygon", Cardinality.OPTIONAL, ColumnType.POLYGON),
+      new DataColumnFixed("multipoint", Cardinality.OPTIONAL, ColumnType.MULTIPOINT),
+      new DataColumnFixed("multilinestring", Cardinality.OPTIONAL, ColumnType.MULTILINESTRING),
+      new DataColumnFixed("multipolygon", Cardinality.OPTIONAL, ColumnType.MULTIPOLYGON),
+      new DataColumnFixed("geometrycollection", Cardinality.OPTIONAL,
+          ColumnType.GEOMETRYCOLLECTION),
+      new DataColumnFixed("coordinate", Cardinality.OPTIONAL, ColumnType.COORDINATE)));
 
   private static final DataRow DATA_ROW = DATA_SCHEMA.createRow()
       .with("byte", Byte.MAX_VALUE)
@@ -345,7 +346,7 @@ public class DataTypeProvider {
                                             new Coordinate(4, 1), new Coordinate(3, 1)})})})),
 
         // Row
-        Arguments.of(new RowDataType(DATA_SCHEMA), DATA_ROW),
+        Arguments.of(new DataTypeImpl(DATA_SCHEMA), DATA_ROW),
 
         // Geometry
         Arguments.of(new GeometryDataType(),

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.apache.baremaps.openstreetmap.OpenStreetMapFormat.EntityReader;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 
 /**
  * A DataTable implementation for OpenStreetMap data.
@@ -52,17 +53,17 @@ public class OpenStreetMapDataTable implements DataTable {
    */
   private DataSchema createSchema() {
     List<DataColumn> columns = List.of(
-        new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED, DataColumn.Type.LONG),
-        new DataColumnFixed("type", DataColumn.Cardinality.REQUIRED, DataColumn.Type.STRING),
-        new DataColumnFixed("version", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.INTEGER),
+        new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED, ColumnType.LONG),
+        new DataColumnFixed("type", DataColumn.Cardinality.REQUIRED, ColumnType.STRING),
+        new DataColumnFixed("version", DataColumn.Cardinality.OPTIONAL, ColumnType.INTEGER),
         new DataColumnFixed("timestamp", DataColumn.Cardinality.OPTIONAL,
-            DataColumn.Type.LOCAL_DATE_TIME),
-        new DataColumnFixed("uid", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.INTEGER),
-        new DataColumnFixed("user", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.STRING),
-        new DataColumnFixed("changeset", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.LONG),
-        new DataColumnFixed("tags", DataColumn.Cardinality.OPTIONAL, DataColumn.Type.NESTED),
+            ColumnType.LOCAL_DATE_TIME),
+        new DataColumnFixed("uid", DataColumn.Cardinality.OPTIONAL, ColumnType.INTEGER),
+        new DataColumnFixed("user", DataColumn.Cardinality.OPTIONAL, ColumnType.STRING),
+        new DataColumnFixed("changeset", DataColumn.Cardinality.OPTIONAL, ColumnType.LONG),
+        new DataColumnFixed("tags", DataColumn.Cardinality.OPTIONAL, ColumnType.NESTED),
         new DataColumnFixed("geometry", DataColumn.Cardinality.OPTIONAL,
-            DataColumn.Type.GEOMETRY));
+            ColumnType.GEOMETRY));
     return new DataSchemaImpl("osm_data", columns);
   }
 
@@ -131,5 +132,10 @@ public class OpenStreetMapDataTable implements DataTable {
       return "relation";
     else
       return "unknown";
+  }
+
+  @Override
+  public void close() throws Exception {
+    inputStream.close();
   }
 }

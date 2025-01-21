@@ -20,25 +20,24 @@ package org.apache.baremaps.flatgeobuf;
 
 import java.util.*;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf.Feature;
-import org.apache.baremaps.flatgeobuf.generated.ColumnType;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.locationtech.jts.geom.Geometry;
 
 public class FlatGeoBufTypeConversion {
 
-  private static final Map<Type, Integer> types = new EnumMap<>(Type.class);
+  private static final Map<ColumnType, Integer> types = new EnumMap<>(ColumnType.class);
 
   static {
-    types.put(Type.BYTE, ColumnType.Byte);
-    types.put(Type.BOOLEAN, ColumnType.Bool);
-    types.put(Type.SHORT, ColumnType.Short);
-    types.put(Type.INTEGER, ColumnType.Int);
-    types.put(Type.LONG, ColumnType.Long);
-    types.put(Type.FLOAT, ColumnType.Float);
-    types.put(Type.DOUBLE, ColumnType.Double);
-    types.put(Type.STRING, ColumnType.String);
+    types.put(ColumnType.BYTE, org.apache.baremaps.flatgeobuf.generated.ColumnType.Byte);
+    types.put(ColumnType.BOOLEAN, org.apache.baremaps.flatgeobuf.generated.ColumnType.Bool);
+    types.put(ColumnType.SHORT, org.apache.baremaps.flatgeobuf.generated.ColumnType.Short);
+    types.put(ColumnType.INTEGER, org.apache.baremaps.flatgeobuf.generated.ColumnType.Int);
+    types.put(ColumnType.LONG, org.apache.baremaps.flatgeobuf.generated.ColumnType.Long);
+    types.put(ColumnType.FLOAT, org.apache.baremaps.flatgeobuf.generated.ColumnType.Float);
+    types.put(ColumnType.DOUBLE, org.apache.baremaps.flatgeobuf.generated.ColumnType.Double);
+    types.put(ColumnType.STRING, org.apache.baremaps.flatgeobuf.generated.ColumnType.String);
   }
 
   private FlatGeoBufTypeConversion() {
@@ -51,7 +50,7 @@ public class FlatGeoBufTypeConversion {
         .map(column -> new DataColumnFixed(
             column.name(),
             column.nullable() ? Cardinality.OPTIONAL : Cardinality.REQUIRED,
-            Type.fromBinding(fromColumnType(column.type()))))
+            ColumnType.fromBinding(fromColumnType(column.type()))))
         .map(DataColumn.class::cast)
         .toList();
     return new DataSchemaImpl(name, columns);

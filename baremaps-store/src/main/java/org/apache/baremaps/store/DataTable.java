@@ -26,7 +26,7 @@ import java.util.stream.StreamSupport;
 /**
  * A {@link DataTable} is a collection of rows respecting a {@link DataSchema} .
  */
-public interface DataTable extends Iterable<DataRow> {
+public interface DataTable extends Iterable<DataRow>, AutoCloseable {
 
   /**
    * Returns the schema of the row.

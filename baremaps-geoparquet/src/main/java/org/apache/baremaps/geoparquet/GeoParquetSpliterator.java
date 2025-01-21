@@ -284,4 +284,5 @@ class GeoParquetSpliterator implements Spliterator<GeoParquetGroup> {
   public int characteristics() {
     return NONNULL | IMMUTABLE;
   }
+
 }

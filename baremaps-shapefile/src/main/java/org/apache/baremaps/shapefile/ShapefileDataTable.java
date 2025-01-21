@@ -38,6 +38,8 @@ public class ShapefileDataTable implements DataTable {
 
   private final ShapefileReader shapeFile;
 
+  private ShapefileIterator iterator;
+
   /**
    * Constructs a table from a shapefile.
    *
@@ -73,7 +75,7 @@ public class ShapefileDataTable implements DataTable {
   @Override
   public Iterator<DataRow> iterator() {
     try {
-      return new ShapefileIterator(shapeFile.read());
+      return (iterator = new ShapefileIterator(shapeFile));
     } catch (IOException e) {
       throw new DataStoreException(e);
     }
@@ -87,10 +89,17 @@ public class ShapefileDataTable implements DataTable {
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public void close() throws Exception {
+    if (iterator != null) {
+      iterator.close();
+    }
+  }
+
   /**
    * An iterator over the rows of a shapefile.
    */
-  public static class ShapefileIterator implements Iterator<DataRow> {
+  public static class ShapefileIterator implements Iterator<DataRow>, AutoCloseable {
 
     private final ShapefileInputStream shapefileInputStream;
 
@@ -99,10 +108,10 @@ public class ShapefileDataTable implements DataTable {
     /**
      * Constructs an iterator from a shapefile input stream.
      *
-     * @param shapefileInputStream the shapefile input stream
+     * @param shapefileReader the shapefile input stream
      */
-    public ShapefileIterator(ShapefileInputStream shapefileInputStream) {
-      this.shapefileInputStream = shapefileInputStream;
+    public ShapefileIterator(ShapefileReader shapefileReader) throws IOException {
+      this.shapefileInputStream = shapefileReader.read();
     }
 
     /**
@@ -146,6 +155,11 @@ public class ShapefileDataTable implements DataTable {
         }
         throw new NoSuchElementException();
       }
+    }
+
+    @Override
+    public void close() throws Exception {
+      shapefileInputStream.close();
     }
   }
 }

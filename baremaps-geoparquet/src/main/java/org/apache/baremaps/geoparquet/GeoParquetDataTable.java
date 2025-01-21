@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.geoparquet;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.Spliterator;
@@ -93,6 +94,13 @@ public class GeoParquetDataTable implements DataTable {
       return reader.getGeoParquetMetadata().getSrid(column);
     } catch (Exception e) {
       throw new GeoParquetException("Fail to read the SRID from the GeoParquet metadata", e);
+    }
+  }
+
+  @Override
+  public void close() throws IOException {
+    if (reader != null) {
+      reader.close();
     }
   }
 }

@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.baremaps.store.*;
+import org.apache.baremaps.store.DataColumn.Cardinality;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.locationtech.jts.io.WKTReader;
 
 /**
@@ -34,43 +36,57 @@ import org.locationtech.jts.io.WKTReader;
  */
 public class CsvDataTable implements DataTable {
 
-  private final DataSchema schema;
   private final File csvFile;
   private final CsvSchema csvSchema;
+  private final DataSchema dataSchema;
+
   private final long size;
+  private JsonParser parser;
 
   /**
    * Constructs a CsvDataTable with the specified schema, CSV file, header presence, and separator.
    *
-   * @param schema the data schema defining the structure
    * @param csvFile the CSV file to read data from
    * @param hasHeader whether the CSV file includes a header row
-   * @param separator the character used to separate columns in the CSV file
    * @throws IOException if an I/O error occurs
    */
-  public CsvDataTable(DataSchema schema, File csvFile, boolean hasHeader, char separator)
-      throws IOException {
-    this.schema = schema;
+  public CsvDataTable(File csvFile, boolean hasHeader) throws IOException {
     this.csvFile = csvFile;
-    this.csvSchema = buildCsvSchema(schema, hasHeader, separator);
+    this.csvSchema = inferCsvSchema(csvFile);
+    this.dataSchema = createDataSchema(csvFile.getName(), csvSchema);
     this.size = calculateSize();
   }
 
-  /**
-   * Builds the CsvSchema for Jackson based on the provided DataSchema, header presence, and
-   * separator.
-   *
-   * @param dataSchema the data schema
-   * @param hasHeader whether the CSV file includes a header row
-   * @param separator the character used to separate columns
-   * @return the CsvSchema for Jackson
-   */
-  private CsvSchema buildCsvSchema(DataSchema dataSchema, boolean hasHeader, char separator) {
-    CsvSchema.Builder builder = CsvSchema.builder();
-    for (DataColumn column : dataSchema.columns()) {
-      builder.addColumn(column.name());
+
+  private CsvSchema inferCsvSchema(File csvFile) {
+    CsvSchema csvSchema = CsvSchema.emptySchema().withUseHeader(true).withColumnSeparator(',');
+    try (var ignored = new CsvMapper().readerFor(Map.class)
+        .with(csvSchema)
+        .createParser(csvFile)) {
+      var test = ignored.readValueAsTree();
+      return csvSchema;
+    } catch (IOException e) {
+      throw new DataStoreException("Error reading CSV file", e);
     }
-    return builder.setUseHeader(hasHeader).setColumnSeparator(separator).build();
+  }
+
+  private DataSchema createDataSchema(String name, CsvSchema csvSchema) {
+    List<DataColumn> columns = new ArrayList<>();
+    for (String columnName : csvSchema.getColumnNames()) {
+      switch (csvSchema.column(columnName).getType()) {
+        case STRING -> columns
+            .add(new DataColumnFixed(columnName, Cardinality.REQUIRED, ColumnType.STRING));
+        case NUMBER -> columns
+            .add(new DataColumnFixed(columnName, Cardinality.REQUIRED, ColumnType.DOUBLE));
+        case BOOLEAN -> columns
+            .add(new DataColumnFixed(columnName, Cardinality.REQUIRED, ColumnType.BOOLEAN));
+        case ARRAY -> columns
+            .add(new DataColumnFixed(columnName, Cardinality.REPEATED, ColumnType.STRING));
+        default -> throw new IllegalArgumentException(
+            "Unsupported column type: " + csvSchema.column(columnName).getType());
+      }
+    }
+    return new DataSchemaImpl(name, columns);
   }
 
   /**
@@ -95,7 +111,7 @@ public class CsvDataTable implements DataTable {
 
   @Override
   public DataSchema schema() {
-    return schema;
+    return dataSchema;
   }
 
   @Override
@@ -117,7 +133,7 @@ public class CsvDataTable implements DataTable {
   public Iterator<DataRow> iterator() {
     try {
       CsvMapper csvMapper = new CsvMapper();
-      JsonParser parser = csvMapper.readerFor(Map.class)
+      parser = csvMapper.readerFor(Map.class)
           .with(csvSchema)
           .createParser(csvFile);
 
@@ -134,10 +150,10 @@ public class CsvDataTable implements DataTable {
         @Override
         public DataRow next() {
           Map<String, String> csvRow = csvIterator.next();
-          DataRow dataRow = schema.createRow();
+          DataRow dataRow = dataSchema.createRow();
 
-          for (int i = 0; i < schema.columns().size(); i++) {
-            DataColumn column = schema.columns().get(i);
+          for (int i = 0; i < dataSchema.columns().size(); i++) {
+            DataColumn column = dataSchema.columns().get(i);
             String columnName = column.name();
             String value = csvRow.get(columnName);
 
@@ -165,7 +181,7 @@ public class CsvDataTable implements DataTable {
    * @return the parsed value
    */
   private Object parseValue(DataColumn column, String value) {
-    DataColumn.Type type = column.type();
+    ColumnType type = column.type();
     try {
       if (value == null || value.isEmpty()) {
         return null;
@@ -197,5 +213,12 @@ public class CsvDataTable implements DataTable {
   @Override
   public Stream<DataRow> stream() {
     return StreamSupport.stream(spliterator(), false);
+  }
+
+  @Override
+  public void close() throws IOException {
+    if (parser != null) {
+      parser.close();
+    }
   }
 }

@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import org.apache.baremaps.store.DataColumn;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.apache.baremaps.store.DataRow;
 import org.apache.baremaps.store.DataRowImpl;
 import org.apache.baremaps.store.DataSchema;
@@ -29,41 +29,36 @@ import org.apache.baremaps.store.DataSchema;
 /**
  * A {@link DataType} for reading and writing {@link DataRow} objects in {@link ByteBuffer}s.
  */
-public class RowDataType implements DataType<DataRow> {
+public class DataTypeImpl implements DataType<DataRow> {
 
   /**
    * Map of data types for each of the supported column types.
    */
-  private static final EnumMap<Type, DataType> types = new EnumMap<>(Type.class);
+  private static final EnumMap<ColumnType, DataType> types = new EnumMap<>(ColumnType.class);
 
   static {
-    types.put(Type.BYTE, new ByteDataType());
-    types.put(Type.BOOLEAN, new BooleanDataType());
-    types.put(Type.SHORT, new ShortDataType());
-    types.put(Type.INTEGER, new IntegerDataType());
-    types.put(Type.LONG, new LongDataType());
-    types.put(Type.FLOAT, new FloatDataType());
-    types.put(Type.DOUBLE, new DoubleDataType());
-    types.put(Type.STRING, new StringDataType());
-    types.put(Type.GEOMETRY, new GeometryDataType());
-    types.put(Type.POINT, new PointDataType());
-    types.put(Type.LINESTRING, new LineStringDataType());
-    types.put(Type.POLYGON, new PolygonDataType());
-    types.put(Type.MULTIPOINT, new MultiPointDataType());
-    types.put(Type.MULTILINESTRING, new MultiLineStringDataType());
-    types.put(Type.MULTIPOLYGON, new MultiPolygonDataType());
-    types.put(Type.GEOMETRYCOLLECTION, new GeometryCollectionDataType());
-    types.put(Type.COORDINATE, new CoordinateDataType());
+    types.put(ColumnType.BYTE, new ByteDataType());
+    types.put(ColumnType.BOOLEAN, new BooleanDataType());
+    types.put(ColumnType.SHORT, new ShortDataType());
+    types.put(ColumnType.INTEGER, new IntegerDataType());
+    types.put(ColumnType.LONG, new LongDataType());
+    types.put(ColumnType.FLOAT, new FloatDataType());
+    types.put(ColumnType.DOUBLE, new DoubleDataType());
+    types.put(ColumnType.STRING, new StringDataType());
+    types.put(ColumnType.GEOMETRY, new GeometryDataType());
+    types.put(ColumnType.POINT, new PointDataType());
+    types.put(ColumnType.LINESTRING, new LineStringDataType());
+    types.put(ColumnType.POLYGON, new PolygonDataType());
+    types.put(ColumnType.MULTIPOINT, new MultiPointDataType());
+    types.put(ColumnType.MULTILINESTRING, new MultiLineStringDataType());
+    types.put(ColumnType.MULTIPOLYGON, new MultiPolygonDataType());
+    types.put(ColumnType.GEOMETRYCOLLECTION, new GeometryCollectionDataType());
+    types.put(ColumnType.COORDINATE, new CoordinateDataType());
   }
 
   private final DataSchema rowType;
 
-  /**
-   * Constructs a {@link RowDataType} with a specified schema.
-   *
-   * @param rowType the data schema defining the row's structure
-   */
-  public RowDataType(DataSchema rowType) {
+  public DataTypeImpl(DataSchema rowType) {
     this.rowType = rowType;
   }
 

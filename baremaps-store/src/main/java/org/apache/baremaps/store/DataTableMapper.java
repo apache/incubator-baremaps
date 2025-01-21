@@ -68,4 +68,8 @@ public class DataTableMapper implements DataTable {
     table.clear();
   }
 
+  @Override
+  public void close() throws Exception {
+    table.close();
+  }
 }

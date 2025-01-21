@@ -18,34 +18,33 @@
 package org.apache.baremaps.calcite;
 
 
-import com.google.common.collect.ImmutableList;
-import java.sql.*;
-import java.util.List;
-import java.util.Properties;
-import org.apache.baremaps.data.calcite.SqlDataTable;
-import org.apache.baremaps.data.collection.AppendOnlyLog;
-import org.apache.baremaps.data.collection.IndexedDataList;
-import org.apache.baremaps.data.store.BaremapsDataTable;
-import org.apache.baremaps.data.type.RowDataType;
-import org.apache.baremaps.maplibre.vectortile.VectorTileFunctions;
-import org.apache.baremaps.store.*;
-import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
-import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.model.ModelHandler;
-import org.apache.calcite.runtime.AccumOperation;
-import org.apache.calcite.runtime.CollectOperation;
-import org.apache.calcite.runtime.SpatialTypeFunctions;
-import org.apache.calcite.runtime.UnionOperation;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.schema.impl.AggregateFunctionImpl;
-import org.apache.calcite.sql.fun.SqlSpatialTypeFunctions;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.*;
+ import com.google.common.collect.ImmutableList;
+ import java.sql.*;
+ import java.util.List;
+ import java.util.Properties;
+ import org.apache.baremaps.data.calcite.BaremapsTable;
+ import org.apache.baremaps.data.collection.AppendOnlyLog;
+ import org.apache.baremaps.data.collection.IndexedDataList;
+ import org.apache.baremaps.data.store.DataTableImpl;
+ import org.apache.baremaps.data.type.DataTypeImpl;
+ import org.apache.baremaps.maplibre.vectortile.VectorTileFunctions;
+ import org.apache.baremaps.store.*;
+ import org.apache.baremaps.store.DataColumn.Cardinality;
+ import org.apache.baremaps.store.DataColumn.Type;
+ import org.apache.calcite.jdbc.CalciteConnection;
+ import org.apache.calcite.model.ModelHandler;
+ import org.apache.calcite.runtime.AccumOperation;
+ import org.apache.calcite.runtime.CollectOperation;
+ import org.apache.calcite.runtime.SpatialTypeFunctions;
+ import org.apache.calcite.runtime.UnionOperation;
+ import org.apache.calcite.schema.SchemaPlus;
+ import org.apache.calcite.schema.impl.AggregateFunctionImpl;
+ import org.apache.calcite.sql.fun.SqlSpatialTypeFunctions;
+ import org.junit.jupiter.api.Assertions;
+ import org.junit.jupiter.api.Test;
+ import org.locationtech.jts.geom.*;
 
 class CalciteTest {
-
   @Test
   void test() throws SQLException {
     GeometryFactory geometryFactory = new GeometryFactory();

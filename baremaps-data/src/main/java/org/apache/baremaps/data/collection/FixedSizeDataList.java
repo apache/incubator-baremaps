@@ -19,6 +19,7 @@ package org.apache.baremaps.data.collection;
 
 
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.baremaps.data.memory.Memory;

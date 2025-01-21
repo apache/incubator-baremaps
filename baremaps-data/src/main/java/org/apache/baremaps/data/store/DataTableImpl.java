@@ -17,8 +17,11 @@
 
 package org.apache.baremaps.data.store;
 
+import java.io.IOException;
 import java.util.Iterator;
+import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
+import org.apache.baremaps.data.type.DataTypeImpl;
 import org.apache.baremaps.store.DataRow;
 import org.apache.baremaps.store.DataSchema;
 import org.apache.baremaps.store.DataTable;
@@ -26,7 +29,7 @@ import org.apache.baremaps.store.DataTable;
 /**
  * A {@link DataTable} is a collection of rows respecting a {@link DataSchema}.
  */
-public class BaremapsDataTable implements DataTable {
+public class DataTableImpl implements DataTable {
 
   private final DataSchema schema;
 
@@ -38,9 +41,19 @@ public class BaremapsDataTable implements DataTable {
    * @param schema the schema of the rows
    * @param rows the rows
    */
-  public BaremapsDataTable(DataSchema schema, DataCollection<DataRow> rows) {
+  public DataTableImpl(DataSchema schema, DataCollection<DataRow> rows) {
     this.schema = schema;
     this.rows = rows;
+  }
+
+  /**
+   * Constructs a {@link DataTable} with the specified row {@link DataSchema}.
+   *
+   * @param schema the schema of the rows
+   */
+  public DataTableImpl(DataSchema schema) {
+    this.schema = schema;
+    this.rows = new AppendOnlyLog<>(new DataTypeImpl(schema));
   }
 
   /**
@@ -75,12 +88,13 @@ public class BaremapsDataTable implements DataTable {
     return rows.size();
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public Iterator<DataRow> iterator() {
     return rows.iterator();
   }
 
+  @Override
+  public void close() throws IOException {
+    rows.close();
+  }
 }

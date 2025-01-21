@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.store;
 
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -29,7 +30,7 @@ import org.locationtech.jts.geom.*;
 /**
  * A column in a table.
  */
-public interface DataColumn {
+public interface DataColumn extends Serializable {
 
   /**
    * Returns the name of the column.
@@ -37,7 +38,6 @@ public interface DataColumn {
    * @return the name of the column
    */
   String name();
-
 
   Cardinality cardinality();
 
@@ -52,12 +52,12 @@ public interface DataColumn {
    *
    * @return the type of the column
    */
-  Type type();
+  ColumnType type();
 
   /**
    * An enumeration of the supported data column types.
    */
-  enum Type {
+  enum ColumnType {
     BINARY(byte[].class),
     BYTE(Byte.class),
     BOOLEAN(Boolean.class),
@@ -87,7 +87,7 @@ public interface DataColumn {
 
     private final Class<?> binding;
 
-    Type(Class<?> binding) {
+    ColumnType(Class<?> binding) {
       this.binding = binding;
     }
 
@@ -95,8 +95,8 @@ public interface DataColumn {
       return binding;
     }
 
-    public static Type fromBinding(Class<?> binding) {
-      for (Type type : Type.values()) {
+    public static ColumnType fromBinding(Class<?> binding) {
+      for (ColumnType type : ColumnType.values()) {
         if (type.binding().equals(binding)) {
           return type;
         }

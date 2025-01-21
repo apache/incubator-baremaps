@@ -49,7 +49,7 @@ public class CsvDataStore implements DataStore {
       char separator) throws IOException {
     this.tableName = tableName;
     this.schema = schema;
-    this.dataTable = new CsvDataTable(schema, csvFile, hasHeader, separator);
+    this.dataTable = new CsvDataTable(csvFile, hasHeader);
   }
 
   /**

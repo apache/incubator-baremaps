@@ -31,7 +31,7 @@ import org.apache.baremaps.postgres.copy.GeometryValueHandler;
 import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
 import org.apache.baremaps.postgres.metadata.TableMetadata;
 import org.apache.baremaps.store.*;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 import org.slf4j.Logger;
@@ -291,7 +291,7 @@ public class PostgresDataStore implements DataStore {
    * @param type the type
    * @return the handler
    */
-  protected BaseValueHandler getHandler(Type type) {
+  protected BaseValueHandler getHandler(ColumnType type) {
     return switch (type) {
       case STRING -> new StringValueHandler();
       case SHORT -> new ShortValueHandler<Short>();

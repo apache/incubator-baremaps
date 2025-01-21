@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import org.apache.baremaps.store.DataColumn;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.apache.baremaps.store.DataRow;
 import org.apache.baremaps.store.DataSchema;
 import org.apache.lucene.document.*;
@@ -58,7 +59,7 @@ public class DataRowMapper implements Function<DataRow, Document> {
   @SuppressWarnings("squid:S6541")
   private void applyValue(DataColumn column, Document doc, Object value) {
     String columnName = column.name();
-    DataColumn.Type type = column.type();
+    ColumnType type = column.type();
     try {
       switch (type) {
         case BINARY:

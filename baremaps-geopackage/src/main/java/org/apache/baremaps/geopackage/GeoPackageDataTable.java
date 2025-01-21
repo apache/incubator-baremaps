@@ -18,6 +18,7 @@
 package org.apache.baremaps.geopackage;
 
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import mil.nga.geopackage.GeoPackage;
@@ -28,7 +29,7 @@ import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.locationtech.jts.geom.*;
 
 /**
@@ -40,7 +41,7 @@ public class GeoPackageDataTable implements DataTable {
 
   private final String name;
 
-    private final GeoPackage geoPackage;
+  private final GeoPackage geoPackage;
 
   private final FeatureDao featureDao;
 
@@ -71,11 +72,11 @@ public class GeoPackageDataTable implements DataTable {
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
-  private Type classType(FeatureColumn column) {
+  private ColumnType classType(FeatureColumn column) {
     if (column.isGeometry()) {
-      return Type.fromBinding(Geometry.class);
+      return ColumnType.fromBinding(Geometry.class);
     } else {
-      return Type.fromBinding(column.getDataType().getClassType());
+      return ColumnType.fromBinding(column.getDataType().getClassType());
     }
   }
 
@@ -220,6 +221,11 @@ public class GeoPackageDataTable implements DataTable {
    */
   private Point asJtsPoint(mil.nga.sf.Point point) {
     return geometryFactory.createPoint(new Coordinate(point.getX(), point.getY()));
+  }
+
+  @Override
+  public void close() throws IOException {
+    geoPackage.close();
   }
 
   /**

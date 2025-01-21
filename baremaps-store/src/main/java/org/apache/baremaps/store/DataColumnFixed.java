@@ -17,12 +17,13 @@
 
 package org.apache.baremaps.store;
 
+
 /**
  * A column in a table.
  */
 public record DataColumnFixed(
     String name,
     Cardinality cardinality,
-    Type type) implements DataColumn {
+    ColumnType type) implements DataColumn {
 
 }

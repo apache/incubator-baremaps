@@ -17,13 +17,15 @@
 
 package org.apache.baremaps.store;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A {@link DataSchema} defines the structure of a table.
  */
-public record DataSchemaImpl(String name, List<DataColumn> columns) implements DataSchema {
+public record DataSchemaImpl(String name,
+    List<DataColumn> columns) implements DataSchema, Serializable {
 
   /**
    * {@inheritDoc}

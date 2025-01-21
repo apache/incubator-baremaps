@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.locationtech.jts.geom.Coordinate;
 
 public class MockDataTable implements DataTable {
@@ -33,11 +33,11 @@ public class MockDataTable implements DataTable {
 
   public MockDataTable() {
     this.rowType = new DataSchemaImpl("mock", List.of(
-        new DataColumnFixed("string", Cardinality.OPTIONAL, Type.STRING),
-        new DataColumnFixed("integer", Cardinality.OPTIONAL, Type.INTEGER),
-        new DataColumnFixed("double", Cardinality.OPTIONAL, Type.DOUBLE),
-        new DataColumnFixed("float", Cardinality.OPTIONAL, Type.FLOAT),
-        new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
+        new DataColumnFixed("string", Cardinality.OPTIONAL, ColumnType.STRING),
+        new DataColumnFixed("integer", Cardinality.OPTIONAL, ColumnType.INTEGER),
+        new DataColumnFixed("double", Cardinality.OPTIONAL, ColumnType.DOUBLE),
+        new DataColumnFixed("float", Cardinality.OPTIONAL, ColumnType.FLOAT),
+        new DataColumnFixed("geometry", Cardinality.OPTIONAL, ColumnType.GEOMETRY)));
     this.rows = List.of(
         new DataRowImpl(rowType,
             List.of("string", 1, 1.0, 1.0f,
@@ -74,5 +74,10 @@ public class MockDataTable implements DataTable {
   @Override
   public DataSchema schema() {
     return rowType;
+  }
+
+  @Override
+  public void close() throws Exception {
+    // Do nothing
   }
 }

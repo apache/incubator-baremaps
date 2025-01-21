@@ -190,7 +190,6 @@ public class ShapefileReader {
    * this is also automatically done when executing a query on it, by findAll.
    */
   public void loadDescriptors() throws IOException {
-
     try (ShapefileInputStream is = read()) {
       // Doing a read is sufficient to initialize the internal descriptors.
     }

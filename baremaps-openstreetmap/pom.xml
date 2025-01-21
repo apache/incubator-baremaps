@@ -44,8 +44,13 @@ limitations under the License.
       <artifactId>jts-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.locationtech.jts.io</groupId>
+      <artifactId>jts-io-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.locationtech.proj4j</groupId>
       <artifactId>proj4j</artifactId>
+      <version>${version.lib.proj4j}</version>
     </dependency>
   </dependencies>
 

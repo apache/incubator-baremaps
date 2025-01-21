@@ -19,7 +19,7 @@ package org.apache.baremaps.postgres.store;
 
 import java.util.EnumMap;
 import java.util.Map;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 
 @SuppressWarnings("squid:S1192")
 public class PostgresTypeConversion {
@@ -28,45 +28,45 @@ public class PostgresTypeConversion {
     // Prevent instantiation
   }
 
-  protected static final Map<Type, String> typeToName = new EnumMap<>(Type.class);
+  protected static final Map<ColumnType, String> typeToName = new EnumMap<>(ColumnType.class);
 
   static {
-    typeToName.put(Type.STRING, "varchar");
-    typeToName.put(Type.SHORT, "int2");
-    typeToName.put(Type.INTEGER, "int4");
-    typeToName.put(Type.LONG, "int8");
-    typeToName.put(Type.FLOAT, "float4");
-    typeToName.put(Type.DOUBLE, "float8");
-    typeToName.put(Type.GEOMETRY, "geometry");
-    typeToName.put(Type.POINT, "geometry");
-    typeToName.put(Type.MULTIPOINT, "geometry");
-    typeToName.put(Type.LINESTRING, "geometry");
-    typeToName.put(Type.MULTILINESTRING, "geometry");
-    typeToName.put(Type.POLYGON, "geometry");
-    typeToName.put(Type.MULTIPOLYGON, "geometry");
-    typeToName.put(Type.GEOMETRYCOLLECTION, "geometry");
-    typeToName.put(Type.ENVELOPE, "geometry");
-    typeToName.put(Type.INET_ADDRESS, "inet");
-    typeToName.put(Type.INET4_ADDRESS, "inet");
-    typeToName.put(Type.INET6_ADDRESS, "inet");
-    typeToName.put(Type.LOCAL_DATE, "date");
-    typeToName.put(Type.LOCAL_TIME, "time");
-    typeToName.put(Type.LOCAL_DATE_TIME, "timestamp");
-    typeToName.put(Type.NESTED, "jsonb");
+    typeToName.put(ColumnType.STRING, "varchar");
+    typeToName.put(ColumnType.SHORT, "int2");
+    typeToName.put(ColumnType.INTEGER, "int4");
+    typeToName.put(ColumnType.LONG, "int8");
+    typeToName.put(ColumnType.FLOAT, "float4");
+    typeToName.put(ColumnType.DOUBLE, "float8");
+    typeToName.put(ColumnType.GEOMETRY, "geometry");
+    typeToName.put(ColumnType.POINT, "geometry");
+    typeToName.put(ColumnType.MULTIPOINT, "geometry");
+    typeToName.put(ColumnType.LINESTRING, "geometry");
+    typeToName.put(ColumnType.MULTILINESTRING, "geometry");
+    typeToName.put(ColumnType.POLYGON, "geometry");
+    typeToName.put(ColumnType.MULTIPOLYGON, "geometry");
+    typeToName.put(ColumnType.GEOMETRYCOLLECTION, "geometry");
+    typeToName.put(ColumnType.ENVELOPE, "geometry");
+    typeToName.put(ColumnType.INET_ADDRESS, "inet");
+    typeToName.put(ColumnType.INET4_ADDRESS, "inet");
+    typeToName.put(ColumnType.INET6_ADDRESS, "inet");
+    typeToName.put(ColumnType.LOCAL_DATE, "date");
+    typeToName.put(ColumnType.LOCAL_TIME, "time");
+    typeToName.put(ColumnType.LOCAL_DATE_TIME, "timestamp");
+    typeToName.put(ColumnType.NESTED, "jsonb");
   }
 
-  protected static final Map<String, Type> nameToType = Map.ofEntries(
-      Map.entry("varchar", Type.STRING),
-      Map.entry("int2", Type.SHORT),
-      Map.entry("int4", Type.INTEGER),
-      Map.entry("int8", Type.LONG),
-      Map.entry("float4", Type.FLOAT),
-      Map.entry("float8", Type.DOUBLE),
-      Map.entry("geometry", Type.GEOMETRY),
-      Map.entry("inet", Type.INET6_ADDRESS),
-      Map.entry("date", Type.LOCAL_DATE),
-      Map.entry("time", Type.LOCAL_TIME),
-      Map.entry("timestamp", Type.LOCAL_DATE_TIME),
-      Map.entry("jsonb", Type.NESTED));
+  protected static final Map<String, ColumnType> nameToType = Map.ofEntries(
+      Map.entry("varchar", ColumnType.STRING),
+      Map.entry("int2", ColumnType.SHORT),
+      Map.entry("int4", ColumnType.INTEGER),
+      Map.entry("int8", ColumnType.LONG),
+      Map.entry("float4", ColumnType.FLOAT),
+      Map.entry("float8", ColumnType.DOUBLE),
+      Map.entry("geometry", ColumnType.GEOMETRY),
+      Map.entry("inet", ColumnType.INET6_ADDRESS),
+      Map.entry("date", ColumnType.LOCAL_DATE),
+      Map.entry("time", ColumnType.LOCAL_TIME),
+      Map.entry("timestamp", ColumnType.LOCAL_DATE_TIME),
+      Map.entry("jsonb", ColumnType.NESTED));
 
 }

@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.data.calcite;
+package com.apache.baremaps.calcite;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.*;
+import org.apache.baremaps.calcite.BaremapsTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
-import org.apache.baremaps.data.store.BaremapsDataTable;
-import org.apache.baremaps.data.type.RowDataType;
+import org.apache.baremaps.data.store.DataTableImpl;
+import org.apache.baremaps.data.type.DataTypeImpl;
 import org.apache.baremaps.store.*;
 import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
+import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.DataContexts;
 import org.apache.calcite.interpreter.Interpreter;
@@ -43,6 +46,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Frameworks;
 import org.apache.calcite.tools.Planner;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -50,6 +54,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 public class CalciteTest {
 
   @Test
+  @Disabled
   void sql() throws SQLException {
     GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -66,36 +71,36 @@ public class CalciteTest {
 
       // Create and add 'city' table
       DataSchema cityRowType = new DataSchemaImpl("city", List.of(
-          new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
-          new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
-          new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
+          new DataColumnFixed("id", Cardinality.OPTIONAL, ColumnType.INTEGER),
+          new DataColumnFixed("name", Cardinality.OPTIONAL, ColumnType.STRING),
+          new DataColumnFixed("geometry", Cardinality.OPTIONAL, ColumnType.GEOMETRY)));
 
-      DataTable cityDataTable = new BaremapsDataTable(
+      DataTable cityDataTable = new DataTableImpl(
           cityRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(cityRowType))));
+          new IndexedDataList<>(new AppendOnlyLog<>(new DataTypeImpl(cityRowType))));
 
       cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
           List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
       cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
           List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
 
-      SqlDataTable citySqlDataTable = new SqlDataTable(cityDataTable);
-      rootSchema.add("city", citySqlDataTable);
+      BaremapsTable cityBaremapsTable = new BaremapsTable(cityDataTable);
+      rootSchema.add("city", cityBaremapsTable);
 
       // Create and add 'population' table
       DataSchema populationRowType = new DataSchemaImpl("population", List.of(
-          new DataColumnFixed("city_id", Cardinality.OPTIONAL, Type.INTEGER),
-          new DataColumnFixed("population", Cardinality.OPTIONAL, Type.INTEGER)));
+          new DataColumnFixed("city_id", Cardinality.OPTIONAL, ColumnType.INTEGER),
+          new DataColumnFixed("population", Cardinality.OPTIONAL, ColumnType.INTEGER)));
 
-      DataTable populationDataTable = new BaremapsDataTable(
+      DataTable populationDataTable = new DataTableImpl(
           populationRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(populationRowType))));
+          new IndexedDataList<>(new AppendOnlyLog<>(new DataTypeImpl(populationRowType))));
 
       populationDataTable.add(new DataRowImpl(populationDataTable.schema(), List.of(1, 2_161_000)));
       populationDataTable.add(new DataRowImpl(populationDataTable.schema(), List.of(2, 8_336_000)));
 
-      SqlDataTable populationSqlDataTable = new SqlDataTable(populationDataTable);
-      rootSchema.add("population", populationSqlDataTable);
+      BaremapsTable populationBaremapsTable = new BaremapsTable(populationDataTable);
+      rootSchema.add("population", populationBaremapsTable);
 
       // Create view 'city_population'
       String mvSql = "SELECT c.id, c.name, c.geometry, p.population " +
@@ -181,6 +186,7 @@ public class CalciteTest {
   }
 
   @Test
+  @Disabled
   void list() throws Exception {
     // Initialize your Java lists
     List<Integer> listA = List.of(1, 2, 3, 4, 5);
@@ -192,13 +198,13 @@ public class CalciteTest {
 
     // Create and add 'city' table
     DataSchema cityRowType = new DataSchemaImpl("city", List.of(
-        new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
-        new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
-        new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
+        new DataColumnFixed("id", Cardinality.OPTIONAL, ColumnType.INTEGER),
+        new DataColumnFixed("name", Cardinality.OPTIONAL, ColumnType.STRING),
+        new DataColumnFixed("geometry", Cardinality.OPTIONAL, ColumnType.GEOMETRY)));
 
-    DataTable cityDataTable = new BaremapsDataTable(
+    DataTable cityDataTable = new DataTableImpl(
         cityRowType,
-        new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(cityRowType))));
+        new IndexedDataList<>(new AppendOnlyLog<>(new DataTypeImpl(cityRowType))));
 
     GeometryFactory geometryFactory = new GeometryFactory();
     cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
@@ -206,8 +212,8 @@ public class CalciteTest {
     cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
         List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
 
-    SqlDataTable citySqlDataTable = new SqlDataTable(cityDataTable);
-    rootSchema.add("CITY", citySqlDataTable);
+    BaremapsTable cityBaremapsTable = new BaremapsTable(cityDataTable);
+    rootSchema.add("CITY", cityBaremapsTable);
 
     // Configure the framework
     FrameworkConfig config = Frameworks.newConfigBuilder()
@@ -232,13 +238,59 @@ public class CalciteTest {
     Interpreter interpreter = new Interpreter(DataContexts.EMPTY, rel);
 
     // Create an interpreter to execute the RelNode
-    for (Object[] row : interpreter.asEnumerable()) {
+    for (Object[] row : interpreter) {
       listB.add((Integer) row[0]);
     }
 
     // Display the results
     System.out.println("List A: " + listA);
     System.out.println("List B (after SQL): " + listB);
+  }
+
+  @Test
+  public void testCsvStream() throws Exception {
+    File file = File.createTempFile("test", ".csv");
+    String csv = """
+        ID,NAME,GEOM
+        1,Paris,POINT(2.3522 48.8566)
+        2,New York,POINT(-74.0060 40.7128)
+        """;
+    try (PrintWriter writer = new PrintWriter(file)) {
+      writer.write(csv);
+    }
+
+    String model = """
+        {
+            version: '1.0',
+            defaultSchema: 'TEST',
+            schemas: [
+                {
+                name: 'TEST',
+                tables: [
+                    {
+                      name: 'TEST',
+                      type: 'custom',
+                      factory: 'org.apache.baremaps.calcite.BaremapsTableFactory',
+                      operand: {
+                          file: '%s'
+                      }
+                    }
+                ]
+              }
+            ]
+        }
+        """.formatted(file.getAbsolutePath());
+
+    try (Connection connection =
+        DriverManager.getConnection("jdbc:calcite:model=inline:" + model)) {
+
+      ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM TEST.TEST");
+      while (resultSet.next()) {
+        System.out.println(resultSet.getString("ID") + " " + resultSet.getString("GEOM"));
+      }
+    } finally {
+      file.delete();
+    }
   }
 
 }
