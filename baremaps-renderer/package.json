@@ -16,7 +16,7 @@
     "chalk": "^4",
     "commander": "^10.0.1",
     "http": "^0.0.1-security",
-    "maplibre-gl": "^2.4.0",
+    "maplibre-gl": "^5.0.1",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
     "puppeteer": "^20.2.0",
