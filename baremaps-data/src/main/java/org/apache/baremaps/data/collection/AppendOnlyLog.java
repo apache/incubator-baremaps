@@ -127,8 +127,8 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
-    this.offset = Long.BYTES;
-    this.size = memory.segment(0).getLong(0);
+    this.size = memory.header().getLong(0);
+    this.offset = 0;
   }
 
   /**
@@ -220,6 +220,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   @Override
   public void close() throws Exception {
     try {
+      memory.header().putLong(0, size);
       memory.close();
     } catch (IOException e) {
       throw new DataCollectionException(e);
@@ -238,7 +239,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
     private AppendOnlyLogIterator(long size) {
       this.size = size;
       index = 0;
-      position = Long.BYTES;
+      position = 0;
     }
 
     @Override

@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package com.apache.baremaps.calcite;
+package org.apache.baremaps.calcite;
 
-import java.io.File;
-import java.io.PrintWriter;
 import java.sql.*;
 import java.util.*;
-import org.apache.baremaps.calcite.BaremapsTable;
+
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
 import org.apache.baremaps.data.store.DataTableImpl;
@@ -247,50 +245,5 @@ public class CalciteTest {
     System.out.println("List B (after SQL): " + listB);
   }
 
-  @Test
-  public void testCsvStream() throws Exception {
-    File file = File.createTempFile("test", ".csv");
-    String csv = """
-        ID,NAME,GEOM
-        1,Paris,POINT(2.3522 48.8566)
-        2,New York,POINT(-74.0060 40.7128)
-        """;
-    try (PrintWriter writer = new PrintWriter(file)) {
-      writer.write(csv);
-    }
-
-    String model = """
-        {
-            version: '1.0',
-            defaultSchema: 'TEST',
-            schemas: [
-                {
-                name: 'TEST',
-                tables: [
-                    {
-                      name: 'TEST',
-                      type: 'custom',
-                      factory: 'org.apache.baremaps.calcite.BaremapsTableFactory',
-                      operand: {
-                          file: '%s'
-                      }
-                    }
-                ]
-              }
-            ]
-        }
-        """.formatted(file.getAbsolutePath());
-
-    try (Connection connection =
-        DriverManager.getConnection("jdbc:calcite:model=inline:" + model)) {
-
-      ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM TEST.TEST");
-      while (resultSet.next()) {
-        System.out.println(resultSet.getString("ID") + " " + resultSet.getString("GEOM"));
-      }
-    } finally {
-      file.delete();
-    }
-  }
 
 }

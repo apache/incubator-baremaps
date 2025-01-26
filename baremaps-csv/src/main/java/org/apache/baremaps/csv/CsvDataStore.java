@@ -41,15 +41,15 @@ public class CsvDataStore implements DataStore {
    * @param tableName the name of the table
    * @param schema the data schema defining the structure
    * @param csvFile the CSV file to read data from
-   * @param hasHeader whether the CSV file includes a header row
+   * @param header whether the CSV file includes a header row
    * @param separator the character used to separate columns in the CSV file
    * @throws IOException if an I/O error occurs
    */
-  public CsvDataStore(String tableName, DataSchema schema, File csvFile, boolean hasHeader,
+  public CsvDataStore(String tableName, DataSchema schema, File csvFile, boolean header,
       char separator) throws IOException {
     this.tableName = tableName;
     this.schema = schema;
-    this.dataTable = new CsvDataTable(csvFile, hasHeader);
+    this.dataTable = new CsvDataTable(tableName, csvFile, header, separator);
   }
 
   /**

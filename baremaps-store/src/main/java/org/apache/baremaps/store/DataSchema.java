@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ import org.apache.baremaps.store.DataColumn.ColumnType;
 /**
  * A {@link DataSchema} is a description of the structure of a row in a {@link DataTable}.
  */
-public interface DataSchema extends Serializable {
+public interface DataSchema {
 
   /**
    * Returns the name of the schema.
@@ -100,14 +102,19 @@ public interface DataSchema extends Serializable {
     return mapper;
   }
 
-  static DataSchema read(Path path) throws IOException {
+  static DataSchema read(ByteBuffer buffer) throws IOException {
     var mapper = configureObjectMapper();
-    return mapper.readValue(path.toFile(), DataSchema.class);
+    int length = buffer.getInt();
+    byte[] bytes = new byte[length];
+    buffer.get(bytes);
+    return mapper.readValue(bytes, DataSchema.class);
   }
 
-  static void write(Path path, DataSchema schema) throws IOException {
+  static void write(ByteBuffer buffer, DataSchema schema) throws IOException {
     var mapper = configureObjectMapper();
-    mapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), schema);
+    var bytes = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(schema);
+    buffer.putInt(bytes.length);
+    buffer.put(bytes);
   }
-  
+
 }

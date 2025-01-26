@@ -29,7 +29,7 @@ class CsvDataTableGeonamesTest {
 
   @Test
   void testGeonamesCsvDataTable() throws IOException {
-    DataTable dataTable = new CsvDataTable(GEONAMES_CSV.toFile(), false);
+    DataTable dataTable = new CsvDataTable("sample", GEONAMES_CSV.toFile(), false, '\t');
 
     assertEquals(5, dataTable.size(), "DataTable should have 5 rows.");
 

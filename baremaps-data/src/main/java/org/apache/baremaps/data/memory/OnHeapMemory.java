@@ -34,13 +34,19 @@ public class OnHeapMemory extends Memory<ByteBuffer> {
    * @param segmentSize the size of each segment in bytes
    */
   public OnHeapMemory(int segmentSize) {
-    super(segmentSize);
+    super(1024, segmentSize);
   }
 
   /** {@inheritDoc} */
   @Override
-  protected ByteBuffer allocate(int index, int size) {
-    return ByteBuffer.allocate(size);
+  protected ByteBuffer allocateHeader() {
+    return ByteBuffer.allocate(headerSize());
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected ByteBuffer allocateSegment(int index) {
+    return ByteBuffer.allocate(segmentSize());
   }
 
   /**

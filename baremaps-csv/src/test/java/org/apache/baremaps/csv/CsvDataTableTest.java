@@ -58,7 +58,7 @@ class CsvDataTableTest {
         2,PointB,"POINT(2 2)"
         """;
     Files.writeString(tempCsvFile.toPath(), csvContent);
-    DataTable dataTable = new CsvDataTable(tempCsvFile, true);
+    DataTable dataTable = new CsvDataTable("test_table", tempCsvFile, true, ',');
     assertEquals(2, dataTable.size());
     int rowCount = 0;
     for (DataRow row : dataTable) {
@@ -86,8 +86,7 @@ class CsvDataTableTest {
         new DataColumnFixed("column1", Cardinality.REQUIRED, ColumnType.INTEGER),
         new DataColumnFixed("column2", Cardinality.OPTIONAL, ColumnType.STRING),
         new DataColumnFixed("column3", Cardinality.OPTIONAL, ColumnType.GEOMETRY));
-    DataSchema schema = new DataSchemaImpl("test_table", columns);
-    DataTable dataTable = new CsvDataTable(tempCsvFile, false);
+    DataTable dataTable = new CsvDataTable("test_table", tempCsvFile, false, ';');
     assertEquals(2, dataTable.size());
     int rowCount = 0;
     for (DataRow row : dataTable) {
@@ -120,8 +119,7 @@ class CsvDataTableTest {
         new DataColumnFixed("double_col", Cardinality.REQUIRED, ColumnType.DOUBLE),
         new DataColumnFixed("bool_col", Cardinality.REQUIRED, ColumnType.BOOLEAN),
         new DataColumnFixed("string_col", Cardinality.REQUIRED, ColumnType.STRING));
-    DataSchema schema = new DataSchemaImpl("test_table", columns);
-    DataTable dataTable = new CsvDataTable(tempCsvFile, true);
+    DataTable dataTable = new CsvDataTable("test_table", tempCsvFile, true, ',');
     assertEquals(2, dataTable.size());
     int rowCount = 0;
     for (DataRow row : dataTable) {
@@ -150,8 +148,7 @@ class CsvDataTableTest {
     List<DataColumn> columns = List.of(
         new DataColumnFixed("id", Cardinality.REQUIRED, ColumnType.INTEGER),
         new DataColumnFixed("name", Cardinality.OPTIONAL, ColumnType.STRING));
-    DataSchema schema = new DataSchemaImpl("test_table", columns);
-    DataTable dataTable = new CsvDataTable(tempCsvFile, true);
+    DataTable dataTable = new CsvDataTable("test_table", tempCsvFile, true, ',');
     assertThrows(RuntimeException.class, () -> {
       for (DataRow row : dataTable) {
         // This line should throw an exception because abc is not a valid integer
@@ -164,7 +161,7 @@ class CsvDataTableTest {
   void testAddAndClearUnsupportedOperations() throws IOException {
     String csvContent = "";
     Files.writeString(tempCsvFile.toPath(), csvContent);
-    DataTable dataTable = new CsvDataTable(tempCsvFile, true);
+    DataTable dataTable = new CsvDataTable("test_table", tempCsvFile, true, ',');
     assertThrows(UnsupportedOperationException.class, () -> dataTable.add(null));
     assertThrows(UnsupportedOperationException.class, dataTable::clear);
   }
@@ -178,7 +175,7 @@ class CsvDataTableTest {
         3,Name3
         """;
     Files.writeString(tempCsvFile.toPath(), csvContent);
-    DataTable dataTable = new CsvDataTable(tempCsvFile, true);
+    DataTable dataTable = new CsvDataTable("test_table", tempCsvFile, true, ',');
     assertEquals(3, dataTable.size());
   }
 }

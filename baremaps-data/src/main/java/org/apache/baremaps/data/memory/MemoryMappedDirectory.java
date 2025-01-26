@@ -48,18 +48,31 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
    * @param segmentBytes the size of each segment in bytes
    */
   public MemoryMappedDirectory(Path directory, int segmentBytes) {
-    super(segmentBytes);
+    super(1024, segmentBytes);
     this.directory = directory;
+  }
+
+  @Override
+  protected MappedByteBuffer allocateHeader() {
+    try {
+      Path file = directory.resolve("header");
+      try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE,
+              StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+        return channel.map(MapMode.READ_WRITE, 0, 1024);
+      }
+    } catch (IOException e) {
+      throw new MemoryException(e);
+    }
   }
 
   /** {@inheritDoc} */
   @Override
-  protected MappedByteBuffer allocate(int index, int size) {
+  protected MappedByteBuffer allocateSegment(int index) {
     try {
       Path file = directory.resolve(String.format("%s.part", index));
       try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE,
           StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-        return channel.map(MapMode.READ_WRITE, 0, size);
+        return channel.map(MapMode.READ_WRITE, 0, segmentSize());
       }
     } catch (IOException e) {
       throw new MemoryException(e);
@@ -73,7 +86,7 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
    */
   @Override
   public synchronized void close() throws IOException {
-    // Release MappedByteBuffer resources
+    MappedByteBufferUtils.unmap(header);
     for (MappedByteBuffer buffer : segments) {
       if (buffer != null) {
         MappedByteBufferUtils.unmap(buffer);
@@ -91,7 +104,8 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
     // Release resources first
     close();
 
-    // Clear the segment list
+    // Clear the header and segment list
+    header.clear();
     segments.clear();
 
     // Delete the directory and all files in it
