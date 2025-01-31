@@ -54,10 +54,10 @@ export class MaplibreBrowserHelpers {
     }
 
     await page.addScriptTag({
-      url: 'https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js',
+      url: 'https://unpkg.com/maplibre-gl@5.0.1/dist/maplibre-gl.js',
     });
     await page.addStyleTag({
-      url: 'https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css',
+      url: 'https://unpkg.com/maplibre-gl@5.0.1/dist/maplibre-gl.css',
     });
   }
 
