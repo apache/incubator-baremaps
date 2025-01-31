@@ -31,7 +31,9 @@ This template is used to list the dependencies and their licenses at the end of 
     <#return project.artifactId + "-" + project.version>
 </#function>
 
-   This product bundles the following dependencies:
+   Dependencies produced outside the ASF that is included in the
+   distribution of this product is subject to the following
+   additional license terms.
 
 <#if dependencyMap?size != 0>
     <#list dependencyMap as dependency>
