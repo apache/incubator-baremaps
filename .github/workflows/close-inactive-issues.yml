@@ -1,0 +1,32 @@
+name: Close inactive issues and PRs
+on:
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+permissions: read-all
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@28ca1036281a5e5922ead5184a1bbf96e5fc984e # v9
+        with:
+          only-labels: "status: waiting-for-feedback" # only consider issues and PRs with this label
+          days-before-stale: 30 # 1 month
+          days-before-close: 60 # 2 months after being stale
+          stale-issue-label: "status: stale"
+          stale-pr-label: "status: stale"
+          stale-issue-message: >
+            This issue has been inactive for a while. If you’re still interested, let us know how we can help! Our community is small, and we need contributors like you. 
+            If we don’t hear back, we may close it, but you’re always welcome to reopen it. Let’s build this together! 🚀
+          close-issue-message: >
+            Closing this issue due to inactivity. If you’re still interested, let us know! Our community is small, and we need contributors like you. 
+            If you provide more details or take the lead on a solution, we’ll be happy to re-open it. Let’s build this together! 🚀
+          stale-pr-message: >
+            This PR has been inactive for a while. If you’re still working on it, let us know how we can help! Our community is small, and we need contributors like you. 
+            If we don’t hear back, we may close it, but you’re always welcome to reopen it. Let’s build this together! 🚀
+          close-pr-message: >
+            Closing this PR due to inactivity. If you’d like to continue, let us know! Our community is small, and we need contributors like you. 
+            Feel free to re-open this PR or submit a new one when you’re ready. Let’s build this together! 🚀
