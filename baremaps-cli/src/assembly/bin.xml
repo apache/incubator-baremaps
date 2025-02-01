@@ -82,7 +82,7 @@ limitations under the License.
   </fileSets>
   <files>
     <file>
-      <source>../NOTICE-BINARY</source>
+      <source>../NOTICE-binary</source>
       <outputDirectory>.</outputDirectory>
       <destName>NOTICE</destName>
       <fileMode>0644</fileMode>
