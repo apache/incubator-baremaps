@@ -19,14 +19,14 @@ jobs:
           stale-issue-label: "status: stale"
           stale-pr-label: "status: stale"
           stale-issue-message: >
-            If you would like us to be able to process this issue, please provide the requested information.
-            If the information is not provided within the next 2 months, we will be unable to proceed and this issue will be closed.
+            This issue has been inactive for a while. If you’re still interested, let us know how we can help! Our community is small, and we need contributors like you. 
+            If we don’t hear back, we may close it, but you’re always welcome to reopen it. Let’s build this together! 🚀
           close-issue-message: >
-            Closing due to lack of requested feedback.
-            If you would like to proceed with your contribution, please provide the requested information and we will re-open this issue.
+            Closing this issue due to inactivity. If you’re still interested, let us know! Our community is small, and we need contributors like you. 
+            If you provide more details or take the lead on a solution, we’ll be happy to re-open it. Let’s build this together! 🚀
           stale-pr-message: >
-            If you would like us to be able to process this pull request, please provide the requested information or make the requested changes.
-            If the information is not provided or the requested changes are not made within the next 2 months, we will be unable to proceed and this pull request will be closed.
+            This PR has been inactive for a while. If you’re still working on it, let us know how we can help! Our community is small, and we need contributors like you. 
+            If we don’t hear back, we may close it, but you’re always welcome to reopen it. Let’s build this together! 🚀
           close-pr-message: >
-            Closing due to lack of requested feedback.
-            If you would like to proceed with your contribution, please provide the requested information or make the requested changes, and we will re-open this pull request.
+            Closing this PR due to inactivity. If you’d like to continue, let us know! Our community is small, and we need contributors like you. 
+            Feel free to re-open this PR or submit a new one when you’re ready. Let’s build this together! 🚀
