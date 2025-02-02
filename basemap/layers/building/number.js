@@ -24,7 +24,7 @@ export default {
     layout: {
         'text-allow-overlap': false,
         'text-anchor': 'center',
-        'text-field': '{addr:housenumber}',
+        'text-field': ['get', 'addr:housenumber'],
         'text-font': ['Noto Sans Regular'],
         'text-offset': [0, 0],
         'text-size': [
@@ -34,9 +34,9 @@ export default {
             15,
             0,
             16,
-            11,
+            10,
             20,
-            11,
+            20,
         ],
         visibility: 'visible',
     },
@@ -45,4 +45,9 @@ export default {
         'text-halo-color': theme.buildingNumberTextHaloColor,
         'text-halo-width': 1.2,
     },
+    filter: ['all',
+      ['==', ['geometry-type'], 'Polygon'],
+      ['!=', ['get', 'building'], 'no'],
+      ['!=', ['get', 'addr:housenumber'], '']
+    ],
 }

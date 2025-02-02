@@ -50,6 +50,7 @@ import highway_label from '../basemap/layers/highway/highway_label.js';
 
 import ocean_overlay from '../basemap/layers/ocean/overlay.js';
 import route_line from "../basemap/layers/route/style.js"
+import building_number from "../basemap/layers/building/number.js";
 import building_fill from "../basemap/layers/building/fill.js";
 import building_extrusion from "../basemap/layers/building/extrusion.js";
 import man_made_fill from "../basemap/layers/man_made/man_made_fill.js";
@@ -102,6 +103,7 @@ export default {
         highway_tunnel_line,
         railway_tunnel,
         building_fill,
+        building_number,
         highway_construction_line,
         highway_outline,
         highway_line,
