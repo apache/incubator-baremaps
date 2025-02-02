@@ -210,12 +210,14 @@
    distribution of this product is subject to the following
    additional license terms.
 
-       - FlatGeobuf, BSD-2-Clause license, see licenses/flatgeobuf.
-       - GeoPackage Java, MIT License, see licenses/geopackage-java.
-       - OSMPBF, MIT License, see licenses/osm-binary.
-       - OSM Test Data, Public domain, see licenses/osm-testdata.
-       - Mapbox Vector Tile, Creative Commons Public License, see licenses/vector-tile-spec.
-       - Palantir Streams, Apache License 2.0, see licenses/palantir-streams.
-       - Planetiler, Apache License 2.0, see licenses/planetiler.
-       - PMTiles, BSD-3-Clause license, see licenses/pmtiles.
-       - pyosmium, BSD 2-Clause "Simplified" License, see licenses/pyosmium.
+       - Externalsortinginjava, Public domain
+       - FlatGeobuf, BSD-2-Clause license
+       - GeoPackage Java, MIT License
+       - Hilbert Curves, Public domain
+       - OSMPBF, MIT License
+       - OSM Test Data, Public domain
+       - Mapbox Vector Tile, Creative Commons Public License
+       - Palantir Streams, Apache License 2.0
+       - Planetiler, Apache License 2.0
+       - PMTiles, BSD-3-Clause license
+       - pyosmium, BSD 2-Clause "Simplified" License

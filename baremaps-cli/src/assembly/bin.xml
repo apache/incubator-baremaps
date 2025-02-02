@@ -29,7 +29,6 @@ limitations under the License.
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>DISCLAIMER</include>
-        <include>NOTICE</include>
         <include>licenses/**</include>
         <include>licenses-binary/**</include>
         <include>notices/**</include>
@@ -81,6 +80,14 @@ limitations under the License.
       </includes>
     </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>../NOTICE-binary</source>
+      <outputDirectory>.</outputDirectory>
+      <destName>NOTICE</destName>
+      <fileMode>0644</fileMode>
+    </file>
+  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
