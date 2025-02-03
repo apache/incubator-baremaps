@@ -21,70 +21,12 @@ package org.apache.baremaps.data.type;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.ColumnType;
-import org.apache.baremaps.store.DataColumnFixed;
-import org.apache.baremaps.store.DataRow;
-import org.apache.baremaps.store.DataSchema;
-import org.apache.baremaps.store.DataSchemaImpl;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.*;
 
 public class DataTypeProvider {
 
   private static final GeometryFactory geometryFactory = new GeometryFactory();
-
-  private static final DataSchema DATA_SCHEMA = new DataSchemaImpl("row", List.of(
-      new DataColumnFixed("byte", Cardinality.OPTIONAL, ColumnType.BYTE),
-      new DataColumnFixed("boolean", Cardinality.OPTIONAL, ColumnType.BOOLEAN),
-      new DataColumnFixed("short", Cardinality.OPTIONAL, ColumnType.SHORT),
-      new DataColumnFixed("integer", Cardinality.OPTIONAL, ColumnType.INTEGER),
-      new DataColumnFixed("long", Cardinality.OPTIONAL, ColumnType.LONG),
-      new DataColumnFixed("float", Cardinality.OPTIONAL, ColumnType.FLOAT),
-      new DataColumnFixed("double", Cardinality.OPTIONAL, ColumnType.DOUBLE),
-      new DataColumnFixed("string", Cardinality.OPTIONAL, ColumnType.STRING),
-      new DataColumnFixed("geometry", Cardinality.OPTIONAL, ColumnType.GEOMETRY),
-      new DataColumnFixed("point", Cardinality.OPTIONAL, ColumnType.POINT),
-      new DataColumnFixed("linestring", Cardinality.OPTIONAL, ColumnType.LINESTRING),
-      new DataColumnFixed("polygon", Cardinality.OPTIONAL, ColumnType.POLYGON),
-      new DataColumnFixed("multipoint", Cardinality.OPTIONAL, ColumnType.MULTIPOINT),
-      new DataColumnFixed("multilinestring", Cardinality.OPTIONAL, ColumnType.MULTILINESTRING),
-      new DataColumnFixed("multipolygon", Cardinality.OPTIONAL, ColumnType.MULTIPOLYGON),
-      new DataColumnFixed("geometrycollection", Cardinality.OPTIONAL,
-          ColumnType.GEOMETRYCOLLECTION),
-      new DataColumnFixed("coordinate", Cardinality.OPTIONAL, ColumnType.COORDINATE)));
-
-  private static final DataRow DATA_ROW = DATA_SCHEMA.createRow()
-      .with("byte", Byte.MAX_VALUE)
-      .with("boolean", true)
-      .with("short", Short.MAX_VALUE)
-      .with("integer", Integer.MAX_VALUE)
-      .with("long", Long.MAX_VALUE)
-      .with("float", Float.MAX_VALUE)
-      .with("double", Double.MAX_VALUE)
-      .with("string", "Hello, World!")
-      .with("geometry", geometryFactory.createPoint(new Coordinate(0, 0)))
-      .with("point", geometryFactory.createPoint(new Coordinate(0, 0)))
-      .with("linestring",
-          geometryFactory
-              .createLineString(new Coordinate[] {new Coordinate(0, 0), new Coordinate(1, 1)}))
-      .with("polygon",
-          geometryFactory.createPolygon(new Coordinate[] {new Coordinate(0, 0),
-              new Coordinate(1, 1), new Coordinate(0, 1), new Coordinate(0, 0)}))
-      .with("multipoint",
-          geometryFactory
-              .createMultiPoint(new Coordinate[] {new Coordinate(0, 0), new Coordinate(1, 1)}))
-      .with("multilinestring",
-          geometryFactory.createMultiLineString(new LineString[] {geometryFactory
-              .createLineString(new Coordinate[] {new Coordinate(0, 0), new Coordinate(1, 1)})}))
-      .with("multipolygon",
-          geometryFactory.createMultiPolygon(
-              new Polygon[] {geometryFactory.createPolygon(new Coordinate[] {new Coordinate(0, 0),
-                  new Coordinate(1, 1), new Coordinate(0, 1), new Coordinate(0, 0)})}))
-      .with("geometrycollection",
-          geometryFactory.createGeometryCollection(
-              new Geometry[] {geometryFactory.createPoint(new Coordinate(0, 0))}))
-      .with("coordinate", new Coordinate(0, 0));
 
   private static Stream<Arguments> dataTypes() {
     return Stream.of(
@@ -194,7 +136,7 @@ public class DataTypeProvider {
 
         Arguments.of(new CoordinateDataType(), new Coordinate(-180, -90)),
         Arguments.of(new CoordinateDataType(), new Coordinate(180, 90)),
-        Arguments.of(new org.apache.baremaps.data.type.LonLatDataType(), new Coordinate(-180, -90)),
+        Arguments.of(new LonLatDataType(), new Coordinate(-180, -90)),
         Arguments.of(new LonLatDataType(), new Coordinate(180, 90)),
         Arguments.of(new SmallIntegerDataType(1), (int) Math.pow(2, 7) - 1),
         Arguments.of(new SmallIntegerDataType(1), (int) -Math.pow(2, 7)),
@@ -344,9 +286,6 @@ public class DataTypeProvider {
                                         .createLinearRing(new Coordinate[] {new Coordinate(3, 1),
                                             new Coordinate(3, 2), new Coordinate(4, 2),
                                             new Coordinate(4, 1), new Coordinate(3, 1)})})})),
-
-        // Row
-        Arguments.of(new DataTypeImpl(DATA_SCHEMA), DATA_ROW),
 
         // Geometry
         Arguments.of(new GeometryDataType(),

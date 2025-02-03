@@ -26,10 +26,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.apache.baremaps.store.DataColumn;
-import org.apache.baremaps.store.DataColumn.ColumnType;
-import org.apache.baremaps.store.DataRow;
-import org.apache.baremaps.store.DataSchema;
+import org.apache.baremaps.calcite.DataColumn;
+import org.apache.baremaps.calcite.DataColumn.Type;
+import org.apache.baremaps.calcite.DataRow;
+import org.apache.baremaps.calcite.DataSchema;
 import org.apache.lucene.document.*;
 import org.locationtech.jts.geom.*;
 import org.slf4j.Logger;
@@ -59,7 +59,7 @@ public class DataRowMapper implements Function<DataRow, Document> {
   @SuppressWarnings("squid:S6541")
   private void applyValue(DataColumn column, Document doc, Object value) {
     String columnName = column.name();
-    ColumnType type = column.type();
+    Type type = column.type();
     try {
       switch (type) {
         case BINARY:

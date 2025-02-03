@@ -28,21 +28,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.List;
+import org.apache.baremaps.calcite.DataColumn.Cardinality;
+import org.apache.baremaps.calcite.DataColumn.Type;
+import org.apache.baremaps.calcite.baremaps.BaremapsDataTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.memory.Memory;
 import org.apache.baremaps.data.memory.MemoryMappedDirectory;
-import org.apache.baremaps.data.store.DataTableImpl;
-import org.apache.baremaps.data.type.DataTypeImpl;
 import org.apache.baremaps.data.util.FileUtils;
-import org.apache.baremaps.store.*;
-import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 
 class DataTableAdapterFactoryTest {
-
 
   @Test
   public void createCsvTable() throws Exception {
@@ -65,7 +62,7 @@ class DataTableAdapterFactoryTest {
                 tables: [
                     {
                       name: 'TEST',
-                      factory: 'org.apache.baremaps.calcite.BaremapsTableFactory',
+                      factory: 'org.apache.baremaps.calcite.DataTableFactory',
                       operand: {
                           format: 'csv',
                           file: '%s'
@@ -92,10 +89,10 @@ class DataTableAdapterFactoryTest {
   public void createMMapTable() throws Exception {
     Path path = Files.createTempDirectory("temp");
 
-    DataSchema dataSchema = new DataSchemaImpl("test", List.of(
-        new DataColumnFixed("id", Cardinality.REQUIRED, ColumnType.INTEGER),
-        new DataColumnFixed("name", Cardinality.REQUIRED, ColumnType.STRING),
-        new DataColumnFixed("geom", Cardinality.REQUIRED, ColumnType.GEOMETRY)));
+    DataSchema dataSchema = new DataSchema("test", List.of(
+        new DataColumnFixed("id", Cardinality.REQUIRED, Type.INTEGER),
+        new DataColumnFixed("name", Cardinality.REQUIRED, Type.STRING),
+        new DataColumnFixed("geom", Cardinality.REQUIRED, Type.GEOMETRY)));
 
     // Serialize the schema
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -110,10 +107,11 @@ class DataTableAdapterFactoryTest {
     header.put(bytes);
 
     DataTable dataTable =
-        new DataTableImpl(dataSchema, new AppendOnlyLog<>(new DataTypeImpl(dataSchema), memory));
-    dataTable.add(new DataRowImpl(dataSchema,
+        new BaremapsDataTable(dataSchema,
+            new AppendOnlyLog<>(new DataRowType(dataSchema), memory));
+    dataTable.add(new DataRow(dataSchema,
         List.of(1, "a", new GeometryFactory().createPoint(new Coordinate(1, 1)))));
-    dataTable.add(new DataRowImpl(dataSchema,
+    dataTable.add(new DataRow(dataSchema,
         List.of(2, "b", new GeometryFactory().createPoint(new Coordinate(2, 2)))));
 
     dataTable.close();
@@ -129,9 +127,9 @@ class DataTableAdapterFactoryTest {
                 tables: [
                     {
                       name: 'TEST',
-                      factory: 'org.apache.baremaps.calcite.BaremapsTableFactory',
+                      factory: 'org.apache.baremaps.calcite.DataTableFactory',
                       operand: {
-                          format: 'mmap',
+                          format: 'baremaps',
                           directory: '%s'
                       }
                     }

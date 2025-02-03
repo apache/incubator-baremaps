@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
-import org.apache.baremaps.utils.FileUtils;
+import org.apache.baremaps.data.util.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;

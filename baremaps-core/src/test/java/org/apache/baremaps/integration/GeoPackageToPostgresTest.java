@@ -19,8 +19,8 @@ package org.apache.baremaps.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.baremaps.geopackage.GeoPackageDataStore;
-import org.apache.baremaps.postgres.store.PostgresDataStore;
+import org.apache.baremaps.calcite.geopackage.GeoPackageDataStore;
+import org.apache.baremaps.calcite.postgres.PostgresDataStore;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Tag;
@@ -42,8 +42,8 @@ class GeoPackageToPostgresTest extends PostgresContainerTest {
 
     // Check the table in Postgres
     var postgresTable = postgresStore.get("countries");
-    assertEquals("countries", postgresTable.schema().getName());
-    assertEquals(4, postgresTable.schema().getColumns().size());
+    assertEquals("countries", postgresTable.schema().name());
+    assertEquals(4, postgresTable.schema().columns().size());
     assertEquals(179l, postgresTable.size());
     assertEquals(179l, postgresTable.stream().count());
   }

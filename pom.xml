@@ -51,11 +51,9 @@ limitations under the License.
     <module>baremaps-calcite</module>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
-    <module>baremaps-csv</module>
     <module>baremaps-data</module>
     <module>baremaps-dem</module>
     <module>baremaps-flatgeobuf</module>
-    <module>baremaps-geopackage</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
@@ -64,7 +62,6 @@ limitations under the License.
     <module>baremaps-rpsl</module>
     <module>baremaps-server</module>
     <module>baremaps-shapefile</module>
-    <module>baremaps-store</module>
     <module>baremaps-testing</module>
   </modules>
 
@@ -258,17 +255,17 @@ limitations under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-calcite</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-cli</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-core</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-csv</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -284,11 +281,6 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-flatgeobuf</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-geopackage</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -329,11 +321,6 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-shapefile</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-store</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

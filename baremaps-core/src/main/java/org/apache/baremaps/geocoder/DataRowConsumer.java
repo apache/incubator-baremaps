@@ -18,7 +18,7 @@
 package org.apache.baremaps.geocoder;
 
 import java.util.function.Consumer;
-import org.apache.baremaps.store.DataRow;
+import org.apache.baremaps.calcite.DataRow;
 import org.apache.lucene.index.IndexWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

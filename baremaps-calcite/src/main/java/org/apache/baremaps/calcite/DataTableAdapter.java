@@ -18,9 +18,7 @@
 package org.apache.baremaps.calcite;
 
 import java.util.EnumMap;
-import org.apache.baremaps.store.DataColumn;
-import org.apache.baremaps.store.DataColumn.ColumnType;
-import org.apache.baremaps.store.DataTable;
+import org.apache.baremaps.calcite.DataColumn.Type;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerable;
@@ -35,40 +33,40 @@ import org.locationtech.jts.geom.*;
 
 public class DataTableAdapter extends AbstractTable implements ScannableTable {
 
-  private static final EnumMap<ColumnType, RelDataType> types = new EnumMap<>(ColumnType.class);
+  private static final EnumMap<Type, RelDataType> types = new EnumMap<>(Type.class);
 
   static {
-    types.put(ColumnType.BYTE, new JavaTypeFactoryImpl()
+    types.put(Type.BYTE, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.TINYINT));
-    types.put(ColumnType.BOOLEAN, new JavaTypeFactoryImpl()
+    types.put(Type.BOOLEAN, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.BOOLEAN));
-    types.put(ColumnType.SHORT, new JavaTypeFactoryImpl()
+    types.put(Type.SHORT, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.SMALLINT));
-    types.put(ColumnType.INTEGER, new JavaTypeFactoryImpl()
+    types.put(Type.INTEGER, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.INTEGER));
-    types.put(ColumnType.LONG, new JavaTypeFactoryImpl()
+    types.put(Type.LONG, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.BIGINT));
-    types.put(ColumnType.FLOAT, new JavaTypeFactoryImpl()
+    types.put(Type.FLOAT, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.FLOAT));
-    types.put(ColumnType.DOUBLE, new JavaTypeFactoryImpl()
+    types.put(Type.DOUBLE, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.DOUBLE));
-    types.put(ColumnType.STRING, new JavaTypeFactoryImpl()
+    types.put(Type.STRING, new JavaTypeFactoryImpl()
         .createSqlType(SqlTypeName.VARCHAR));
-    types.put(ColumnType.GEOMETRY, new JavaTypeFactoryImpl()
+    types.put(Type.GEOMETRY, new JavaTypeFactoryImpl()
         .createJavaType(Geometry.class));
-    types.put(ColumnType.POINT, new JavaTypeFactoryImpl()
+    types.put(Type.POINT, new JavaTypeFactoryImpl()
         .createJavaType(Point.class));
-    types.put(ColumnType.LINESTRING, new JavaTypeFactoryImpl()
+    types.put(Type.LINESTRING, new JavaTypeFactoryImpl()
         .createJavaType(LineString.class));
-    types.put(ColumnType.POLYGON, new JavaTypeFactoryImpl()
+    types.put(Type.POLYGON, new JavaTypeFactoryImpl()
         .createJavaType(Polygon.class));
-    types.put(ColumnType.MULTIPOINT, new JavaTypeFactoryImpl()
+    types.put(Type.MULTIPOINT, new JavaTypeFactoryImpl()
         .createJavaType(MultiPoint.class));
-    types.put(ColumnType.MULTILINESTRING, new JavaTypeFactoryImpl()
+    types.put(Type.MULTILINESTRING, new JavaTypeFactoryImpl()
         .createJavaType(MultiLineString.class));
-    types.put(ColumnType.MULTIPOLYGON, new JavaTypeFactoryImpl()
+    types.put(Type.MULTIPOLYGON, new JavaTypeFactoryImpl()
         .createJavaType(MultiPolygon.class));
-    types.put(ColumnType.GEOMETRYCOLLECTION, new JavaTypeFactoryImpl()
+    types.put(Type.GEOMETRYCOLLECTION, new JavaTypeFactoryImpl()
         .createJavaType(GeometryCollection.class));
   }
 

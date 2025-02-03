@@ -19,13 +19,11 @@ package org.apache.baremaps.calcite;
 
 import java.sql.*;
 import java.util.*;
+import org.apache.baremaps.calcite.DataColumn.Cardinality;
+import org.apache.baremaps.calcite.DataColumn.Type;
+import org.apache.baremaps.calcite.baremaps.BaremapsDataTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
-import org.apache.baremaps.data.store.DataTableImpl;
-import org.apache.baremaps.data.type.DataTypeImpl;
-import org.apache.baremaps.store.*;
-import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.ColumnType;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.DataContexts;
 import org.apache.calcite.interpreter.Interpreter;
@@ -67,34 +65,34 @@ public class CalciteTest {
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
       // Create and add 'city' table
-      DataSchema cityRowType = new DataSchemaImpl("city", List.of(
-          new DataColumnFixed("id", Cardinality.OPTIONAL, ColumnType.INTEGER),
-          new DataColumnFixed("name", Cardinality.OPTIONAL, ColumnType.STRING),
-          new DataColumnFixed("geometry", Cardinality.OPTIONAL, ColumnType.GEOMETRY)));
+      DataSchema cityRowType = new DataSchema("city", List.of(
+          new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
+          new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
+          new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
 
-      DataTable cityDataTable = new DataTableImpl(
+      DataTable cityDataTable = new BaremapsDataTable(
           cityRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new DataTypeImpl(cityRowType))));
+          new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(cityRowType))));
 
-      cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
+      cityDataTable.add(new DataRow(cityDataTable.schema(),
           List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
-      cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
+      cityDataTable.add(new DataRow(cityDataTable.schema(),
           List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
 
       DataTableAdapter cityDataTableAdapter = new DataTableAdapter(cityDataTable);
       rootSchema.add("city", cityDataTableAdapter);
 
       // Create and add 'population' table
-      DataSchema populationRowType = new DataSchemaImpl("population", List.of(
-          new DataColumnFixed("city_id", Cardinality.OPTIONAL, ColumnType.INTEGER),
-          new DataColumnFixed("population", Cardinality.OPTIONAL, ColumnType.INTEGER)));
+      DataSchema populationRowType = new DataSchema("population", List.of(
+          new DataColumnFixed("city_id", Cardinality.OPTIONAL, Type.INTEGER),
+          new DataColumnFixed("population", Cardinality.OPTIONAL, Type.INTEGER)));
 
-      DataTable populationDataTable = new DataTableImpl(
+      DataTable populationDataTable = new BaremapsDataTable(
           populationRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new DataTypeImpl(populationRowType))));
+          new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(populationRowType))));
 
-      populationDataTable.add(new DataRowImpl(populationDataTable.schema(), List.of(1, 2_161_000)));
-      populationDataTable.add(new DataRowImpl(populationDataTable.schema(), List.of(2, 8_336_000)));
+      populationDataTable.add(new DataRow(populationDataTable.schema(), List.of(1, 2_161_000)));
+      populationDataTable.add(new DataRow(populationDataTable.schema(), List.of(2, 8_336_000)));
 
       DataTableAdapter populationDataTableAdapter = new DataTableAdapter(populationDataTable);
       rootSchema.add("population", populationDataTableAdapter);
@@ -194,19 +192,19 @@ public class CalciteTest {
     rootSchema.add("MY_SCHEMA", new ListSchema(listA, listB));
 
     // Create and add 'city' table
-    DataSchema cityRowType = new DataSchemaImpl("city", List.of(
-        new DataColumnFixed("id", Cardinality.OPTIONAL, ColumnType.INTEGER),
-        new DataColumnFixed("name", Cardinality.OPTIONAL, ColumnType.STRING),
-        new DataColumnFixed("geometry", Cardinality.OPTIONAL, ColumnType.GEOMETRY)));
+    DataSchema cityRowType = new DataSchema("city", List.of(
+        new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
+        new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
+        new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
 
-    DataTable cityDataTable = new DataTableImpl(
+    DataTable cityDataTable = new BaremapsDataTable(
         cityRowType,
-        new IndexedDataList<>(new AppendOnlyLog<>(new DataTypeImpl(cityRowType))));
+        new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(cityRowType))));
 
     GeometryFactory geometryFactory = new GeometryFactory();
-    cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
+    cityDataTable.add(new DataRow(cityDataTable.schema(),
         List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
-    cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
+    cityDataTable.add(new DataRow(cityDataTable.schema(),
         List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
 
     DataTableAdapter cityDataTableAdapter = new DataTableAdapter(cityDataTable);
