@@ -55,6 +55,7 @@ import highway_label from './layers/highway/highway_label.js';
 
 import ocean_overlay from './layers/ocean/overlay.js';
 import route_line from "./layers/route/style.js"
+import building_number from "./layers/building/number.js";
 import building_fill from "./layers/building/fill.js";
 import building_extrusion from "./layers/building/extrusion.js";
 import man_made_fill from "./layers/man_made/man_made_fill.js";
@@ -105,6 +106,7 @@ export default {
         highway_tunnel_outline,
         highway_tunnel_line,
         building_fill,
+        building_number,
         highway_construction_line,
         highway_fill,
         highway_outline,
