@@ -42,8 +42,8 @@ class RpslDataTableTest {
   @Test
   void schema() {
     DataSchema schema = dataTable.schema();
-    assertEquals("RpslObject", schema.name());
-    List<DataColumn> columns = schema.columns();
+    assertEquals("RpslObject", schema.getName());
+    List<DataColumn> columns = schema.getColumns();
     assertTrue(columns.stream().anyMatch(c -> c.name().equals("type")));
     assertTrue(columns.stream().anyMatch(c -> c.name().equals("id")));
     assertTrue(columns.stream().anyMatch(c -> c.name().equals("inetnum")));

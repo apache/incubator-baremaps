@@ -29,7 +29,8 @@ public class DataStoreImpl implements DataStore {
 
   public DataStoreImpl(List<DataTable> tables) {
     this.tables =
-        tables.stream().collect(Collectors.toMap(table -> table.schema().name(), table -> table));
+        tables.stream()
+            .collect(Collectors.toMap(table -> table.schema().name(), table -> table));
   }
 
   @Override

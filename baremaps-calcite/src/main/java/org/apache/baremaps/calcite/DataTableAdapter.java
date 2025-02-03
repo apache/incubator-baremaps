@@ -33,7 +33,7 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.locationtech.jts.geom.*;
 
-public class BaremapsTable extends AbstractTable implements ScannableTable {
+public class DataTableAdapter extends AbstractTable implements ScannableTable {
 
   private static final EnumMap<ColumnType, RelDataType> types = new EnumMap<>(ColumnType.class);
 
@@ -78,12 +78,12 @@ public class BaremapsTable extends AbstractTable implements ScannableTable {
 
   private RelDataType rowType;
 
-  public BaremapsTable(DataTable table) {
+  public DataTableAdapter(DataTable table) {
     this.table = table;
     this.protoRowType = null;
   }
 
-  public BaremapsTable(DataTable table, RelProtoDataType protoRowType) {
+  public DataTableAdapter(DataTable table, RelProtoDataType protoRowType) {
     this.table = table;
     this.protoRowType = protoRowType;
   }

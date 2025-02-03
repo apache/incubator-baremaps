@@ -33,8 +33,8 @@ class OpenStreetMapDataTableTest {
     try (var inputStream = Files.newInputStream(uri)) {
       var table = new OpenStreetMapDataTable(new PbfEntityReader(), inputStream);
       var rowType = table.schema();
-      assertEquals(rowType.name(), "osm_data");
-      assertEquals(9, rowType.columns().size());
+      assertEquals(rowType.getName(), "osm_data");
+      assertEquals(9, rowType.getColumns().size());
     }
   }
 

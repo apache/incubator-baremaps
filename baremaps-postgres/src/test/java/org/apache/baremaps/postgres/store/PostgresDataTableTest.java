@@ -61,8 +61,8 @@ class PostgresDataTableTest extends PostgresContainerTest {
     var table = schema.get("mock");
     var rowType = table.schema();
     assertNotNull(rowType);
-    assertEquals("mock", rowType.name());
-    assertEquals(5, rowType.columns().size());
+    assertEquals("mock", rowType.getName());
+    assertEquals(5, rowType.getColumns().size());
   }
 
   @Test

@@ -55,7 +55,7 @@ public class MemoryMappedFile extends Memory<MappedByteBuffer> {
   protected MappedByteBuffer allocateHeader() {
     try {
       try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE,
-              StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+          StandardOpenOption.READ, StandardOpenOption.WRITE)) {
         return channel.map(MapMode.READ_WRITE, 0, headerSize());
       }
     } catch (IOException e) {

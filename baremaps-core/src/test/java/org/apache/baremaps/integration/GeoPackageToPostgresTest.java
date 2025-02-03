@@ -42,8 +42,8 @@ class GeoPackageToPostgresTest extends PostgresContainerTest {
 
     // Check the table in Postgres
     var postgresTable = postgresStore.get("countries");
-    assertEquals("countries", postgresTable.schema().name());
-    assertEquals(4, postgresTable.schema().columns().size());
+    assertEquals("countries", postgresTable.schema().getName());
+    assertEquals(4, postgresTable.schema().getColumns().size());
     assertEquals(179l, postgresTable.size());
     assertEquals(179l, postgresTable.stream().count());
   }

@@ -44,8 +44,8 @@ class GeoParquetToPostgresTest extends PostgresContainerTest {
     // Check the table in Postgres
     var postgresTable = postgresStore.get("geoparquet");
 
-    assertEquals("geoparquet", postgresTable.schema().name());
-    assertEquals(7, postgresTable.schema().columns().size());
+    assertEquals("geoparquet", postgresTable.schema().getName());
+    assertEquals(7, postgresTable.schema().getColumns().size());
     assertEquals(5L, postgresTable.size());
     assertEquals(5L, postgresTable.stream().count());
   }

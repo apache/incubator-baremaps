@@ -19,7 +19,6 @@ package org.apache.baremaps.calcite;
 
 import java.sql.*;
 import java.util.*;
-
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
 import org.apache.baremaps.data.store.DataTableImpl;
@@ -82,8 +81,8 @@ public class CalciteTest {
       cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
           List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
 
-      BaremapsTable cityBaremapsTable = new BaremapsTable(cityDataTable);
-      rootSchema.add("city", cityBaremapsTable);
+      DataTableAdapter cityDataTableAdapter = new DataTableAdapter(cityDataTable);
+      rootSchema.add("city", cityDataTableAdapter);
 
       // Create and add 'population' table
       DataSchema populationRowType = new DataSchemaImpl("population", List.of(
@@ -97,8 +96,8 @@ public class CalciteTest {
       populationDataTable.add(new DataRowImpl(populationDataTable.schema(), List.of(1, 2_161_000)));
       populationDataTable.add(new DataRowImpl(populationDataTable.schema(), List.of(2, 8_336_000)));
 
-      BaremapsTable populationBaremapsTable = new BaremapsTable(populationDataTable);
-      rootSchema.add("population", populationBaremapsTable);
+      DataTableAdapter populationDataTableAdapter = new DataTableAdapter(populationDataTable);
+      rootSchema.add("population", populationDataTableAdapter);
 
       // Create view 'city_population'
       String mvSql = "SELECT c.id, c.name, c.geometry, p.population " +
@@ -210,8 +209,8 @@ public class CalciteTest {
     cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
         List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
 
-    BaremapsTable cityBaremapsTable = new BaremapsTable(cityDataTable);
-    rootSchema.add("CITY", cityBaremapsTable);
+    DataTableAdapter cityDataTableAdapter = new DataTableAdapter(cityDataTable);
+    rootSchema.add("CITY", cityDataTableAdapter);
 
     // Configure the framework
     FrameworkConfig config = Frameworks.newConfigBuilder()
@@ -244,6 +243,4 @@ public class CalciteTest {
     System.out.println("List A: " + listA);
     System.out.println("List B (after SQL): " + listB);
   }
-
-
 }

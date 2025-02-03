@@ -26,10 +26,8 @@ import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.baremaps.store.DataColumn.Cardinality;
@@ -102,19 +100,14 @@ public interface DataSchema {
     return mapper;
   }
 
-  static DataSchema read(ByteBuffer buffer) throws IOException {
+  static DataSchema read(InputStream inputStream) throws IOException {
     var mapper = configureObjectMapper();
-    int length = buffer.getInt();
-    byte[] bytes = new byte[length];
-    buffer.get(bytes);
-    return mapper.readValue(bytes, DataSchema.class);
+    return mapper.readValue(inputStream, DataSchema.class);
   }
 
-  static void write(ByteBuffer buffer, DataSchema schema) throws IOException {
+  static void write(OutputStream outputStream, DataSchema schema) throws IOException {
     var mapper = configureObjectMapper();
-    var bytes = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(schema);
-    buffer.putInt(bytes.length);
-    buffer.put(bytes);
+    mapper.writeValue(outputStream, schema);
   }
 
 }
