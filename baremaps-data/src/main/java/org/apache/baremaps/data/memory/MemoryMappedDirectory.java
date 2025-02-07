@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.apache.baremaps.data.util.FileUtils;
@@ -39,6 +40,13 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
    */
   public MemoryMappedDirectory(Path directory) {
     this(directory, 1 << 30);
+    if (!Files.exists(directory)) {
+      try {
+        Files.createDirectories(directory);
+      } catch (IOException e) {
+        throw new MemoryException(e);
+      }
+    }
   }
 
   /**

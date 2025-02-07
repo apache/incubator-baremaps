@@ -17,228 +17,105 @@
 
 package org.apache.baremaps.calcite;
 
-import java.sql.*;
-import java.util.*;
 import org.apache.baremaps.calcite.DataColumn.Cardinality;
 import org.apache.baremaps.calcite.DataColumn.Type;
 import org.apache.baremaps.calcite.baremaps.BaremapsDataTable;
+import org.apache.baremaps.calcite.baremaps.ServerDdlExecutor;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.DataContexts;
-import org.apache.calcite.interpreter.Interpreter;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.calcite.linq4j.Linq4j;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.schema.ScannableTable;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.schema.Table;
-import org.apache.calcite.schema.impl.*;
-import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.tools.FrameworkConfig;
-import org.apache.calcite.tools.Frameworks;
-import org.apache.calcite.tools.Planner;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 
+import java.sql.*;
+import java.util.List;
+import java.util.Properties;
+
 public class CalciteTest {
 
-  @Test
-  @Disabled
-  void sql() throws SQLException {
-    GeometryFactory geometryFactory = new GeometryFactory();
+    @Test
+    @Disabled
+    void sql() throws SQLException {
+        GeometryFactory geometryFactory = new GeometryFactory();
 
-    // Configure Calcite connection properties
-    Properties info = new Properties();
-    info.setProperty("lex", "MYSQL"); // Use MySQL dialect
-    info.setProperty("caseSensitive", "false"); // Disable case sensitivity
-    info.setProperty("unquotedCasing", "TO_LOWER"); // Convert unquoted identifiers to lowercase
-    info.setProperty("quotedCasing", "TO_LOWER");
+        // Configure Calcite connection properties
+        Properties info = new Properties();
+        info.setProperty("lex", "MYSQL"); // Use MySQL dialect
+        info.setProperty("caseSensitive", "false"); // Disable case sensitivity
+        info.setProperty("unquotedCasing", "TO_LOWER"); // Convert unquoted identifiers to lowercase
+        info.setProperty("quotedCasing", "TO_LOWER");
+        info.setProperty("parserFactory", ServerDdlExecutor.class.getName() + "#PARSER_FACTORY");
+        info.setProperty("materializationsEnabled", "true");
 
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+        try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Create and add 'city' table
-      DataSchema cityRowType = new DataSchema("city", List.of(
-          new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
-          new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
-          new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
+            // Create and add 'city' table
+            DataSchema cityRowType = new DataSchema("city", List.of(
+                    new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
+                    new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
+                    new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
 
-      DataTable cityDataTable = new BaremapsDataTable(
-          cityRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(cityRowType))));
+            DataTable cityDataTable = new BaremapsDataTable(
+                    cityRowType,
+                    new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(cityRowType))));
 
-      cityDataTable.add(new DataRow(cityDataTable.schema(),
-          List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
-      cityDataTable.add(new DataRow(cityDataTable.schema(),
-          List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
+            cityDataTable.add(new DataRow(cityDataTable.schema(),
+                    List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
+            cityDataTable.add(new DataRow(cityDataTable.schema(),
+                    List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
 
-      DataTableAdapter cityDataTableAdapter = new DataTableAdapter(cityDataTable);
-      rootSchema.add("city", cityDataTableAdapter);
+            DataTableAdapter cityDataTableAdapter = new DataTableAdapter(cityDataTable);
+            rootSchema.add("city", cityDataTableAdapter);
 
-      // Create and add 'population' table
-      DataSchema populationRowType = new DataSchema("population", List.of(
-          new DataColumnFixed("city_id", Cardinality.OPTIONAL, Type.INTEGER),
-          new DataColumnFixed("population", Cardinality.OPTIONAL, Type.INTEGER)));
+            // Create and add 'population' table
+            DataSchema populationRowType = new DataSchema("population", List.of(
+                    new DataColumnFixed("city_id", Cardinality.OPTIONAL, Type.INTEGER),
+                    new DataColumnFixed("population", Cardinality.OPTIONAL, Type.INTEGER)));
 
-      DataTable populationDataTable = new BaremapsDataTable(
-          populationRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(populationRowType))));
+            DataTable populationDataTable = new BaremapsDataTable(
+                    populationRowType,
+                    new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(populationRowType))));
 
-      populationDataTable.add(new DataRow(populationDataTable.schema(), List.of(1, 2_161_000)));
-      populationDataTable.add(new DataRow(populationDataTable.schema(), List.of(2, 8_336_000)));
+            populationDataTable.add(new DataRow(populationDataTable.schema(), List.of(1, 2_161_000)));
+            populationDataTable.add(new DataRow(populationDataTable.schema(), List.of(2, 8_336_000)));
 
-      DataTableAdapter populationDataTableAdapter = new DataTableAdapter(populationDataTable);
-      rootSchema.add("population", populationDataTableAdapter);
+            DataTableAdapter populationDataTableAdapter = new DataTableAdapter(populationDataTable);
+            rootSchema.add("population", populationDataTableAdapter);
 
-      // Create view 'city_population'
-      String mvSql = "SELECT c.id, c.name, c.geometry, p.population " +
-          "FROM city c " + // lowercase and unquoted
-          "JOIN population p ON c.id = p.city_id";
+            String mv = "CREATE MATERIALIZED VIEW city_population AS "
+                    + "SELECT c.id, c.name, c.geometry, p.population "
+                    + "FROM city c "
+                    + "JOIN population p ON c.id = p.city_id";
 
-      ViewTableMacro materializedView = MaterializedViewTable.viewMacro(
-          rootSchema,
-          mvSql,
-          Collections.emptyList(), // Schema path
-          List.of("city_population"), // Name parts
-          false); // Not a materialized view
+            // Execute the SQL query
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(mv);
+            }
+
+            // Debug: List all tables in the root schema
+            System.out.println("Available tables in the root schema:");
+            for (String tableName : rootSchema.getTableNames()) {
+                System.out.println(" - " + tableName);
+            }
+
+            String sql = "SELECT * FROM city_population";
+
+            // Execute the SQL query
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery(sql);
+                while (resultSet.next()) {
+                    System.out.println(resultSet.getInt(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3) + " " + resultSet.getInt(4));
+                }
+            }
 
 
-      rootSchema.add("city_population", materializedView);
-
-      // Debug: List all tables in the root schema
-      System.out.println("Available tables in the root schema:");
-      for (String tableName : rootSchema.getTableNames()) {
-        System.out.println(" - " + tableName);
-      }
-
-      String sql = "SELECT * FROM city";
-      try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery(sql)) {
-        while (resultSet.next()) {
-          System.out.println(resultSet.getString("id") + " " + resultSet.getString("geometry"));
         }
-      }
 
-      // Query the view
-      sql = "SELECT * FROM city_population";
-      try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery(sql)) {
-        while (resultSet.next()) {
-          System.out.println(
-              resultSet.getString("id") + " " + resultSet.getString("name"));
-        }
-      }
     }
 
-  }
-
-  public class ListTable extends AbstractTable implements ScannableTable {
-    private final List<Integer> data;
-
-    public ListTable(List<Integer> data) {
-      this.data = data;
-    }
-
-    @Override
-    public RelDataType getRowType(RelDataTypeFactory typeFactory) {
-      // Define a single column named "value" of type INTEGER
-      return typeFactory.builder()
-          .add("V", SqlTypeName.INTEGER)
-          .build();
-    }
-
-    @Override
-    public Enumerable<Object[]> scan(DataContext root) {
-      // Convert the List<Integer> to Enumerable<Object[]>
-      return Linq4j.asEnumerable(data)
-          .select(i -> new Object[] {i});
-    }
-  }
-
-  public class ListSchema extends AbstractSchema {
-    private final List<Integer> listA;
-    private final List<Integer> listB;
-
-    public ListSchema(List<Integer> listA, List<Integer> listB) {
-      this.listA = listA;
-      this.listB = listB;
-    }
-
-    @Override
-    protected Map<String, Table> getTableMap() {
-      Map<String, Table> tables = new HashMap<>();
-      tables.put("LIST_A", new ListTable(listA));
-      tables.put("LIST_B", new ListTable(listB)); // Initially empty
-      return tables;
-    }
-  }
-
-  @Test
-  @Disabled
-  void list() throws Exception {
-    // Initialize your Java lists
-    List<Integer> listA = List.of(1, 2, 3, 4, 5);
-    List<Integer> listB = new ArrayList<>();
-
-    // Set up Calcite schema
-    SchemaPlus rootSchema = Frameworks.createRootSchema(true);
-    rootSchema.add("MY_SCHEMA", new ListSchema(listA, listB));
-
-    // Create and add 'city' table
-    DataSchema cityRowType = new DataSchema("city", List.of(
-        new DataColumnFixed("id", Cardinality.OPTIONAL, Type.INTEGER),
-        new DataColumnFixed("name", Cardinality.OPTIONAL, Type.STRING),
-        new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
-
-    DataTable cityDataTable = new BaremapsDataTable(
-        cityRowType,
-        new IndexedDataList<>(new AppendOnlyLog<>(new DataRowType(cityRowType))));
-
-    GeometryFactory geometryFactory = new GeometryFactory();
-    cityDataTable.add(new DataRow(cityDataTable.schema(),
-        List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
-    cityDataTable.add(new DataRow(cityDataTable.schema(),
-        List.of(2, "New York", geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128)))));
-
-    DataTableAdapter cityDataTableAdapter = new DataTableAdapter(cityDataTable);
-    rootSchema.add("CITY", cityDataTableAdapter);
-
-    // Configure the framework
-    FrameworkConfig config = Frameworks.newConfigBuilder()
-        .defaultSchema(rootSchema.getSubSchema("MY_SCHEMA"))
-        .build();
-
-    // Create a planner
-    Planner planner = Frameworks.getPlanner(config);
-
-    // Define the SQL query to populate list_b from list_a
-    String sql = "SELECT V * 2 AS V FROM LIST_A";
-
-    // Parse the SQL query
-    org.apache.calcite.sql.SqlNode parsed = planner.parse(sql);
-
-    // Validate the SQL query
-    org.apache.calcite.sql.SqlNode validated = planner.validate(parsed);
-
-    // Convert the SQL query to a relational expression
-    RelNode rel = planner.rel(validated).rel;
-
-    Interpreter interpreter = new Interpreter(DataContexts.EMPTY, rel);
-
-    // Create an interpreter to execute the RelNode
-    for (Object[] row : interpreter) {
-      listB.add((Integer) row[0]);
-    }
-
-    // Display the results
-    System.out.println("List A: " + listA);
-    System.out.println("List B (after SQL): " + listB);
-  }
 }

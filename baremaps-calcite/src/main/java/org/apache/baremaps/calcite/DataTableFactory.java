@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.file.Paths;
 import java.util.Map;
-import org.apache.baremaps.calcite.baremaps.BaremapsDataTable;
 import org.apache.baremaps.calcite.csv.CsvDataTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
@@ -35,16 +34,17 @@ import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.TableFactory;
 
-public class DataTableFactory implements TableFactory<DataTableAdapter> {
+public class DataTableFactory implements TableFactory<Table> {
 
   public DataTableFactory() {
 
   }
 
   @Override
-  public DataTableAdapter create(
+  public Table create(
       SchemaPlus schema,
       String name,
       Map<String, Object> operand,
@@ -52,16 +52,15 @@ public class DataTableFactory implements TableFactory<DataTableAdapter> {
     final RelProtoDataType protoRowType =
         rowType != null ? RelDataTypeImpl.proto(rowType) : null;
     String format = (String) operand.get("format");
-    DataTable dataTable = switch (format) {
-      case "baremaps" -> createMMapTable(schema, name, operand, rowType);
+    return switch (format) {
+      case "baremaps" -> createDataTable(schema, name, operand, rowType);
       case "csv" -> createCsvTable(schema, name, operand, rowType);
       default -> throw new RuntimeException("Unsupported format");
     };
-    return new DataTableAdapter(dataTable, protoRowType);
   }
 
-  private DataTable createMMapTable(SchemaPlus schema, String name, Map<String, Object> operand,
-      RelDataType rowType) {
+  private Table createDataTable(SchemaPlus schema, String name, Map<String, Object> operand,
+                                RelDataType rowType) {
     String directory = (String) operand.get("directory");
     if (directory == null) {
       throw new RuntimeException("A directory should be specified");
@@ -76,20 +75,20 @@ public class DataTableFactory implements TableFactory<DataTableAdapter> {
       DataSchema dataSchema = DataSchema.read(new ByteArrayInputStream(bytes));
       DataType<DataRow> dataType = new DataRowType(dataSchema);
       DataCollection<DataRow> dataCollection = new AppendOnlyLog<>(dataType, memory);
-      return new BaremapsDataTable(dataSchema, dataCollection);
+      return null; //new BaremapsTable(dataSchema, dataCollection);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private DataTable createCsvTable(SchemaPlus schema, String name, Map<String, Object> operand,
+  private Table createCsvTable(SchemaPlus schema, String name, Map<String, Object> operand,
       RelDataType rowType) {
     String file = (String) operand.get("file");
     if (file == null) {
       throw new RuntimeException("A file should be specified");
     }
     try {
-      return new CsvDataTable(name, new File(file), ',', true);
+      return new DataTableAdapter(new CsvDataTable(name, new File(file), ',', true));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
