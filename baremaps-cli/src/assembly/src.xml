@@ -35,6 +35,7 @@ limitations under the License.
                 <include>DISCLAIMER</include>
                 <include>LICENSE.header</include>
                 <include>NOTICE</include>
+                <include>NOTICE-binary</include>
             </includes>
         </fileSet>
         <fileSet>
