@@ -20,6 +20,7 @@ package org.apache.baremaps.data.type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 
 /**
  * A data type for {@link GeometryCollection} objects.
@@ -95,5 +96,10 @@ public class MultiPolygonDataType implements DataType<MultiPolygon> {
       p += polygonDataType.size(buffer, p);
     }
     return geometryFactory.createMultiPolygon(polygons.toArray(Polygon[]::new));
+  }
+
+  // Simplifies a MultiPolygon using the Douglas-Peucker algorithm with the given tolerance
+  public MultiPolygon simplify(MultiPolygon multiPolygon, double tolerance) {
+    return (MultiPolygon) DouglasPeuckerSimplifier.simplify(multiPolygon, tolerance);
   }
 }
