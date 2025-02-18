@@ -54,6 +54,9 @@ public class RelationBoundaryBuilder implements Consumer<Entity> {
   @Override
   public void accept(final Entity entity) {
     if (entity instanceof Relation relation) {
+      if (!relation.getTags().containsKey("boundary")) {
+        return;
+      }
       try {
         var start = System.currentTimeMillis();
 
