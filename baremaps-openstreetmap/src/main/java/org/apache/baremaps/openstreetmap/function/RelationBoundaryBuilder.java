@@ -23,9 +23,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryCombiner;
 import org.slf4j.Logger;
@@ -35,61 +34,91 @@ public class RelationBoundaryBuilder implements Consumer<Entity> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationBoundaryBuilder.class);
 
-  private final Map<Long, Node> nodes;
-  private final Map<Long, Way> ways;
-  private final Map<Long, Relation> relations;
-  private final GeometryFactory geometryFactory;
+  private final Map<Long, Coordinate> coordinateMap;
+  private final Map<Long, List<Long>> referenceMap;
 
-  public RelationBoundaryBuilder(
-      Map<Long, Node> nodes,
-      Map<Long, Way> ways,
-      Map<Long, Relation> relations,
-      GeometryFactory geometryFactory) {
-    this.nodes = nodes;
-    this.ways = ways;
-    this.relations = relations;
-    this.geometryFactory = geometryFactory;
+  public RelationBoundaryBuilder(Map<Long, Coordinate> coordinateMap,
+      Map<Long, List<Long>> referenceMap) {
+    this.coordinateMap = coordinateMap;
+    this.referenceMap = referenceMap;
   }
 
   @Override
   public void accept(final Entity entity) {
-    if (entity instanceof Relation relation) {
-      if (!relation.getTags().containsKey("boundary")) {
-        return;
+    if (!(entity instanceof Relation relation)) {
+      return;
+    }
+    if (!relation.getTags().containsKey("boundary")) {
+      return;
+    }
+    try {
+      long start = System.currentTimeMillis();
+      buildBoundary(relation);
+      long end = System.currentTimeMillis();
+      long duration = end - start;
+      if (duration > 60 * 1000) {
+        logger.debug("Relation #{} processed in {} ms", relation.getId(), duration);
       }
-      try {
-        var start = System.currentTimeMillis();
-
-        buildBoundary(relation);
-
-        var end = System.currentTimeMillis();
-        var duration = end - start;
-        if (duration > 60 * 1000) {
-          logger.debug("Relation #{} processed in {} ms", relation.getId(), duration);
-        }
-      } catch (Exception e) {
-        logger.error("Error processing relation #" + relation.getId(), e);
-      }
+    } catch (Exception e) {
+      logger.error("Error processing relation #" + relation.getId(), e);
     }
   }
 
-  public Geometry buildBoundary(Relation relation) {
+  public void buildBoundary(Relation relation) {
     List<Geometry> geometries = relation.getMembers().stream()
         .map(member -> switch (member.type()) {
-        case NODE -> nodes.get(member.ref()).getGeometry();
-        case WAY -> ways.get(member.ref()).getGeometry();
-        case RELATION -> buildBoundary(relations.get(member.ref()));
+          case NODE -> {
+            Coordinate coord = coordinateMap.get(member.ref());
+            yield (coord != null) ? GeometryUtils.GEOMETRY_FACTORY_WGS84.createPoint(coord) : null;
+          }
+          case WAY -> {
+            List<Long> nodeIds = referenceMap.get(member.ref());
+            if (nodeIds == null || nodeIds.isEmpty()) {
+              yield null;
+            }
+            Coordinate[] coords = nodeIds.stream()
+                .map(coordinateMap::get)
+                .filter(Objects::nonNull)
+                .toArray(Coordinate[]::new);
+            if (coords.length < 2) {
+              yield null;
+            }
+            if (coords[0].equals2D(coords[coords.length - 1]) && coords.length >= 4) {
+              LinearRing ring = GeometryUtils.GEOMETRY_FACTORY_WGS84.createLinearRing(coords);
+              yield GeometryUtils.GEOMETRY_FACTORY_WGS84.createPolygon(ring);
+            } else {
+              yield GeometryUtils.GEOMETRY_FACTORY_WGS84.createLineString(coords);
+            }
+          }
+          case RELATION -> null;
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-    GeometryCombiner combiner = new GeometryCombiner(geometries);
-    Geometry combinedGeometry = combiner.combine();
-
-    if (combinedGeometry instanceof MultiPolygon || combinedGeometry instanceof MultiLineString) {
-      return combinedGeometry;
+    Geometry finalGeometry;
+    if (geometries.isEmpty()) {
+      finalGeometry = GeometryUtils.GEOMETRY_FACTORY_WGS84.createGeometryCollection(new Geometry[]{});
     } else {
-      return geometryFactory.createGeometryCollection(new Geometry[] {combinedGeometry});
+      Geometry combinedGeometry = GeometryCombiner.combine(geometries);
+      if (combinedGeometry instanceof Polygon) {
+        finalGeometry = GeometryUtils.GEOMETRY_FACTORY_WGS84.createMultiPolygon(new Polygon[]{(Polygon) combinedGeometry});
+      } else if (combinedGeometry instanceof LineString) {
+        finalGeometry = GeometryUtils.GEOMETRY_FACTORY_WGS84.createMultiLineString(new LineString[]{(LineString) combinedGeometry});
+      } else if (combinedGeometry instanceof GeometryCollection && combinedGeometry.getNumGeometries() == 1) {
+        Geometry single = combinedGeometry.getGeometryN(0);
+        if (single instanceof Polygon) {
+            finalGeometry = GeometryUtils.GEOMETRY_FACTORY_WGS84.createMultiPolygon(new Polygon[]{(Polygon) single});
+        } else if (single instanceof LineString) {
+            finalGeometry = GeometryUtils.GEOMETRY_FACTORY_WGS84.createMultiLineString(new LineString[]{(LineString) single});
+        } else {
+          finalGeometry = combinedGeometry;
+        }
+      } else if (combinedGeometry instanceof MultiPolygon || combinedGeometry instanceof MultiLineString) {
+        finalGeometry = combinedGeometry;
+      } else {
+        finalGeometry = GeometryUtils.GEOMETRY_FACTORY_WGS84.createGeometryCollection(new Geometry[]{combinedGeometry});
+      }
     }
+    relation.setGeometry(finalGeometry);
   }
 }
