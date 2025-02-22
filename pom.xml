@@ -75,8 +75,6 @@ limitations under the License.
 
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
     <project.build.outputTimestamp>2025-02-26T10:10:41Z</project.build.outputTimestamp>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -116,15 +114,15 @@ limitations under the License.
     <version.lib.testcontainers>1.20.1</version.lib.testcontainers>
     <version.plugin.jacoco-maven-plugin>0.8.11</version.plugin.jacoco-maven-plugin>
     <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
-    <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
+    <version.plugin.maven-compiler-plugin>3.14.0</version.plugin.maven-compiler-plugin>
     <version.plugin.maven-exec-plugin>3.0.0</version.plugin.maven-exec-plugin>
     <version.plugin.maven-gpg-plugin>1.6</version.plugin.maven-gpg-plugin>
-    <version.plugin.maven-jar-plugin>3.3.0</version.plugin.maven-jar-plugin>
-    <version.plugin.maven-javadoc-plugin>3.2.0</version.plugin.maven-javadoc-plugin>
+    <version.plugin.maven-jar-plugin>3.4.2</version.plugin.maven-jar-plugin>
+    <version.plugin.maven-javadoc-plugin>3.11.2</version.plugin.maven-javadoc-plugin>
     <version.plugin.maven-jxr-plugin>3.3.1</version.plugin.maven-jxr-plugin>
-    <version.plugin.maven-release-plugin>2.5.3</version.plugin.maven-release-plugin>
+    <version.plugin.maven-release-plugin>3.1.1</version.plugin.maven-release-plugin>
     <version.plugin.maven-scm-plugin>1.11.2</version.plugin.maven-scm-plugin>
-    <version.plugin.maven-source-plugin>3.2.1</version.plugin.maven-source-plugin>
+    <version.plugin.maven-source-plugin>3.3.1</version.plugin.maven-source-plugin>
     <version.plugin.maven-surefire-plugin>3.2.1</version.plugin.maven-surefire-plugin>
     <version.plugin.maven-surefire-plugin.provider.junit>1.3.2</version.plugin.maven-surefire-plugin.provider.junit>
     <version.plugin.nexus-staging-maven-plugin>1.6.13</version.plugin.nexus-staging-maven-plugin>
@@ -700,7 +698,6 @@ limitations under the License.
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${version.plugin.maven-compiler-plugin}</version>
         <configuration>
-          <release>17</release>
           <compilerArgs>
             <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
           </compilerArgs>
@@ -717,14 +714,9 @@ limitations under the License.
         <version>${version.plugin.maven-jar-plugin}</version>
         <configuration>
           <archive>
-            <manifestEntries>
-              <Build-Date>${project.build.outputTimestamp}</Build-Date>
-              <Build-Version>${project.version}</Build-Version>
-              <Build-Jdk>${java.version}</Build-Jdk>
-              <Specification-Title>${project.name}</Specification-Title>
-              <Specification-Vendor>Apache Software Foundation</Specification-Vendor>
-              <Implementation-Vendor>Apache Software Foundation</Implementation-Vendor>
-            </manifestEntries>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
           </archive>
         </configuration>
       </plugin>
