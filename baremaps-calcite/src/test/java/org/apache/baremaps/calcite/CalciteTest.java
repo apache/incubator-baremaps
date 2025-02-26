@@ -20,7 +20,7 @@ package org.apache.baremaps.calcite;
 import org.apache.baremaps.calcite.DataColumn.Cardinality;
 import org.apache.baremaps.calcite.DataColumn.Type;
 import org.apache.baremaps.calcite.baremaps.BaremapsDataTable;
-import org.apache.baremaps.calcite.baremaps.ServerDdlExecutor;
+import org.apache.baremaps.calcite.baremaps.BaremapsDdlExecutor;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.IndexedDataList;
 import org.apache.calcite.jdbc.CalciteConnection;
@@ -47,7 +47,7 @@ public class CalciteTest {
         info.setProperty("caseSensitive", "false"); // Disable case sensitivity
         info.setProperty("unquotedCasing", "TO_LOWER"); // Convert unquoted identifiers to lowercase
         info.setProperty("quotedCasing", "TO_LOWER");
-        info.setProperty("parserFactory", ServerDdlExecutor.class.getName() + "#PARSER_FACTORY");
+        info.setProperty("parserFactory", BaremapsDdlExecutor.class.getName() + "#PARSER_FACTORY");
         info.setProperty("materializationsEnabled", "true");
 
         try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {

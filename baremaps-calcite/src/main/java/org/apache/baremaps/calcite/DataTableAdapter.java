@@ -72,18 +72,10 @@ public class DataTableAdapter extends AbstractTable implements ScannableTable {
 
   private final DataTable table;
 
-  private final RelProtoDataType protoRowType;
-
   private RelDataType rowType;
 
   public DataTableAdapter(DataTable table) {
     this.table = table;
-    this.protoRowType = null;
-  }
-
-  public DataTableAdapter(DataTable table, RelProtoDataType protoRowType) {
-    this.table = table;
-    this.protoRowType = protoRowType;
   }
 
   @Override

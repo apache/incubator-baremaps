@@ -22,11 +22,10 @@ import org.apache.calcite.materialize.MaterializationKey;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.Schema;
-import org.apache.calcite.sql2rel.InitializerExpressionFactory;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** A table that implements a materialized view. */
-class BaremapsMaterializedView extends BaremapsMutableTable {
+class BaremapsMaterializedView extends BaremapsModifiableTable {
   /**
    * The key with which this was stored in the materialization service, or null if not (yet)
    * materialized.
@@ -37,9 +36,8 @@ class BaremapsMaterializedView extends BaremapsMutableTable {
   BaremapsMaterializedView(
           String name,
       RelProtoDataType protoRowType,
-      InitializerExpressionFactory initializerExpressionFactory,
       RelDataTypeFactory typeFactory) {
-    super(name, protoRowType, initializerExpressionFactory, typeFactory);
+    super(name, protoRowType, typeFactory);
   }
 
   @Override

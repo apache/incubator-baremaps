@@ -97,11 +97,7 @@ import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.InitializerContext;
 import org.apache.calcite.sql2rel.InitializerExpressionFactory;
 import org.apache.calcite.sql2rel.NullInitializerExpressionFactory;
-import org.apache.calcite.tools.FrameworkConfig;
-import org.apache.calcite.tools.Frameworks;
-import org.apache.calcite.tools.Planner;
-import org.apache.calcite.tools.RelConversionException;
-import org.apache.calcite.tools.ValidationException;
+import org.apache.calcite.tools.*;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
@@ -115,9 +111,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * appropriate {@code execute} method. For example, "CREATE TABLE" ({@link SqlCreateTable}) is
  * dispatched to {@link #execute(SqlCreateTable, CalcitePrepare.Context)}.
  */
-public class ServerDdlExecutor extends DdlExecutorImpl {
+public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Singleton instance. */
-  public static final ServerDdlExecutor INSTANCE = new ServerDdlExecutor();
+  public static final BaremapsDdlExecutor INSTANCE = new BaremapsDdlExecutor();
 
   /** Parser factory. */
   @SuppressWarnings("unused") // used via reflection
@@ -130,7 +126,7 @@ public class ServerDdlExecutor extends DdlExecutorImpl {
 
         @Override
         public DdlExecutor getDdlExecutor() {
-          return ServerDdlExecutor.INSTANCE;
+          return BaremapsDdlExecutor.INSTANCE;
         }
       };
 
@@ -138,7 +134,7 @@ public class ServerDdlExecutor extends DdlExecutorImpl {
    * Creates a ServerDdlExecutor. Protected only to allow sub-classing; use {@link #INSTANCE} where
    * possible.
    */
-  protected ServerDdlExecutor() {}
+  protected BaremapsDdlExecutor() {}
 
   /**
    * Returns the schema in which to create an object; the left part is null if the schema does not
@@ -208,8 +204,8 @@ public class ServerDdlExecutor extends DdlExecutorImpl {
     final CalciteSchema.TableEntry tableEntry =
         calciteSchema.getTable(tblName, context.config().caseSensitive());
     final Table table = requireNonNull(tableEntry, "tableEntry").getTable();
-    if (table instanceof BaremapsMutableTable) {
-      BaremapsMutableTable mutableArrayTable = (BaremapsMutableTable) table;
+    if (table instanceof BaremapsModifiableTable) {
+      BaremapsModifiableTable mutableArrayTable = (BaremapsModifiableTable) table;
       mutableArrayTable.rows.clear();
     } else {
       // Not calcite-server created, so not support truncate.
@@ -428,8 +424,7 @@ public class ServerDdlExecutor extends DdlExecutorImpl {
 
     // Table does not exist. Create it.
     final BaremapsMaterializedView table =
-        new BaremapsMaterializedView(pair.right, RelDataTypeImpl.proto(rowType),
-            NullInitializerExpressionFactory.INSTANCE, context.getTypeFactory());
+        new BaremapsMaterializedView(pair.right, RelDataTypeImpl.proto(rowType), context.getTypeFactory());
     pair.left.add(pair.right, table);
     populate(create.name, create.query, context);
     table.key =
@@ -545,31 +540,6 @@ public class ServerDdlExecutor extends DdlExecutorImpl {
       }
     }
     final RelDataType rowType = builder.build();
-    final RelDataType storedRowType = storedBuilder.build();
-    final List<ColumnDef> columns = b.build();
-    final InitializerExpressionFactory ief =
-        new NullInitializerExpressionFactory() {
-          @Override
-          public ColumnStrategy generationStrategy(RelOptTable table,
-              int iColumn) {
-            return columns.get(iColumn).strategy;
-          }
-
-          @Override
-          public RexNode newColumnDefaultValue(RelOptTable table,
-              int iColumn, InitializerContext context) {
-            final ColumnDef c = columns.get(iColumn);
-            if (c.expr != null) {
-              // REVIEW Danny 2019-10-09: Should we support validation for DDL nodes?
-              final SqlNode validated = context.validateExpression(storedRowType, c.expr);
-              // The explicit specified type should have the same nullability
-              // with the column expression inferred type,
-              // actually they should be exactly the same.
-              return context.convertExpression(validated);
-            }
-            return super.newColumnDefaultValue(table, iColumn, context);
-          }
-        };
     if (pair.left.plus().getTable(pair.right) != null) {
       // Table exists.
       if (create.ifNotExists) {
@@ -583,8 +553,8 @@ public class ServerDdlExecutor extends DdlExecutorImpl {
     }
     // Table does not exist. Create it.
     pair.left.add(pair.right,
-        new BaremapsMutableTable(pair.right,
-            RelDataTypeImpl.proto(rowType), ief, context.getTypeFactory()));
+        new BaremapsModifiableTable(pair.right,
+            RelDataTypeImpl.proto(rowType), context.getTypeFactory()));
     if (create.query != null) {
       populate(create.name, create.query, context);
     }
@@ -643,8 +613,8 @@ public class ServerDdlExecutor extends DdlExecutorImpl {
     final RelDataType rowType = table.getRowType(typeFactory);
     // Table does not exist. Create it.
     pair.left.add(pair.right,
-        new BaremapsMutableTable(pair.right,
-            RelDataTypeImpl.proto(rowType), ief, typeFactory));
+        new BaremapsModifiableTable(pair.right,
+            RelDataTypeImpl.proto(rowType), typeFactory));
   }
 
   /** Executes a {@code CREATE TYPE} command. */

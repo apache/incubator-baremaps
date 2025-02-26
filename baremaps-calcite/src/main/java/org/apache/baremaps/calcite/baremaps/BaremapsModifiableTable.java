@@ -45,7 +45,6 @@ import org.apache.calcite.schema.Wrapper;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.calcite.schema.impl.AbstractTableQueryable;
 import org.apache.calcite.sql.type.SqlTypeName;
-import org.apache.calcite.sql2rel.InitializerExpressionFactory;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Type;
@@ -58,11 +57,9 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 
-class BaremapsMutableTable extends AbstractTable implements ModifiableTable, Wrapper {
+class BaremapsModifiableTable extends AbstractTable implements ModifiableTable, Wrapper {
 
     private final String name;
-
-    private final InitializerExpressionFactory initializerExpressionFactory;
 
     private final RelProtoDataType protoRowType;
 
@@ -72,14 +69,11 @@ class BaremapsMutableTable extends AbstractTable implements ModifiableTable, Wra
 
     final DataCollection<DataRow> rows;
 
-    BaremapsMutableTable(String name,
-                         RelProtoDataType protoRowType,
-                         InitializerExpressionFactory initializerExpressionFactory,
-                         RelDataTypeFactory typeFactory) {
+    BaremapsModifiableTable(String name,
+                            RelProtoDataType protoRowType,
+                            RelDataTypeFactory typeFactory) {
         super();
         this.name = requireNonNull(name, "name");
-        this.initializerExpressionFactory =
-                requireNonNull(initializerExpressionFactory, "initializerExpressionFactory");
         this.protoRowType = requireNonNull(protoRowType, "protoRowType");
         this.rowType = this.protoRowType.apply(typeFactory);
 
@@ -196,14 +190,6 @@ class BaremapsMutableTable extends AbstractTable implements ModifiableTable, Wra
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
         return rowType;
-    }
-
-    @Override
-    public <C extends Object> @Nullable C unwrap(Class<C> aClass) {
-        if (aClass.isInstance(initializerExpressionFactory)) {
-            return aClass.cast(initializerExpressionFactory);
-        }
-        return super.unwrap(aClass);
     }
 
     private class CollectionAdapter implements Collection<Object[]> {
