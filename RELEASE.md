@@ -41,7 +41,7 @@ git checkout -b release-$RELEASE_VERSION
 - [ ] Set the release version and commit the changes:
 
 ```bash 
-./mvnw versions:set -DnewVersion=$RELEASE_VERSION
+./mvnw versions:set -DnewVersion=$RELEASE_VERSION -DgenerateBackupPoms=false
 git commit -a -m "Release Baremaps $RELEASE_VERSION"
 git push --set-upstream origin release-$RELEASE_VERSION
 ```
@@ -90,7 +90,7 @@ svn cp https://dist.apache.org/repos/dist/dev/incubator/baremaps/$RELEASE_VERSIO
 - [ ] Set the version of the next iteration and commit the changes:
 
 ```bash
-./mvnw versions:set -DnewVersion=$NEXT_VERSION-SNAPSHOT
+./mvnw versions:set -DnewVersion=$NEXT_VERSION-SNAPSHOT -DgenerateBackupPoms=false
 git commit -a -m "Prepare for next development iteration"
 git push origin
 ```
@@ -116,7 +116,7 @@ docker run \
   -v $(pwd):/baremaps \
   -w /baremaps \
   eclipse-temurin:17-jdk \
-  ./mvnw clean install -DskipTests
+  ./mvnw clean verify -DskipTests artifact:compare -Dreference.repo=https://repository.apache.org/content/repositories/staging/
 ```
 
 ## Verifying the release artifacts
