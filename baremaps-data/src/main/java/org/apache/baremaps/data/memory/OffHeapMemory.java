@@ -17,23 +17,21 @@
 
 package org.apache.baremaps.data.memory;
 
-
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-/** A {@link Memory} that stores segments off-heap using direct byte buffers. */
+/** Memory implementation that uses off-heap (direct) byte buffers for storage. */
 public class OffHeapMemory extends Memory<ByteBuffer> {
 
-  /** Constructs an {@link OffHeapMemory} with a default segment size of 1mb. */
+  /** Constructs an OffHeapMemory with a 1MB default segment size. */
   public OffHeapMemory() {
     this(1 << 20);
   }
 
   /**
-   * Constructs an {@link OffHeapMemory} with a custom segment size.
+   * Constructs an OffHeapMemory with the specified segment size.
    *
-   * @param segmentSize the size of the segments in bytes
+   * @param segmentSize the size of each segment in bytes
    */
   public OffHeapMemory(int segmentSize) {
     super(segmentSize);
@@ -45,15 +43,25 @@ public class OffHeapMemory extends Memory<ByteBuffer> {
     return ByteBuffer.allocateDirect(size);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Direct buffers are managed by GC and can't be explicitly freed in Java 8.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void close() throws IOException {
-    // Nothing to close
+  public synchronized void close() throws IOException {
+    // Direct ByteBuffers are managed by GC - we can't explicitly free them in Java 8
+    // In Java 9+, we could use Cleaner or Unsafe API if needed
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Clears all segments to allow garbage collection.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void clear() throws IOException {
-    // Nothing to clean
+  public synchronized void clear() throws IOException {
+    // Clear the segment list to allow GC to reclaim the memory
+    segments.clear();
   }
 }

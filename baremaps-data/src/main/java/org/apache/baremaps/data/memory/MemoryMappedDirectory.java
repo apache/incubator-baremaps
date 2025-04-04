@@ -17,8 +17,6 @@
 
 package org.apache.baremaps.data.memory;
 
-
-
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -29,28 +27,25 @@ import org.apache.baremaps.data.util.FileUtils;
 import org.apache.baremaps.data.util.MappedByteBufferUtils;
 
 
-/**
- * A {@link Memory} that stores segments on-disk using mapped byte buffers in a directory of files.
- */
+/** Memory implementation that uses memory-mapped files in a directory for storage. */
 public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
 
   private final Path directory;
 
   /**
-   * Constructs an {@link MemoryMappedDirectory} with a custom directory and a default segment size
-   * of 1gb.
+   * Constructs a MemoryMappedDirectory with the specified directory and 1GB segment size.
    *
-   * @param directory the directory that stores the data
+   * @param directory the directory to store segments in
    */
   public MemoryMappedDirectory(Path directory) {
     this(directory, 1 << 30);
   }
 
   /**
-   * Constructs an {@link MemoryMappedDirectory} with a custom directory and a custom segment size.
+   * Constructs a MemoryMappedDirectory with the specified directory and segment size.
    *
-   * @param directory the directory that stores the data
-   * @param segmentBytes the size of the segments in bytes
+   * @param directory the directory to store segments in
+   * @param segmentBytes the size of each segment in bytes
    */
   public MemoryMappedDirectory(Path directory, int segmentBytes) {
     super(segmentBytes);
@@ -71,20 +66,35 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Releases all mapped buffers but keeps the files intact.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void close() throws IOException {
+  public synchronized void close() throws IOException {
+    // Release MappedByteBuffer resources
     for (MappedByteBuffer buffer : segments) {
-      MappedByteBufferUtils.unmap(buffer);
+      if (buffer != null) {
+        MappedByteBufferUtils.unmap(buffer);
+      }
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Unmaps all buffers and deletes the directory with all its files.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void clear() throws IOException {
+  public synchronized void clear() throws IOException {
+    // Release resources first
     close();
+    
+    // Clear the segment list
     segments.clear();
+    
+    // Delete the directory and all files in it
     FileUtils.deleteRecursively(directory);
   }
-
 }
