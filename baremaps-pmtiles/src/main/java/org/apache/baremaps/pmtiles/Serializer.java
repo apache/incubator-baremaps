@@ -17,14 +17,32 @@
 
 package org.apache.baremaps.pmtiles;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
- * Enumeration of tile image formats supported by PMTiles.
+ * Generic serializer interface for PMTiles components.
+ *
+ * @param <T> the type of object to serialize/deserialize
  */
-public enum TileType {
-  UNKNOWN,
-  MVT,
-  PNG,
-  JPEG,
-  WEBP,
-  AVIF,
+public interface Serializer<T> {
+
+  /**
+   * Serialize an object to an output stream.
+   *
+   * @param object the object to serialize
+   * @param output the output stream to write to
+   * @throws IOException if an I/O error occurs
+   */
+  void serialize(T object, OutputStream output) throws IOException;
+
+  /**
+   * Deserialize an object from an input stream.
+   *
+   * @param input the input stream to read from
+   * @return the deserialized object
+   * @throws IOException if an I/O error occurs
+   */
+  T deserialize(InputStream input) throws IOException;
 }
