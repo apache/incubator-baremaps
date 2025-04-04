@@ -19,6 +19,9 @@ package org.apache.baremaps.pmtiles;
 
 import java.util.Objects;
 
+/**
+ * A class that represents the header of a PMTiles file.
+ */
 public class Header {
 
   private int specVersion;
@@ -82,10 +85,20 @@ public class Header {
   private double centerLon;
   private double centerLat;
 
-  public Header() {
+  /**
+   * Creates a new Header with default values.
+   * <p>
+   * Use {@link Builder} for a more fluent way to create Header objects.
+   */
+  private Header() {
     this.specVersion = 3;
   }
 
+  /**
+   * Creates a new Header with the specified values.
+   * <p>
+   * This constructor has many parameters. Consider using {@link Builder} instead.
+   */
   @SuppressWarnings("squid:S107")
   public Header(
       int specVersion,
@@ -137,6 +150,48 @@ public class Header {
     this.centerZoom = centerZoom;
     this.centerLon = centerLon;
     this.centerLat = centerLat;
+  }
+
+  /**
+   * Creates a new Header from a Builder.
+   *
+   * @param builder the builder to use
+   */
+  private Header(Builder builder) {
+    this.specVersion = builder.specVersion;
+    this.rootDirectoryOffset = builder.rootDirectoryOffset;
+    this.rootDirectoryLength = builder.rootDirectoryLength;
+    this.jsonMetadataOffset = builder.jsonMetadataOffset;
+    this.jsonMetadataLength = builder.jsonMetadataLength;
+    this.leafDirectoryOffset = builder.leafDirectoryOffset;
+    this.leafDirectoryLength = builder.leafDirectoryLength;
+    this.tileDataOffset = builder.tileDataOffset;
+    this.tileDataLength = builder.tileDataLength;
+    this.numAddressedTiles = builder.numAddressedTiles;
+    this.numTileEntries = builder.numTileEntries;
+    this.numTileContents = builder.numTileContents;
+    this.clustered = builder.clustered;
+    this.internalCompression = builder.internalCompression;
+    this.tileCompression = builder.tileCompression;
+    this.tileType = builder.tileType;
+    this.minZoom = builder.minZoom;
+    this.maxZoom = builder.maxZoom;
+    this.minLon = builder.minLon;
+    this.minLat = builder.minLat;
+    this.maxLon = builder.maxLon;
+    this.maxLat = builder.maxLat;
+    this.centerZoom = builder.centerZoom;
+    this.centerLon = builder.centerLon;
+    this.centerLat = builder.centerLat;
+  }
+
+  /**
+   * Creates a new Builder for Header objects.
+   *
+   * @return a new builder
+   */
+  public static Builder builder() {
+    return new Builder();
   }
 
   public int getSpecVersion() {
@@ -373,5 +428,359 @@ public class Header {
         tileDataLength, numAddressedTiles, numTileEntries, numTileContents, clustered,
         internalCompression, tileCompression, tileType, minZoom, maxZoom, minLon, minLat, maxLon,
         maxLat, centerZoom, centerLon, centerLat);
+  }
+
+  /**
+   * Builder for Header objects.
+   */
+  public static class Builder {
+    private int specVersion = 3;
+    private long rootDirectoryOffset;
+    private long rootDirectoryLength;
+    private long jsonMetadataOffset;
+    private long jsonMetadataLength;
+    private long leafDirectoryOffset;
+    private long leafDirectoryLength;
+    private long tileDataOffset;
+    private long tileDataLength;
+    private long numAddressedTiles;
+    private long numTileEntries;
+    private long numTileContents;
+    private boolean clustered;
+    private Compression internalCompression = Compression.GZIP;
+    private Compression tileCompression = Compression.GZIP;
+    private TileType tileType = TileType.MVT;
+    private int minZoom;
+    private int maxZoom = 14;
+    private double minLon = -180;
+    private double minLat = -90;
+    private double maxLon = 180;
+    private double maxLat = 90;
+    private int centerZoom = 3;
+    private double centerLon;
+    private double centerLat;
+
+    /**
+     * Creates a new Builder with default values.
+     */
+    private Builder() {
+      // Use static factory method
+    }
+
+    /**
+     * Sets the spec version.
+     *
+     * @param specVersion the spec version
+     * @return this builder
+     */
+    public Builder specVersion(int specVersion) {
+      this.specVersion = specVersion;
+      return this;
+    }
+
+    /**
+     * Sets the root directory offset.
+     *
+     * @param rootDirectoryOffset the root directory offset
+     * @return this builder
+     */
+    public Builder rootDirectoryOffset(long rootDirectoryOffset) {
+      this.rootDirectoryOffset = rootDirectoryOffset;
+      return this;
+    }
+
+    /**
+     * Sets the root directory length.
+     *
+     * @param rootDirectoryLength the root directory length
+     * @return this builder
+     */
+    public Builder rootDirectoryLength(long rootDirectoryLength) {
+      this.rootDirectoryLength = rootDirectoryLength;
+      return this;
+    }
+
+    /**
+     * Sets the JSON metadata offset.
+     *
+     * @param jsonMetadataOffset the JSON metadata offset
+     * @return this builder
+     */
+    public Builder jsonMetadataOffset(long jsonMetadataOffset) {
+      this.jsonMetadataOffset = jsonMetadataOffset;
+      return this;
+    }
+
+    /**
+     * Sets the JSON metadata length.
+     *
+     * @param jsonMetadataLength the JSON metadata length
+     * @return this builder
+     */
+    public Builder jsonMetadataLength(long jsonMetadataLength) {
+      this.jsonMetadataLength = jsonMetadataLength;
+      return this;
+    }
+
+    /**
+     * Sets the leaf directory offset.
+     *
+     * @param leafDirectoryOffset the leaf directory offset
+     * @return this builder
+     */
+    public Builder leafDirectoryOffset(long leafDirectoryOffset) {
+      this.leafDirectoryOffset = leafDirectoryOffset;
+      return this;
+    }
+
+    /**
+     * Sets the leaf directory length.
+     *
+     * @param leafDirectoryLength the leaf directory length
+     * @return this builder
+     */
+    public Builder leafDirectoryLength(long leafDirectoryLength) {
+      this.leafDirectoryLength = leafDirectoryLength;
+      return this;
+    }
+
+    /**
+     * Sets the tile data offset.
+     *
+     * @param tileDataOffset the tile data offset
+     * @return this builder
+     */
+    public Builder tileDataOffset(long tileDataOffset) {
+      this.tileDataOffset = tileDataOffset;
+      return this;
+    }
+
+    /**
+     * Sets the tile data length.
+     *
+     * @param tileDataLength the tile data length
+     * @return this builder
+     */
+    public Builder tileDataLength(long tileDataLength) {
+      this.tileDataLength = tileDataLength;
+      return this;
+    }
+
+    /**
+     * Sets the number of addressed tiles.
+     *
+     * @param numAddressedTiles the number of addressed tiles
+     * @return this builder
+     */
+    public Builder numAddressedTiles(long numAddressedTiles) {
+      this.numAddressedTiles = numAddressedTiles;
+      return this;
+    }
+
+    /**
+     * Sets the number of tile entries.
+     *
+     * @param numTileEntries the number of tile entries
+     * @return this builder
+     */
+    public Builder numTileEntries(long numTileEntries) {
+      this.numTileEntries = numTileEntries;
+      return this;
+    }
+
+    /**
+     * Sets the number of tile contents.
+     *
+     * @param numTileContents the number of tile contents
+     * @return this builder
+     */
+    public Builder numTileContents(long numTileContents) {
+      this.numTileContents = numTileContents;
+      return this;
+    }
+
+    /**
+     * Sets whether the tiles are clustered.
+     *
+     * @param clustered whether the tiles are clustered
+     * @return this builder
+     */
+    public Builder clustered(boolean clustered) {
+      this.clustered = clustered;
+      return this;
+    }
+
+    /**
+     * Sets the internal compression.
+     *
+     * @param internalCompression the internal compression
+     * @return this builder
+     */
+    public Builder internalCompression(Compression internalCompression) {
+      this.internalCompression = internalCompression;
+      return this;
+    }
+
+    /**
+     * Sets the tile compression.
+     *
+     * @param tileCompression the tile compression
+     * @return this builder
+     */
+    public Builder tileCompression(Compression tileCompression) {
+      this.tileCompression = tileCompression;
+      return this;
+    }
+
+    /**
+     * Sets the tile type.
+     *
+     * @param tileType the tile type
+     * @return this builder
+     */
+    public Builder tileType(TileType tileType) {
+      this.tileType = tileType;
+      return this;
+    }
+
+    /**
+     * Sets the minimum zoom level.
+     *
+     * @param minZoom the minimum zoom level
+     * @return this builder
+     */
+    public Builder minZoom(int minZoom) {
+      this.minZoom = minZoom;
+      return this;
+    }
+
+    /**
+     * Sets the maximum zoom level.
+     *
+     * @param maxZoom the maximum zoom level
+     * @return this builder
+     */
+    public Builder maxZoom(int maxZoom) {
+      this.maxZoom = maxZoom;
+      return this;
+    }
+
+    /**
+     * Sets the minimum longitude.
+     *
+     * @param minLon the minimum longitude
+     * @return this builder
+     */
+    public Builder minLon(double minLon) {
+      this.minLon = minLon;
+      return this;
+    }
+
+    /**
+     * Sets the minimum latitude.
+     *
+     * @param minLat the minimum latitude
+     * @return this builder
+     */
+    public Builder minLat(double minLat) {
+      this.minLat = minLat;
+      return this;
+    }
+
+    /**
+     * Sets the maximum longitude.
+     *
+     * @param maxLon the maximum longitude
+     * @return this builder
+     */
+    public Builder maxLon(double maxLon) {
+      this.maxLon = maxLon;
+      return this;
+    }
+
+    /**
+     * Sets the maximum latitude.
+     *
+     * @param maxLat the maximum latitude
+     * @return this builder
+     */
+    public Builder maxLat(double maxLat) {
+      this.maxLat = maxLat;
+      return this;
+    }
+
+    /**
+     * Sets the center zoom level.
+     *
+     * @param centerZoom the center zoom level
+     * @return this builder
+     */
+    public Builder centerZoom(int centerZoom) {
+      this.centerZoom = centerZoom;
+      return this;
+    }
+
+    /**
+     * Sets the center longitude.
+     *
+     * @param centerLon the center longitude
+     * @return this builder
+     */
+    public Builder centerLon(double centerLon) {
+      this.centerLon = centerLon;
+      return this;
+    }
+
+    /**
+     * Sets the center latitude.
+     *
+     * @param centerLat the center latitude
+     * @return this builder
+     */
+    public Builder centerLat(double centerLat) {
+      this.centerLat = centerLat;
+      return this;
+    }
+
+    /**
+     * Sets the bounds of the tiles.
+     *
+     * @param minLon the minimum longitude
+     * @param minLat the minimum latitude
+     * @param maxLon the maximum longitude
+     * @param maxLat the maximum latitude
+     * @return this builder
+     */
+    public Builder bounds(double minLon, double minLat, double maxLon, double maxLat) {
+      this.minLon = minLon;
+      this.minLat = minLat;
+      this.maxLon = maxLon;
+      this.maxLat = maxLat;
+      return this;
+    }
+
+    /**
+     * Sets the center of the tiles.
+     *
+     * @param centerZoom the center zoom level
+     * @param centerLon the center longitude
+     * @param centerLat the center latitude
+     * @return this builder
+     */
+    public Builder center(int centerZoom, double centerLon, double centerLat) {
+      this.centerZoom = centerZoom;
+      this.centerLon = centerLon;
+      this.centerLat = centerLat;
+      return this;
+    }
+
+    /**
+     * Builds a new Header object.
+     *
+     * @return a new Header
+     */
+    public Header build() {
+      return new Header(this);
+    }
   }
 }

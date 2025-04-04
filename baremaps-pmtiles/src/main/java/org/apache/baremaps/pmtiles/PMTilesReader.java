@@ -26,27 +26,50 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class PMTilesReader {
+/**
+ * Reads tile data and metadata from a PMTiles file.
+ */
+public class PMTilesReader implements AutoCloseable {
 
   private final Path path;
+  private final HeaderSerializer headerSerializer;
+  private final EntrySerializer entrySerializer;
 
   private Header header;
-
   private List<Entry> rootEntries;
 
+  /**
+   * Creates a new PMTilesReader for the specified file.
+   *
+   * @param path the path to the PMTiles file
+   */
   public PMTilesReader(Path path) {
     this.path = path;
+    this.headerSerializer = new HeaderSerializer();
+    this.entrySerializer = new EntrySerializer();
   }
 
+  /**
+   * Gets the header of the PMTiles file.
+   *
+   * @return the header of the PMTiles file
+   * @throws IOException if an I/O error occurs
+   */
   public Header getHeader() throws IOException {
     if (header == null) {
-      try (var inputStream = new LittleEndianDataInputStream(Files.newInputStream(path))) {
-        header = PMTilesUtils.deserializeHeader(inputStream);
+      try (var inputStream = Files.newInputStream(path)) {
+        header = headerSerializer.deserialize(inputStream);
       }
     }
     return header;
   }
 
+  /**
+   * Gets the root directory of the PMTiles file.
+   *
+   * @return the root directory entries
+   * @throws IOException if an I/O error occurs
+   */
   public List<Entry> getRootDirectory() throws IOException {
     if (rootEntries == null) {
       var header = getHeader();
@@ -55,6 +78,13 @@ public class PMTilesReader {
     return rootEntries;
   }
 
+  /**
+   * Gets a directory from the PMTiles file at the specified offset.
+   *
+   * @param offset the offset of the directory in the file
+   * @return the directory entries
+   * @throws IOException if an I/O error occurs
+   */
   public List<Entry> getDirectory(long offset) throws IOException {
     var header = getHeader();
     try (var input = Files.newInputStream(path)) {
@@ -64,16 +94,25 @@ public class PMTilesReader {
       }
       try (var decompressed =
           new LittleEndianDataInputStream(header.getInternalCompression().decompress(input))) {
-        return PMTilesUtils.deserializeEntries(decompressed);
+        return entrySerializer.deserialize(decompressed);
       }
     }
   }
 
+  /**
+   * Gets a tile by its coordinates.
+   *
+   * @param z the zoom level
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * @return the tile data as a ByteBuffer, or null if not found
+   * @throws IOException if an I/O error occurs
+   */
   public ByteBuffer getTile(int z, long x, long y) throws IOException {
-    var tileId = PMTilesUtils.zxyToTileId(z, x, y);
+    var tileId = TileIdConverter.zxyToTileId(z, x, y);
     var fileHeader = getHeader();
     var entries = getRootDirectory();
-    var entry = PMTilesUtils.findTile(entries, tileId);
+    var entry = entrySerializer.findTile(entries, tileId);
 
     if (entry == null) {
       return null;
@@ -88,5 +127,14 @@ public class PMTilesReader {
         return ByteBuffer.wrap(tile.readAllBytes());
       }
     }
+  }
+
+  /**
+   * Closes the PMTilesReader. No resources need to be closed as all I/O operations use
+   * try-with-resources.
+   */
+  @Override
+  public void close() {
+    // No resources to close at the class level since all I/O operations use try-with-resources
   }
 }

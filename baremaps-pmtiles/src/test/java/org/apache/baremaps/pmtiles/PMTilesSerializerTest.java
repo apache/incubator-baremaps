@@ -32,7 +32,12 @@ import java.util.Random;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-class PMTilesUtilsTest {
+class PMTilesSerializerTest {
+
+  private final VarIntSerializer varIntSerializer = new VarIntSerializer();
+  private final HeaderSerializer headerSerializer = new HeaderSerializer();
+  private final EntrySerializer entrySerializer = new EntrySerializer();
+  private final DirectorySerializer directorySerializer = new DirectorySerializer();
 
   @Test
   void decodeVarInt() throws IOException {
@@ -41,53 +46,53 @@ class PMTilesUtilsTest {
         (byte) 127, (byte) 0xe5,
         (byte) 0x8e, (byte) 0x26
     }));
-    assertEquals(0, PMTilesUtils.readVarInt(b));
-    assertEquals(1, PMTilesUtils.readVarInt(b));
-    assertEquals(127, PMTilesUtils.readVarInt(b));
-    assertEquals(624485, PMTilesUtils.readVarInt(b));
+    assertEquals(0, varIntSerializer.readVarInt(b));
+    assertEquals(1, varIntSerializer.readVarInt(b));
+    assertEquals(127, varIntSerializer.readVarInt(b));
+    assertEquals(624485, varIntSerializer.readVarInt(b));
     b = new LittleEndianDataInputStream(new ByteArrayInputStream(new byte[] {
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0xff,
         (byte) 0xff, (byte) 0x0f,
     }));
-    assertEquals(9007199254740991L, PMTilesUtils.readVarInt(b));
+    assertEquals(9007199254740991L, varIntSerializer.readVarInt(b));
   }
 
   @Test
   void encodeVarInt() throws IOException {
     for (long i = 0; i < 1000; i++) {
       var array = new ByteArrayOutputStream();
-      PMTilesUtils.writeVarInt(array, i);
+      varIntSerializer.writeVarInt(array, i);
       var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
-      assertEquals(i, PMTilesUtils.readVarInt(input));
+      assertEquals(i, varIntSerializer.readVarInt(input));
     }
     for (long i = Long.MAX_VALUE - 1000; i < Long.MAX_VALUE; i++) {
       var array = new ByteArrayOutputStream();
-      PMTilesUtils.writeVarInt(array, i);
+      varIntSerializer.writeVarInt(array, i);
       var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
-      assertEquals(i, PMTilesUtils.readVarInt(input));
+      assertEquals(i, varIntSerializer.readVarInt(input));
     }
   }
 
   @Test
   void zxyToTileId() {
-    assertEquals(0, PMTilesUtils.zxyToTileId(0, 0, 0));
-    assertEquals(1, PMTilesUtils.zxyToTileId(1, 0, 0));
-    assertEquals(2, PMTilesUtils.zxyToTileId(1, 0, 1));
-    assertEquals(3, PMTilesUtils.zxyToTileId(1, 1, 1));
-    assertEquals(4, PMTilesUtils.zxyToTileId(1, 1, 0));
-    assertEquals(5, PMTilesUtils.zxyToTileId(2, 0, 0));
+    assertEquals(0, TileIdConverter.zxyToTileId(0, 0, 0));
+    assertEquals(1, TileIdConverter.zxyToTileId(1, 0, 0));
+    assertEquals(2, TileIdConverter.zxyToTileId(1, 0, 1));
+    assertEquals(3, TileIdConverter.zxyToTileId(1, 1, 1));
+    assertEquals(4, TileIdConverter.zxyToTileId(1, 1, 0));
+    assertEquals(5, TileIdConverter.zxyToTileId(2, 0, 0));
   }
 
   @Test
   void tileIdToZxy() {
-    assertArrayEquals(new long[] {0, 0, 0}, PMTilesUtils.tileIdToZxy(0));
-    assertArrayEquals(new long[] {1, 0, 0}, PMTilesUtils.tileIdToZxy(1));
-    assertArrayEquals(new long[] {1, 0, 1}, PMTilesUtils.tileIdToZxy(2));
-    assertArrayEquals(new long[] {1, 1, 1}, PMTilesUtils.tileIdToZxy(3));
-    assertArrayEquals(new long[] {1, 1, 0}, PMTilesUtils.tileIdToZxy(4));
-    assertArrayEquals(new long[] {2, 0, 0}, PMTilesUtils.tileIdToZxy(5));
+    assertArrayEquals(new long[] {0, 0, 0}, TileIdConverter.tileIdToZxy(0));
+    assertArrayEquals(new long[] {1, 0, 0}, TileIdConverter.tileIdToZxy(1));
+    assertArrayEquals(new long[] {1, 0, 1}, TileIdConverter.tileIdToZxy(2));
+    assertArrayEquals(new long[] {1, 1, 1}, TileIdConverter.tileIdToZxy(3));
+    assertArrayEquals(new long[] {1, 1, 0}, TileIdConverter.tileIdToZxy(4));
+    assertArrayEquals(new long[] {2, 0, 0}, TileIdConverter.tileIdToZxy(5));
   }
 
   @Test
@@ -95,7 +100,7 @@ class PMTilesUtilsTest {
     for (int z = 0; z < 9; z++) {
       for (long x = 0; x < 1 << z; x++) {
         for (long y = 0; y < 1 << z; y++) {
-          var result = PMTilesUtils.tileIdToZxy(PMTilesUtils.zxyToTileId(z, x, y));
+          var result = TileIdConverter.tileIdToZxy(TileIdConverter.zxyToTileId(z, x, y));
           if (result[0] != z || result[1] != x || result[2] != y) {
             fail("roundtrip failed");
           }
@@ -108,30 +113,30 @@ class PMTilesUtilsTest {
   void tileExtremes() {
     for (var z = 0; z < 27; z++) {
       var dim = LongMath.pow(2, z) - 1;
-      var tl = PMTilesUtils.tileIdToZxy(PMTilesUtils.zxyToTileId(z, 0, 0));
+      var tl = TileIdConverter.tileIdToZxy(TileIdConverter.zxyToTileId(z, 0, 0));
       assertArrayEquals(new long[] {z, 0, 0}, tl);
-      var tr = PMTilesUtils.tileIdToZxy(PMTilesUtils.zxyToTileId(z, dim, 0));
+      var tr = TileIdConverter.tileIdToZxy(TileIdConverter.zxyToTileId(z, dim, 0));
       assertArrayEquals(new long[] {z, dim, 0}, tr);
-      var bl = PMTilesUtils.tileIdToZxy(PMTilesUtils.zxyToTileId(z, 0, dim));
+      var bl = TileIdConverter.tileIdToZxy(TileIdConverter.zxyToTileId(z, 0, dim));
       assertArrayEquals(new long[] {z, 0, dim}, bl);
-      var br = PMTilesUtils.tileIdToZxy(PMTilesUtils.zxyToTileId(z, dim, dim));
+      var br = TileIdConverter.tileIdToZxy(TileIdConverter.zxyToTileId(z, dim, dim));
       assertArrayEquals(new long[] {z, dim, dim}, br);
     }
   }
 
   @Test
   void invalidTiles() {
-    assertThrows(RuntimeException.class, () -> PMTilesUtils.tileIdToZxy(9007199254740991L));
-    assertThrows(RuntimeException.class, () -> PMTilesUtils.zxyToTileId(27, 0, 0));
-    assertThrows(RuntimeException.class, () -> PMTilesUtils.zxyToTileId(0, 1, 1));
+    assertThrows(RuntimeException.class, () -> TileIdConverter.tileIdToZxy(9007199254740991L));
+    assertThrows(RuntimeException.class, () -> TileIdConverter.zxyToTileId(27, 0, 0));
+    assertThrows(RuntimeException.class, () -> TileIdConverter.zxyToTileId(0, 1, 1));
   }
 
   @Test
   void decodeHeader() throws IOException {
     var file = TestFiles.resolve("baremaps-testing/data/pmtiles/test_fixture_1.pmtiles");
     try (var channel = FileChannel.open(file)) {
-      var input = new LittleEndianDataInputStream(Channels.newInputStream(channel));
-      var header = PMTilesUtils.deserializeHeader(input);
+      var input = Channels.newInputStream(channel);
+      var header = headerSerializer.deserialize(input);
       assertEquals(127, header.getRootDirectoryOffset());
       assertEquals(25, header.getRootDirectoryLength());
       assertEquals(152, header.getJsonMetadataOffset());
@@ -158,38 +163,34 @@ class PMTilesUtilsTest {
 
   @Test
   void encodeHeader() throws IOException {
-    var header = new Header(
-        127,
-        25,
-        152,
-        247,
-        0,
-        0,
-        399,
-        69,
-        1,
-        1,
-        1,
-        10,
-        false,
-        Compression.GZIP,
-        Compression.GZIP,
-        TileType.MVT,
-        0,
-        0,
-        0,
-        1,
-        1,
-        0,
-        0,
-        0,
-        0);
+    var header = Header.builder()
+        .specVersion(127)
+        .rootDirectoryOffset(25)
+        .rootDirectoryLength(152)
+        .jsonMetadataOffset(247)
+        .jsonMetadataLength(0)
+        .leafDirectoryOffset(0)
+        .leafDirectoryLength(399)
+        .tileDataOffset(69)
+        .tileDataLength(1)
+        .numAddressedTiles(1)
+        .numTileEntries(1)
+        .numTileContents(10)
+        .clustered(false)
+        .internalCompression(Compression.GZIP)
+        .tileCompression(Compression.GZIP)
+        .tileType(TileType.MVT)
+        .minZoom(0)
+        .maxZoom(0)
+        .bounds(0, 1, 1, 0)
+        .center(0, 0, 0)
+        .build();
 
     var array = new ByteArrayOutputStream();
-    array.write(PMTilesUtils.serializeHeader(header));
+    headerSerializer.serialize(header, array);
 
-    var input = new LittleEndianDataInputStream(new ByteArrayInputStream(array.toByteArray()));
-    var header2 = PMTilesUtils.deserializeHeader(input);
+    var input = new ByteArrayInputStream(array.toByteArray());
+    var header2 = headerSerializer.deserialize(input);
 
     assertEquals(header, header2);
   }
@@ -197,46 +198,46 @@ class PMTilesUtilsTest {
   @Test
   void searchForMissingEntry() {
     var entries = new ArrayList<Entry>();
-    assertNull(PMTilesUtils.findTile(entries, 101));
+    assertNull(entrySerializer.findTile(entries, 101));
   }
 
   @Test
   void searchForFirstEntry() {
-    var entry = new Entry(100, 1, 1, 1);
+    var entry = Entry.builder().tileId(100).offset(1).length(1).runLength(1).build();
     var entries = new ArrayList<Entry>();
     entries.add(entry);
-    assertEquals(entry, PMTilesUtils.findTile(entries, 100));
+    assertEquals(entry, entrySerializer.findTile(entries, 100));
   }
 
   @Test
   void searchWithRunLength() {
-    var entry = new Entry(3, 3, 1, 2);
+    var entry = Entry.builder().tileId(3).offset(3).length(1).runLength(2).build();
     var entries = new ArrayList<Entry>();
     entries.add(entry);
-    entries.add(new Entry(5, 5, 1, 2));
-    assertEquals(entry, PMTilesUtils.findTile(entries, 4));
+    entries.add(Entry.builder().tileId(5).offset(5).length(1).runLength(2).build());
+    assertEquals(entry, entrySerializer.findTile(entries, 4));
   }
 
   @Test
   void searchWithMultipleTileEntries() {
     var entries = new ArrayList<Entry>();
-    entries.add(new Entry(100, 1, 1, 2));
-    var entry = PMTilesUtils.findTile(entries, 101);
+    entries.add(Entry.builder().tileId(100).offset(1).length(1).runLength(2).build());
+    var entry = entrySerializer.findTile(entries, 101);
     assertEquals(1, entry.getOffset());
     assertEquals(1, entry.getLength());
 
     entries = new ArrayList<Entry>();
-    entries.add(new Entry(100, 1, 1, 1));
-    entries.add(new Entry(150, 2, 2, 2));
-    entry = PMTilesUtils.findTile(entries, 151);
+    entries.add(Entry.builder().tileId(100).offset(1).length(1).runLength(1).build());
+    entries.add(Entry.builder().tileId(150).offset(2).length(2).runLength(2).build());
+    entry = entrySerializer.findTile(entries, 151);
     assertEquals(2, entry.getOffset());
     assertEquals(2, entry.getLength());
 
     entries = new ArrayList<>();
-    entries.add(new Entry(50, 1, 1, 2));
-    entries.add(new Entry(100, 2, 2, 1));
-    entries.add(new Entry(150, 3, 3, 1));
-    entry = PMTilesUtils.findTile(entries, 51);
+    entries.add(Entry.builder().tileId(50).offset(1).length(1).runLength(2).build());
+    entries.add(Entry.builder().tileId(100).offset(2).length(2).runLength(1).build());
+    entries.add(Entry.builder().tileId(150).offset(3).length(3).runLength(1).build());
+    entry = entrySerializer.findTile(entries, 51);
     assertEquals(1, entry.getOffset());
     assertEquals(1, entry.getLength());
   }
@@ -244,26 +245,25 @@ class PMTilesUtilsTest {
   @Test
   void leafSearch() {
     var entries = new ArrayList<Entry>();
-    entries.add(new Entry(100, 1, 1, 0));
-    var entry = PMTilesUtils.findTile(entries, 150);
+    entries.add(Entry.builder().tileId(100).offset(1).length(1).runLength(0).build());
+    var entry = entrySerializer.findTile(entries, 150);
     assertEquals(1, entry.getOffset());
     assertEquals(1, entry.getLength());
   }
 
   @Test
   void buildRootLeaves() throws IOException {
-    var entries = List.of(new Entry(100, 1, 1, 0));
-    var directories = PMTilesUtils.buildRootLeaves(entries, 1, Compression.NONE);
+    var entries = List.of(Entry.builder().tileId(100).offset(1).length(1).runLength(0).build());
+    var directories = directorySerializer.buildRootLeaves(entries, 1, Compression.NONE);
     assertEquals(1, directories.getNumLeaves());
-
   }
 
   @Test
   void optimizeDirectories() throws IOException {
     var random = new Random(3857);
     var entries = new ArrayList<Entry>();
-    entries.add(new Entry(0, 0, 100, 1));
-    var directories = PMTilesUtils.optimizeDirectories(entries, 100, Compression.NONE);
+    entries.add(Entry.builder().tileId(0).offset(0).length(100).runLength(1).build());
+    var directories = directorySerializer.optimizeDirectories(entries, 100, Compression.NONE);
     assertFalse(directories.getLeaves().length > 0);
     assertEquals(0, directories.getNumLeaves());
 
@@ -271,10 +271,11 @@ class PMTilesUtilsTest {
     int offset = 0;
     for (var i = 0; i < 1000; i++) {
       var randTileSize = random.nextInt(1000000);
-      entries.add(new Entry(i, offset, randTileSize, 1));
+      entries
+          .add(Entry.builder().tileId(i).offset(offset).length(randTileSize).runLength(1).build());
       offset += randTileSize;
     }
-    directories = PMTilesUtils.optimizeDirectories(entries, 1024, Compression.NONE);
+    directories = directorySerializer.optimizeDirectories(entries, 1024, Compression.NONE);
     assertFalse(directories.getRoot().length > 1024);
     assertNotEquals(0, directories.getNumLeaves());
     assertNotEquals(0, directories.getLeaves().length);
