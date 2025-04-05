@@ -156,8 +156,8 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
   protected abstract T allocate(int index, int size);
 
   /**
-   * Releases resources associated with this memory.
-   * Unlike {@link #clear()}, this method does not delete underlying data.
+   * Releases resources associated with this memory. Unlike {@link #clear()}, this method does not
+   * delete underlying data.
    *
    * @throws IOException if an I/O error occurs
    */
@@ -169,8 +169,8 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
   }
 
   /**
-   * Deletes all data managed by this memory.
-   * Unlike {@link #close()}, this method removes underlying data.
+   * Deletes all data managed by this memory. Unlike {@link #close()}, this method removes
+   * underlying data.
    *
    * @throws IOException if an I/O error occurs
    */

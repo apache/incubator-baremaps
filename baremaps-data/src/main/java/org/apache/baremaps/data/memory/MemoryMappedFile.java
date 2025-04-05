@@ -88,10 +88,10 @@ public class MemoryMappedFile extends Memory<MappedByteBuffer> {
   public synchronized void clear() throws IOException {
     // Release resources first
     close();
-    
+
     // Clear the segment list
     segments.clear();
-    
+
     // Delete the file
     Files.deleteIfExists(file);
   }

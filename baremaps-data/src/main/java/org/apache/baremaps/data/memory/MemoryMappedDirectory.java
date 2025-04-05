@@ -90,10 +90,10 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
   public synchronized void clear() throws IOException {
     // Release resources first
     close();
-    
+
     // Clear the segment list
     segments.clear();
-    
+
     // Delete the directory and all files in it
     FileUtils.deleteRecursively(directory);
   }
