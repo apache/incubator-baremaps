@@ -104,11 +104,12 @@ public class WorkflowContext {
       DataType<Coordinate> dataType)
       throws IOException {
     Path mapDir = Files.createDirectories(cacheDir.resolve(name));
-    return new MonotonicPairedDataMap<>(
-        MemoryAlignedDataList.<PairDataType.Pair<Long, Coordinate>>builder()
+    return MonotonicPairedDataMap.<Coordinate>builder()
+        .values(MemoryAlignedDataList.<PairDataType.Pair<Long, Coordinate>>builder()
             .dataType(new PairDataType<>(new LongDataType(), new LonLatDataType()))
             .memory(new MemoryMappedDirectory(Files.createDirectories(mapDir)))
-            .build());
+            .build())
+        .build();
   }
 
   public void cleanCache() throws IOException {

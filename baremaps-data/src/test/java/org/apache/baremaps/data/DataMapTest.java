@@ -187,10 +187,11 @@ class DataMapTest {
                     .memory(new OffHeapMemory())
                     .build())
                 .build()),
-            Arguments.of(new MonotonicPairedDataMap<>(
-                MemoryAlignedDataList.<PairDataType.Pair<Long, Long>>builder()
+            Arguments.of(MonotonicPairedDataMap.<Long>builder()
+                .values(MemoryAlignedDataList.<PairDataType.Pair<Long, Long>>builder()
                     .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
-                    .build())),
+                    .build())
+                .build()),
             Arguments.of(DirectHashDataMap.<Long>builder()
                 .keyType(new LongDataType())
                 .dataType(new LongDataType())

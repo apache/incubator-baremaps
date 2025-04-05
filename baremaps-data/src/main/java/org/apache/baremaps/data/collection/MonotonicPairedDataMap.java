@@ -96,30 +96,22 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
       }
 
       if (offsets == null) {
-        return new MonotonicPairedDataMap<>(values);
-      } else {
-        return new MonotonicPairedDataMap<>(offsets, values);
+        offsets = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
       }
+      
+      return new MonotonicPairedDataMap<>(offsets, values);
     }
   }
 
   /**
-   * Constructs a {@link MonotonicPairedDataMap}.
-   */
-  public MonotonicPairedDataMap(MemoryAlignedDataList<Pair<Long, E>> values) {
-    this(MemoryAlignedDataList.<Long>builder()
-            .dataType(new LongDataType())
-            .build(),
-        values);
-  }
-
-  /**
-   * Constructs a {@link MonotonicPairedDataMap}.
+   * Private constructor for {@link MonotonicPairedDataMap}.
    *
    * @param offsets the list of offsets
    * @param values the buffer of values
    */
-  public MonotonicPairedDataMap(DataList<Long> offsets,
+  private MonotonicPairedDataMap(DataList<Long> offsets,
       MemoryAlignedDataList<Pair<Long, E>> values) {
     this.offsets = offsets;
     this.values = values;
