@@ -104,47 +104,30 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
         throw new IllegalStateException("Values must be specified");
       }
       
-      if (offsets == null && keys == null) {
-        return new MonotonicFixedSizeDataMap<>(values);
-      } else if (offsets == null) {
+      if (offsets == null) {
         offsets = MemoryAlignedDataList.<Long>builder()
             .dataType(new LongDataType())
             .build();
-        return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
-      } else if (keys == null) {
+      }
+      
+      if (keys == null) {
         keys = MemoryAlignedDataList.<Long>builder()
             .dataType(new LongDataType())
             .build();
-        return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
-      } else {
-        return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
       }
+      
+      return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
     }
   }
 
   /**
-   * Constructs a {@link MonotonicFixedSizeDataMap} with default lists for storing offsets and keys.
-   *
-   * @param values the list of values
-   */
-  public MonotonicFixedSizeDataMap(DataList<E> values) {
-    this(MemoryAlignedDataList.<Long>builder()
-            .dataType(new LongDataType())
-            .build(),
-        MemoryAlignedDataList.<Long>builder()
-            .dataType(new LongDataType())
-            .build(), 
-        values);
-  }
-
-  /**
-   * Constructs a {@link MonotonicFixedSizeDataMap}.
+   * Private constructor for {@link MonotonicFixedSizeDataMap}.
    *
    * @param offsets the list of offsets
    * @param keys the list of keys
    * @param values the list of values
    */
-  public MonotonicFixedSizeDataMap(
+  private MonotonicFixedSizeDataMap(
       DataList<Long> offsets,
       DataList<Long> keys,
       DataList<E> values) {
