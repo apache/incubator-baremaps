@@ -47,12 +47,75 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   private final Lock lock = new ReentrantLock();
 
   /**
-   * Constructs an {@link AppendOnlyLog}.
+   * Static factory method to create a new builder.
    *
-   * @param dataType the data type
+   * @param <E> the type of elements
+   * @return a new builder
    */
-  public AppendOnlyLog(DataType<E> dataType) {
-    this(dataType, new OffHeapMemory());
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link AppendOnlyLog}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataType<E> dataType;
+    private Memory<?> memory;
+
+    /**
+     * Sets the data type for the log.
+     *
+     * @param dataType the data type
+     * @return this builder
+     */
+    public <T extends E> Builder<E> dataType(DataType<T> dataType) {
+      @SuppressWarnings("unchecked")
+      DataType<E> castedDataType = (DataType<E>) dataType;
+      this.dataType = castedDataType;
+      return this;
+    }
+
+    /**
+     * Sets the memory for the log.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> memory(Memory<?> memory) {
+      this.memory = memory;
+      return this;
+    }
+
+    /**
+     * Sets the values memory for the log. This is an alias for {@link #memory(Memory)}.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> values(Memory<?> memory) {
+      return memory(memory);
+    }
+
+    /**
+     * Builds a new {@link AppendOnlyLog}.
+     *
+     * @return a new AppendOnlyLog
+     * @throws IllegalStateException if required parameters are missing
+     */
+    public AppendOnlyLog<E> build() {
+      if (dataType == null) {
+        throw new IllegalStateException("Data type must be specified");
+      }
+
+      if (memory == null) {
+        memory = new OffHeapMemory();
+      }
+
+      return new AppendOnlyLog<>(dataType, memory);
+    }
   }
 
   /**
@@ -61,7 +124,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public AppendOnlyLog(DataType<E> dataType, Memory<?> memory) {
+  private AppendOnlyLog(DataType<E> dataType, Memory<?> memory) {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();

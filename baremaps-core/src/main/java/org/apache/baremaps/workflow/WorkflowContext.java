@@ -73,7 +73,7 @@ public class WorkflowContext {
 
   private <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
       throws IOException {
-    var coordinateDir = Files.createDirectories(cacheDir.resolve(name));
+    Path coordinateDir = Files.createDirectories(cacheDir.resolve(name));
     return new MemoryAlignedDataMap<>(
         dataType,
         new MemoryMappedDirectory(coordinateDir));
@@ -81,22 +81,26 @@ public class WorkflowContext {
 
   private <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)
       throws IOException {
-    var mapDir = Files.createDirectories(cacheDir.resolve(name));
-    var keysDir = Files.createDirectories(mapDir.resolve("keys"));
-    var valuesDir = Files.createDirectories(mapDir.resolve("values"));
-    return new MonotonicDataMap<>(
-        new MemoryAlignedDataList<>(
-            new PairDataType<>(new LongDataType(), new LongDataType()),
-            new MemoryMappedDirectory(keysDir)),
-        new AppendOnlyLog<>(
-            dataType,
-            new MemoryMappedDirectory(valuesDir)));
+    Path mapDir = Files.createDirectories(cacheDir.resolve(name));
+    Path keysDir = Files.createDirectories(mapDir.resolve("keys"));
+    Path valuesDir = Files.createDirectories(mapDir.resolve("values"));
+    MemoryAlignedDataList<Pair<Long, Long>> keys = new MemoryAlignedDataList<>(
+        new PairDataType<>(new LongDataType(), new LongDataType()),
+        new MemoryMappedDirectory(keysDir));
+    AppendOnlyLog<T> values = AppendOnlyLog.<T>builder()
+        .dataType(dataType)
+        .values(new MemoryMappedDirectory(valuesDir))
+        .build();
+    return MonotonicDataMap.<T>builder()
+        .keys(keys)
+        .values(values)
+        .build();
   }
 
   private DataMap<Long, Coordinate> getMonotonicPairedDataMap(String name,
       DataType<Coordinate> dataType)
       throws IOException {
-    var mapDir = Files.createDirectories(cacheDir.resolve(name));
+    Path mapDir = Files.createDirectories(cacheDir.resolve(name));
     return new MonotonicPairedDataMap<>(
         new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LonLatDataType()),
