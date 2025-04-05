@@ -22,7 +22,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPoint;
 
 /**
- * A data type for {@link MultiPoint} objects.
+ * A {@link DataType} for reading and writing {@link MultiPoint} objects in {@link ByteBuffer}s.
  */
 public class MultiPointDataType implements DataType<MultiPoint> {
 
@@ -31,14 +31,14 @@ public class MultiPointDataType implements DataType<MultiPoint> {
   private final GeometryFactory geometryFactory;
 
   /**
-   * Constructs a {@code MultiPointDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link MultiPointDataType} with a default {@link GeometryFactory}.
    */
   public MultiPointDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code MultiPointDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link MultiPointDataType} with a specified {@link GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */

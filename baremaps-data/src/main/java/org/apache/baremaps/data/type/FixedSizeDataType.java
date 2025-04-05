@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 /**
  * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is fixed.
  *
- * @param <T>
+ * @param <T> the type of value being read or written
  */
 public abstract class FixedSizeDataType<T> implements DataType<T> {
 
@@ -33,7 +33,7 @@ public abstract class FixedSizeDataType<T> implements DataType<T> {
   /**
    * Creates a {@link FixedSizeDataType} with a fixed size.
    *
-   * @param size the size of the value
+   * @param size the size of the value in bytes
    */
   protected FixedSizeDataType(final int size) {
     this.size = size;
@@ -52,9 +52,9 @@ public abstract class FixedSizeDataType<T> implements DataType<T> {
   }
 
   /**
-   * Returns the size of the data type.
+   * Returns the fixed size of this data type.
    *
-   * @return the size of the data type
+   * @return the size in bytes
    */
   public int size() {
     return size;

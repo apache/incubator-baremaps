@@ -23,21 +23,21 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 /**
- * A data type for {@link Point} objects.
+ * A {@link DataType} for reading and writing {@link Point} objects in {@link ByteBuffer}s.
  */
 public class PointDataType implements DataType<Point> {
 
   private final GeometryFactory geometryFactory;
 
   /**
-   * Constructs a {@code PointDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link PointDataType} with a default {@link GeometryFactory}.
    */
   public PointDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code PointDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link PointDataType} with a specified {@link GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */

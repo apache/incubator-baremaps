@@ -23,12 +23,23 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import org.apache.baremaps.data.type.PairDataType.Pair;
 
-/** A {@link DataType} for reading and writing pairs of values in {@link ByteBuffer}s. */
+/** 
+ * A {@link DataType} for reading and writing pairs of values in {@link ByteBuffer}s.
+ *
+ * @param <L> the type of the left value in the pair
+ * @param <R> the type of the right value in the pair
+ */
 public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
 
   private final FixedSizeDataType<L> left;
   private final FixedSizeDataType<R> right;
 
+  /**
+   * Constructs a {@link PairDataType} with data types for left and right values.
+   *
+   * @param left the data type for the left value
+   * @param right the data type for the right value
+   */
   public PairDataType(final FixedSizeDataType<L> left, final FixedSizeDataType<R> right) {
     super(left.size() + right.size());
     this.left = left;
@@ -50,21 +61,43 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
         right.read(buffer, position + left.size()));
   }
 
+  /**
+   * A class representing a pair of values.
+   *
+   * @param <L> the type of the left value
+   * @param <R> the type of the right value
+   */
   public static class Pair<L, R> {
 
     private final L left;
 
     private final R right;
 
+    /**
+     * Constructs a pair with left and right values.
+     *
+     * @param left the left value
+     * @param right the right value
+     */
     public Pair(L left, R right) {
       this.left = left;
       this.right = right;
     }
 
+    /**
+     * Returns the left value of the pair.
+     *
+     * @return the left value
+     */
     public L left() {
       return left;
     }
 
+    /**
+     * Returns the right value of the pair.
+     *
+     * @return the right value
+     */
     public R right() {
       return right;
     }

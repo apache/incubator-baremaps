@@ -17,11 +17,11 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing lists of floats in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing arrays of float values in {@link ByteBuffer}s.
+ */
 public class FloatArrayDataType implements DataType<float[]> {
 
   /** {@inheritDoc} */

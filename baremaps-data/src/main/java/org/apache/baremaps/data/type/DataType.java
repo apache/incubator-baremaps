@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
  * A data type for reading and writing values in {@link ByteBuffer}s. Read and write operations must
  * use absolute positions within the {@link ByteBuffer}.
  *
- * @param <T>
+ * @param <T> the type of value being read or written
  */
 public interface DataType<T> {
 
@@ -33,34 +33,34 @@ public interface DataType<T> {
    * Returns the size of the value.
    *
    * @param value the value
-   * @return the size of the value
+   * @return the size of the value in bytes
    */
   int size(final T value);
 
   /**
    * Returns the size of the value stored at the specified position in a {@link ByteBuffer}.
    *
-   * @param buffer the buffer
-   * @param position the position
-   * @return the size of the value
+   * @param buffer the buffer containing the value
+   * @param position the absolute position of the value within the buffer
+   * @return the size of the value in bytes
    */
   int size(final ByteBuffer buffer, final int position);
 
   /**
-   * Write a value.
+   * Writes a value to the specified position in a {@link ByteBuffer}.
    *
-   * @param buffer the source buffer
-   * @param position the absolute position of the value within the buffer
-   * @param value the value
+   * @param buffer the destination buffer
+   * @param position the absolute position within the buffer to write the value
+   * @param value the value to write
    */
   void write(final ByteBuffer buffer, final int position, final T value);
 
   /**
-   * Read a value.
+   * Reads a value from the specified position in a {@link ByteBuffer}.
    *
    * @param buffer the source buffer
-   * @param position the absolute position of the value within the buffer
-   * @return the object
+   * @param position the absolute position within the buffer to read the value
+   * @return the read value
    */
   T read(final ByteBuffer buffer, final int position);
 }

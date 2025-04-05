@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.*;
 
 /**
- * A {@code DataType} for {@link Geometry} objects.
+ * A {@link DataType} for reading and writing {@link Geometry} objects in {@link ByteBuffer}s.
  */
 public class GeometryDataType implements DataType<Geometry> {
 
@@ -42,16 +42,16 @@ public class GeometryDataType implements DataType<Geometry> {
   private final GeometryCollectionDataType geometryCollectionDataType;
 
   /**
-   * Constructs a {@code GeometryDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link GeometryDataType} with a default {@link GeometryFactory}.
    */
   public GeometryDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code GeometryDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link GeometryDataType} with a specified {@link GeometryFactory}.
    *
-   * @param geometryFactory
+   * @param geometryFactory the geometry factory
    */
   public GeometryDataType(GeometryFactory geometryFactory) {
     this.pointDataType = new PointDataType(geometryFactory);

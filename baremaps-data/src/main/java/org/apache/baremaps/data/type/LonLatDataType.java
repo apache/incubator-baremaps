@@ -32,11 +32,20 @@ public class LonLatDataType extends MemoryAlignedDataType<Coordinate> {
   private static final long SHIFT = 32;
   private static final long MASK = (1L << 32) - 1L;
 
-  /** Constructs a {@link LonLatDataType}. */
+  /** 
+   * Constructs a {@link LonLatDataType} with a fixed size of {@link Long#BYTES}.
+   */
   public LonLatDataType() {
     super(Long.BYTES);
   }
 
+  /**
+   * Encodes longitude and latitude values into a single long value.
+   *
+   * @param lon the longitude value
+   * @param lat the latitude value
+   * @return the encoded coordinate as a long value
+   */
   public static long encodeLonLat(final double lon, final double lat) {
     long x = (long) (((lon + 180) / 360) * BITS);
     long y = (long) (((lat + 90) / 180) * BITS);
@@ -45,11 +54,23 @@ public class LonLatDataType extends MemoryAlignedDataType<Coordinate> {
     return l | r;
   }
 
+  /**
+   * Decodes the longitude value from an encoded coordinate.
+   *
+   * @param value the encoded coordinate
+   * @return the longitude value
+   */
   public static double decodeLon(final long value) {
     double l = (value >>> 32);
     return (l / BITS) * 360 - 180;
   }
 
+  /**
+   * Decodes the latitude value from an encoded coordinate.
+   *
+   * @param value the encoded coordinate
+   * @return the latitude value
+   */
   public static double decodeLat(final long value) {
     long r = (value & MASK);
     return (r / BITS) * 180 - 90;

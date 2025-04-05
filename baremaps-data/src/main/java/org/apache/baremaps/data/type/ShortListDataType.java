@@ -17,13 +17,13 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of shorts in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing lists of short values in {@link ByteBuffer}s.
+ */
 public class ShortListDataType implements DataType<List<Short>> {
 
   /** {@inheritDoc} */

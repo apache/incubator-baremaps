@@ -23,10 +23,14 @@ import static java.lang.Boolean.TRUE;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing bytes in {@link ByteBuffer}s. */
+/** 
+ * A {@link DataType} for reading and writing boolean values in {@link ByteBuffer}s. 
+ */
 public class BooleanDataType extends MemoryAlignedDataType<Boolean> {
 
-  /** Constructs a {@link ByteDataType}. */
+  /** 
+   * Constructs a {@link BooleanDataType} with a fixed size of {@link Byte#BYTES}.
+   */
   public BooleanDataType() {
     super(Byte.BYTES);
   }

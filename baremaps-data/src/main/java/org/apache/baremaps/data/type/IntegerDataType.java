@@ -22,11 +22,13 @@ package org.apache.baremaps.data.type;
 import java.nio.ByteBuffer;
 
 /**
- * A {@link DataType} for reading and writing integers in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing integer values in {@link ByteBuffer}s.
  */
 public class IntegerDataType extends MemoryAlignedDataType<Integer> {
 
-  /** Constructs a {@link IntegerDataType}. */
+  /** 
+   * Constructs an {@link IntegerDataType} with a fixed size of {@link Integer#BYTES}.
+   */
   public IntegerDataType() {
     super(Integer.BYTES);
   }

@@ -17,11 +17,11 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing lists of longs in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing arrays of long values in {@link ByteBuffer}s.
+ */
 public class LongArrayDataType implements DataType<long[]> {
 
   /** {@inheritDoc} */

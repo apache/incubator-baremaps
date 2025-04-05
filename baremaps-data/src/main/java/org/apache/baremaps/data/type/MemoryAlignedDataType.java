@@ -25,14 +25,15 @@ import java.nio.ByteBuffer;
  * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is memory
  * aligned.
  *
- * @param <T>
+ * @param <T> the type of value being read or written
  */
 public abstract class MemoryAlignedDataType<T> extends FixedSizeDataType<T> {
 
   /**
-   * Constructs a {@link MemoryAlignedDataType}.
+   * Constructs a {@link MemoryAlignedDataType} with a memory-aligned size.
    *
-   * @param size
+   * @param size the size of the value in bytes (must be a power of 2)
+   * @throws IllegalArgumentException if the size is not a power of 2
    */
   protected MemoryAlignedDataType(int size) {
     super(size);

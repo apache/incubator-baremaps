@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A {@link DataType} for reading and writing strings in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing string values in {@link ByteBuffer}s.
  */
 public class StringDataType implements DataType<String> {
 

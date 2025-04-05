@@ -21,7 +21,9 @@ package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing lists of floats in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing arrays of boolean values in {@link ByteBuffer}s.
+ */
 public class BooleanArrayDataType implements DataType<boolean[]> {
 
   /** {@inheritDoc} */

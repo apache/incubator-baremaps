@@ -17,11 +17,11 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing lists of integers in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing arrays of integer values in {@link ByteBuffer}s.
+ */
 public class IntegerArrayDataType implements DataType<int[]> {
 
   /** {@inheritDoc} */
@@ -30,6 +30,7 @@ public class IntegerArrayDataType implements DataType<int[]> {
     return Integer.BYTES + values.length * Integer.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
