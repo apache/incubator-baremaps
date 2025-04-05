@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  */
 public class IntegerDataType extends MemoryAlignedDataType<Integer> {
 
-  /** 
+  /**
    * Constructs an {@link IntegerDataType} with a fixed size of {@link Integer#BYTES}.
    */
   public IntegerDataType() {

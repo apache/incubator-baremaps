@@ -20,8 +20,8 @@ package org.apache.baremaps.data.type;
 import java.nio.ByteBuffer;
 
 /**
- * A {@link DataType} for reading and writing small long values in {@link ByteBuffer}s
- * with a customizable storage size.
+ * A {@link DataType} for reading and writing small long values in {@link ByteBuffer}s with a
+ * customizable storage size.
  */
 public class SmallLongDataType extends FixedSizeDataType<Long> {
 

@@ -32,7 +32,7 @@ public class LonLatDataType extends MemoryAlignedDataType<Coordinate> {
   private static final long SHIFT = 32;
   private static final long MASK = (1L << 32) - 1L;
 
-  /** 
+  /**
    * Constructs a {@link LonLatDataType} with a fixed size of {@link Long#BYTES}.
    */
   public LonLatDataType() {

@@ -23,8 +23,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 
- * A {@link DataType} for reading and writing lists of boolean values in {@link ByteBuffer}s. 
+/**
+ * A {@link DataType} for reading and writing lists of boolean values in {@link ByteBuffer}s.
  */
 public class BooleanListDataType implements DataType<List<Boolean>> {
 

@@ -25,7 +25,7 @@ import org.locationtech.jts.geom.Coordinate;
 /** A {@link DataType} for reading and writing {@link Coordinate} values in {@link ByteBuffer}s. */
 public class CoordinateDataType extends MemoryAlignedDataType<Coordinate> {
 
-  /** 
+  /**
    * Constructs a {@link CoordinateDataType} with a fixed size of two {@link Double#BYTES}.
    */
   public CoordinateDataType() {

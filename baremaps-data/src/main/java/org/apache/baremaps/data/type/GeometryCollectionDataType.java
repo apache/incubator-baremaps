@@ -24,7 +24,8 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 
 /**
- * A {@link DataType} for reading and writing {@link GeometryCollection} objects in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing {@link GeometryCollection} objects in
+ * {@link ByteBuffer}s.
  */
 public class GeometryCollectionDataType implements DataType<GeometryCollection> {
 

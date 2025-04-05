@@ -22,14 +22,13 @@ import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
 /**
- * A {@link DataType} for reading and writing {@link Geometry} objects in Well-Known Binary (WKB) format
- * in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing {@link Geometry} objects in Well-Known Binary (WKB)
+ * format in {@link ByteBuffer}s.
  */
 public class WKBDataType implements DataType<Geometry> {
 

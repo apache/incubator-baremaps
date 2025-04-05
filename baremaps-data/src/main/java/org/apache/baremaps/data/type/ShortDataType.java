@@ -21,7 +21,7 @@ package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
 
-/** 
+/**
  * A {@link DataType} for reading and writing short values in {@link ByteBuffer}s.
  */
 public class ShortDataType extends FixedSizeDataType<Short> {

@@ -24,7 +24,8 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 
 /**
- * A {@link DataType} for reading and writing {@link MultiLineString} objects in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing {@link MultiLineString} objects in
+ * {@link ByteBuffer}s.
  */
 public class MultiLineStringDataType implements DataType<MultiLineString> {
 

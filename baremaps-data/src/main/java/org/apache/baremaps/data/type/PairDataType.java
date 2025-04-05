@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import org.apache.baremaps.data.type.PairDataType.Pair;
 
-/** 
+/**
  * A {@link DataType} for reading and writing pairs of values in {@link ByteBuffer}s.
  *
  * @param <L> the type of the left value in the pair
