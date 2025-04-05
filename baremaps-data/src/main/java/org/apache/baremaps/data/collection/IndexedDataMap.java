@@ -90,20 +90,11 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
       }
 
       if (index == null) {
-        return new IndexedDataMap<>(values);
-      } else {
-        return new IndexedDataMap<>(index, values);
+        index = new HashMap<>();
       }
-    }
-  }
 
-  /**
-   * Constructs a {@link IndexedDataMap}.
-   *
-   * @param values the values
-   */
-  public IndexedDataMap(AppendOnlyLog<E> values) {
-    this(new HashMap<>(), values);
+      return new IndexedDataMap<>(index, values);
+    }
   }
 
   /**
@@ -112,7 +103,7 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
    * @param index the index
    * @param values the values
    */
-  public IndexedDataMap(Map<Long, Long> index, AppendOnlyLog<E> values) {
+  private IndexedDataMap(Map<Long, Long> index, AppendOnlyLog<E> values) {
     this.index = index;
     this.values = values;
   }

@@ -165,11 +165,12 @@ class DataMapTest {
     return Stream
         .of(
             Arguments.of(
-                new IndexedDataMap<>(
-                    AppendOnlyLog.<Long>builder()
+                IndexedDataMap.<Long>builder()
+                    .values(AppendOnlyLog.<Long>builder()
                         .dataType(new LongDataType())
                         .memory(new OffHeapMemory())
-                        .build())),
+                        .build())
+                    .build()),
             Arguments.of(new MonotonicFixedSizeDataMap<>(
                 new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new MonotonicDataMap<>(

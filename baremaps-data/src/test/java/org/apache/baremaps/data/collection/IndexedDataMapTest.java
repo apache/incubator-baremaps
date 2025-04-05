@@ -37,9 +37,11 @@ class IndexedDataMapTest {
 
   @BeforeEach
   void setUp() {
-    map = new IndexedDataMap<>(AppendOnlyLog.<Integer>builder()
-        .dataType(new IntegerDataType())
-        .build());
+    map = IndexedDataMap.<Integer>builder()
+        .values(AppendOnlyLog.<Integer>builder()
+            .dataType(new IntegerDataType())
+            .build())
+        .build();
   }
 
   @AfterEach
