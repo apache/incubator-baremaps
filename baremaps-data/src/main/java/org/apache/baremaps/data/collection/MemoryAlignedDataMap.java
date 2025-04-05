@@ -210,4 +210,12 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
     };
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
+  }
 }

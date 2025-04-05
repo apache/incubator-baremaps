@@ -172,4 +172,14 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
     values.clear();
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      offsets.close();
+      keys.close();
+      values.close();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

@@ -375,6 +375,13 @@ public class DataConversions {
     public int hashCode() {
       return map.hashCode();
     }
+
+    @Override
+    public void close() throws Exception {
+      if (map instanceof AutoCloseable) {
+        ((AutoCloseable) map).close();
+      }
+    }
   }
 
 }

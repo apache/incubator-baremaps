@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
  * @param <K> The type of the keys.
  * @param <V> The type of the values.
  */
-public interface DataMap<K, V> {
+public interface DataMap<K, V> extends AutoCloseable {
 
   /**
    * Returns the number of values stored in the data map.

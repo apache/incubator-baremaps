@@ -151,4 +151,14 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
     offsets.clear();
     values.clear();
   }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      offsets.close();
+      values.close();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

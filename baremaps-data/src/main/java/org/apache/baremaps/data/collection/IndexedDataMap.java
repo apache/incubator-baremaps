@@ -121,4 +121,13 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
     index.clear();
     values.clear();
   }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      values.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
+  }
 }
