@@ -166,17 +166,28 @@ class DataMapTest {
         .of(
             Arguments.of(
                 new IndexedDataMap<>(
-                    new AppendOnlyLog<>(new LongDataType(), new OffHeapMemory()))),
+                    AppendOnlyLog.<Long>builder()
+                        .dataType(new LongDataType())
+                        .memory(new OffHeapMemory())
+                        .build())),
             Arguments.of(new MonotonicFixedSizeDataMap<>(
                 new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new MonotonicDataMap<>(
                 new MemoryAlignedDataList<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
                     new OffHeapMemory()),
-                new AppendOnlyLog<>(new LongDataType(), new OffHeapMemory()))),
+                AppendOnlyLog.<Long>builder()
+                    .dataType(new LongDataType())
+                    .memory(new OffHeapMemory())
+                    .build())),
             Arguments.of(new MonotonicPairedDataMap<>(new MemoryAlignedDataList<>(
                 new PairDataType<>(new LongDataType(), new LongDataType())))),
-            Arguments.of(new DirectHashDataMap<>(new LongDataType(), new LongDataType(),
-                new OffHeapMemory(), new OffHeapMemory(), 1000)));
+            Arguments.of(DirectHashDataMap.<Long>builder()
+                .keyType(new LongDataType())
+                .dataType(new LongDataType())
+                .keyMemory(new OffHeapMemory())
+                .valueMemory(new OffHeapMemory())
+                .capacity(1000)
+                .build()));
   }
 }

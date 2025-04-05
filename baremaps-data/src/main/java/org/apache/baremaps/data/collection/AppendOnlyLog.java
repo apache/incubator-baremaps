@@ -71,7 +71,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
      * @param dataType the data type
      * @return this builder
      */
-    public <T extends E> Builder<E> dataType(DataType<T> dataType) {
+    public Builder<E> dataType(DataType<?> dataType) {
       @SuppressWarnings("unchecked")
       DataType<E> castedDataType = (DataType<E>) dataType;
       this.dataType = castedDataType;

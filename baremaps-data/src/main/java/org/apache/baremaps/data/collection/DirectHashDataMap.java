@@ -165,7 +165,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
    * @param valueMemory the memory for values
    * @param capacity the fixed capacity of the map
    */
-  public DirectHashDataMap(
+  private DirectHashDataMap(
       FixedSizeDataType<Long> keyType,
       FixedSizeDataType<V> dataType,
       Memory<?> keyMemory,
