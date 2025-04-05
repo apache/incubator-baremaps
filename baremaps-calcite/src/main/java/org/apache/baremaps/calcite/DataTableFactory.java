@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.file.Paths;
 import java.util.Map;
+import org.apache.baremaps.calcite.baremaps.BaremapsDataTable;
 import org.apache.baremaps.calcite.csv.CsvDataTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
@@ -78,7 +79,7 @@ public class DataTableFactory implements TableFactory<Table> {
           .dataType(dataType)
           .memory(memory)
           .build();
-      return null; // new BaremapsTable(dataSchema, dataCollection);
+      return new DataTableAdapter(new BaremapsDataTable(dataSchema, dataCollection));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
