@@ -120,10 +120,6 @@ public class CalciteTest {
               + resultSet.getString(3) + " " + resultSet.getInt(4));
         }
       }
-
-
     }
-
   }
-
 }
