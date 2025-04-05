@@ -41,29 +41,29 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   private final AppendOnlyLog<E> values;
 
   private long lastChunk = -1;
-
+  
   /**
-   * Static factory method to create a new builder.
+   * Creates a builder for {@link MonotonicDataMap}.
    *
-   * @param <E> the type of elements
+   * @param <E> the type of values in the map
    * @return a new builder
    */
   public static <E> Builder<E> builder() {
     return new Builder<>();
   }
-
+  
   /**
    * Builder for {@link MonotonicDataMap}.
    *
-   * @param <E> the type of elements
+   * @param <E> the type of values in the map
    */
   public static class Builder<E> {
     private DataList<Long> offsets;
     private DataList<Pair<Long, Long>> keys;
     private AppendOnlyLog<E> values;
-
+    
     /**
-     * Sets the offsets for the map.
+     * Sets the offsets list.
      *
      * @param offsets the list of offsets
      * @return this builder
@@ -72,9 +72,9 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
       this.offsets = offsets;
       return this;
     }
-
+    
     /**
-     * Sets the keys for the map.
+     * Sets the keys list.
      *
      * @param keys the list of keys
      * @return this builder
@@ -83,9 +83,9 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
       this.keys = keys;
       return this;
     }
-
+    
     /**
-     * Sets the values for the map.
+     * Sets the values buffer.
      *
      * @param values the buffer of values
      * @return this builder
@@ -94,65 +94,31 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
       this.values = values;
       return this;
     }
-
+    
     /**
      * Builds a new {@link MonotonicDataMap}.
      *
-     * @return a new MonotonicDataMap
-     * @throws IllegalStateException if values are missing
+     * @return a new map instance
      */
     public MonotonicDataMap<E> build() {
       if (values == null) {
-        throw new IllegalStateException("Values must be specified");
+        throw new IllegalArgumentException("Values buffer must be provided");
       }
       
-      if (offsets == null && keys == null) {
-        return new MonotonicDataMap<>(values);
-      } else if (keys == null) {
-        keys = MemoryAlignedDataList.<Pair<Long, Long>>builder()
-            .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
-            .build();
-        return new MonotonicDataMap<>(offsets, keys, values);
-      } else if (offsets == null) {
+      if (offsets == null) {
         offsets = MemoryAlignedDataList.<Long>builder()
             .dataType(new LongDataType())
             .build();
-        return new MonotonicDataMap<>(offsets, keys, values);
-      } else {
-        return new MonotonicDataMap<>(offsets, keys, values);
       }
-    }
-  }
-
-  /**
-   * Constructs a {@link MonotonicDataMap} with default lists for storing offsets.
-   *
-   * @param values the buffer of values
-   */
-  public MonotonicDataMap(AppendOnlyLog<E> values) {
-    this(
-        MemoryAlignedDataList.<Long>builder()
-            .dataType(new LongDataType())
-            .build(),
-        MemoryAlignedDataList.<Pair<Long, Long>>builder()
+      
+      if (keys == null) {
+        keys = MemoryAlignedDataList.<Pair<Long, Long>>builder()
             .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
-            .build(),
-        values);
-  }
-
-  /**
-   * Constructs a {@link MonotonicDataMap} with default lists for storing offsets and keys.
-   *
-   * @param keys the list of keys
-   * @param values the buffer of values
-   */
-  public MonotonicDataMap(DataList<Pair<Long, Long>> keys, AppendOnlyLog<E> values) {
-    this(
-        MemoryAlignedDataList.<Long>builder()
-            .dataType(new LongDataType())
-            .build(),
-        keys,
-        values);
+            .build();
+      }
+      
+      return new MonotonicDataMap<>(offsets, keys, values);
+    }
   }
 
   /**
@@ -162,7 +128,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
    * @param keys the list of keys
    * @param values the buffer of values
    */
-  public MonotonicDataMap(DataList<Long> offsets, DataList<Pair<Long, Long>> keys,
+  private MonotonicDataMap(DataList<Long> offsets, DataList<Pair<Long, Long>> keys,
       AppendOnlyLog<E> values) {
     this.offsets = offsets;
     this.keys = keys;
@@ -260,6 +226,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
     values.clear();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws Exception {
     try {
@@ -267,7 +234,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
       keys.close();
       values.close();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new DataCollectionException(e);
     }
   }
 }
