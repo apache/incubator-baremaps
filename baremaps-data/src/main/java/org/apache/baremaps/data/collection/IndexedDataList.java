@@ -86,20 +86,11 @@ public class IndexedDataList<E> implements DataList<E> {
       }
 
       if (index == null) {
-        return new IndexedDataList<>(values);
-      } else {
-        return new IndexedDataList<>(index, values);
+        index = new MemoryAlignedDataList<>(new LongDataType());
       }
+      
+      return new IndexedDataList<>(index, values);
     }
-  }
-
-  /**
-   * Constructs a {@link IndexedDataList}.
-   *
-   * @param values the values
-   */
-  public IndexedDataList(AppendOnlyLog<E> values) {
-    this(new MemoryAlignedDataList<>(new LongDataType()), values);
   }
 
   /**
@@ -108,7 +99,7 @@ public class IndexedDataList<E> implements DataList<E> {
    * @param index the index
    * @param values the values
    */
-  public IndexedDataList(DataList<Long> index, AppendOnlyLog<E> values) {
+  private IndexedDataList(DataList<Long> index, AppendOnlyLog<E> values) {
     this.index = index;
     this.values = values;
   }

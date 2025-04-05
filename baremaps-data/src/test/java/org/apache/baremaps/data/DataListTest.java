@@ -78,10 +78,12 @@ class DataListTest {
         Arguments.of(FixedSizeDataList.<Long>builder()
                 .dataType(new LongDataType())
                 .build()),
-        Arguments.of(new IndexedDataList<>(new MemoryAlignedDataList<>(new LongDataType()),
-            AppendOnlyLog.<Long>builder()
-                .dataType(new LongDataType())
-                .build())),
+        Arguments.of(IndexedDataList.<Long>builder()
+                .index(new MemoryAlignedDataList<>(new LongDataType()))
+                .values(AppendOnlyLog.<Long>builder()
+                    .dataType(new LongDataType())
+                    .build())
+                .build()),
         Arguments.of(new MemoryAlignedDataList<>(new LongDataType())));
   }
 }
