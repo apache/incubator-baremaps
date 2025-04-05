@@ -19,14 +19,13 @@ package org.apache.baremaps.tasks;
 
 import java.nio.file.Path;
 import java.util.StringJoiner;
-import org.apache.baremaps.geopackage.GeoPackageDataStore;
+import org.apache.baremaps.calcite.DataTableGeometryMapper;
+import org.apache.baremaps.calcite.DataTableMapper;
+import org.apache.baremaps.calcite.geopackage.GeoPackageDataStore;
+import org.apache.baremaps.calcite.postgres.PostgresDataStore;
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
-import org.apache.baremaps.postgres.store.PostgresDataStore;
-import org.apache.baremaps.store.DataTableGeometryMapper;
-import org.apache.baremaps.store.DataTableMapper;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,20 +70,17 @@ public class ImportGeoPackage implements Task {
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
-    try (var geoPackageDataStore = new GeoPackageDataStore(path)) {
-      var dataSource = context.getDataSource(database);
-      var postgresDataStore = new PostgresDataStore(dataSource);
-      for (var name : geoPackageDataStore.list()) {
-        var geoPackageTable = geoPackageDataStore.get(name);
-        var projectionTransformer = new ProjectionTransformer(fileSrid, databaseSrid);
-        var rowTransformer =
-            new DataTableGeometryMapper(geoPackageTable, projectionTransformer);
-        var transformedDataTable =
-            new DataTableMapper(geoPackageDataStore.get(name), rowTransformer);
-        postgresDataStore.add(transformedDataTable);
-      }
-    } catch (Exception e) {
-      throw new WorkflowException(e);
+    var geoPackageDataStore = new GeoPackageDataStore(path);
+    var dataSource = context.getDataSource(database);
+    var postgresDataStore = new PostgresDataStore(dataSource);
+    for (var name : geoPackageDataStore.list()) {
+      var geoPackageTable = geoPackageDataStore.get(name);
+      var projectionTransformer = new ProjectionTransformer(fileSrid, databaseSrid);
+      var rowTransformer =
+          new DataTableGeometryMapper(geoPackageTable, projectionTransformer);
+      var transformedDataTable =
+          new DataTableMapper(geoPackageDataStore.get(name), rowTransformer);
+      postgresDataStore.add(transformedDataTable);
     }
   }
 

@@ -19,6 +19,7 @@ package org.apache.baremaps.geoparquet;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -42,7 +43,7 @@ import org.locationtech.jts.geom.Envelope;
  * automatically inferred from the files. The reader can be used to read the records in a sequential
  * or parallel manner. It is also capable of filtering records based on an envelope.
  */
-public class GeoParquetReader {
+public class GeoParquetReader implements Closeable {
 
   protected final Configuration configuration;
   protected final List<FileStatus> files;
@@ -192,6 +193,11 @@ public class GeoParquetReader {
 
   public Stream<GeoParquetGroup> readParallel() {
     return streamGeoParquetGroups(true);
+  }
+
+  @Override
+  public void close() throws IOException {
+    // TODO: Implement close
   }
 
   private record FileInfo(

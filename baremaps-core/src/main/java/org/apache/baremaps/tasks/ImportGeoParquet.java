@@ -19,12 +19,12 @@ package org.apache.baremaps.tasks;
 
 import java.net.URI;
 import java.util.StringJoiner;
-import org.apache.baremaps.geoparquet.GeoParquetDataStore;
-import org.apache.baremaps.geoparquet.GeoParquetDataTable;
+import org.apache.baremaps.calcite.DataTableGeometryMapper;
+import org.apache.baremaps.calcite.DataTableMapper;
+import org.apache.baremaps.calcite.geoparquet.GeoParquetDataStore;
+import org.apache.baremaps.calcite.geoparquet.GeoParquetDataTable;
+import org.apache.baremaps.calcite.postgres.PostgresDataStore;
 import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
-import org.apache.baremaps.postgres.store.PostgresDataStore;
-import org.apache.baremaps.store.DataTableGeometryMapper;
-import org.apache.baremaps.store.DataTableMapper;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;

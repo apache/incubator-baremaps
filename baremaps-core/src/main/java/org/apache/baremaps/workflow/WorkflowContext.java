@@ -29,8 +29,8 @@ import javax.sql.DataSource;
 import org.apache.baremaps.data.collection.*;
 import org.apache.baremaps.data.memory.MemoryMappedDirectory;
 import org.apache.baremaps.data.type.*;
+import org.apache.baremaps.data.util.FileUtils;
 import org.apache.baremaps.postgres.utils.PostgresUtils;
-import org.apache.baremaps.utils.FileUtils;
 import org.locationtech.jts.geom.Coordinate;
 
 /**

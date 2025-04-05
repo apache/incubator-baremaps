@@ -22,9 +22,8 @@ package org.apache.baremaps.shapefile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
-import org.apache.baremaps.store.DataRow;
-import org.apache.baremaps.store.DataSchema;
 
 /**
  * Input Stream of features.
@@ -52,7 +51,7 @@ public class ShapefileInputStream extends InputStream {
   private boolean hasShapefileIndex;
 
   /** Row type of the features contained in this shapefile. */
-  private DataSchema schema;
+  // private DataSchema schema;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -79,7 +78,6 @@ public class ShapefileInputStream extends InputStream {
 
     this.shapefileReader =
         new ShapefileByteReader(this.shapefile, this.databaseFile, this.shapefileIndex);
-    this.schema = this.shapefileReader.getSchema();
   }
 
   /**
@@ -125,11 +123,11 @@ public class ShapefileInputStream extends InputStream {
    * @throws ShapefileException if the current connection used to query the shapefile has been
    *         closed.
    */
-  public DataRow readRow() throws ShapefileException {
+  public List<Object> readRow() throws ShapefileException {
     if (!this.dbaseReader.nextRowAvailable()) {
       return null;
     }
-    DataRow row = this.schema.createRow();
+    List<Object> row = new ArrayList<>();
     this.dbaseReader.loadRow(row);
     this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
     this.shapefileReader.completeRow(row);
@@ -141,9 +139,9 @@ public class ShapefileInputStream extends InputStream {
    *
    * @return the schema.
    */
-  public DataSchema schema() {
-    return schema;
-  }
+  // public DataSchema schema() {
+  // return schema;
+  // }
 
   /**
    * Returns the shapefile descriptor.

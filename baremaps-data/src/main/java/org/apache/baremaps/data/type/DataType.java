@@ -63,4 +63,5 @@ public interface DataType<T> {
    * @return the read value
    */
   T read(final ByteBuffer buffer, final int position);
+
 }
