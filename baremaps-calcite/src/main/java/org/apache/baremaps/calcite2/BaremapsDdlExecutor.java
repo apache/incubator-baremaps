@@ -18,6 +18,8 @@
 package org.apache.baremaps.calcite2;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.baremaps.calcite2.data.DataMaterializedView;
+import org.apache.baremaps.calcite2.data.DataModifiableTable;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.avatica.AvaticaUtils;
@@ -78,9 +80,9 @@ import static org.apache.calcite.util.Static.RESOURCE;
  * appropriate {@code execute} method. For example, "CREATE TABLE" ({@link SqlCreateTable}) is
  * dispatched to {@link #execute(SqlCreateTable, CalcitePrepare.Context)}.
  */
-public class DataDdlExecutor extends DdlExecutorImpl {
+public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Singleton instance. */
-  public static final DataDdlExecutor INSTANCE = new DataDdlExecutor();
+  public static final BaremapsDdlExecutor INSTANCE = new BaremapsDdlExecutor();
 
   /** Parser factory. */
   @SuppressWarnings("unused") // used via reflection
@@ -93,7 +95,7 @@ public class DataDdlExecutor extends DdlExecutorImpl {
 
         @Override
         public DdlExecutor getDdlExecutor() {
-          return DataDdlExecutor.INSTANCE;
+          return BaremapsDdlExecutor.INSTANCE;
         }
       };
 
@@ -101,7 +103,7 @@ public class DataDdlExecutor extends DdlExecutorImpl {
    * Creates a ServerDdlExecutor. Protected only to allow sub-classing; use {@link #INSTANCE} where
    * possible.
    */
-  protected DataDdlExecutor() {}
+  protected BaremapsDdlExecutor() {}
 
   /**
    * Returns the schema in which to create an object; the left part is null if the schema does not

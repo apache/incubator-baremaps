@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.calcite2;
+package org.apache.baremaps.calcite2.data;
 
 
 import org.apache.calcite.materialize.MaterializationKey;
@@ -24,20 +24,43 @@ import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.Schema;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** A table that implements a materialized view. */
-class DataMaterializedView extends DataModifiableTable {
+/**
+ * A table that implements a materialized view. This extends the standard modifiable
+ * table with materialization capabilities.
+ */
+public class DataMaterializedView extends DataModifiableTable {
   /**
    * The key with which this was stored in the materialization service, or null if not (yet)
    * materialized.
    */
   @Nullable
-  MaterializationKey key;
+  public MaterializationKey key;
 
-  DataMaterializedView(
+  /**
+   * Constructs a new materialized view.
+   *
+   * @param name the name of the materialized view
+   * @param protoRowType the prototype row type
+   * @param typeFactory the type factory
+   * @throws NullPointerException if name, protoRowType, or typeFactory is null
+   */
+  public DataMaterializedView(
       String name,
       RelProtoDataType protoRowType,
       RelDataTypeFactory typeFactory) {
     super(name, protoRowType, typeFactory);
+    // key is initially null until the materialization is registered
+  }
+
+  /**
+   * Sets the materialization key.
+   *
+   * @param key the materialization key
+   * @return this materialized view
+   */
+  public DataMaterializedView withKey(MaterializationKey key) {
+    this.key = key;
+    return this;
   }
 
   @Override
@@ -46,7 +69,7 @@ class DataMaterializedView extends DataModifiableTable {
   }
 
   @Override
-  public <C extends Object> @Nullable C unwrap(Class<C> aClass) {
+  public <C> @Nullable C unwrap(Class<C> aClass) {
     if (MaterializationKey.class.isAssignableFrom(aClass)
         && aClass.isInstance(key)) {
       return aClass.cast(key);
