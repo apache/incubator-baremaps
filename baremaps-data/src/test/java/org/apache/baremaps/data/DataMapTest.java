@@ -176,6 +176,7 @@ class DataMapTest {
                 new AppendOnlyLog<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new MonotonicPairedDataMap<>(new MemoryAlignedDataList<>(
                 new PairDataType<>(new LongDataType(), new LongDataType())))),
-                Arguments.of(new DirectHashDataMap<>(new LongDataType(), new LongDataType(), new OffHeapMemory(), new OffHeapMemory(), 1000)));
+            Arguments.of(new DirectHashDataMap<>(new LongDataType(), new LongDataType(),
+                new OffHeapMemory(), new OffHeapMemory(), 1000)));
   }
 }

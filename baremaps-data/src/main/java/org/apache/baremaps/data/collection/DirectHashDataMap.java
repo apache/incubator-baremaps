@@ -1,9 +1,12 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,11 +27,12 @@ import org.apache.baremaps.data.memory.Memory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
 /**
- * A {@link DataMap} that uses direct hashing with open addressing and linear probing.
- * This implementation provides O(1) access time for both get and put operations
- * and doesn't have any insertion order dependencies.
+ * A {@link DataMap} that uses direct hashing with open addressing and linear probing. This
+ * implementation provides O(1) access time for both get and put operations and doesn't have any
+ * insertion order dependencies.
  * 
- * <p>The map size is fixed at instantiation time and cannot be resized afterward.
+ * <p>
+ * The map size is fixed at instantiation time and cannot be resized afterward.
  * 
  * @param <V> the type of the values
  */
@@ -36,17 +40,121 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
 
   private static final long EMPTY_KEY = Long.MIN_VALUE;
   private static final long TOMBSTONE = Long.MIN_VALUE + 1;
-  
+
   private final FixedSizeDataType<V> dataType;
   private final FixedSizeDataType<Long> keyType;
   private final Memory<?> keyMemory;
   private final Memory<?> valueMemory;
-  
+
   private final long capacity;
   private final int valueSize;
   private final int keySize;
-  
+
   private long size;
+
+  /**
+   * Static factory method to create a new builder.
+   *
+   * @param <V> the type of values
+   * @return a new builder
+   */
+  public static <V> Builder<V> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link DirectHashDataMap}.
+   *
+   * @param <V> the type of values
+   */
+  public static class Builder<V> {
+    private FixedSizeDataType<Long> keyType;
+    private FixedSizeDataType<V> dataType;
+    private Memory<?> keyMemory;
+    private Memory<?> valueMemory;
+    private long capacity;
+
+    /**
+     * Sets the key type for the map.
+     *
+     * @param keyType the data type for keys
+     * @return this builder
+     */
+    public Builder<V> keyType(FixedSizeDataType<Long> keyType) {
+      this.keyType = keyType;
+      return this;
+    }
+
+    /**
+     * Sets the data type for the map.
+     *
+     * @param dataType the data type for values
+     * @return this builder
+     */
+    public Builder<V> dataType(FixedSizeDataType<V> dataType) {
+      this.dataType = dataType;
+      return this;
+    }
+
+    /**
+     * Sets the key memory for the map.
+     *
+     * @param keyMemory the memory for keys
+     * @return this builder
+     */
+    public Builder<V> keyMemory(Memory<?> keyMemory) {
+      this.keyMemory = keyMemory;
+      return this;
+    }
+
+    /**
+     * Sets the value memory for the map.
+     *
+     * @param valueMemory the memory for values
+     * @return this builder
+     */
+    public Builder<V> valueMemory(Memory<?> valueMemory) {
+      this.valueMemory = valueMemory;
+      return this;
+    }
+
+    /**
+     * Sets the capacity for the map.
+     *
+     * @param capacity the fixed capacity of the map
+     * @return this builder
+     */
+    public Builder<V> capacity(long capacity) {
+      this.capacity = capacity;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link DirectHashDataMap}.
+     *
+     * @return a new DirectHashDataMap
+     * @throws IllegalStateException if any required parameter is missing
+     */
+    public DirectHashDataMap<V> build() {
+      if (keyType == null) {
+        throw new IllegalStateException("Key type must be specified");
+      }
+      if (dataType == null) {
+        throw new IllegalStateException("Data type must be specified");
+      }
+      if (keyMemory == null) {
+        throw new IllegalStateException("Key memory must be specified");
+      }
+      if (valueMemory == null) {
+        throw new IllegalStateException("Value memory must be specified");
+      }
+      if (capacity <= 0) {
+        throw new IllegalStateException("Capacity must be greater than zero");
+      }
+
+      return new DirectHashDataMap<>(keyType, dataType, keyMemory, valueMemory, capacity);
+    }
+  }
 
   /**
    * Constructs a {@link DirectHashDataMap} with the specified capacity.
@@ -59,7 +167,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
    */
   public DirectHashDataMap(
       FixedSizeDataType<Long> keyType,
-      FixedSizeDataType<V> dataType, 
+      FixedSizeDataType<V> dataType,
       Memory<?> keyMemory,
       Memory<?> valueMemory,
       long capacity) {
@@ -71,7 +179,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     this.keySize = keyType.size();
     this.valueSize = dataType.size();
     this.size = 0;
-    
+
     // Initialize all keys to EMPTY_KEY
     for (long i = 0; i < capacity; i++) {
       storeKey(i, EMPTY_KEY);
@@ -101,12 +209,12 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   private long findSlot(long key, boolean forInsertion) {
     long index = hash(key);
     long tombstoneSlot = -1;
-    
+
     // Linear probing to handle collisions
     for (long i = 0; i < capacity; i++) {
       long currentIndex = (index + i) % capacity;
       long currentKey = readKey(currentIndex);
-      
+
       if (currentKey == EMPTY_KEY) {
         // Found empty slot
         return forInsertion ? (tombstoneSlot != -1 ? tombstoneSlot : currentIndex) : -1;
@@ -120,12 +228,12 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
         return currentIndex;
       }
     }
-    
+
     // If we're inserting and found a tombstone earlier, use that
     if (forInsertion && tombstoneSlot != -1) {
       return tombstoneSlot;
     }
-    
+
     // Map is full or key not found
     return -1;
   }
@@ -179,19 +287,19 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   public V put(Long key, V value) {
     Objects.requireNonNull(key, "Key cannot be null");
     Objects.requireNonNull(value, "Value cannot be null");
-    
+
     if (key == EMPTY_KEY || key == TOMBSTONE) {
       throw new IllegalArgumentException("Reserved key value: " + key);
     }
-    
+
     long slot = findSlot(key, true);
     if (slot == -1) {
       throw new IllegalStateException("Map is full");
     }
-    
+
     long existingKey = readKey(slot);
     V previousValue = null;
-    
+
     if (existingKey != EMPTY_KEY && existingKey != TOMBSTONE) {
       // Slot contains an existing key
       previousValue = readValue(slot);
@@ -199,10 +307,10 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
       // New entry
       size++;
     }
-    
+
     storeKey(slot, key);
     storeValue(slot, value);
-    
+
     return previousValue;
   }
 
@@ -212,16 +320,16 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     if (!(keyObj instanceof Long key)) {
       return null;
     }
-    
+
     if (key == EMPTY_KEY || key == TOMBSTONE) {
       return null;
     }
-    
+
     long slot = findSlot(key, false);
     if (slot == -1) {
       return null;
     }
-    
+
     return readValue(slot);
   }
 
@@ -231,11 +339,11 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     if (!(keyObj instanceof Long key)) {
       return false;
     }
-    
+
     if (key == EMPTY_KEY || key == TOMBSTONE) {
       return false;
     }
-    
+
     return findSlot(key, false) != -1;
   }
 
@@ -245,14 +353,14 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     if (value == null) {
       return false;
     }
-    
+
     Iterator<V> iterator = valueIterator();
     while (iterator.hasNext()) {
       if (value.equals(iterator.next())) {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -277,18 +385,18 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     return new Iterator<>() {
       private long currentIndex = 0;
       private long returnedCount = 0;
-      
+
       @Override
       public boolean hasNext() {
         return returnedCount < size;
       }
-      
+
       @Override
       public Long next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
-        
+
         while (currentIndex < capacity) {
           long key = readKey(currentIndex++);
           if (key != EMPTY_KEY && key != TOMBSTONE) {
@@ -296,7 +404,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
             return key;
           }
         }
-        
+
         throw new NoSuchElementException();
       }
     };
@@ -308,18 +416,18 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     return new Iterator<>() {
       private long currentIndex = 0;
       private long returnedCount = 0;
-      
+
       @Override
       public boolean hasNext() {
         return returnedCount < size;
       }
-      
+
       @Override
       public V next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
-        
+
         while (currentIndex < capacity) {
           long key = readKey(currentIndex);
           if (key != EMPTY_KEY && key != TOMBSTONE) {
@@ -328,7 +436,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
           }
           currentIndex++;
         }
-        
+
         throw new NoSuchElementException();
       }
     };
@@ -340,18 +448,18 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     return new Iterator<>() {
       private long currentIndex = 0;
       private long returnedCount = 0;
-      
+
       @Override
       public boolean hasNext() {
         return returnedCount < size;
       }
-      
+
       @Override
       public Entry<Long, V> next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
-        
+
         while (currentIndex < capacity) {
           long key = readKey(currentIndex);
           if (key != EMPTY_KEY && key != TOMBSTONE) {
@@ -362,7 +470,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
           }
           currentIndex++;
         }
-        
+
         throw new NoSuchElementException();
       }
     };
@@ -377,4 +485,4 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
       throw new DataCollectionException(e);
     }
   }
-} 
+}

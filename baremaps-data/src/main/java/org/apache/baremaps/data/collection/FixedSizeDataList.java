@@ -40,6 +40,66 @@ public class FixedSizeDataList<E> implements DataList<E> {
   private AtomicLong size;
 
   /**
+   * Static factory method to create a new builder.
+   *
+   * @param <E> the type of elements
+   * @return a new builder
+   */
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link FixedSizeDataList}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private FixedSizeDataType<E> dataType;
+    private Memory<?> memory;
+
+    /**
+     * Sets the data type for the list.
+     *
+     * @param dataType the data type
+     * @return this builder
+     */
+    public Builder<E> dataType(FixedSizeDataType<E> dataType) {
+      this.dataType = dataType;
+      return this;
+    }
+
+    /**
+     * Sets the memory for the list.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> memory(Memory<?> memory) {
+      this.memory = memory;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link FixedSizeDataList}.
+     *
+     * @return a new FixedSizeDataList
+     * @throws IllegalStateException if the data type is missing
+     */
+    public FixedSizeDataList<E> build() {
+      if (dataType == null) {
+        throw new IllegalStateException("Data type must be specified");
+      }
+
+      if (memory == null) {
+        return new FixedSizeDataList<>(dataType);
+      } else {
+        return new FixedSizeDataList<>(dataType, memory);
+      }
+    }
+  }
+
+  /**
    * Constructs a {@link FixedSizeDataList}.
    *
    * @param dataType the data type

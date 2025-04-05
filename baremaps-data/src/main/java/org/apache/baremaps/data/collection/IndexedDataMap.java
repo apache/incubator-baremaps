@@ -38,6 +38,66 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
   private final AppendOnlyLog<E> values;
 
   /**
+   * Static factory method to create a new builder.
+   *
+   * @param <E> the type of elements
+   * @return a new builder
+   */
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link IndexedDataMap}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private Map<Long, Long> index;
+    private AppendOnlyLog<E> values;
+
+    /**
+     * Sets the index for the map.
+     *
+     * @param index the index
+     * @return this builder
+     */
+    public Builder<E> index(Map<Long, Long> index) {
+      this.index = index;
+      return this;
+    }
+
+    /**
+     * Sets the values for the map.
+     *
+     * @param values the values
+     * @return this builder
+     */
+    public Builder<E> values(AppendOnlyLog<E> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link IndexedDataMap}.
+     *
+     * @return a new IndexedDataMap
+     * @throws IllegalStateException if values are missing
+     */
+    public IndexedDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+
+      if (index == null) {
+        return new IndexedDataMap<>(values);
+      } else {
+        return new IndexedDataMap<>(index, values);
+      }
+    }
+  }
+
+  /**
    * Constructs a {@link IndexedDataMap}.
    *
    * @param values the values

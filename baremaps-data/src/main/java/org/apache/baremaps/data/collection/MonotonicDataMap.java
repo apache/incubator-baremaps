@@ -43,6 +43,84 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
+   * Static factory method to create a new builder.
+   *
+   * @param <E> the type of elements
+   * @return a new builder
+   */
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link MonotonicDataMap}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataList<Long> offsets;
+    private DataList<Pair<Long, Long>> keys;
+    private AppendOnlyLog<E> values;
+
+    /**
+     * Sets the offsets for the map.
+     *
+     * @param offsets the list of offsets
+     * @return this builder
+     */
+    public Builder<E> offsets(DataList<Long> offsets) {
+      this.offsets = offsets;
+      return this;
+    }
+
+    /**
+     * Sets the keys for the map.
+     *
+     * @param keys the list of keys
+     * @return this builder
+     */
+    public Builder<E> keys(DataList<Pair<Long, Long>> keys) {
+      this.keys = keys;
+      return this;
+    }
+
+    /**
+     * Sets the values for the map.
+     *
+     * @param values the buffer of values
+     * @return this builder
+     */
+    public Builder<E> values(AppendOnlyLog<E> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link MonotonicDataMap}.
+     *
+     * @return a new MonotonicDataMap
+     * @throws IllegalStateException if values are missing
+     */
+    public MonotonicDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+      
+      if (offsets == null && keys == null) {
+        return new MonotonicDataMap<>(values);
+      } else if (keys == null) {
+        keys = new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()));
+        return new MonotonicDataMap<>(offsets, keys, values);
+      } else if (offsets == null) {
+        offsets = new MemoryAlignedDataList<>(new LongDataType());
+        return new MonotonicDataMap<>(offsets, keys, values);
+      } else {
+        return new MonotonicDataMap<>(offsets, keys, values);
+      }
+    }
+  }
+
+  /**
    * Constructs a {@link MonotonicDataMap} with default lists for storing offsets.
    *
    * @param values the buffer of values

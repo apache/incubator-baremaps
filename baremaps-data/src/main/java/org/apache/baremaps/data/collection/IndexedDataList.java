@@ -34,6 +34,66 @@ public class IndexedDataList<E> implements DataList<E> {
   private final AppendOnlyLog<E> values;
 
   /**
+   * Static factory method to create a new builder.
+   *
+   * @param <E> the type of elements
+   * @return a new builder
+   */
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link IndexedDataList}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataList<Long> index;
+    private AppendOnlyLog<E> values;
+
+    /**
+     * Sets the index for the list.
+     *
+     * @param index the index
+     * @return this builder
+     */
+    public Builder<E> index(DataList<Long> index) {
+      this.index = index;
+      return this;
+    }
+
+    /**
+     * Sets the values for the list.
+     *
+     * @param values the values
+     * @return this builder
+     */
+    public Builder<E> values(AppendOnlyLog<E> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link IndexedDataList}.
+     *
+     * @return a new IndexedDataList
+     * @throws IllegalStateException if values are missing
+     */
+    public IndexedDataList<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+
+      if (index == null) {
+        return new IndexedDataList<>(values);
+      } else {
+        return new IndexedDataList<>(index, values);
+      }
+    }
+  }
+
+  /**
    * Constructs a {@link IndexedDataList}.
    *
    * @param values the values

@@ -41,6 +41,84 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
+   * Static factory method to create a new builder.
+   *
+   * @param <E> the type of elements
+   * @return a new builder
+   */
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link MonotonicFixedSizeDataMap}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataList<Long> offsets;
+    private DataList<Long> keys;
+    private DataList<E> values;
+
+    /**
+     * Sets the offsets for the map.
+     *
+     * @param offsets the list of offsets
+     * @return this builder
+     */
+    public Builder<E> offsets(DataList<Long> offsets) {
+      this.offsets = offsets;
+      return this;
+    }
+
+    /**
+     * Sets the keys for the map.
+     *
+     * @param keys the list of keys
+     * @return this builder
+     */
+    public Builder<E> keys(DataList<Long> keys) {
+      this.keys = keys;
+      return this;
+    }
+
+    /**
+     * Sets the values for the map.
+     *
+     * @param values the list of values
+     * @return this builder
+     */
+    public Builder<E> values(DataList<E> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link MonotonicFixedSizeDataMap}.
+     *
+     * @return a new MonotonicFixedSizeDataMap
+     * @throws IllegalStateException if values are missing
+     */
+    public MonotonicFixedSizeDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+      
+      if (offsets == null && keys == null) {
+        return new MonotonicFixedSizeDataMap<>(values);
+      } else if (offsets == null) {
+        offsets = new MemoryAlignedDataList<>(new LongDataType());
+        return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
+      } else if (keys == null) {
+        keys = new MemoryAlignedDataList<>(new LongDataType());
+        return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
+      } else {
+        return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
+      }
+    }
+  }
+
+  /**
    * Constructs a {@link MonotonicFixedSizeDataMap} with default lists for storing offsets and keys.
    *
    * @param values the list of values

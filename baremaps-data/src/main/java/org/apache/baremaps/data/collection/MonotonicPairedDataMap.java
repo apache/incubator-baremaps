@@ -44,6 +44,66 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
+   * Static factory method to create a new builder.
+   *
+   * @param <E> the type of elements
+   * @return a new builder
+   */
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for {@link MonotonicPairedDataMap}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataList<Long> offsets;
+    private MemoryAlignedDataList<Pair<Long, E>> values;
+
+    /**
+     * Sets the offsets for the map.
+     *
+     * @param offsets the list of offsets
+     * @return this builder
+     */
+    public Builder<E> offsets(DataList<Long> offsets) {
+      this.offsets = offsets;
+      return this;
+    }
+
+    /**
+     * Sets the values for the map.
+     *
+     * @param values the buffer of values
+     * @return this builder
+     */
+    public Builder<E> values(MemoryAlignedDataList<Pair<Long, E>> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link MonotonicPairedDataMap}.
+     *
+     * @return a new MonotonicPairedDataMap
+     * @throws IllegalStateException if values are missing
+     */
+    public MonotonicPairedDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+
+      if (offsets == null) {
+        return new MonotonicPairedDataMap<>(values);
+      } else {
+        return new MonotonicPairedDataMap<>(offsets, values);
+      }
+    }
+  }
+
+  /**
    * Constructs a {@link MonotonicPairedDataMap}.
    */
   public MonotonicPairedDataMap(MemoryAlignedDataList<Pair<Long, E>> values) {
