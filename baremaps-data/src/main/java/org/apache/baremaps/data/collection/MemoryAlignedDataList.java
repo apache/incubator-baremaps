@@ -100,20 +100,11 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
       }
 
       if (memory == null) {
-        return new MemoryAlignedDataList<>(dataType);
-      } else {
-        return new MemoryAlignedDataList<>(dataType, memory);
+        memory = new OffHeapMemory();
       }
-    }
-  }
 
-  /**
-   * Constructs a {@link MemoryAlignedDataList}.
-   *
-   * @param dataType the data type
-   */
-  public MemoryAlignedDataList(FixedSizeDataType<E> dataType) {
-    this(dataType, new OffHeapMemory());
+      return new MemoryAlignedDataList<>(dataType, memory);
+    }
   }
 
   /**
@@ -122,7 +113,7 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
+  private MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }

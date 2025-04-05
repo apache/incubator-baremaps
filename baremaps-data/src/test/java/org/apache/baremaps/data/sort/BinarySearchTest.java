@@ -28,7 +28,9 @@ class BinarySearchTest {
 
   @Test
   void binarySearch() {
-    var list = new MemoryAlignedDataList<>(new LongDataType());
+    var list = MemoryAlignedDataList.<Long>builder()
+        .dataType(new LongDataType())
+        .build();
     for (long i = 0; i < 1000; i++) {
       list.add(i);
     }

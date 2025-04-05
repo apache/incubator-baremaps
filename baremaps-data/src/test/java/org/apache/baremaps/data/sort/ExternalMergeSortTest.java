@@ -54,7 +54,10 @@ class ExternalMergeSortTest {
     stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();
     stringsDistinct = stringsAsc.stream().distinct().toList();
     supplier = () -> IndexedDataList.<String>builder()
-        .index(new MemoryAlignedDataList<>(new LongDataType(), new OnHeapMemory()))
+        .index(MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .memory(new OnHeapMemory())
+            .build())
         .values(AppendOnlyLog.<String>builder()
             .dataType(new StringDataType())
             .memory(new OnHeapMemory())

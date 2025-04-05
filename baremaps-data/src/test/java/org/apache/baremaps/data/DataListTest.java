@@ -79,11 +79,15 @@ class DataListTest {
                 .dataType(new LongDataType())
                 .build()),
         Arguments.of(IndexedDataList.<Long>builder()
-                .index(new MemoryAlignedDataList<>(new LongDataType()))
+                .index(MemoryAlignedDataList.<Long>builder()
+                    .dataType(new LongDataType())
+                    .build())
                 .values(AppendOnlyLog.<Long>builder()
                     .dataType(new LongDataType())
                     .build())
                 .build()),
-        Arguments.of(new MemoryAlignedDataList<>(new LongDataType())));
+        Arguments.of(MemoryAlignedDataList.<Long>builder()
+                .dataType(new LongDataType())
+                .build()));
   }
 }

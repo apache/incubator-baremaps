@@ -107,10 +107,14 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
       if (offsets == null && keys == null) {
         return new MonotonicFixedSizeDataMap<>(values);
       } else if (offsets == null) {
-        offsets = new MemoryAlignedDataList<>(new LongDataType());
+        offsets = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
         return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
       } else if (keys == null) {
-        keys = new MemoryAlignedDataList<>(new LongDataType());
+        keys = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
         return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
       } else {
         return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
@@ -124,8 +128,13 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
    * @param values the list of values
    */
   public MonotonicFixedSizeDataMap(DataList<E> values) {
-    this(new MemoryAlignedDataList<>(new LongDataType()),
-        new MemoryAlignedDataList<>(new LongDataType()), values);
+    this(MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build(),
+        MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build(), 
+        values);
   }
 
   /**

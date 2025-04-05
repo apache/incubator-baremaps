@@ -107,7 +107,10 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
    * Constructs a {@link MonotonicPairedDataMap}.
    */
   public MonotonicPairedDataMap(MemoryAlignedDataList<Pair<Long, E>> values) {
-    this(new MemoryAlignedDataList<>(new LongDataType()), values);
+    this(MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build(),
+        values);
   }
 
   /**

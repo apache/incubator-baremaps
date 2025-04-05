@@ -84,9 +84,11 @@ public class WorkflowContext {
     Path mapDir = Files.createDirectories(cacheDir.resolve(name));
     Path keysDir = Files.createDirectories(mapDir.resolve("keys"));
     Path valuesDir = Files.createDirectories(mapDir.resolve("values"));
-    MemoryAlignedDataList<PairDataType.Pair<Long, Long>> keys = new MemoryAlignedDataList<>(
-        new PairDataType<>(new LongDataType(), new LongDataType()),
-        new MemoryMappedDirectory(keysDir));
+    MemoryAlignedDataList<PairDataType.Pair<Long, Long>> keys = MemoryAlignedDataList
+        .<PairDataType.Pair<Long, Long>>builder()
+        .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
+        .memory(new MemoryMappedDirectory(keysDir))
+        .build();
     AppendOnlyLog<T> values = AppendOnlyLog.<T>builder()
         .dataType(dataType)
         .values(new MemoryMappedDirectory(valuesDir))
@@ -102,9 +104,10 @@ public class WorkflowContext {
       throws IOException {
     Path mapDir = Files.createDirectories(cacheDir.resolve(name));
     return new MonotonicPairedDataMap<>(
-        new MemoryAlignedDataList<>(
-            new PairDataType<>(new LongDataType(), new LonLatDataType()),
-            new MemoryMappedDirectory(Files.createDirectories(mapDir))));
+        MemoryAlignedDataList.<PairDataType.Pair<Long, Coordinate>>builder()
+            .dataType(new PairDataType<>(new LongDataType(), new LonLatDataType()))
+            .memory(new MemoryMappedDirectory(Files.createDirectories(mapDir)))
+            .build());
   }
 
   public void cleanCache() throws IOException {

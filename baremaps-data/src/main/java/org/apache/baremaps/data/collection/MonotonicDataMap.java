@@ -109,10 +109,14 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
       if (offsets == null && keys == null) {
         return new MonotonicDataMap<>(values);
       } else if (keys == null) {
-        keys = new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()));
+        keys = MemoryAlignedDataList.<Pair<Long, Long>>builder()
+            .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
+            .build();
         return new MonotonicDataMap<>(offsets, keys, values);
       } else if (offsets == null) {
-        offsets = new MemoryAlignedDataList<>(new LongDataType());
+        offsets = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
         return new MonotonicDataMap<>(offsets, keys, values);
       } else {
         return new MonotonicDataMap<>(offsets, keys, values);
@@ -127,8 +131,12 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
    */
   public MonotonicDataMap(AppendOnlyLog<E> values) {
     this(
-        new MemoryAlignedDataList<>(new LongDataType()),
-        new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType())),
+        MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build(),
+        MemoryAlignedDataList.<Pair<Long, Long>>builder()
+            .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
+            .build(),
         values);
   }
 
@@ -140,7 +148,9 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
    */
   public MonotonicDataMap(DataList<Pair<Long, Long>> keys, AppendOnlyLog<E> values) {
     this(
-        new MemoryAlignedDataList<>(new LongDataType()),
+        MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build(),
         keys,
         values);
   }

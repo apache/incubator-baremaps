@@ -86,7 +86,9 @@ public class IndexedDataList<E> implements DataList<E> {
       }
 
       if (index == null) {
-        index = new MemoryAlignedDataList<>(new LongDataType());
+        index = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
       }
       
       return new IndexedDataList<>(index, values);
