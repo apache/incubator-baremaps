@@ -23,9 +23,8 @@ import java.util.Map.Entry;
 import org.apache.baremaps.data.type.LongDataType;
 
 /**
- * A {@link DataMap} that can hold a large number of fixed-size data elements. The elements must be
- * sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
- * once inserted.
+ * A map that stores fixed-size values in monotonically increasing key order.
+ * Optimized for sequential insertions and fast binary search lookups.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -41,23 +40,93 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
-   * Constructs a {@link MonotonicFixedSizeDataMap} with default lists for storing offsets and keys.
+   * Static factory method to create a new builder.
    *
-   * @param values the list of values
+   * @param <E> the type of elements
+   * @return a new builder
    */
-  public MonotonicFixedSizeDataMap(DataList<E> values) {
-    this(new MemoryAlignedDataList<>(new LongDataType()),
-        new MemoryAlignedDataList<>(new LongDataType()), values);
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
   }
 
   /**
-   * Constructs a {@link MonotonicFixedSizeDataMap}.
+   * Builder for {@link MonotonicFixedSizeDataMap}.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataList<Long> offsets;
+    private DataList<Long> keys;
+    private DataList<E> values;
+
+    /**
+     * Sets the offsets for the map.
+     *
+     * @param offsets the list of offsets
+     * @return this builder
+     */
+    public Builder<E> offsets(DataList<Long> offsets) {
+      this.offsets = offsets;
+      return this;
+    }
+
+    /**
+     * Sets the keys for the map.
+     *
+     * @param keys the list of keys
+     * @return this builder
+     */
+    public Builder<E> keys(DataList<Long> keys) {
+      this.keys = keys;
+      return this;
+    }
+
+    /**
+     * Sets the values for the map.
+     *
+     * @param values the list of values
+     * @return this builder
+     */
+    public Builder<E> values(DataList<E> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new {@link MonotonicFixedSizeDataMap}.
+     *
+     * @return a new MonotonicFixedSizeDataMap
+     * @throws IllegalStateException if values are missing
+     */
+    public MonotonicFixedSizeDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+      
+      if (offsets == null) {
+        offsets = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
+      }
+      
+      if (keys == null) {
+        keys = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
+      }
+      
+      return new MonotonicFixedSizeDataMap<>(offsets, keys, values);
+    }
+  }
+
+  /**
+   * Private constructor for {@link MonotonicFixedSizeDataMap}.
    *
    * @param offsets the list of offsets
    * @param keys the list of keys
    * @param values the list of values
    */
-  public MonotonicFixedSizeDataMap(
+  private MonotonicFixedSizeDataMap(
       DataList<Long> offsets,
       DataList<Long> keys,
       DataList<E> values) {
@@ -152,4 +221,14 @@ public class MonotonicFixedSizeDataMap<E> implements DataMap<Long, E> {
     values.clear();
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      offsets.close();
+      keys.close();
+      values.close();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

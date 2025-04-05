@@ -55,9 +55,19 @@ class ImportUpdateSampleTest extends PostgresRepositoryTest {
 
     // Initialize the data maps
     Map<Long, Coordinate> coordinateMap = DataConversions.asMap(
-        new IndexedDataMap<>(new AppendOnlyLog<>(new CoordinateDataType(), new OnHeapMemory())));
+        IndexedDataMap.<Coordinate>builder()
+            .values(AppendOnlyLog.<Coordinate>builder()
+                .dataType(new CoordinateDataType())
+                .memory(new OnHeapMemory())
+                .build())
+            .build());
     Map<Long, List<Long>> referenceMap = DataConversions.asMap(
-        new IndexedDataMap<>(new AppendOnlyLog<>(new LongListDataType(), new OnHeapMemory())));
+        IndexedDataMap.<List<Long>>builder()
+            .values(AppendOnlyLog.<List<Long>>builder()
+                .dataType(new LongListDataType())
+                .memory(new OnHeapMemory())
+                .build())
+            .build());
 
     // Import the sample data
     ImportOsmPbf.execute(TestFiles.SAMPLE_OSM_PBF, coordinateMap, referenceMap, headerRepository,

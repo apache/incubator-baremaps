@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import org.locationtech.jts.geom.*;
 
 /**
- * A data type for {@link GeometryCollection} objects.
+ * A {@link DataType} for reading and writing {@link MultiPolygon} objects in {@link ByteBuffer}s.
  */
 public class MultiPolygonDataType implements DataType<MultiPolygon> {
 
@@ -31,14 +31,14 @@ public class MultiPolygonDataType implements DataType<MultiPolygon> {
   private final PolygonDataType polygonDataType;
 
   /**
-   * Constructs a {@code MultiPolygonDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link MultiPolygonDataType} with a default {@link GeometryFactory}.
    */
   public MultiPolygonDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code MultiPolygonDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link MultiPolygonDataType} with a specified {@link GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */

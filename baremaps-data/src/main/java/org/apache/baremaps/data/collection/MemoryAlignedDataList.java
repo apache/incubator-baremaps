@@ -28,41 +28,89 @@ import org.apache.baremaps.data.memory.OffHeapMemory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
 /**
- * A {@link DataList} that can hold a large number of fixed-size memory-aligned data elements. This
- * data list is backed by a memory that can be either heap, off-heap, or memory mapped.
+ * A list that stores fixed-size memory-aligned elements. Optimized for performance with bit-shift
+ * operations for memory addressing.
  *
- * @param <E> The type of the elements.
+ * @param <E> The type of elements in the list
  */
 public class MemoryAlignedDataList<E> implements DataList<E> {
 
   private final FixedSizeDataType<E> dataType;
-
   private final Memory<?> memory;
-
   private final int valueShift;
-
   private final long segmentShift;
-
   private final long segmentMask;
-
   private AtomicLong size;
 
   /**
-   * Constructs a {@link MemoryAlignedDataList}.
+   * Creates a new builder for a MemoryAlignedDataList.
    *
-   * @param dataType the data type
+   * @param <E> the type of elements
+   * @return a new builder
    */
-  public MemoryAlignedDataList(FixedSizeDataType<E> dataType) {
-    this(dataType, new OffHeapMemory());
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
   }
 
   /**
-   * Constructs a {@link MemoryAlignedDataList}.
+   * Builder for MemoryAlignedDataList.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private FixedSizeDataType<E> dataType;
+    private Memory<?> memory;
+
+    /**
+     * Sets the data type for the list.
+     *
+     * @param dataType the data type
+     * @return this builder
+     */
+    public Builder<E> dataType(FixedSizeDataType<E> dataType) {
+      this.dataType = dataType;
+      return this;
+    }
+
+    /**
+     * Sets the memory for the list.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> memory(Memory<?> memory) {
+      this.memory = memory;
+      return this;
+    }
+
+    /**
+     * Builds a new MemoryAlignedDataList.
+     *
+     * @return a new MemoryAlignedDataList
+     * @throws IllegalStateException if the data type is missing
+     */
+    public MemoryAlignedDataList<E> build() {
+      if (dataType == null) {
+        throw new IllegalStateException("Data type must be specified");
+      }
+
+      if (memory == null) {
+        memory = new OffHeapMemory();
+      }
+
+      return new MemoryAlignedDataList<>(dataType, memory);
+    }
+  }
+
+  /**
+   * Constructs a MemoryAlignedDataList.
    *
    * @param dataType the data type
    * @param memory the memory
+   * @throws DataCollectionException if memory and data type size requirements are not met
+   * @throws IllegalArgumentException if data type size is not a power of 2
    */
-  public MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
+  private MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }
@@ -80,6 +128,12 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
     this.size = new AtomicLong(0);
   }
 
+  /**
+   * Writes an element at the specified index.
+   *
+   * @param index the index
+   * @param value the element to write
+   */
   private void write(long index, E value) {
     long position = index << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
@@ -129,4 +183,12 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
     }
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (IOException e) {
+      throw new MemoryException(e);
+    }
+  }
 }

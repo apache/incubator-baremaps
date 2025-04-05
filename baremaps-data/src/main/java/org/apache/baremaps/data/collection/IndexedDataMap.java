@@ -26,33 +26,83 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * A {@link DataMap} that can hold a large number of variable size data elements. This data map is
- * backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ * A map that stores variable-size values using an index. Values are stored in an append-only log
+ * with indices for fast access.
  *
- * @param <E> The type of the elements.
+ * @param <E> The type of values in the map
  */
 public class IndexedDataMap<E> implements DataMap<Long, E> {
 
   private final Map<Long, Long> index;
-
   private final AppendOnlyLog<E> values;
 
   /**
-   * Constructs a {@link IndexedDataMap}.
+   * Creates a new builder for an IndexedDataMap.
    *
-   * @param values the values
+   * @param <E> the type of values
+   * @return a new builder
    */
-  public IndexedDataMap(AppendOnlyLog<E> values) {
-    this(new HashMap<>(), values);
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
   }
 
   /**
-   * Constructs a {@link IndexedDataMap}.
+   * Builder for IndexedDataMap.
+   *
+   * @param <E> the type of values
+   */
+  public static class Builder<E> {
+    private Map<Long, Long> index;
+    private AppendOnlyLog<E> values;
+
+    /**
+     * Sets the index for the map.
+     *
+     * @param index the index
+     * @return this builder
+     */
+    public Builder<E> index(Map<Long, Long> index) {
+      this.index = index;
+      return this;
+    }
+
+    /**
+     * Sets the values for the map.
+     *
+     * @param values the values
+     * @return this builder
+     */
+    public Builder<E> values(AppendOnlyLog<E> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new IndexedDataMap.
+     *
+     * @return a new IndexedDataMap
+     * @throws IllegalStateException if values are missing
+     */
+    public IndexedDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+
+      if (index == null) {
+        index = new HashMap<>();
+      }
+
+      return new IndexedDataMap<>(index, values);
+    }
+  }
+
+  /**
+   * Constructs an IndexedDataMap.
    *
    * @param index the index
    * @param values the values
    */
-  public IndexedDataMap(Map<Long, Long> index, AppendOnlyLog<E> values) {
+  private IndexedDataMap(Map<Long, Long> index, AppendOnlyLog<E> values) {
     this.index = index;
     this.values = values;
   }
@@ -120,5 +170,14 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
   public void clear() {
     index.clear();
     values.clear();
+  }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      values.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
   }
 }

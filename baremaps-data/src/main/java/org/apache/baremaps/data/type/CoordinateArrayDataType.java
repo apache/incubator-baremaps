@@ -21,7 +21,8 @@ import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A data type for {@link Coordinate} arrays.
+ * A {@link DataType} for reading and writing arrays of {@link Coordinate} values in
+ * {@link ByteBuffer}s.
  */
 public class CoordinateArrayDataType implements DataType<Coordinate[]> {
 

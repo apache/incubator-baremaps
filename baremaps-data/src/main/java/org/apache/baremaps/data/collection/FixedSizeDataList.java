@@ -26,35 +26,85 @@ import org.apache.baremaps.data.memory.OffHeapMemory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
 /**
- * A {@link DataList} that can hold a large number of fixed size data elements. This data list is
- * backed by a memory that can be either heap, off-heap, or memory mapped.
+ * A list that stores fixed-size elements in memory. Elements can be stored in heap memory, off-heap
+ * memory, or memory-mapped files.
  *
- * @param <E> The type of the elements.
+ * @param <E> The type of elements in the list
  */
 public class FixedSizeDataList<E> implements DataList<E> {
 
   private final FixedSizeDataType<E> dataType;
-
   private final Memory<?> memory;
-
   private AtomicLong size;
 
   /**
-   * Constructs a {@link FixedSizeDataList}.
+   * Creates a new builder for a FixedSizeDataList.
    *
-   * @param dataType the data type
+   * @param <E> the type of elements
+   * @return a new builder
    */
-  public FixedSizeDataList(FixedSizeDataType<E> dataType) {
-    this(dataType, new OffHeapMemory());
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
   }
 
   /**
-   * Constructs a list.
+   * Builder for FixedSizeDataList.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private FixedSizeDataType<E> dataType;
+    private Memory<?> memory;
+
+    /**
+     * Sets the data type for the list.
+     *
+     * @param dataType the data type
+     * @return this builder
+     */
+    public Builder<E> dataType(FixedSizeDataType<E> dataType) {
+      this.dataType = dataType;
+      return this;
+    }
+
+    /**
+     * Sets the memory for the list.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> memory(Memory<?> memory) {
+      this.memory = memory;
+      return this;
+    }
+
+    /**
+     * Builds a new FixedSizeDataList.
+     *
+     * @return a new FixedSizeDataList
+     * @throws IllegalStateException if the data type is missing
+     */
+    public FixedSizeDataList<E> build() {
+      if (dataType == null) {
+        throw new IllegalStateException("Data type must be specified");
+      }
+
+      if (memory == null) {
+        memory = new OffHeapMemory();
+      }
+
+      return new FixedSizeDataList<>(dataType, memory);
+    }
+  }
+
+  /**
+   * Constructs a FixedSizeDataList.
    *
    * @param dataType the data type
    * @param memory the memory
+   * @throws DataCollectionException if the data type is too large for the memory segment size
    */
-  public FixedSizeDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
+  private FixedSizeDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }
@@ -63,6 +113,12 @@ public class FixedSizeDataList<E> implements DataList<E> {
     this.size = new AtomicLong(0);
   }
 
+  /**
+   * Writes an element at the specified index.
+   *
+   * @param index the index
+   * @param value the element to write
+   */
   private void write(long index, E value) {
     long position = index * dataType.size();
     int segmentIndex = (int) (position / memory.segmentSize());
@@ -108,5 +164,14 @@ public class FixedSizeDataList<E> implements DataList<E> {
   @Override
   public void clear() {
     size.set(0);
+  }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
   }
 }

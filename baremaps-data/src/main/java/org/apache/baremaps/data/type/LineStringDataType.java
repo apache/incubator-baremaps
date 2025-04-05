@@ -22,7 +22,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 
 /**
- * A data type for {@link LineString} objects.
+ * A {@link DataType} for reading and writing {@link LineString} objects in {@link ByteBuffer}s.
  */
 public class LineStringDataType implements DataType<LineString> {
 
@@ -31,14 +31,14 @@ public class LineStringDataType implements DataType<LineString> {
   private final CoordinateArrayDataType coordinateArrayDataType;
 
   /**
-   * Constructs a {@code LineStringDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link LineStringDataType} with a default {@link GeometryFactory}.
    */
   public LineStringDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code LineStringDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link LineStringDataType} with a specified {@link GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */

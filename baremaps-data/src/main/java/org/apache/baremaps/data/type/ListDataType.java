@@ -17,23 +17,23 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A {@link DataType} for reading and writing lists of objects in {@link ByteBuffer}s.
+ *
+ * @param <T> the type of elements in the list
  */
 public class ListDataType<T> implements DataType<List<T>> {
 
   public final DataType<T> dataType;
 
   /**
-   * Constructs a {@link ListDataType} with a data type.
+   * Constructs a {@link ListDataType} with a data type for its elements.
    *
-   * @param dataType the data type of the values
+   * @param dataType the data type of the list elements
    */
   public ListDataType(final DataType<T> dataType) {
     this.dataType = dataType;
@@ -49,6 +49,7 @@ public class ListDataType<T> implements DataType<List<T>> {
     return size;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);

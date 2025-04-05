@@ -17,14 +17,16 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing bytes in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing byte values in {@link ByteBuffer}s.
+ */
 public class ByteDataType extends MemoryAlignedDataType<Byte> {
 
-  /** Constructs a {@link ByteDataType}. */
+  /**
+   * Constructs a {@link ByteDataType} with a fixed size of {@link Byte#BYTES}.
+   */
   public ByteDataType() {
     super(Byte.BYTES);
   }

@@ -26,7 +26,8 @@ import org.apache.baremaps.data.memory.Memory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
 /**
- * A {@link DataMap} that can hold a large number of fixed-size memory-aligned data elements.
+ * A map that stores fixed-size memory-aligned elements with optimized memory addressing.
+ * Uses bit-shift operations for fast memory access.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -46,12 +47,73 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
   private final long upperBoundary;
 
   /**
-   * Constructs a {@link MemoryAlignedDataMap}.
+   * Creates a new builder for a MemoryAlignedDataMap.
+   *
+   * @param <E> the type of values
+   * @return a new builder
+   */
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+
+  /**
+   * Builder for MemoryAlignedDataMap.
+   *
+   * @param <E> the type of values
+   */
+  public static class Builder<E> {
+    private FixedSizeDataType<E> dataType;
+    private Memory<?> memory;
+
+    /**
+     * Sets the data type for the map.
+     *
+     * @param dataType the data type
+     * @return this builder
+     */
+    public Builder<E> dataType(FixedSizeDataType<E> dataType) {
+      this.dataType = dataType;
+      return this;
+    }
+
+    /**
+     * Sets the memory for the map.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> memory(Memory<?> memory) {
+      this.memory = memory;
+      return this;
+    }
+
+    /**
+     * Builds a new MemoryAlignedDataMap.
+     *
+     * @return a new MemoryAlignedDataMap
+     * @throws IllegalStateException if required parameters are missing
+     */
+    public MemoryAlignedDataMap<E> build() {
+      if (dataType == null) {
+        throw new IllegalStateException("Data type must be specified");
+      }
+      if (memory == null) {
+        throw new IllegalStateException("Memory must be specified");
+      }
+      
+      return new MemoryAlignedDataMap<>(dataType, memory);
+    }
+  }
+
+  /**
+   * Constructs a MemoryAlignedDataMap.
    *
    * @param dataType the data type
    * @param memory the memory
+   * @throws DataCollectionException if memory and data type size requirements are not met
+   * @throws IllegalArgumentException if data type size is not a power of 2
    */
-  public MemoryAlignedDataMap(FixedSizeDataType<E> dataType, Memory<?> memory) {
+  private MemoryAlignedDataMap(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }
@@ -70,6 +132,13 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
         : Long.MAX_VALUE >> (32 - segmentShift + valueShift);
   }
 
+  /**
+   * Checks if the key is within valid boundaries.
+   *
+   * @param key the key to check
+   * @throws NullPointerException if key is null
+   * @throws IndexOutOfBoundsException if key is outside valid range
+   */
   private void checkBoundary(Long key) {
     Objects.requireNonNull(key, "Key couldn't be null");
     if (key < 0 || key > upperBoundary) {
@@ -210,4 +279,12 @@ public class MemoryAlignedDataMap<E> implements DataMap<Long, E> {
     };
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
+  }
 }

@@ -165,16 +165,39 @@ class DataMapTest {
     return Stream
         .of(
             Arguments.of(
-                new IndexedDataMap<>(
-                    new AppendOnlyLog<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new MonotonicFixedSizeDataMap<>(
-                new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new MonotonicDataMap<>(
-                new MemoryAlignedDataList<>(
-                    new PairDataType<>(new LongDataType(), new LongDataType()),
-                    new OffHeapMemory()),
-                new AppendOnlyLog<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new MonotonicPairedDataMap<>(new MemoryAlignedDataList<>(
-                new PairDataType<>(new LongDataType(), new LongDataType())))));
+                IndexedDataMap.<Long>builder()
+                    .values(AppendOnlyLog.<Long>builder()
+                        .dataType(new LongDataType())
+                        .memory(new OffHeapMemory())
+                        .build())
+                    .build()),
+            Arguments.of(MonotonicFixedSizeDataMap.<Long>builder()
+                .values(MemoryAlignedDataList.<Long>builder()
+                    .dataType(new LongDataType())
+                    .memory(new OffHeapMemory())
+                    .build())
+                .build()),
+            Arguments.of(MonotonicDataMap.<Long>builder()
+                .keys(MemoryAlignedDataList.<PairDataType.Pair<Long, Long>>builder()
+                    .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
+                    .memory(new OffHeapMemory())
+                    .build())
+                .values(AppendOnlyLog.<Long>builder()
+                    .dataType(new LongDataType())
+                    .memory(new OffHeapMemory())
+                    .build())
+                .build()),
+            Arguments.of(MonotonicPairedDataMap.<Long>builder()
+                .values(MemoryAlignedDataList.<PairDataType.Pair<Long, Long>>builder()
+                    .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
+                    .build())
+                .build()),
+            Arguments.of(DirectHashDataMap.<Long>builder()
+                .keyType(new LongDataType())
+                .dataType(new LongDataType())
+                .keyMemory(new OffHeapMemory())
+                .valueMemory(new OffHeapMemory())
+                .capacity(1000)
+                .build()));
   }
 }

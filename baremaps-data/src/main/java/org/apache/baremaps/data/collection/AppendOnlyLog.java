@@ -30,11 +30,10 @@ import org.apache.baremaps.data.memory.OffHeapMemory;
 import org.apache.baremaps.data.type.DataType;
 
 /**
- * A log of records backed by a {@link DataType} and a {@link Memory}. Elements are appended to the
- * log and can be accessed by their position in the {@link Memory}. Appending elements to the log is
- * thread-safe.
+ * A log of elements that can only be appended to. Elements are stored in memory and can be accessed
+ * by their position. Append operations are thread-safe.
  *
- * @param <E> The type of the data.
+ * @param <E> The type of elements in the log
  */
 public class AppendOnlyLog<E> implements DataCollection<E> {
 
@@ -47,21 +46,84 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   private final Lock lock = new ReentrantLock();
 
   /**
-   * Constructs an {@link AppendOnlyLog}.
+   * Creates a new builder for an AppendOnlyLog.
    *
-   * @param dataType the data type
+   * @param <E> the type of elements
+   * @return a new builder
    */
-  public AppendOnlyLog(DataType<E> dataType) {
-    this(dataType, new OffHeapMemory());
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
   }
 
   /**
-   * Constructs an append only log.
+   * Builder for AppendOnlyLog.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataType<E> dataType;
+    private Memory<?> memory;
+
+    /**
+     * Sets the data type for the log.
+     *
+     * @param dataType the data type
+     * @return this builder
+     */
+    public Builder<E> dataType(DataType<?> dataType) {
+      @SuppressWarnings("unchecked")
+      DataType<E> castedDataType = (DataType<E>) dataType;
+      this.dataType = castedDataType;
+      return this;
+    }
+
+    /**
+     * Sets the memory for the log.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> memory(Memory<?> memory) {
+      this.memory = memory;
+      return this;
+    }
+
+    /**
+     * Sets the memory for the log values.
+     *
+     * @param memory the memory
+     * @return this builder
+     */
+    public Builder<E> values(Memory<?> memory) {
+      return memory(memory);
+    }
+
+    /**
+     * Builds a new AppendOnlyLog.
+     *
+     * @return a new AppendOnlyLog
+     * @throws IllegalStateException if required parameters are missing
+     */
+    public AppendOnlyLog<E> build() {
+      if (dataType == null) {
+        throw new IllegalStateException("Data type must be specified");
+      }
+
+      if (memory == null) {
+        memory = new OffHeapMemory();
+      }
+
+      return new AppendOnlyLog<>(dataType, memory);
+    }
+  }
+
+  /**
+   * Constructs an AppendOnlyLog.
    *
    * @param dataType the data type
    * @param memory the memory
    */
-  public AppendOnlyLog(DataType<E> dataType, Memory<?> memory) {
+  private AppendOnlyLog(DataType<E> dataType, Memory<?> memory) {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
@@ -70,10 +132,18 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Appends the value to the log and returns its position in the memory.
+   * Persists the current size to memory.
+   */
+  public void persistSize() {
+    memory.segment(0).putLong(0, size);
+  }
+
+  /**
+   * Appends an element to the log and returns its position in memory.
    *
-   * @param value the value
-   * @return the position of the value in the memory.
+   * @param value the element to add
+   * @return the position of the element in memory
+   * @throws DataCollectionException if the element is too large for a segment
    */
   public long addPositioned(E value) {
     int valueSize = dataType.size(value);
@@ -102,10 +172,10 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Returns a values at the specified position in the memory.
+   * Returns the element at the specified position in memory.
    *
-   * @param position the position of the value
-   * @return the value
+   * @param position the position of the element
+   * @return the element
    */
   public E getPositioned(long position) {
     long segmentIndex = position / segmentSize;
@@ -130,32 +200,39 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   public void clear() {
     try {
       memory.clear();
+      this.size = 0;
+      persistSize();
     } catch (IOException e) {
       throw new DataCollectionException(e);
     }
   }
 
   /**
-   * Returns an iterator over the values of the log, starting at the beginning of the log. The
-   * iterator allows to get the current position in the memory.
+   * Returns an iterator over the elements of this log.
    * 
-   * @return an iterator over the values of the log
+   * @return an iterator over the elements
    */
   @Override
   public AppendOnlyLogIterator iterator() {
     return new AppendOnlyLogIterator(size);
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (IOException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
   /**
-   * An iterator over the values of the log that can be used to iterate over the values of the log
-   * and to get the current position in the memory.
+   * An iterator over the elements in this log.
    */
   public class AppendOnlyLogIterator implements Iterator<E> {
 
     private final long size;
-
     private long index;
-
     private long position;
 
     private AppendOnlyLogIterator(long size) {
@@ -199,9 +276,13 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
       return dataType.read(segment, (int) segmentOffset);
     }
 
+    /**
+     * Returns the current position in memory.
+     *
+     * @return the current position
+     */
     public long getPosition() {
       return position;
     }
-
   }
 }

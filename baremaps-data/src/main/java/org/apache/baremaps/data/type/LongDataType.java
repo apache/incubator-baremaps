@@ -21,9 +21,14 @@ package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing longs in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing long values in {@link ByteBuffer}s.
+ */
 public class LongDataType extends MemoryAlignedDataType<Long> {
 
+  /**
+   * Constructs a {@link LongDataType} with a fixed size of {@link Long#BYTES}.
+   */
   public LongDataType() {
     super(Long.BYTES);
   }

@@ -17,35 +17,35 @@
 
 package org.apache.baremaps.data.memory;
 
-/** Signals that an exception occurred in a memory. */
+/** Exception thrown when a memory operation fails. */
 public class MemoryException extends RuntimeException {
 
-  /** Constructs a {@link MemoryException} with {@code null} as its error detail message. */
+  /** Constructs a MemoryException with no message or cause. */
   public MemoryException() {}
 
   /**
-   * Constructs an {@link MemoryException} with the specified detail message.
+   * Constructs a MemoryException with the specified message.
    *
-   * @param message the message
+   * @param message error message
    */
   public MemoryException(String message) {
     super(message);
   }
 
   /**
-   * Constructs a {@link MemoryException} with the specified cause.
+   * Constructs a MemoryException with the specified cause.
    *
-   * @param cause the cause
+   * @param cause the underlying cause
    */
   public MemoryException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * Constructs a {@link MemoryException} with the specified detail message and cause.
+   * Constructs a MemoryException with the specified message and cause.
    *
-   * @param message the message
-   * @param cause the cause
+   * @param message error message
+   * @param cause the underlying cause
    */
   public MemoryException(String message, Throwable cause) {
     super(message, cause);

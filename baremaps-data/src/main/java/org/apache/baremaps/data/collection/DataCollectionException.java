@@ -17,35 +17,39 @@
 
 package org.apache.baremaps.data.collection;
 
-/** Signals that an exception occurred in a store. */
+/**
+ * Exception thrown when an error occurs in a data collection operation.
+ */
 public class DataCollectionException extends RuntimeException {
 
-  /** Constructs a {@code DataCollectionException} with {@code null} as its error detail message. */
+  /**
+   * Constructs a new exception with null as its detail message.
+   */
   public DataCollectionException() {}
 
   /**
-   * Constructs an {@code DataCollectionException} with the specified detail message.
+   * Constructs a new exception with the specified detail message.
    *
-   * @param message the message
+   * @param message the detail message
    */
   public DataCollectionException(String message) {
     super(message);
   }
 
   /**
-   * Constructs a {@code DataCollectionException} with the specified cause.
+   * Constructs a new exception with the specified cause.
    *
-   * @param cause the cause
+   * @param cause the cause of this exception
    */
   public DataCollectionException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * Constructs a {@code DataCollectionException} with the specified detail message and cause.
+   * Constructs a new exception with the specified detail message and cause.
    *
-   * @param message the message
-   * @param cause the cause
+   * @param message the detail message
+   * @param cause the cause of this exception
    */
   public DataCollectionException(String message, Throwable cause) {
     super(message, cause);

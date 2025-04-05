@@ -21,17 +21,30 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A {@link DataType} for reading and writing map objects in {@link ByteBuffer}s.
+ *
+ * @param <K> the type of keys in the map
+ * @param <V> the type of values in the map
+ */
 public class MapDataType<K, V> implements DataType<Map<K, V>> {
 
   private final DataType<K> keyType;
 
   private final DataType<V> valueType;
 
+  /**
+   * Constructs a {@link MapDataType} with data types for keys and values.
+   *
+   * @param keyType the data type for map keys
+   * @param valueType the data type for map values
+   */
   public MapDataType(final DataType<K> keyType, final DataType<V> valueType) {
     this.keyType = keyType;
     this.valueType = valueType;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final Map<K, V> value) {
     int size = Integer.BYTES;
@@ -42,11 +55,13 @@ public class MapDataType<K, V> implements DataType<Map<K, V>> {
     return size;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(final ByteBuffer buffer, final int position, final Map<K, V> value) {
     buffer.putInt(position, size(value));
@@ -59,6 +74,7 @@ public class MapDataType<K, V> implements DataType<Map<K, V>> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public Map<K, V> read(final ByteBuffer buffer, final int position) {
     int size = buffer.getInt(position);

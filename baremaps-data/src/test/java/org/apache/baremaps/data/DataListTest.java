@@ -75,9 +75,19 @@ class DataListTest {
 
   static Stream<Arguments> listProvider() {
     return Stream.of(
-        Arguments.of(new FixedSizeDataList<>(new LongDataType())),
-        Arguments.of(new IndexedDataList<>(new MemoryAlignedDataList<>(new LongDataType()),
-            new AppendOnlyLog<>(new LongDataType()))),
-        Arguments.of(new MemoryAlignedDataList<>(new LongDataType())));
+        Arguments.of(FixedSizeDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build()),
+        Arguments.of(IndexedDataList.<Long>builder()
+            .index(MemoryAlignedDataList.<Long>builder()
+                .dataType(new LongDataType())
+                .build())
+            .values(AppendOnlyLog.<Long>builder()
+                .dataType(new LongDataType())
+                .build())
+            .build()),
+        Arguments.of(MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build()));
   }
 }

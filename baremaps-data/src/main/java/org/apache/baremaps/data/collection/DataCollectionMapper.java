@@ -22,7 +22,10 @@ import java.util.Iterator;
 import java.util.function.Function;
 
 /**
- * A decorator for a table that transforms the geometries of the rows.
+ * A decorator that transforms elements of a data collection using a function.
+ *
+ * @param <S> The source element type
+ * @param <T> The transformed element type
  */
 public class DataCollectionMapper<S, T> implements DataCollection<T> {
 
@@ -31,10 +34,10 @@ public class DataCollectionMapper<S, T> implements DataCollection<T> {
   private final Function<S, T> mapper;
 
   /**
-   * Constructs a new table decorator.
+   * Constructs a new mapper for a data collection.
    *
-   * @param collection the table to decorate
-   * @param mapper the row transformer
+   * @param collection the source collection
+   * @param mapper the function to transform elements
    */
   public DataCollectionMapper(DataCollection<S> collection, Function<S, T> mapper) {
     this.collection = collection;
@@ -57,5 +60,10 @@ public class DataCollectionMapper<S, T> implements DataCollection<T> {
   @Override
   public void clear() {
     collection.clear();
+  }
+
+  @Override
+  public void close() throws Exception {
+    collection.close();
   }
 }

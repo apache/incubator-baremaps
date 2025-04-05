@@ -35,7 +35,10 @@ class AppendOnlyLogTest {
 
   @Test
   void addFixedSizeData() {
-    var collection = new AppendOnlyLog<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
+    var collection = AppendOnlyLog.<Integer>builder()
+        .dataType(new IntegerDataType())
+        .memory(new OffHeapMemory(1 << 10))
+        .build();
     for (int i = 0; i < 1 << 20; i++) {
       assertEquals(Long.BYTES + (i << 2), collection.addPositioned(i));
     }
@@ -46,7 +49,10 @@ class AppendOnlyLogTest {
 
   @Test
   void addVariableSizeValues() {
-    var collection = new AppendOnlyLog<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
+    var collection = AppendOnlyLog.<ArrayList<Integer>>builder()
+        .dataType(new IntegerListDataType())
+        .memory(new OffHeapMemory(1 << 10))
+        .build();
     var random = new Random(0);
     var positions = new ArrayList<Long>();
     var values = new ArrayList<ArrayList<Integer>>();
@@ -69,7 +75,10 @@ class AppendOnlyLogTest {
   @MethodSource("org.apache.baremaps.data.type.DataTypeProvider#dataTypes")
   void testAllDataTypes(DataType dataType, Object value) {
     var num = 1000;
-    var collection = new AppendOnlyLog<>(dataType, new OffHeapMemory(1 << 22));
+    var collection = AppendOnlyLog.builder()
+        .dataType(dataType)
+        .memory(new OffHeapMemory(1 << 22))
+        .build();
 
     // write values
     for (int i = 0; i < num; i++) {

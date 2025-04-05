@@ -17,23 +17,21 @@
 
 package org.apache.baremaps.data.memory;
 
-
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-/** A {@link Memory} that stores segments on-heap using regular byte buffers. */
+/** Memory implementation that uses on-heap byte buffers for storage. */
 public class OnHeapMemory extends Memory<ByteBuffer> {
 
-  /** Constructs an {@link OnHeapMemory} with a default segment size of 1mb. */
+  /** Constructs an OnHeapMemory with a 1MB default segment size. */
   public OnHeapMemory() {
     this(1 << 20);
   }
 
   /**
-   * Constructs an {@link OnHeapMemory} with a custom segment size.
+   * Constructs an OnHeapMemory with the specified segment size.
    *
-   * @param segmentSize the size of the segments in bytes
+   * @param segmentSize the size of each segment in bytes
    */
   public OnHeapMemory(int segmentSize) {
     super(segmentSize);
@@ -45,15 +43,24 @@ public class OnHeapMemory extends Memory<ByteBuffer> {
     return ByteBuffer.allocate(size);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * On-heap buffers don't require explicit cleanup.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void close() throws IOException {
-    // Nothing to close
+  public synchronized void close() throws IOException {
+    // On-heap ByteBuffers don't need special cleanup
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Clears all segments to allow garbage collection.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void clear() throws IOException {
-    // Nothing to clean
+  public synchronized void clear() throws IOException {
+    // Clear the segment list to allow GC to reclaim the memory
+    segments.clear();
   }
 }

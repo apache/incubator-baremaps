@@ -21,15 +21,19 @@ package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing nullable values in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing nullable values in {@link ByteBuffer}s.
+ *
+ * @param <T> the type of value being read or written
+ */
 public class NullableDataType<T> implements DataType<T> {
 
   private final DataType<T> dataType;
 
   /**
-   * Constructs a {@link NullableDataType} with a data type.
+   * Constructs a {@link NullableDataType} with a data type for the wrapped value.
    *
-   * @param dataType the data type of the values
+   * @param dataType the data type for the non-null values
    */
   public NullableDataType(final DataType<T> dataType) {
     this.dataType = dataType;

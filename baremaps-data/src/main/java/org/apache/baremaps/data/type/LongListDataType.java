@@ -17,13 +17,13 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of longs in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing lists of long values in {@link ByteBuffer}s.
+ */
 public class LongListDataType implements DataType<List<Long>> {
 
   /** {@inheritDoc} */

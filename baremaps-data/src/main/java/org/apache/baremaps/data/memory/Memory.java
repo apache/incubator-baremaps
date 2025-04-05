@@ -17,16 +17,13 @@
 
 package org.apache.baremaps.data.memory;
 
-
-
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A base class to manage segments of on-heap, off-heap, or on-disk memory. */
-public abstract class Memory<T extends ByteBuffer> implements Closeable {
+/** A base class for managing on-heap, off-heap, or memory-mapped segments. */
+public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
 
   private final int segmentSize;
 
@@ -36,10 +33,14 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
 
   protected final List<T> segments = new ArrayList<>();
 
+  // Flag to track if this Memory has been closed
+  protected volatile boolean closed = false;
+
   /**
-   * Constructs a memory with a given segment size.
+   * Constructs a memory with the specified segment size.
    *
-   * @param segmentSize the size of the segments
+   * @param segmentSize the size of the segments (must be a power of 2)
+   * @throws IllegalArgumentException if the segment size is not a power of 2
    */
   protected Memory(int segmentSize) {
     if ((segmentSize & -segmentSize) != segmentSize) {
@@ -51,37 +52,38 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
   }
 
   /**
-   * Returns the size of the segments.
+   * Returns the size of each segment.
    *
-   * @return the size of the segments
+   * @return the segment size in bytes
    */
   public int segmentSize() {
     return segmentSize;
   }
 
   /**
-   * Returns the bit shift to find a segment index from a memory position.
+   * Returns the bit shift used to find a segment index from a memory position.
    *
-   * @return the bit shift
+   * @return the bit shift value
    */
   public long segmentShift() {
     return segmentShift;
   }
 
   /**
-   * Returns the bit mask to find a segment offset from a memory position.
+   * Returns the bit mask used to find an offset within a segment from a memory position.
    *
-   * @return the bit mask
+   * @return the bit mask value
    */
   public long segmentMask() {
     return segmentMask;
   }
 
   /**
-   * Returns a segment of the memory.
+   * Returns a segment at the specified index, allocating it if necessary.
    *
-   * @param index the index of the segment
-   * @return the segment
+   * @param index the segment index
+   * @return the segment as a ByteBuffer
+   * @throws MemoryException if segment allocation fails
    */
   public ByteBuffer segment(int index) {
     if (segments.size() <= index) {
@@ -94,38 +96,82 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
     return segment;
   }
 
-  /** The allocation of segments is synchronized to enable access by multiple threads. */
-  private synchronized ByteBuffer allocate(int index) {
-    while (segments.size() <= index) {
-      segments.add(null);
+  /**
+   * Checks if this Memory has been closed.
+   * 
+   * @throws IllegalStateException if this Memory has been closed
+   */
+  protected void checkNotClosed() {
+    if (closed) {
+      throw new IllegalStateException("Memory has been closed");
     }
-    T segment = segments.get(index);
-    if (segment == null) {
-      segment = allocate(index, segmentSize);
-      segments.set(index, segment);
-    }
-    return segment;
   }
 
-  /** Returns the size of the allocated memory. */
+  /**
+   * Allocates a segment at the specified index. Thread-safe method.
+   *
+   * @param index the segment index
+   * @return the allocated segment
+   * @throws MemoryException if allocation fails
+   */
+  private synchronized ByteBuffer allocate(int index) {
+    checkNotClosed();
+
+    try {
+      while (segments.size() <= index) {
+        segments.add(null);
+      }
+      T segment = segments.get(index);
+      if (segment == null) {
+        segment = allocate(index, segmentSize);
+        segments.set(index, segment);
+      }
+      return segment;
+    } catch (OutOfMemoryError e) {
+      throw new MemoryException(
+          "Failed to allocate memory segment of size " + segmentSize + " bytes", e);
+    } catch (Exception e) {
+      throw new MemoryException("Failed to allocate memory segment", e);
+    }
+  }
+
+  /**
+   * Returns the total size of allocated memory.
+   *
+   * @return the size in bytes
+   */
   public long size() {
+    checkNotClosed();
     return (long) segments.size() * (long) segmentSize;
   }
 
   /**
-   * Allocates a segment for a given index and size.
+   * Allocates a segment of the specified size.
    *
-   * @param index the index of the segment
-   * @param size the size of the segment
-   * @return the segment
+   * @param index the segment index
+   * @param size the segment size in bytes
+   * @return the allocated segment
    */
   protected abstract T allocate(int index, int size);
 
   /**
-   * Clears the memory and the underlying resources.
+   * Releases resources associated with this memory. Unlike {@link #clear()}, this method does not
+   * delete underlying data.
+   *
+   * @throws IOException if an I/O error occurs
+   */
+  @Override
+  public synchronized void close() throws IOException {
+    if (!closed) {
+      closed = true;
+    }
+  }
+
+  /**
+   * Deletes all data managed by this memory. Unlike {@link #close()}, this method removes
+   * underlying data.
+   *
+   * @throws IOException if an I/O error occurs
    */
   public abstract void clear() throws IOException;
-
-
-
 }

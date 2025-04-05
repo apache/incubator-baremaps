@@ -24,15 +24,11 @@ import org.apache.baremaps.data.type.PairDataType;
 import org.apache.baremaps.data.type.PairDataType.Pair;
 
 /**
- * A {@link DataMap} that can hold a large number of variable-size data elements. The elements must
- * be sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
- * once inserted.
+ * A map that stores values in a monotonically increasing key order. Optimized for 
+ * sequential insertions and binary search lookups with chunked indexing.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
- *
- * <p>
- * Copyright (c) Planetiler.
  */
 public class MonotonicDataMap<E> implements DataMap<Long, E> {
 
@@ -41,40 +37,95 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   private final AppendOnlyLog<E> values;
 
   private long lastChunk = -1;
-
+  
   /**
-   * Constructs a {@link MonotonicDataMap} with default lists for storing offsets.
+   * Creates a new builder for a MonotonicDataMap.
    *
-   * @param values the buffer of values
+   * @param <E> the type of values in the map
+   * @return a new builder
    */
-  public MonotonicDataMap(AppendOnlyLog<E> values) {
-    this(
-        new MemoryAlignedDataList<>(new LongDataType()),
-        new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType())),
-        values);
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
+  }
+  
+  /**
+   * Builder for MonotonicDataMap.
+   *
+   * @param <E> the type of values in the map
+   */
+  public static class Builder<E> {
+    private DataList<Long> offsets;
+    private DataList<Pair<Long, Long>> keys;
+    private AppendOnlyLog<E> values;
+    
+    /**
+     * Sets the offsets list.
+     *
+     * @param offsets the list of offsets
+     * @return this builder
+     */
+    public Builder<E> offsets(DataList<Long> offsets) {
+      this.offsets = offsets;
+      return this;
+    }
+    
+    /**
+     * Sets the keys list.
+     *
+     * @param keys the list of keys
+     * @return this builder
+     */
+    public Builder<E> keys(DataList<Pair<Long, Long>> keys) {
+      this.keys = keys;
+      return this;
+    }
+    
+    /**
+     * Sets the values buffer.
+     *
+     * @param values the buffer of values
+     * @return this builder
+     */
+    public Builder<E> values(AppendOnlyLog<E> values) {
+      this.values = values;
+      return this;
+    }
+    
+    /**
+     * Builds a new MonotonicDataMap.
+     *
+     * @return a new MonotonicDataMap
+     * @throws IllegalArgumentException if the values buffer is not provided
+     */
+    public MonotonicDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalArgumentException("Values buffer must be provided");
+      }
+      
+      if (offsets == null) {
+        offsets = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
+      }
+      
+      if (keys == null) {
+        keys = MemoryAlignedDataList.<Pair<Long, Long>>builder()
+            .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
+            .build();
+      }
+      
+      return new MonotonicDataMap<>(offsets, keys, values);
+    }
   }
 
   /**
-   * Constructs a {@link MonotonicDataMap} with default lists for storing offsets and keys.
-   *
-   * @param keys the list of keys
-   * @param values the buffer of values
-   */
-  public MonotonicDataMap(DataList<Pair<Long, Long>> keys, AppendOnlyLog<E> values) {
-    this(
-        new MemoryAlignedDataList<>(new LongDataType()),
-        keys,
-        values);
-  }
-
-  /**
-   * Constructs a {@link MonotonicDataMap}.
+   * Constructs a MonotonicDataMap.
    *
    * @param offsets the list of offsets
    * @param keys the list of keys
    * @param values the buffer of values
    */
-  public MonotonicDataMap(DataList<Long> offsets, DataList<Pair<Long, Long>> keys,
+  private MonotonicDataMap(DataList<Long> offsets, DataList<Pair<Long, Long>> keys,
       AppendOnlyLog<E> values) {
     this.offsets = offsets;
     this.keys = keys;
@@ -172,4 +223,15 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
     values.clear();
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public void close() throws Exception {
+    try {
+      offsets.close();
+      keys.close();
+      values.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
+  }
 }

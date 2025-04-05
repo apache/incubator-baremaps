@@ -22,10 +22,12 @@ package org.apache.baremaps.data.type;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A {@link DataType} for reading and writing {@link Coordinate}s in {@link ByteBuffer}s. */
+/** A {@link DataType} for reading and writing {@link Coordinate} values in {@link ByteBuffer}s. */
 public class CoordinateDataType extends MemoryAlignedDataType<Coordinate> {
 
-  /** Constructs a {@link CoordinateDataType}. */
+  /**
+   * Constructs a {@link CoordinateDataType} with a fixed size of two {@link Double#BYTES}.
+   */
   public CoordinateDataType() {
     super(Double.BYTES * 2);
   }

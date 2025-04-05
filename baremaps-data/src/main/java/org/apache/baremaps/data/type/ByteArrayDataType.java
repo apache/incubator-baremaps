@@ -21,7 +21,7 @@ package org.apache.baremaps.data.type;
 import java.nio.ByteBuffer;
 
 /**
- * A {@link DataType} for reading and writing lists of values in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing byte arrays in {@link ByteBuffer}s.
  */
 public class ByteArrayDataType implements DataType<byte[]> {
 

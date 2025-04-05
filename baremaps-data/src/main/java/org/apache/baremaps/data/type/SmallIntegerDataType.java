@@ -17,19 +17,21 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing small integers in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing small integer values in {@link ByteBuffer}s with a
+ * customizable storage size.
+ */
 public class SmallIntegerDataType extends FixedSizeDataType<Integer> {
 
   private final int n;
 
   /**
-   * Constructs a {@link SmallIntegerDataType}.
+   * Constructs a {@link SmallIntegerDataType} with a specified number of bytes.
    *
-   * @param n the number of bytes used to store the integer
+   * @param n the number of bytes used to store the integer (must be between 1 and 4)
+   * @throws IllegalArgumentException if n is less than 1 or greater than 4
    */
   public SmallIntegerDataType(int n) {
     super(n);

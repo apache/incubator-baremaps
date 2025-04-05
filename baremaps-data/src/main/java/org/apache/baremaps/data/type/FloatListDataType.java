@@ -17,13 +17,13 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of floats in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing lists of float values in {@link ByteBuffer}s.
+ */
 public class FloatListDataType implements DataType<List<Float>> {
 
   /** {@inheritDoc} */

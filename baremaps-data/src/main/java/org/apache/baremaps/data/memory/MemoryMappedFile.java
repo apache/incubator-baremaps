@@ -17,8 +17,6 @@
 
 package org.apache.baremaps.data.memory;
 
-
-
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -28,25 +26,25 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.apache.baremaps.data.util.MappedByteBufferUtils;
 
-/** A {@link Memory} that stores segments on-disk using mapped byte buffers in a file. */
+/** Memory implementation that uses memory-mapped file for storage. */
 public class MemoryMappedFile extends Memory<MappedByteBuffer> {
 
   private final Path file;
 
   /**
-   * Constructs an {@link MemoryMappedFile} with a custom file and a default segment size of 1gb.
+   * Constructs a MemoryMappedFile with the specified file and 1GB segment size.
    *
-   * @param file the file that stores the data
+   * @param file the file to memory-map
    */
   public MemoryMappedFile(Path file) {
     this(file, 1 << 30);
   }
 
   /**
-   * Constructs an {@link MemoryMappedFile} with a custom file and a custom segment size.
+   * Constructs a MemoryMappedFile with the specified file and segment size.
    *
-   * @param file the file that stores the data
-   * @param segmentBytes the size of the segments in bytes
+   * @param file the file to memory-map
+   * @param segmentBytes the size of each segment in bytes
    */
   public MemoryMappedFile(Path file, int segmentBytes) {
     super(segmentBytes);
@@ -66,19 +64,35 @@ public class MemoryMappedFile extends Memory<MappedByteBuffer> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Releases all mapped buffers but keeps the file intact.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void close() throws IOException {
+  public synchronized void close() throws IOException {
+    // Release MappedByteBuffer resources
     for (MappedByteBuffer buffer : segments) {
-      MappedByteBufferUtils.unmap(buffer);
+      if (buffer != null) {
+        MappedByteBufferUtils.unmap(buffer);
+      }
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Unmaps all buffers and deletes the file.
+   * 
+   * {@inheritDoc}
+   */
   @Override
-  public void clear() throws IOException {
+  public synchronized void clear() throws IOException {
+    // Release resources first
     close();
+
+    // Clear the segment list
     segments.clear();
-    Files.delete(file);
+
+    // Delete the file
+    Files.deleteIfExists(file);
   }
 }

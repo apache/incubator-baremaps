@@ -27,10 +27,13 @@ import org.apache.baremaps.store.DataRowImpl;
 import org.apache.baremaps.store.DataSchema;
 
 /**
- * A data type for rows.
+ * A {@link DataType} for reading and writing {@link DataRow} objects in {@link ByteBuffer}s.
  */
 public class RowDataType implements DataType<DataRow> {
 
+  /**
+   * Map of data types for each of the supported column types.
+   */
   private static final EnumMap<Type, DataType> types = new EnumMap<>(Type.class);
 
   static {
@@ -55,10 +58,16 @@ public class RowDataType implements DataType<DataRow> {
 
   private final DataSchema rowType;
 
+  /**
+   * Constructs a {@link RowDataType} with a specified schema.
+   *
+   * @param rowType the data schema defining the row's structure
+   */
   public RowDataType(DataSchema rowType) {
     this.rowType = rowType;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final DataRow row) {
     int size = Integer.BYTES;
@@ -72,11 +81,13 @@ public class RowDataType implements DataType<DataRow> {
     return size;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(final ByteBuffer buffer, final int position) {
     return buffer.getInt(position);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(final ByteBuffer buffer, final int position, final DataRow row) {
     int p = position + Integer.BYTES;
@@ -92,6 +103,7 @@ public class RowDataType implements DataType<DataRow> {
     buffer.putInt(position, p - position);
   }
 
+  /** {@inheritDoc} */
   @Override
   public DataRow read(final ByteBuffer buffer, final int position) {
     int p = position + Integer.BYTES;

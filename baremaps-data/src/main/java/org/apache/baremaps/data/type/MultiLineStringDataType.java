@@ -24,7 +24,8 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 
 /**
- * A data type for {@link MultiLineString} objects.
+ * A {@link DataType} for reading and writing {@link MultiLineString} objects in
+ * {@link ByteBuffer}s.
  */
 public class MultiLineStringDataType implements DataType<MultiLineString> {
 
@@ -33,14 +34,14 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
   private final GeometryFactory geometryFactory;
 
   /**
-   * Constructs a {@code MultiLineStringDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link MultiLineStringDataType} with a default {@link GeometryFactory}.
    */
   public MultiLineStringDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code MultiLineStringDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link MultiLineStringDataType} with a specified {@link GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */

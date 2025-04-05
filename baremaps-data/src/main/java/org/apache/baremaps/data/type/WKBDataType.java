@@ -17,19 +17,19 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
-/** A {@link DataType} for reading and writing {@link Geometry} in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing {@link Geometry} objects in Well-Known Binary (WKB)
+ * format in {@link ByteBuffer}s.
+ */
 public class WKBDataType implements DataType<Geometry> {
 
   /** {@inheritDoc} */
@@ -70,14 +70,11 @@ public class WKBDataType implements DataType<Geometry> {
     return deserialize(bytes);
   }
 
-  public static final GeometryFactory GEOMETRY_FACTORY_WGS84 =
-      new GeometryFactory(new PrecisionModel(), 4326);
-
   /**
-   * Serializes a geometry in the WKB format.
+   * Serializes a geometry into the WKB format.
    *
-   * @param geometry
-   * @return
+   * @param geometry the geometry to serialize
+   * @return the serialized geometry as a byte array, or null if the input is null
    */
   private static byte[] serialize(Geometry geometry) {
     if (geometry == null) {
@@ -88,10 +85,11 @@ public class WKBDataType implements DataType<Geometry> {
   }
 
   /**
-   * Deserializes a geometry in the WKB format.
+   * Deserializes a geometry from the WKB format.
    *
-   * @param wkb
-   * @return
+   * @param wkb the WKB byte array to deserialize
+   * @return the deserialized geometry, or null if the input is null
+   * @throws IllegalArgumentException if the WKB cannot be parsed
    */
   private static Geometry deserialize(byte[] wkb) {
     if (wkb == null) {

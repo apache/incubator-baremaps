@@ -25,7 +25,7 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * A data type for {@link Polygon} objects.
+ * A {@link DataType} for reading and writing {@link Polygon} objects in {@link ByteBuffer}s.
  */
 public class PolygonDataType implements DataType<Polygon> {
 
@@ -34,14 +34,14 @@ public class PolygonDataType implements DataType<Polygon> {
   private final GeometryFactory geometryFactory;
 
   /**
-   * Constructs a {@code PolygonDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link PolygonDataType} with a default {@link GeometryFactory}.
    */
   public PolygonDataType() {
     this(new GeometryFactory());
   }
 
   /**
-   * Constructs a {@code PolygonDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link PolygonDataType} with a specified {@link GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */

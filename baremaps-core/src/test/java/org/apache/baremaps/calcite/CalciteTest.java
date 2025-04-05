@@ -80,7 +80,11 @@ class CalciteTest {
           new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY)));
       DataTable cityDataTable = new BaremapsDataTable(
           cityRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(cityRowType))));
+          IndexedDataList.<DataRow>builder()
+              .values(AppendOnlyLog.<DataRow>builder()
+                  .dataType(new RowDataType(cityRowType))
+                  .build())
+              .build());
       cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
           List.of(1, "Paris", geometryFactory.createPoint(new Coordinate(2.3522, 48.8566)))));
       cityDataTable.add(new DataRowImpl(cityDataTable.schema(),
@@ -94,7 +98,11 @@ class CalciteTest {
           new DataColumnFixed("population", Cardinality.OPTIONAL, Type.INTEGER)));
       DataTable populationDataTable = new BaremapsDataTable(
           populationRowType,
-          new IndexedDataList<>(new AppendOnlyLog<>(new RowDataType(populationRowType))));
+          IndexedDataList.<DataRow>builder()
+              .values(AppendOnlyLog.<DataRow>builder()
+                  .dataType(new RowDataType(populationRowType))
+                  .build())
+              .build());
       populationDataTable
           .add(new DataRowImpl(populationDataTable.schema(), List.of(1, 2_161_000)));
       populationDataTable

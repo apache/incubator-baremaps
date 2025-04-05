@@ -22,33 +22,85 @@ package org.apache.baremaps.data.collection;
 import org.apache.baremaps.data.type.LongDataType;
 
 /**
- * A data list that can hold a large number of variable size data elements. This data list is backed
- * by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ * A list that stores variable-size elements using an index. Elements are stored in an append-only
+ * log with fixed indices for fast access.
  *
- * @param <E> The type of the elements.
+ * @param <E> The type of elements in the list
  */
 public class IndexedDataList<E> implements DataList<E> {
 
   private final DataList<Long> index;
-
   private final AppendOnlyLog<E> values;
 
   /**
-   * Constructs a {@link IndexedDataList}.
+   * Creates a new builder for an IndexedDataList.
    *
-   * @param values the values
+   * @param <E> the type of elements
+   * @return a new builder
    */
-  public IndexedDataList(AppendOnlyLog<E> values) {
-    this(new MemoryAlignedDataList<>(new LongDataType()), values);
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
   }
 
   /**
-   * Constructs a {@link IndexedDataList}.
+   * Builder for IndexedDataList.
+   *
+   * @param <E> the type of elements
+   */
+  public static class Builder<E> {
+    private DataList<Long> index;
+    private AppendOnlyLog<E> values;
+
+    /**
+     * Sets the index for the list.
+     *
+     * @param index the index
+     * @return this builder
+     */
+    public Builder<E> index(DataList<Long> index) {
+      this.index = index;
+      return this;
+    }
+
+    /**
+     * Sets the values for the list.
+     *
+     * @param values the values
+     * @return this builder
+     */
+    public Builder<E> values(AppendOnlyLog<E> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new IndexedDataList.
+     *
+     * @return a new IndexedDataList
+     * @throws IllegalStateException if values are missing
+     */
+    public IndexedDataList<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+
+      if (index == null) {
+        index = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
+      }
+
+      return new IndexedDataList<>(index, values);
+    }
+  }
+
+  /**
+   * Constructs an IndexedDataList.
    *
    * @param index the index
    * @param values the values
    */
-  public IndexedDataList(DataList<Long> index, AppendOnlyLog<E> values) {
+  private IndexedDataList(DataList<Long> index, AppendOnlyLog<E> values) {
     this.index = index;
     this.values = values;
   }
@@ -85,5 +137,15 @@ public class IndexedDataList<E> implements DataList<E> {
   public void clear() {
     index.clear();
     values.clear();
+  }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      index.close();
+      values.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
   }
 }

@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * A {@link DataType} for reading and writing lists of bytes in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing lists of byte values in {@link ByteBuffer}s.
  */
 public class ByteListDataType implements DataType<List<Byte>> {
 

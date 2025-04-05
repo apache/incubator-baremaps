@@ -24,7 +24,8 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 
 /**
- * A data type for {@link GeometryCollection} objects.
+ * A {@link DataType} for reading and writing {@link GeometryCollection} objects in
+ * {@link ByteBuffer}s.
  */
 public class GeometryCollectionDataType implements DataType<GeometryCollection> {
 
@@ -33,14 +34,14 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
   private final GeometryDataType geometryDataType;
 
   /**
-   * Constructs a {@code GeometryCollectionDataType} with a default {@code GeometryFactory}.
+   * Constructs a {@link GeometryCollectionDataType} with a default {@link GeometryFactory}.
    */
   public GeometryCollectionDataType() {
     this(new GeometryFactory(), new GeometryDataType());
   }
 
   /**
-   * Constructs a {@code GeometryCollectionDataType} with a specified {@code GeometryFactory}.
+   * Constructs a {@link GeometryCollectionDataType} with a specified {@link GeometryFactory}.
    *
    * @param geometryFactory the geometry factory
    */
@@ -49,8 +50,8 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
   }
 
   /**
-   * Constructs a {@code GeometryCollectionDataType} with a specified {@code GeometryFactory} and
-   * {@code GeometryDataType}.
+   * Constructs a {@link GeometryCollectionDataType} with a specified {@link GeometryFactory} and
+   * {@link GeometryDataType}.
    *
    * @param geometryFactory the geometry factory
    * @param geometryDataType the geometry data type

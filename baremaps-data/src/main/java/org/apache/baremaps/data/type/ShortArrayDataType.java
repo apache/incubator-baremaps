@@ -21,7 +21,9 @@ package org.apache.baremaps.data.type;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing lists of shorts in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing arrays of short values in {@link ByteBuffer}s.
+ */
 public class ShortArrayDataType implements DataType<short[]> {
 
   /** {@inheritDoc} */

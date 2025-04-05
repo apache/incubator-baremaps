@@ -26,9 +26,8 @@ import org.apache.baremaps.data.type.LongDataType;
 import org.apache.baremaps.data.type.PairDataType.Pair;
 
 /**
- * A {@link DataMap} that can hold a large number of variable-size data elements. The elements must
- * be sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
- * once inserted.
+ * A map that stores values as key-value pairs in monotonically increasing key order. Optimized for
+ * sequential insertions and fast binary search lookups.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -44,19 +43,74 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
-   * Constructs a {@link MonotonicPairedDataMap}.
+   * Creates a new builder for a MonotonicPairedDataMap.
+   *
+   * @param <E> the type of values
+   * @return a new builder
    */
-  public MonotonicPairedDataMap(MemoryAlignedDataList<Pair<Long, E>> values) {
-    this(new MemoryAlignedDataList<>(new LongDataType()), values);
+  public static <E> Builder<E> builder() {
+    return new Builder<>();
   }
 
   /**
-   * Constructs a {@link MonotonicPairedDataMap}.
+   * Builder for MonotonicPairedDataMap.
+   *
+   * @param <E> the type of values
+   */
+  public static class Builder<E> {
+    private DataList<Long> offsets;
+    private MemoryAlignedDataList<Pair<Long, E>> values;
+
+    /**
+     * Sets the offsets for the map.
+     *
+     * @param offsets the list of offsets
+     * @return this builder
+     */
+    public Builder<E> offsets(DataList<Long> offsets) {
+      this.offsets = offsets;
+      return this;
+    }
+
+    /**
+     * Sets the values for the map.
+     *
+     * @param values the buffer of values
+     * @return this builder
+     */
+    public Builder<E> values(MemoryAlignedDataList<Pair<Long, E>> values) {
+      this.values = values;
+      return this;
+    }
+
+    /**
+     * Builds a new MonotonicPairedDataMap.
+     *
+     * @return a new MonotonicPairedDataMap
+     * @throws IllegalStateException if values are missing
+     */
+    public MonotonicPairedDataMap<E> build() {
+      if (values == null) {
+        throw new IllegalStateException("Values must be specified");
+      }
+
+      if (offsets == null) {
+        offsets = MemoryAlignedDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .build();
+      }
+
+      return new MonotonicPairedDataMap<>(offsets, values);
+    }
+  }
+
+  /**
+   * Constructs a MonotonicPairedDataMap.
    *
    * @param offsets the list of offsets
    * @param values the buffer of values
    */
-  public MonotonicPairedDataMap(DataList<Long> offsets,
+  private MonotonicPairedDataMap(DataList<Long> offsets,
       MemoryAlignedDataList<Pair<Long, E>> values) {
     this.offsets = offsets;
     this.values = values;
@@ -150,5 +204,15 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
   public void clear() {
     offsets.clear();
     values.clear();
+  }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      offsets.close();
+      values.close();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

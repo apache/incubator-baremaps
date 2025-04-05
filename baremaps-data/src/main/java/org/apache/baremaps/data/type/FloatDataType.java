@@ -22,11 +22,13 @@ package org.apache.baremaps.data.type;
 import java.nio.ByteBuffer;
 
 /**
- * A {@link DataType} for reading and writing floats in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing float values in {@link ByteBuffer}s.
  */
 public class FloatDataType extends MemoryAlignedDataType<Float> {
 
-  /** Constructs a {@link FloatDataType}. */
+  /**
+   * Constructs a {@link FloatDataType} with a fixed size of {@link Float#BYTES}.
+   */
   public FloatDataType() {
     super(Float.BYTES);
   }

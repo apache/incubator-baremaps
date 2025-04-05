@@ -17,13 +17,13 @@
 
 package org.apache.baremaps.data.type;
 
-
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of doubles in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing lists of double values in {@link ByteBuffer}s.
+ */
 public class DoubleListDataType implements DataType<List<Double>> {
 
   /** {@inheritDoc} */
