@@ -74,9 +74,10 @@ public class WorkflowContext {
   private <T> DataMap<Long, T> getMemoryAlignedDataMap(String name, FixedSizeDataType<T> dataType)
       throws IOException {
     Path coordinateDir = Files.createDirectories(cacheDir.resolve(name));
-    return new MemoryAlignedDataMap<>(
-        dataType,
-        new MemoryMappedDirectory(coordinateDir));
+    return MemoryAlignedDataMap.<T>builder()
+        .dataType(dataType)
+        .memory(new MemoryMappedDirectory(coordinateDir))
+        .build();
   }
 
   private <T> DataMap<Long, T> getMonotonicDataMap(String name, DataType<T> dataType)

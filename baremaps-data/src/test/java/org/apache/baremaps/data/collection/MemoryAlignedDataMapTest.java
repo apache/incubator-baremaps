@@ -37,7 +37,10 @@ class MemoryAlignedDataMapTest {
 
   @BeforeEach
   void setUp() {
-    map = new MemoryAlignedDataMap<>(new IntegerDataType(), new OnHeapMemory(1024));
+    map = MemoryAlignedDataMap.<Integer>builder()
+        .dataType(new IntegerDataType())
+        .memory(new OnHeapMemory(1024))
+        .build();
   }
 
   @AfterEach
