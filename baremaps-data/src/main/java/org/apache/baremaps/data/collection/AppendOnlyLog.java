@@ -70,6 +70,13 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
+   * Persists the current size to memory.
+   */
+  public void persistSize() {
+    memory.segment(0).putLong(0, size);
+  }
+
+  /**
    * Appends the value to the log and returns its position in the memory.
    *
    * @param value the value
@@ -130,6 +137,8 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   public void clear() {
     try {
       memory.clear();
+      this.size = 0;
+      persistSize();
     } catch (IOException e) {
       throw new DataCollectionException(e);
     }
