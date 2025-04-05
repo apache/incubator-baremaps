@@ -36,13 +36,19 @@ class SizedDataListTest {
   void segmentsTooSmall() {
     var dataType = new LongDataType();
     var memory = new OffHeapMemory(4);
-    assertThrows(DataCollectionException.class, () -> new FixedSizeDataList<>(dataType, memory));
+    assertThrows(DataCollectionException.class, () -> FixedSizeDataList.<Long>builder()
+            .dataType(dataType)
+            .memory(memory)
+            .build());
   }
 
   @ParameterizedTest
   @MethodSource("org.apache.baremaps.data.memory.MemoryProvider#memories")
   void appendFixedSizeValues(Memory memory) throws IOException {
-    var list = new FixedSizeDataList<>(new LongDataType(), memory);
+    var list = FixedSizeDataList.<Long>builder()
+            .dataType(new LongDataType())
+            .memory(memory)
+            .build();
     for (int i = 0; i < 1 << 10; i++) {
       assertEquals(i, list.addIndexed((long) i));
     }

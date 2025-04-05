@@ -92,20 +92,11 @@ public class FixedSizeDataList<E> implements DataList<E> {
       }
 
       if (memory == null) {
-        return new FixedSizeDataList<>(dataType);
-      } else {
-        return new FixedSizeDataList<>(dataType, memory);
+        memory = new OffHeapMemory();
       }
+        
+      return new FixedSizeDataList<>(dataType, memory);
     }
-  }
-
-  /**
-   * Constructs a {@link FixedSizeDataList}.
-   *
-   * @param dataType the data type
-   */
-  public FixedSizeDataList(FixedSizeDataType<E> dataType) {
-    this(dataType, new OffHeapMemory());
   }
 
   /**
@@ -114,7 +105,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public FixedSizeDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
+  private FixedSizeDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }
