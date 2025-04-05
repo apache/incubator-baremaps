@@ -90,7 +90,7 @@ public class IndexedDataList<E> implements DataList<E> {
             .dataType(new LongDataType())
             .build();
       }
-      
+
       return new IndexedDataList<>(index, values);
     }
   }

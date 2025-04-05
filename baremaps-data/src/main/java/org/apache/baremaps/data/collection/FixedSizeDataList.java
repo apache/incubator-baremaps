@@ -94,7 +94,7 @@ public class FixedSizeDataList<E> implements DataList<E> {
       if (memory == null) {
         memory = new OffHeapMemory();
       }
-        
+
       return new FixedSizeDataList<>(dataType, memory);
     }
   }

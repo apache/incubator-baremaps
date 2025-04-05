@@ -85,11 +85,11 @@ public class WorkflowContext {
     Path mapDir = Files.createDirectories(cacheDir.resolve(name));
     Path keysDir = Files.createDirectories(mapDir.resolve("keys"));
     Path valuesDir = Files.createDirectories(mapDir.resolve("values"));
-    MemoryAlignedDataList<PairDataType.Pair<Long, Long>> keys = MemoryAlignedDataList
-        .<PairDataType.Pair<Long, Long>>builder()
-        .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
-        .memory(new MemoryMappedDirectory(keysDir))
-        .build();
+    MemoryAlignedDataList<PairDataType.Pair<Long, Long>> keys =
+        MemoryAlignedDataList.<PairDataType.Pair<Long, Long>>builder()
+            .dataType(new PairDataType<>(new LongDataType(), new LongDataType()))
+            .memory(new MemoryMappedDirectory(keysDir))
+            .build();
     AppendOnlyLog<T> values = AppendOnlyLog.<T>builder()
         .dataType(dataType)
         .values(new MemoryMappedDirectory(valuesDir))

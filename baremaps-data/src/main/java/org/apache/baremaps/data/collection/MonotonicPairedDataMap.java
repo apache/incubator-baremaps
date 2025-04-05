@@ -100,7 +100,7 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
             .dataType(new LongDataType())
             .build();
       }
-      
+
       return new MonotonicPairedDataMap<>(offsets, values);
     }
   }
