@@ -28,27 +28,22 @@ import org.apache.baremaps.data.memory.OffHeapMemory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
 /**
- * A {@link DataList} that can hold a large number of fixed-size memory-aligned data elements. This
- * data list is backed by a memory that can be either heap, off-heap, or memory mapped.
+ * A list that stores fixed-size memory-aligned elements. Optimized for performance with bit-shift
+ * operations for memory addressing.
  *
- * @param <E> The type of the elements.
+ * @param <E> The type of elements in the list
  */
 public class MemoryAlignedDataList<E> implements DataList<E> {
 
   private final FixedSizeDataType<E> dataType;
-
   private final Memory<?> memory;
-
   private final int valueShift;
-
   private final long segmentShift;
-
   private final long segmentMask;
-
   private AtomicLong size;
 
   /**
-   * Static factory method to create a new builder.
+   * Creates a new builder for a MemoryAlignedDataList.
    *
    * @param <E> the type of elements
    * @return a new builder
@@ -58,7 +53,7 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
   }
 
   /**
-   * Builder for {@link MemoryAlignedDataList}.
+   * Builder for MemoryAlignedDataList.
    *
    * @param <E> the type of elements
    */
@@ -89,7 +84,7 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
     }
 
     /**
-     * Builds a new {@link MemoryAlignedDataList}.
+     * Builds a new MemoryAlignedDataList.
      *
      * @return a new MemoryAlignedDataList
      * @throws IllegalStateException if the data type is missing
@@ -108,10 +103,12 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
   }
 
   /**
-   * Constructs a {@link MemoryAlignedDataList}.
+   * Constructs a MemoryAlignedDataList.
    *
    * @param dataType the data type
    * @param memory the memory
+   * @throws DataCollectionException if memory and data type size requirements are not met
+   * @throws IllegalArgumentException if data type size is not a power of 2
    */
   private MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory<?> memory) {
     if (dataType.size() > memory.segmentSize()) {
@@ -131,6 +128,12 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
     this.size = new AtomicLong(0);
   }
 
+  /**
+   * Writes an element at the specified index.
+   *
+   * @param index the index
+   * @param value the element to write
+   */
   private void write(long index, E value) {
     long position = index << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);

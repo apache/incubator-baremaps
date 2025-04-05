@@ -22,19 +22,18 @@ package org.apache.baremaps.data.collection;
 import org.apache.baremaps.data.type.LongDataType;
 
 /**
- * A data list that can hold a large number of variable size data elements. This data list is backed
- * by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ * A list that stores variable-size elements using an index. Elements are stored in an append-only
+ * log with fixed indices for fast access.
  *
- * @param <E> The type of the elements.
+ * @param <E> The type of elements in the list
  */
 public class IndexedDataList<E> implements DataList<E> {
 
   private final DataList<Long> index;
-
   private final AppendOnlyLog<E> values;
 
   /**
-   * Static factory method to create a new builder.
+   * Creates a new builder for an IndexedDataList.
    *
    * @param <E> the type of elements
    * @return a new builder
@@ -44,7 +43,7 @@ public class IndexedDataList<E> implements DataList<E> {
   }
 
   /**
-   * Builder for {@link IndexedDataList}.
+   * Builder for IndexedDataList.
    *
    * @param <E> the type of elements
    */
@@ -75,7 +74,7 @@ public class IndexedDataList<E> implements DataList<E> {
     }
 
     /**
-     * Builds a new {@link IndexedDataList}.
+     * Builds a new IndexedDataList.
      *
      * @return a new IndexedDataList
      * @throws IllegalStateException if values are missing
@@ -96,7 +95,7 @@ public class IndexedDataList<E> implements DataList<E> {
   }
 
   /**
-   * Constructs a {@link IndexedDataList}.
+   * Constructs an IndexedDataList.
    *
    * @param index the index
    * @param values the values

@@ -22,29 +22,31 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * A {@code DataCollection<E>} is a group of elements that can be iterated over. It is similar to a
- * {@link java.util.Collection<E> Collection}, but can hold up to {@link Long#MAX_VALUE} elements.
+ * A collection of elements that can be iterated over. Similar to {@link java.util.Collection} but
+ * supports up to {@link Long#MAX_VALUE} elements.
+ *
+ * @param <E> The type of elements in the collection
  */
 public interface DataCollection<E> extends Iterable<E>, AutoCloseable {
 
   /**
-   * Returns the number of values stored in the data collection.
+   * Returns the number of elements in this collection.
    *
-   * @return the number of values
+   * @return the number of elements
    */
   long size();
 
   /**
-   * Returns true if the data collection is empty.
+   * Returns true if this collection contains no elements.
    *
-   * @return true if the data collection is empty
+   * @return true if this collection is empty
    */
   default boolean isEmpty() {
     return size() == 0;
   }
 
   /**
-   * Returns an iterator over the elements in the data collection.
+   * Returns an iterator over the elements in this collection.
    *
    * @return an iterator
    */
@@ -52,7 +54,7 @@ public interface DataCollection<E> extends Iterable<E>, AutoCloseable {
   Iterator<E> iterator();
 
   /**
-   * Returns a spliterator over the elements in the data collection.
+   * Returns a spliterator over the elements in this collection.
    *
    * @return a spliterator
    */
@@ -62,16 +64,16 @@ public interface DataCollection<E> extends Iterable<E>, AutoCloseable {
   }
 
   /**
-   * Returns a stream over the elements in the data collection.
+   * Returns a sequential stream over the elements in this collection.
    *
-   * @return a stream
+   * @return a sequential stream
    */
   default Stream<E> stream() {
     return StreamSupport.stream(spliterator(), false);
   }
 
   /**
-   * Returns a parallel stream over the elements in the data collection.
+   * Returns a parallel stream over the elements in this collection.
    *
    * @return a parallel stream
    */
@@ -80,20 +82,20 @@ public interface DataCollection<E> extends Iterable<E>, AutoCloseable {
   }
 
   /**
-   * Adds a value to the data collection.
+   * Adds an element to this collection.
    *
-   * @param e the value to add
-   * @return true if the data collection has been modified
+   * @param e the element to add
+   * @return true if the collection changed as a result of the call
    */
   default boolean add(E e) {
     throw new UnsupportedOperationException();
   }
 
   /**
-   * Adds all the values in the specified collection to the data collection.
+   * Adds all elements from the specified collection to this collection.
    *
-   * @param c the collection of values to add
-   * @return true if the data collection has been modified
+   * @param c the collection of elements to add
+   * @return true if this collection changed as a result of the call
    */
   default boolean addAll(Iterable<? extends E> c) {
     boolean modified = false;
@@ -106,9 +108,10 @@ public interface DataCollection<E> extends Iterable<E>, AutoCloseable {
   }
 
   /**
-   * Returns true if the data collection contains the specified value.
+   * Returns true if this collection contains the specified element.
    *
-   * @param o the value to search for
+   * @param o the element to check for
+   * @return true if this collection contains the element
    */
   default boolean contains(Object o) {
     for (E e : this) {
@@ -120,10 +123,10 @@ public interface DataCollection<E> extends Iterable<E>, AutoCloseable {
   }
 
   /**
-   * Returns true if the data collection contains all the values in the specified collection.
+   * Returns true if this collection contains all elements in the specified collection.
    *
-   * @param c the collection of values to search for
-   * @return true if the data collection contains all the values
+   * @param c the collection to check against
+   * @return true if this collection contains all elements in the specified collection
    */
   default boolean containsAll(Iterable<?> c) {
     for (Object o : c) {
@@ -135,7 +138,7 @@ public interface DataCollection<E> extends Iterable<E>, AutoCloseable {
   }
 
   /**
-   * Removes all the values from the data collection.
+   * Removes all elements from this collection.
    */
   void clear();
 

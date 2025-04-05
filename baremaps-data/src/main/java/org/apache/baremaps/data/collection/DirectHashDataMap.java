@@ -27,14 +27,10 @@ import org.apache.baremaps.data.memory.Memory;
 import org.apache.baremaps.data.type.FixedSizeDataType;
 
 /**
- * A {@link DataMap} that uses direct hashing with open addressing and linear probing. This
- * implementation provides O(1) access time for both get and put operations and doesn't have any
- * insertion order dependencies.
+ * A map that uses direct hashing with open addressing and linear probing. Provides O(1) access time
+ * for both get and put operations with a fixed capacity.
  * 
- * <p>
- * The map size is fixed at instantiation time and cannot be resized afterward.
- * 
- * @param <V> the type of the values
+ * @param <V> the type of values in the map
  */
 public class DirectHashDataMap<V> implements DataMap<Long, V> {
 
@@ -53,7 +49,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   private long size;
 
   /**
-   * Static factory method to create a new builder.
+   * Creates a new builder for a DirectHashDataMap.
    *
    * @param <V> the type of values
    * @return a new builder
@@ -63,7 +59,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   }
 
   /**
-   * Builder for {@link DirectHashDataMap}.
+   * Builder for DirectHashDataMap.
    *
    * @param <V> the type of values
    */
@@ -130,7 +126,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
     }
 
     /**
-     * Builds a new {@link DirectHashDataMap}.
+     * Builds a new DirectHashDataMap.
      *
      * @return a new DirectHashDataMap
      * @throws IllegalStateException if any required parameter is missing
@@ -157,7 +153,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   }
 
   /**
-   * Constructs a {@link DirectHashDataMap} with the specified capacity.
+   * Constructs a DirectHashDataMap with the specified capacity.
    *
    * @param keyType the data type for keys
    * @param dataType the data type for values
@@ -187,7 +183,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   }
 
   /**
-   * Hash function for keys, using multiplicative hashing.
+   * Computes the hash value for a key.
    * 
    * @param key the key to hash
    * @return the hash value
@@ -203,7 +199,7 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
    * Finds the slot for a key, either for retrieval or insertion.
    * 
    * @param key the key to find
-   * @param forInsertion whether we're finding for insertion (return empty slot) or retrieval
+   * @param forInsertion whether we're finding for insertion or retrieval
    * @return the slot index or -1 if not found and not for insertion
    */
   private long findSlot(long key, boolean forInsertion) {
@@ -239,7 +235,10 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   }
 
   /**
-   * Reads a key from the key memory at the specified slot.
+   * Reads a key from the specified slot.
+   * 
+   * @param slot the slot index
+   * @return the key at the slot
    */
   private long readKey(long slot) {
     long position = slot * keySize;
@@ -250,7 +249,10 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   }
 
   /**
-   * Stores a key in the key memory at the specified slot.
+   * Stores a key at the specified slot.
+   * 
+   * @param slot the slot index
+   * @param key the key to store
    */
   private void storeKey(long slot, long key) {
     long position = slot * keySize;
@@ -261,7 +263,10 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   }
 
   /**
-   * Reads a value from the value memory at the specified slot.
+   * Reads a value from the specified slot.
+   * 
+   * @param slot the slot index
+   * @return the value at the slot
    */
   private V readValue(long slot) {
     long position = slot * valueSize;
@@ -272,7 +277,10 @@ public class DirectHashDataMap<V> implements DataMap<Long, V> {
   }
 
   /**
-   * Stores a value in the value memory at the specified slot.
+   * Stores a value at the specified slot.
+   * 
+   * @param slot the slot index
+   * @param value the value to store
    */
   private void storeValue(long slot, V value) {
     long position = slot * valueSize;

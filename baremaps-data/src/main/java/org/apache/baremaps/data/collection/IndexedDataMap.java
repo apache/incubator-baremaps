@@ -26,21 +26,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * A {@link DataMap} that can hold a large number of variable size data elements. This data map is
- * backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ * A map that stores variable-size values using an index. Values are stored in an append-only log
+ * with indices for fast access.
  *
- * @param <E> The type of the elements.
+ * @param <E> The type of values in the map
  */
 public class IndexedDataMap<E> implements DataMap<Long, E> {
 
   private final Map<Long, Long> index;
-
   private final AppendOnlyLog<E> values;
 
   /**
-   * Static factory method to create a new builder.
+   * Creates a new builder for an IndexedDataMap.
    *
-   * @param <E> the type of elements
+   * @param <E> the type of values
    * @return a new builder
    */
   public static <E> Builder<E> builder() {
@@ -48,9 +47,9 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Builder for {@link IndexedDataMap}.
+   * Builder for IndexedDataMap.
    *
-   * @param <E> the type of elements
+   * @param <E> the type of values
    */
   public static class Builder<E> {
     private Map<Long, Long> index;
@@ -79,7 +78,7 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
     }
 
     /**
-     * Builds a new {@link IndexedDataMap}.
+     * Builds a new IndexedDataMap.
      *
      * @return a new IndexedDataMap
      * @throws IllegalStateException if values are missing
@@ -98,7 +97,7 @@ public class IndexedDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Constructs a {@link IndexedDataMap}.
+   * Constructs an IndexedDataMap.
    *
    * @param index the index
    * @param values the values

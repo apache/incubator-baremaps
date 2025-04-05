@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * Utility class for converting between collections and data collections.
+ * Utility class for converting between standard Java collections and data collections.
  */
 public class DataConversions {
 
@@ -30,11 +30,11 @@ public class DataConversions {
   }
 
   /**
-   * Converts a {@code DataCollection} to a {@code Collection}.
+   * Converts a DataCollection to a Collection.
    * 
-   * @param dataCollection
-   * @return
-   * @param <E>
+   * @param dataCollection the data collection to convert
+   * @return a Collection view of the data collection
+   * @param <E> the type of elements
    */
   public static <E> Collection<E> asCollection(DataCollection<E> dataCollection) {
     if (dataCollection instanceof DataCollectionAdapter<E>adapter) {
@@ -45,11 +45,11 @@ public class DataConversions {
   }
 
   /**
-   * Converts a {@code Collection} to a {@code DataCollection}.
+   * Converts a Collection to a DataCollection.
    *
-   * @param collection
-   * @return
-   * @param <E>
+   * @param collection the collection to convert
+   * @return a DataCollection view of the collection
+   * @param <E> the type of elements
    */
   public static <E> DataCollection<E> asDataCollection(Collection<E> collection) {
     if (collection instanceof CollectionAdapter<E>adapter) {
@@ -60,10 +60,11 @@ public class DataConversions {
   }
 
   /**
-   * Converts a {@code DataList} to a {@code List}.
+   * Converts a DataList to a List.
    *
-   * @param dataList the data list
-   * @return the list
+   * @param dataList the data list to convert
+   * @return a List view of the data list
+   * @param <E> the type of elements
    */
   public static <E> List<E> asList(DataList<E> dataList) {
     if (dataList instanceof DataListAdapter<E>adapter) {
@@ -74,10 +75,11 @@ public class DataConversions {
   }
 
   /**
-   * Converts a {@code List} to a {@code DataList}.
+   * Converts a List to a DataList.
    *
-   * @param list the list
-   * @return the data list
+   * @param list the list to convert
+   * @return a DataList view of the list
+   * @param <E> the type of elements
    */
   public static <E> DataList<E> asDataList(List<E> list) {
     if (list instanceof ListAdapter<E>adapter) {
@@ -88,10 +90,12 @@ public class DataConversions {
   }
 
   /**
-   * Converts a {@code DataMap} to a {@code Map}.
+   * Converts a DataMap to a Map.
    *
-   * @param dataMap the data map
-   * @return the map
+   * @param dataMap the data map to convert
+   * @return a Map view of the data map
+   * @param <K> the type of keys
+   * @param <V> the type of values
    */
   public static <K, V> Map<K, V> asMap(DataMap<K, V> dataMap) {
     if (dataMap instanceof DataMapAdapter<K, V>adapter) {
@@ -102,10 +106,12 @@ public class DataConversions {
   }
 
   /**
-   * Converts a {@code Map} to a {@code DataMap}.
+   * Converts a Map to a DataMap.
    *
-   * @param map the map
-   * @return the data map
+   * @param map the map to convert
+   * @return a DataMap view of the map
+   * @param <K> the type of keys
+   * @param <V> the type of values
    */
   public static <K, V> DataMap<K, V> asDataMap(Map<K, V> map) {
     if (map instanceof MapAdapter<K, V>adapter) {

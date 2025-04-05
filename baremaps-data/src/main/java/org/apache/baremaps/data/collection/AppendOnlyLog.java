@@ -30,11 +30,10 @@ import org.apache.baremaps.data.memory.OffHeapMemory;
 import org.apache.baremaps.data.type.DataType;
 
 /**
- * A log of records backed by a {@link DataType} and a {@link Memory}. Elements are appended to the
- * log and can be accessed by their position in the {@link Memory}. Appending elements to the log is
- * thread-safe.
+ * A log of elements that can only be appended to. Elements are stored in memory and can be accessed
+ * by their position. Append operations are thread-safe.
  *
- * @param <E> The type of the data.
+ * @param <E> The type of elements in the log
  */
 public class AppendOnlyLog<E> implements DataCollection<E> {
 
@@ -47,7 +46,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   private final Lock lock = new ReentrantLock();
 
   /**
-   * Static factory method to create a new builder.
+   * Creates a new builder for an AppendOnlyLog.
    *
    * @param <E> the type of elements
    * @return a new builder
@@ -57,7 +56,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Builder for {@link AppendOnlyLog}.
+   * Builder for AppendOnlyLog.
    *
    * @param <E> the type of elements
    */
@@ -90,7 +89,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
     }
 
     /**
-     * Sets the values memory for the log. This is an alias for {@link #memory(Memory)}.
+     * Sets the memory for the log values.
      *
      * @param memory the memory
      * @return this builder
@@ -100,7 +99,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
     }
 
     /**
-     * Builds a new {@link AppendOnlyLog}.
+     * Builds a new AppendOnlyLog.
      *
      * @return a new AppendOnlyLog
      * @throws IllegalStateException if required parameters are missing
@@ -119,7 +118,7 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Constructs an append only log.
+   * Constructs an AppendOnlyLog.
    *
    * @param dataType the data type
    * @param memory the memory
@@ -140,10 +139,11 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Appends the value to the log and returns its position in the memory.
+   * Appends an element to the log and returns its position in memory.
    *
-   * @param value the value
-   * @return the position of the value in the memory.
+   * @param value the element to add
+   * @return the position of the element in memory
+   * @throws DataCollectionException if the element is too large for a segment
    */
   public long addPositioned(E value) {
     int valueSize = dataType.size(value);
@@ -172,10 +172,10 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Returns a values at the specified position in the memory.
+   * Returns the element at the specified position in memory.
    *
-   * @param position the position of the value
-   * @return the value
+   * @param position the position of the element
+   * @return the element
    */
   public E getPositioned(long position) {
     long segmentIndex = position / segmentSize;
@@ -208,10 +208,9 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * Returns an iterator over the values of the log, starting at the beginning of the log. The
-   * iterator allows to get the current position in the memory.
+   * Returns an iterator over the elements of this log.
    * 
-   * @return an iterator over the values of the log
+   * @return an iterator over the elements
    */
   @Override
   public AppendOnlyLogIterator iterator() {
@@ -228,15 +227,12 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   }
 
   /**
-   * An iterator over the values of the log that can be used to iterate over the values of the log
-   * and to get the current position in the memory.
+   * An iterator over the elements in this log.
    */
   public class AppendOnlyLogIterator implements Iterator<E> {
 
     private final long size;
-
     private long index;
-
     private long position;
 
     private AppendOnlyLogIterator(long size) {
@@ -280,9 +276,13 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
       return dataType.read(segment, (int) segmentOffset);
     }
 
+    /**
+     * Returns the current position in memory.
+     *
+     * @return the current position
+     */
     public long getPosition() {
       return position;
     }
-
   }
 }

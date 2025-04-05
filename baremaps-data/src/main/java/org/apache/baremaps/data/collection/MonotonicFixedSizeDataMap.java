@@ -23,9 +23,8 @@ import java.util.Map.Entry;
 import org.apache.baremaps.data.type.LongDataType;
 
 /**
- * A {@link DataMap} that can hold a large number of fixed-size data elements. The elements must be
- * sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
- * once inserted.
+ * A map that stores fixed-size values in monotonically increasing key order.
+ * Optimized for sequential insertions and fast binary search lookups.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).

@@ -26,9 +26,8 @@ import org.apache.baremaps.data.type.LongDataType;
 import org.apache.baremaps.data.type.PairDataType.Pair;
 
 /**
- * A {@link DataMap} that can hold a large number of variable-size data elements. The elements must
- * be sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
- * once inserted.
+ * A map that stores values as key-value pairs in monotonically increasing key order. Optimized for
+ * sequential insertions and fast binary search lookups.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -44,9 +43,9 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
 
   /**
-   * Static factory method to create a new builder.
+   * Creates a new builder for a MonotonicPairedDataMap.
    *
-   * @param <E> the type of elements
+   * @param <E> the type of values
    * @return a new builder
    */
   public static <E> Builder<E> builder() {
@@ -54,9 +53,9 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Builder for {@link MonotonicPairedDataMap}.
+   * Builder for MonotonicPairedDataMap.
    *
-   * @param <E> the type of elements
+   * @param <E> the type of values
    */
   public static class Builder<E> {
     private DataList<Long> offsets;
@@ -85,7 +84,7 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
     }
 
     /**
-     * Builds a new {@link MonotonicPairedDataMap}.
+     * Builds a new MonotonicPairedDataMap.
      *
      * @return a new MonotonicPairedDataMap
      * @throws IllegalStateException if values are missing
@@ -106,7 +105,7 @@ public class MonotonicPairedDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Private constructor for {@link MonotonicPairedDataMap}.
+   * Constructs a MonotonicPairedDataMap.
    *
    * @param offsets the list of offsets
    * @param values the buffer of values

@@ -24,15 +24,11 @@ import org.apache.baremaps.data.type.PairDataType;
 import org.apache.baremaps.data.type.PairDataType.Pair;
 
 /**
- * A {@link DataMap} that can hold a large number of variable-size data elements. The elements must
- * be sorted by their key and inserted in a monotonic way. The elements cannot be removed or updated
- * once inserted.
+ * A map that stores values in a monotonically increasing key order. Optimized for 
+ * sequential insertions and binary search lookups with chunked indexing.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
- *
- * <p>
- * Copyright (c) Planetiler.
  */
 public class MonotonicDataMap<E> implements DataMap<Long, E> {
 
@@ -43,7 +39,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   private long lastChunk = -1;
   
   /**
-   * Creates a builder for {@link MonotonicDataMap}.
+   * Creates a new builder for a MonotonicDataMap.
    *
    * @param <E> the type of values in the map
    * @return a new builder
@@ -53,7 +49,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   }
   
   /**
-   * Builder for {@link MonotonicDataMap}.
+   * Builder for MonotonicDataMap.
    *
    * @param <E> the type of values in the map
    */
@@ -96,9 +92,10 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
     }
     
     /**
-     * Builds a new {@link MonotonicDataMap}.
+     * Builds a new MonotonicDataMap.
      *
-     * @return a new map instance
+     * @return a new MonotonicDataMap
+     * @throws IllegalArgumentException if the values buffer is not provided
      */
     public MonotonicDataMap<E> build() {
       if (values == null) {
@@ -122,7 +119,7 @@ public class MonotonicDataMap<E> implements DataMap<Long, E> {
   }
 
   /**
-   * Constructs a {@link MonotonicDataMap}.
+   * Constructs a MonotonicDataMap.
    *
    * @param offsets the list of offsets
    * @param keys the list of keys
