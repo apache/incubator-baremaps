@@ -57,10 +57,7 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
   }
 
   /**
-<<<<<<< HEAD
-   * Returns the size of each segment.
-=======
-   * Returns the size of the header.
+   * <<<<<<< HEAD Returns the size of each segment. ======= Returns the size of the header.
    *
    * @return the size of the header
    */
@@ -69,8 +66,7 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
   }
 
   /**
-   * Returns the size of the segments.
->>>>>>> 251ea904 (Add header to memory)
+   * Returns the size of the segments. >>>>>>> 251ea904 (Add header to memory)
    *
    * @return the segment size in bytes
    */
@@ -157,7 +153,7 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
       }
       T segment = segments.get(index);
       if (segment == null) {
-        segment = allocate(index, segmentSize);
+        segment = allocateSegment(index);
         segments.set(index, segment);
       }
       return segment;

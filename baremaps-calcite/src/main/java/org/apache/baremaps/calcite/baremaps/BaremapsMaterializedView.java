@@ -34,7 +34,7 @@ class BaremapsMaterializedView extends BaremapsModifiableTable {
   MaterializationKey key;
 
   BaremapsMaterializedView(
-          String name,
+      String name,
       RelProtoDataType protoRowType,
       RelDataTypeFactory typeFactory) {
     super(name, protoRowType, typeFactory);

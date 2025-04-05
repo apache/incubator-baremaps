@@ -424,7 +424,8 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
 
     // Table does not exist. Create it.
     final BaremapsMaterializedView table =
-        new BaremapsMaterializedView(pair.right, RelDataTypeImpl.proto(rowType), context.getTypeFactory());
+        new BaremapsMaterializedView(pair.right, RelDataTypeImpl.proto(rowType),
+            context.getTypeFactory());
     pair.left.add(pair.right, table);
     populate(create.name, create.query, context);
     table.key =

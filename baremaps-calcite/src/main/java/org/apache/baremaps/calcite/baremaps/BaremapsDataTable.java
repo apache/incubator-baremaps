@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.calcite.baremaps;
 
-import java.io.IOException;
 import java.util.Iterator;
 import org.apache.baremaps.calcite.DataRow;
 import org.apache.baremaps.calcite.DataRowType;
@@ -53,7 +52,9 @@ public class BaremapsDataTable implements DataTable {
    */
   public BaremapsDataTable(DataSchema schema) {
     this.schema = schema;
-    this.rows = new AppendOnlyLog<>(new DataRowType(schema));
+    this.rows = AppendOnlyLog.<DataRow>builder()
+        .dataType(new DataRowType(schema))
+        .build();
   }
 
   /**
@@ -94,7 +95,7 @@ public class BaremapsDataTable implements DataTable {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() throws Exception {
     rows.close();
   }
 }

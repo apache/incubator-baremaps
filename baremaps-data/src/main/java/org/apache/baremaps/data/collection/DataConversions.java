@@ -17,8 +17,6 @@
 
 package org.apache.baremaps.data.collection;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 

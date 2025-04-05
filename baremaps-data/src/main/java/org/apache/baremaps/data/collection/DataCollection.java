@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.data.collection;
 
-import java.io.Closeable;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;

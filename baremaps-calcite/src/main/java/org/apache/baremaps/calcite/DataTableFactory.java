@@ -60,7 +60,7 @@ public class DataTableFactory implements TableFactory<Table> {
   }
 
   private Table createDataTable(SchemaPlus schema, String name, Map<String, Object> operand,
-                                RelDataType rowType) {
+      RelDataType rowType) {
     String directory = (String) operand.get("directory");
     if (directory == null) {
       throw new RuntimeException("A directory should be specified");
@@ -74,8 +74,11 @@ public class DataTableFactory implements TableFactory<Table> {
       header.get(bytes);
       DataSchema dataSchema = DataSchema.read(new ByteArrayInputStream(bytes));
       DataType<DataRow> dataType = new DataRowType(dataSchema);
-      DataCollection<DataRow> dataCollection = new AppendOnlyLog<>(dataType, memory);
-      return null; //new BaremapsTable(dataSchema, dataCollection);
+      DataCollection<DataRow> dataCollection = AppendOnlyLog.<DataRow>builder()
+          .dataType(dataType)
+          .memory(memory)
+          .build();
+      return null; // new BaremapsTable(dataSchema, dataCollection);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
