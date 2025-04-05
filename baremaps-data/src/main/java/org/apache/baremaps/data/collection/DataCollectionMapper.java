@@ -58,4 +58,9 @@ public class DataCollectionMapper<S, T> implements DataCollection<T> {
   public void clear() {
     collection.clear();
   }
+
+  @Override
+  public void close() throws Exception {
+    collection.close();
+  }
 }

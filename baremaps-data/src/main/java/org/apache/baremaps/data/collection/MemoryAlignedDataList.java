@@ -129,4 +129,12 @@ public class MemoryAlignedDataList<E> implements DataList<E> {
     }
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (IOException e) {
+      throw new MemoryException(e);
+    }
+  }
 }

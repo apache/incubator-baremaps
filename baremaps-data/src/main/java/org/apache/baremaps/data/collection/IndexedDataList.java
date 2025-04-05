@@ -86,4 +86,14 @@ public class IndexedDataList<E> implements DataList<E> {
     index.clear();
     values.clear();
   }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      index.close();
+      values.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
+  }
 }

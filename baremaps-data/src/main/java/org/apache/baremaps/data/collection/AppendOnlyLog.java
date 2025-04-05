@@ -155,6 +155,15 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
     return new AppendOnlyLogIterator(size);
   }
 
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (IOException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
   /**
    * An iterator over the values of the log that can be used to iterate over the values of the log
    * and to get the current position in the memory.

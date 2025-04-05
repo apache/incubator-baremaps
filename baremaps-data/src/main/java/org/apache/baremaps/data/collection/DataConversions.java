@@ -163,6 +163,13 @@ public class DataConversions {
     public Iterator<E> iterator() {
       return collection.iterator();
     }
+
+    @Override
+    public void close() throws Exception {
+      if (collection instanceof AutoCloseable) {
+        ((AutoCloseable) collection).close();
+      }
+    }
   }
 
   private static class ListAdapter<E> extends AbstractList<E> {
@@ -250,6 +257,13 @@ public class DataConversions {
     @Override
     public int hashCode() {
       return list.hashCode();
+    }
+
+    @Override
+    public void close() throws Exception {
+      if (list instanceof AutoCloseable) {
+        ((AutoCloseable) list).close();
+      }
     }
   }
 

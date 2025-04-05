@@ -109,4 +109,13 @@ public class FixedSizeDataList<E> implements DataList<E> {
   public void clear() {
     size.set(0);
   }
+
+  @Override
+  public void close() throws Exception {
+    try {
+      memory.close();
+    } catch (Exception e) {
+      throw new DataCollectionException(e);
+    }
+  }
 }

@@ -17,14 +17,13 @@
 
 package org.apache.baremaps.data.memory;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 /** A base class for managing on-heap, off-heap, or memory-mapped segments. */
-public abstract class Memory<T extends ByteBuffer> implements Closeable {
+public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
 
   private final int segmentSize;
 
