@@ -79,6 +79,9 @@ public class TestFiles {
   public static final Path GEONAMES_CSV =
       resolve("baremaps-testing/data/geonames/sample.txt");
 
+    public static final Path POINT_SHP =
+            resolve("baremaps-testing/data/shapefiles/point.shp");
+
   /* The geometries of the osm-sample/sample.osm.xml file */
 
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();

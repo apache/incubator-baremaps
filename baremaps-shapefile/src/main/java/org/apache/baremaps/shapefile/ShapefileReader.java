@@ -86,6 +86,12 @@ public class ShapefileReader {
 
     shapeFileIndexName.replace(shapefile.length() - 3, shapefile.length(), shapeFileIndexSuffix);
     this.shapeFileIndex = new File(shapeFileIndexName.toString());
+
+    try {
+      loadDescriptors();
+    } catch (IOException e) {
+      throw new RuntimeException("Unable to read shapefile descriptor", e);
+    }
   }
 
   /**

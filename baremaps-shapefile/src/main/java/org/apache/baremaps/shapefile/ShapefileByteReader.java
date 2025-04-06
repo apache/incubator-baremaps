@@ -102,56 +102,6 @@ public class ShapefileByteReader extends CommonByteReader {
     return this.shapefileDescriptor;
   }
 
-  /**
-   * Returns the schema of the data contained in this shapefile.
-   *
-   * @return the schema
-   */
-  // public DataSchema getSchema() {
-  // return this.schema;
-  // }
-
-  /**
-   * Create a row descriptor.
-   *
-   * @param name Name of the field.
-   * @return The schema.
-   */
-  // private DataSchema getSchema(final String name) {
-  // Objects.requireNonNull(name, "The row name cannot be null.");
-  //
-  // var columns = new ArrayList<DataColumn>();
-  // for (int i = 0; i < databaseFieldsDescriptors.size(); i++) {
-  // var fieldDescriptor = this.databaseFieldsDescriptors.get(i);
-  // var columnName = fieldDescriptor.getName();
-  // var columnType = switch (fieldDescriptor.getType()) {
-  // case CHARACTER -> ColumnType.STRING;
-  // case NUMBER -> fieldDescriptor.getDecimalCount() == 0 ? ColumnType.LONG : ColumnType.DOUBLE;
-  // case CURRENCY -> ColumnType.DOUBLE;
-  // case DOUBLE -> ColumnType.DOUBLE;
-  // case INTEGER -> ColumnType.INTEGER;
-  // case AUTO_INCREMENT -> ColumnType.INTEGER;
-  //
-  // // TODO: Implement the following types
-  // case LOGICAL -> ColumnType.STRING;
-  // case DATE -> ColumnType.STRING;
-  // case MEMO -> ColumnType.STRING;
-  // case FLOATING_POINT -> ColumnType.STRING;
-  // case PICTURE -> ColumnType.STRING;
-  // case VARI_FIELD -> ColumnType.STRING;
-  // case VARIANT -> ColumnType.STRING;
-  // case TIMESTAMP -> ColumnType.STRING;
-  // case DATE_TIME -> ColumnType.STRING;
-  // };
-  // columns.add(new DataColumnFixed(columnName, Cardinality.OPTIONAL, columnType));
-  // }
-  //
-  // // Add geometry column.
-  // columns.add(new DataColumnFixed(GEOMETRY_NAME, Cardinality.OPTIONAL, ColumnType.GEOMETRY));
-  //
-  // return new DataSchemaImpl(name, columns);
-  // }
-
   /** Load shapefile descriptor. */
   private void loadDescriptor() {
     this.shapefileDescriptor = new ShapefileDescriptor(getByteBuffer());

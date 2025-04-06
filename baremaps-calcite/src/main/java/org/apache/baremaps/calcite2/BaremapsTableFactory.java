@@ -18,6 +18,7 @@
 package org.apache.baremaps.calcite2;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,11 +27,13 @@ import java.nio.MappedByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import org.apache.baremaps.calcite2.csv.CsvTable;
 import org.apache.baremaps.calcite2.data.DataModifiableTable;
 import org.apache.baremaps.calcite2.data.DataRow;
 import org.apache.baremaps.calcite2.data.DataRowType;
 import org.apache.baremaps.calcite2.data.DataSchema;
 import org.apache.baremaps.calcite2.openstreetmap.OpenStreetMapTable;
+import org.apache.baremaps.calcite2.shapefile.ShapefileTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.memory.Memory;
@@ -72,6 +75,8 @@ public class BaremapsTableFactory implements TableFactory<Table> {
     return switch (format) {
       case "data" -> createDataTable(name, operand, protoRowType, typeFactory);
       case "osm" -> createOpenStreetMapTable(operand);
+      case "csv" -> createCsvTable(operand);
+      case "shp" -> createShapefileTable(operand);
       default -> throw new RuntimeException("Unsupported format: " + format);
     };
   }
@@ -145,6 +150,58 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       }
     } catch (IOException e) {
       throw new RuntimeException("Failed to create OpenStreetMapTable from file: " + filePath, e);
+    }
+  }
+
+  /**
+   * Creates a CSV table from a file.
+   *
+   * @param operand the operand properties
+   * @return the created table
+   */
+  private Table createCsvTable(Map<String, Object> operand) {
+    // Get the file path from the operand
+    String filePath = (String) operand.get("file");
+    if (filePath == null) {
+      throw new IllegalArgumentException("File path must be specified in the 'file' operand");
+    }
+
+    // Get the separator (default to comma)
+    String separatorStr = (String) operand.getOrDefault("separator", ",");
+    if (separatorStr.length() != 1) {
+      throw new IllegalArgumentException("Separator must be a single character");
+    }
+    char separator = separatorStr.charAt(0);
+
+    // Get whether the file has a header (default to true)
+    boolean hasHeader = (Boolean) operand.getOrDefault("hasHeader", true);
+
+    try {
+      File file = new File(filePath);
+      return new CsvTable(file, separator, hasHeader);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create CsvTable from file: " + filePath, e);
+    }
+  }
+
+  /**
+   * Creates a shapefile table from a file.
+   *
+   * @param operand the operand properties
+   * @return the created table
+   */
+  private Table createShapefileTable(Map<String, Object> operand) {
+    // Get the file path from the operand
+    String filePath = (String) operand.get("file");
+    if (filePath == null) {
+      throw new IllegalArgumentException("File path must be specified in the 'file' operand");
+    }
+
+    try {
+      File file = new File(filePath);
+      return new ShapefileTable(file);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create ShapefileTable from file: " + filePath, e);
     }
   }
 
