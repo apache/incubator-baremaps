@@ -32,6 +32,7 @@ import org.apache.baremaps.calcite2.data.DataModifiableTable;
 import org.apache.baremaps.calcite2.data.DataRow;
 import org.apache.baremaps.calcite2.data.DataRowType;
 import org.apache.baremaps.calcite2.data.DataSchema;
+import org.apache.baremaps.calcite2.flatgeobuf.FlatGeoBufTable;
 import org.apache.baremaps.calcite2.openstreetmap.OpenStreetMapTable;
 import org.apache.baremaps.calcite2.rpsl.RpslTable;
 import org.apache.baremaps.calcite2.shapefile.ShapefileTable;
@@ -79,6 +80,7 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       case "csv" -> createCsvTable(operand);
       case "shp" -> createShapefileTable(operand);
       case "rpsl" -> createRpslTable(operand);
+      case "fgb" -> createFlatGeoBufTable(operand);
       default -> throw new RuntimeException("Unsupported format: " + format);
     };
   }
@@ -225,6 +227,27 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       return new RpslTable(file);
     } catch (IOException e) {
       throw new RuntimeException("Failed to create RpslTable from file: " + filePath, e);
+    }
+  }
+
+  /**
+   * Creates a FlatGeoBuf table from a file.
+   *
+   * @param operand the operand properties
+   * @return the created table
+   */
+  private Table createFlatGeoBufTable(Map<String, Object> operand) {
+    // Get the file path from the operand
+    String filePath = (String) operand.get("file");
+    if (filePath == null) {
+      throw new IllegalArgumentException("File path must be specified in the 'file' operand");
+    }
+
+    try {
+      File file = new File(filePath);
+      return new FlatGeoBufTable(file);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create FlatGeoBufTable from file: " + filePath, e);
     }
   }
 
