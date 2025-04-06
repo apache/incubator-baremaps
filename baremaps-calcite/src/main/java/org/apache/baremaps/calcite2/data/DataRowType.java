@@ -17,14 +17,13 @@
 
 package org.apache.baremaps.calcite2.data;
 
-import org.apache.baremaps.data.type.*;
-import org.apache.calcite.sql.type.SqlTypeName;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.baremaps.data.type.*;
+import org.apache.calcite.sql.type.SqlTypeName;
 
 /**
  * A {@link DataType} for reading and writing {@link DataRow} objects in {@link ByteBuffer}s.
@@ -53,7 +52,7 @@ public class DataRowType implements DataType<DataRow> {
     registerType(SqlTypeName.FLOAT, new FloatDataType());
     registerType(SqlTypeName.REAL, new FloatDataType());
     registerType(SqlTypeName.DOUBLE, new DoubleDataType());
-    registerType(SqlTypeName.DECIMAL, new DoubleDataType());  // Simplified mapping
+    registerType(SqlTypeName.DECIMAL, new DoubleDataType()); // Simplified mapping
     registerType(SqlTypeName.CHAR, new StringDataType());
     registerType(SqlTypeName.VARCHAR, new StringDataType());
     registerType(SqlTypeName.BINARY, new BinaryDataType());
@@ -61,15 +60,15 @@ public class DataRowType implements DataType<DataRow> {
     registerType(SqlTypeName.DATE, new LocalDateDataType());
     registerType(SqlTypeName.TIME, new LocalTimeDataType());
     registerType(SqlTypeName.TIMESTAMP, new LocalDateTimeDataType());
-    
+
     // Geometry Types
     registerType(SqlTypeName.GEOMETRY, new GeometryDataType());
-    
+
     // Custom mappings for JTS geometry types
     // These would ideally be based on Calcite types, but we'll handle them specially for now
     registerGeometrySubtypes();
   }
-  
+
   /**
    * Registers geometry subtypes.
    */
@@ -77,9 +76,10 @@ public class DataRowType implements DataType<DataRow> {
     // Custom handler for different geometry types
     // In a full implementation, we might extend SqlTypeName or use attributes
     // For now, we'll handle these as special cases
-    TYPE_REGISTRY.put(SqlTypeName.OTHER, new PointDataType());         // Special case for POINT
-    TYPE_REGISTRY.put(SqlTypeName.DISTINCT, new LineStringDataType()); // Special case for LINESTRING
-    TYPE_REGISTRY.put(SqlTypeName.STRUCTURED, new PolygonDataType());  // Special case for POLYGON
+    TYPE_REGISTRY.put(SqlTypeName.OTHER, new PointDataType()); // Special case for POINT
+    TYPE_REGISTRY.put(SqlTypeName.DISTINCT, new LineStringDataType()); // Special case for
+                                                                       // LINESTRING
+    TYPE_REGISTRY.put(SqlTypeName.STRUCTURED, new PolygonDataType()); // Special case for POLYGON
     // We're using some SqlTypeNames that aren't perfect matches but work for the registry
     // In a real implementation, we might use a more sophisticated approach
   }
@@ -95,7 +95,7 @@ public class DataRowType implements DataType<DataRow> {
   public static <T> void registerType(SqlTypeName sqlTypeName, DataType<T> dataType) {
     Objects.requireNonNull(sqlTypeName, "SQL type name cannot be null");
     Objects.requireNonNull(dataType, "Data type cannot be null");
-    
+
     TYPE_REGISTRY.put(sqlTypeName, dataType);
   }
 
@@ -109,10 +109,11 @@ public class DataRowType implements DataType<DataRow> {
   @SuppressWarnings("unchecked")
   public static <T> DataType<T> getType(SqlTypeName sqlTypeName) {
     Objects.requireNonNull(sqlTypeName, "SQL type name cannot be null");
-    
+
     DataType<T> dataType = (DataType<T>) TYPE_REGISTRY.get(sqlTypeName);
     if (dataType == null) {
-      throw new IllegalArgumentException("No data type registered for SQL type name: " + sqlTypeName);
+      throw new IllegalArgumentException(
+          "No data type registered for SQL type name: " + sqlTypeName);
     }
     return dataType;
   }
@@ -132,7 +133,7 @@ public class DataRowType implements DataType<DataRow> {
   @Override
   public int size(final DataRow row) {
     Objects.requireNonNull(row, "Row cannot be null");
-    
+
     int size = Integer.BYTES;
     var columns = rowType.columns();
     for (int i = 0; i < columns.size(); i++) {
@@ -142,7 +143,7 @@ public class DataRowType implements DataType<DataRow> {
         var value = row.get(i);
         size += dataType.size(value);
       } catch (IllegalArgumentException e) {
-        throw new IllegalStateException("Error determining size for column " + i + 
+        throw new IllegalStateException("Error determining size for column " + i +
             " with type " + column.sqlTypeName(), e);
       }
     }
@@ -156,7 +157,7 @@ public class DataRowType implements DataType<DataRow> {
     if (position < 0 || position >= buffer.capacity()) {
       throw new IllegalArgumentException("Invalid position: " + position);
     }
-    
+
     return buffer.getInt(position);
   }
 
@@ -168,7 +169,7 @@ public class DataRowType implements DataType<DataRow> {
     if (position < 0 || position >= buffer.capacity()) {
       throw new IllegalArgumentException("Invalid position: " + position);
     }
-    
+
     int p = position + Integer.BYTES;
     var columns = rowType.columns();
     for (int i = 0; i < columns.size(); i++) {
@@ -179,7 +180,7 @@ public class DataRowType implements DataType<DataRow> {
         dataType.write(buffer, p, value);
         p += dataType.size(buffer, p);
       } catch (IllegalArgumentException e) {
-        throw new IllegalStateException("Error writing column " + i + 
+        throw new IllegalStateException("Error writing column " + i +
             " with type " + column.sqlTypeName(), e);
       }
     }
@@ -193,7 +194,7 @@ public class DataRowType implements DataType<DataRow> {
     if (position < 0 || position >= buffer.capacity()) {
       throw new IllegalArgumentException("Invalid position: " + position);
     }
-    
+
     int p = position + Integer.BYTES;
     var columns = rowType.columns();
     var values = new ArrayList<>(columns.size());
@@ -204,13 +205,13 @@ public class DataRowType implements DataType<DataRow> {
         values.add(dataType.read(buffer, p));
         p += dataType.size(buffer, p);
       } catch (IllegalArgumentException e) {
-        throw new IllegalStateException("Error reading column " + i + 
+        throw new IllegalStateException("Error reading column " + i +
             " with type " + column.sqlTypeName(), e);
       }
     }
     return new DataRow(rowType, values);
   }
-  
+
   /**
    * Class for handling binary data.
    */
@@ -251,7 +252,7 @@ public class DataRowType implements DataType<DataRow> {
       return value;
     }
   }
-  
+
   /**
    * Class for handling LocalDate data.
    */
@@ -284,7 +285,7 @@ public class DataRowType implements DataType<DataRow> {
       return java.time.LocalDate.ofEpochDay(buffer.getLong(position + Integer.BYTES));
     }
   }
-  
+
   /**
    * Class for handling LocalTime data.
    */
@@ -317,7 +318,7 @@ public class DataRowType implements DataType<DataRow> {
       return java.time.LocalTime.ofNanoOfDay(buffer.getLong(position + Integer.BYTES));
     }
   }
-  
+
   /**
    * Class for handling LocalDateTime data.
    */

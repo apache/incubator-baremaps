@@ -17,10 +17,9 @@
 
 package org.apache.baremaps.calcite2.data;
 
+import java.util.Objects;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.type.SqlTypeName;
-
-import java.util.Objects;
 
 /**
  * A fixed column in a table with a simple type.
@@ -42,7 +41,7 @@ public record DataColumnFixed(
     Objects.requireNonNull(name, "Column name cannot be null");
     Objects.requireNonNull(cardinality, "Column cardinality cannot be null");
     Objects.requireNonNull(relDataType, "Column type cannot be null");
-    
+
     if (name.isBlank()) {
       throw new IllegalArgumentException("Column name cannot be blank");
     }
@@ -57,7 +56,7 @@ public record DataColumnFixed(
   public Class<?> javaType() {
     return sqlTypeNameToJavaClass(sqlTypeName());
   }
-  
+
   /**
    * Converts a SqlTypeName to a Java class.
    *

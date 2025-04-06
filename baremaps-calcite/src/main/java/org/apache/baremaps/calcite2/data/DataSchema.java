@@ -25,16 +25,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.baremaps.calcite2.data.DataColumn.Cardinality;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.sql.type.SqlTypeName;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.*;
+import org.apache.baremaps.calcite2.data.DataColumn.Cardinality;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.sql.type.SqlTypeName;
 
 /**
  * A {@link DataSchema} defines the structure of a table.
@@ -48,20 +47,21 @@ public record DataSchema(String name,
    * @param name the name of the schema
    * @param columns the columns in the schema
    * @throws NullPointerException if name or columns is null
-   * @throws IllegalArgumentException if name is blank, columns is empty, or columns contains duplicates
+   * @throws IllegalArgumentException if name is blank, columns is empty, or columns contains
+   *         duplicates
    */
   public DataSchema {
     Objects.requireNonNull(name, "Schema name cannot be null");
     Objects.requireNonNull(columns, "Columns cannot be null");
-    
+
     if (name.isBlank()) {
       throw new IllegalArgumentException("Schema name cannot be blank");
     }
-    
+
     if (columns.isEmpty()) {
       throw new IllegalArgumentException("Columns cannot be empty");
     }
-    
+
     // Check for duplicate column names
     Set<String> columnNames = new HashSet<>();
     for (DataColumn column : columns) {
@@ -69,7 +69,7 @@ public record DataSchema(String name,
         throw new IllegalArgumentException("Duplicate column name: " + column.name());
       }
     }
-    
+
     // Make defensive copy
     columns = List.copyOf(columns);
   }
@@ -96,7 +96,7 @@ public record DataSchema(String name,
    */
   public DataColumn getColumn(String name) {
     Objects.requireNonNull(name, "Column name cannot be null");
-    
+
     for (DataColumn column : columns) {
       if (column.name().equals(name)) {
         return column;
@@ -114,7 +114,7 @@ public record DataSchema(String name,
    */
   public int getColumnIndex(String name) {
     Objects.requireNonNull(name, "Column name cannot be null");
-    
+
     for (int i = 0; i < columns.size(); i++) {
       if (columns.get(i).name().equals(name)) {
         return i;
@@ -131,7 +131,7 @@ public record DataSchema(String name,
    */
   public boolean hasColumn(String name) {
     Objects.requireNonNull(name, "Column name cannot be null");
-    
+
     for (DataColumn column : columns) {
       if (column.name().equals(name)) {
         return true;
@@ -165,15 +165,15 @@ public record DataSchema(String name,
       if (!node.has("columns")) {
         throw new IOException("Missing required field: columns");
       }
-      
+
       String name = node.get("name").asText();
       List<DataColumn> columns = new ArrayList<>();
-      
+
       JsonNode columnsNode = node.get("columns");
       if (!columnsNode.isArray()) {
         throw new IOException("columns field must be an array");
       }
-      
+
       columnsNode.elements().forEachRemaining(column -> {
         try {
           columns.add(deserialize(column));
@@ -181,57 +181,60 @@ public record DataSchema(String name,
           throw new RuntimeException("Error deserializing column", e);
         }
       });
-      
+
       return new DataSchema(name, columns);
     }
 
     DataColumn deserialize(JsonNode node) {
       if (!node.has("name") || !node.has("cardinality") || !node.has("sqlTypeName")) {
-        throw new IllegalArgumentException("Column is missing required fields: name, cardinality, or sqlTypeName");
+        throw new IllegalArgumentException(
+            "Column is missing required fields: name, cardinality, or sqlTypeName");
       }
-      
+
       String columnName = node.get("name").asText();
       Cardinality cardinality;
       try {
         cardinality = Cardinality.valueOf(node.get("cardinality").asText());
       } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("Invalid cardinality value: " + node.get("cardinality").asText());
+        throw new IllegalArgumentException(
+            "Invalid cardinality value: " + node.get("cardinality").asText());
       }
-      
+
       SqlTypeName sqlTypeName;
       try {
         sqlTypeName = SqlTypeName.valueOf(node.get("sqlTypeName").asText());
       } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("Invalid SQL type name value: " + node.get("sqlTypeName").asText());
+        throw new IllegalArgumentException(
+            "Invalid SQL type name value: " + node.get("sqlTypeName").asText());
       }
-      
+
       // Create the RelDataType based on the SqlTypeName
       RelDataType relDataType;
       if (sqlTypeName == SqlTypeName.ROW) {
         if (!node.has("columns")) {
           throw new IllegalArgumentException("Nested column is missing required field: columns");
         }
-        
+
         List<DataColumn> columns = new ArrayList<>();
         JsonNode columnsNode = node.get("columns");
         if (!columnsNode.isArray()) {
           throw new IllegalArgumentException("columns field must be an array");
         }
-        
+
         columnsNode.elements().forEachRemaining(column -> {
           columns.add(deserialize(column));
         });
-        
+
         return DataColumnNested.of(columnName, cardinality, columns, typeFactory);
       } else {
         // Create basic type without nullability, precision, etc.
         relDataType = typeFactory.createSqlType(sqlTypeName);
-        
+
         // Handle nullability based on cardinality
         if (cardinality == Cardinality.OPTIONAL) {
           relDataType = typeFactory.createTypeWithNullability(relDataType, true);
         }
-        
+
         return new DataColumnFixed(columnName, cardinality, relDataType);
       }
     }
@@ -262,10 +265,11 @@ public record DataSchema(String name,
    * @return the schema
    * @throws IOException if an I/O error occurs
    */
-  public static DataSchema read(InputStream inputStream, RelDataTypeFactory typeFactory) throws IOException {
+  public static DataSchema read(InputStream inputStream, RelDataTypeFactory typeFactory)
+      throws IOException {
     Objects.requireNonNull(inputStream, "Input stream cannot be null");
     Objects.requireNonNull(typeFactory, "Type factory cannot be null");
-    
+
     var mapper = configureObjectMapper(typeFactory);
     return mapper.readValue(inputStream, DataSchema.class);
   }
@@ -278,11 +282,12 @@ public record DataSchema(String name,
    * @param typeFactory the type factory to use
    * @throws IOException if an I/O error occurs
    */
-  public static void write(OutputStream outputStream, DataSchema schema, RelDataTypeFactory typeFactory) throws IOException {
+  public static void write(OutputStream outputStream, DataSchema schema,
+      RelDataTypeFactory typeFactory) throws IOException {
     Objects.requireNonNull(outputStream, "Output stream cannot be null");
     Objects.requireNonNull(schema, "Schema cannot be null");
     Objects.requireNonNull(typeFactory, "Type factory cannot be null");
-    
+
     var mapper = configureObjectMapper(typeFactory);
     mapper.writeValue(outputStream, schema);
   }

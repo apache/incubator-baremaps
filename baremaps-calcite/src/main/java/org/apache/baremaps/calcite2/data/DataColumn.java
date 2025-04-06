@@ -17,10 +17,9 @@
 
 package org.apache.baremaps.calcite2.data;
 
+import java.io.Serializable;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.type.SqlTypeName;
-
-import java.io.Serializable;
 
 /**
  * A column in a table.
@@ -35,13 +34,13 @@ public interface DataColumn extends Serializable {
   String name();
 
   /**
-   * Returns the cardinality of the column.
-   * The cardinality defines if the column is required, optional, or repeated.
+   * Returns the cardinality of the column. The cardinality defines if the column is required,
+   * optional, or repeated.
    *
    * @return the cardinality of the column
    */
   Cardinality cardinality();
-  
+
   /**
    * Returns true if the column is required.
    *
@@ -50,7 +49,7 @@ public interface DataColumn extends Serializable {
   default boolean isRequired() {
     return cardinality() == Cardinality.REQUIRED;
   }
-  
+
   /**
    * Returns true if the column is optional.
    *
@@ -59,7 +58,7 @@ public interface DataColumn extends Serializable {
   default boolean isOptional() {
     return cardinality() == Cardinality.OPTIONAL;
   }
-  
+
   /**
    * Returns true if the column is repeated.
    *
@@ -81,14 +80,14 @@ public interface DataColumn extends Serializable {
    * @return the SQL type name of the column
    */
   SqlTypeName sqlTypeName();
-  
+
   /**
    * Returns the RelDataType of the column.
    *
    * @return the RelDataType of the column
    */
   RelDataType relDataType();
-  
+
   /**
    * Returns the Class that represents the Java type of this column.
    *

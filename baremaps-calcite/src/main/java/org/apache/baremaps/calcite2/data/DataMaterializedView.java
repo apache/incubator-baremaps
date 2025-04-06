@@ -25,8 +25,8 @@ import org.apache.calcite.schema.Schema;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * A table that implements a materialized view. This extends the standard modifiable
- * table with materialization capabilities.
+ * A table that implements a materialized view. This extends the standard modifiable table with
+ * materialization capabilities.
  */
 public class DataMaterializedView extends DataModifiableTable {
   /**

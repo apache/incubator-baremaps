@@ -17,14 +17,27 @@
 
 package org.apache.baremaps.calcite2;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
 import org.apache.baremaps.calcite2.data.DataModifiableTable;
 import org.apache.baremaps.calcite2.data.DataRow;
 import org.apache.baremaps.calcite2.data.DataRowType;
 import org.apache.baremaps.calcite2.data.DataSchema;
+import org.apache.baremaps.calcite2.openstreetmap.OpenStreetMapTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.memory.Memory;
 import org.apache.baremaps.data.memory.MemoryMappedDirectory;
+import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
+import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
+import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
@@ -32,14 +45,6 @@ import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.TableFactory;
-import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.file.Paths;
-import java.util.Map;
 
 /**
  * A table factory for creating tables in the calcite2 package.
@@ -49,8 +54,7 @@ public class BaremapsTableFactory implements TableFactory<Table> {
   /**
    * Constructor.
    */
-  public BaremapsTableFactory() {
-  }
+  public BaremapsTableFactory() {}
 
   @Override
   public Table create(
@@ -61,12 +65,13 @@ public class BaremapsTableFactory implements TableFactory<Table> {
     final RelProtoDataType protoRowType =
         rowType != null ? RelDataTypeImpl.proto(rowType) : null;
     String format = (String) operand.get("format");
-    
+
     // Create a type factory - Calcite doesn't expose one through SchemaPlus
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-    
+
     return switch (format) {
       case "data" -> createDataTable(name, operand, protoRowType, typeFactory);
+      case "osm" -> createOpenStreetMapTable(operand);
       default -> throw new RuntimeException("Unsupported format: " + format);
     };
   }
@@ -103,12 +108,85 @@ public class BaremapsTableFactory implements TableFactory<Table> {
           .memory(memory)
           .build();
       return new DataModifiableTable(
-          name, 
-          dataSchema, 
-          dataCollection, 
+          name,
+          dataSchema,
+          dataCollection,
           typeFactory);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-} 
+
+  /**
+   * Creates an OpenStreetMap table from a file.
+   *
+   * @param operand the operand properties
+   * @return the created table
+   */
+  private Table createOpenStreetMapTable(Map<String, Object> operand) {
+    // Get the file path from the operand
+    String filePath = (String) operand.get("file");
+    if (filePath == null) {
+      throw new IllegalArgumentException("File path must be specified in the 'file' operand");
+    }
+
+    try {
+      // Create a new input stream from the file
+      InputStream inputStream = new FileInputStream(filePath);
+
+      // Create an entity reader based on the file extension
+      if (filePath.endsWith(".pbf") || filePath.endsWith(".osm.pbf")) {
+        return createTableFromPbf(inputStream);
+      } else if (filePath.endsWith(".xml") || filePath.endsWith(".osm")) {
+        return createTableFromXml(inputStream);
+      } else {
+        throw new IllegalArgumentException(
+            "Unsupported file format. Supported formats are .pbf, .osm.pbf, .xml, and .osm");
+      }
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create OpenStreetMapTable from file: " + filePath, e);
+    }
+  }
+
+  /**
+   * Create a table from a PBF file.
+   *
+   * @param inputStream the input stream
+   * @return the table
+   */
+  public static OpenStreetMapTable createTableFromPbf(InputStream inputStream) {
+    return new OpenStreetMapTable(new PbfEntityReader().setGeometries(true), inputStream);
+  }
+
+  /**
+   * Create a table from a PBF file.
+   *
+   * @param path the path to the PBF file
+   * @return the table
+   * @throws IOException if an I/O error occurs
+   */
+  public static OpenStreetMapTable createTableFromPbf(Path path) throws IOException {
+    return createTableFromPbf(new FileInputStream(path.toFile()));
+  }
+
+  /**
+   * Create a table from an XML file.
+   *
+   * @param inputStream the input stream
+   * @return the table
+   */
+  public static OpenStreetMapTable createTableFromXml(InputStream inputStream) {
+    return new OpenStreetMapTable(new XmlEntityReader().setGeometries(true), inputStream);
+  }
+
+  /**
+   * Create a table from an XML file.
+   *
+   * @param path the path to the XML file
+   * @return the table
+   * @throws IOException if an I/O error occurs
+   */
+  public static OpenStreetMapTable createTableFromXml(Path path) throws IOException {
+    return createTableFromXml(new FileInputStream(path.toFile()));
+  }
+}

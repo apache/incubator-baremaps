@@ -36,13 +36,13 @@ public record DataRow(DataSchema schema, List<Object> values) {
   public DataRow {
     Objects.requireNonNull(schema, "Schema cannot be null");
     Objects.requireNonNull(values, "Values cannot be null");
-    
+
     if (values.size() != schema.columns().size()) {
       throw new IllegalArgumentException(
-          "Number of values (" + values.size() + ") doesn't match number of columns (" 
+          "Number of values (" + values.size() + ") doesn't match number of columns ("
               + schema.columns().size() + ")");
     }
-    
+
     // Make a defensive copy to ensure immutability
     values = List.copyOf(values);
   }
@@ -56,7 +56,7 @@ public record DataRow(DataSchema schema, List<Object> values) {
    */
   public Object get(String column) {
     Objects.requireNonNull(column, "Column name cannot be null");
-    
+
     // Use the schema's method to get column index for better performance
     int index = schema.getColumnIndex(column);
     return values.get(index);
@@ -86,7 +86,7 @@ public record DataRow(DataSchema schema, List<Object> values) {
    */
   public DataRow with(String column, Object value) {
     Objects.requireNonNull(column, "Column name cannot be null");
-    
+
     int index = schema.getColumnIndex(column);
     return with(index, value);
   }
@@ -103,13 +103,13 @@ public record DataRow(DataSchema schema, List<Object> values) {
     if (index < 0 || index >= values.size()) {
       throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + values.size());
     }
-    
+
     // Validate value against column type if value is not null
     if (value != null) {
       DataColumn column = schema.columns().get(index);
       validateValue(column, value);
     }
-    
+
     // Create a new list with the updated value
     var newValues = new java.util.ArrayList<>(values);
     newValues.set(index, value);
@@ -127,16 +127,17 @@ public record DataRow(DataSchema schema, List<Object> values) {
     // Skip validation for null values
     if (value == null) {
       if (column.isRequired()) {
-        throw new IllegalArgumentException("Column " + column.name() + " is required but value is null");
+        throw new IllegalArgumentException(
+            "Column " + column.name() + " is required but value is null");
       }
       return;
     }
-    
+
     // For non-null values, validate against the type
     Class<?> javaType = column.javaType();
     if (!javaType.isInstance(value)) {
       throw new IllegalArgumentException(
-          "Value for column " + column.name() + " must be of type " + javaType.getSimpleName() 
+          "Value for column " + column.name() + " must be of type " + javaType.getSimpleName()
               + " but was " + value.getClass().getSimpleName());
     }
   }

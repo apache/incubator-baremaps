@@ -17,6 +17,17 @@
 
 package org.apache.baremaps.calcite2.data;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.reflect.Type;
+import java.nio.MappedByteBuffer;
+import java.nio.file.Paths;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.memory.Memory;
@@ -34,8 +45,8 @@ import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
+import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ModifiableTable;
 import org.apache.calcite.schema.SchemaPlus;
@@ -45,18 +56,6 @@ import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.calcite.schema.impl.AbstractTableQueryable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.lang.reflect.Type;
-import java.nio.MappedByteBuffer;
-import java.nio.file.Paths;
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * A modifiable table implementation for Calcite that stores data in an AppendOnlyLog.
@@ -77,8 +76,8 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
    * @param typeFactory the type factory
    */
   public DataModifiableTable(String name,
-                      RelProtoDataType protoRowType,
-                      RelDataTypeFactory typeFactory) {
+      RelProtoDataType protoRowType,
+      RelDataTypeFactory typeFactory) {
     super();
     this.name = requireNonNull(name, "name");
     this.protoRowType = requireNonNull(protoRowType, "protoRowType");
@@ -92,7 +91,7 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
       DataColumn.Cardinality columnCardinality = determineCardinality(relDataType);
       columns.add(new DataColumnFixed(columnName, columnCardinality, relDataType));
     });
-    
+
     this.schema = new DataSchema(name, columns);
 
     // Create the collection
@@ -110,23 +109,23 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
    * @param typeFactory the type factory
    */
   public DataModifiableTable(String name,
-                      DataSchema schema,
-                      DataCollection<DataRow> rows,
-                      RelDataTypeFactory typeFactory) {
+      DataSchema schema,
+      DataCollection<DataRow> rows,
+      RelDataTypeFactory typeFactory) {
     super();
     this.name = requireNonNull(name, "name");
     this.schema = requireNonNull(schema, "schema");
     this.rows = requireNonNull(rows, "rows");
-    
+
     // Create row type from schema
     List<RelDataType> fieldTypes = new ArrayList<>();
     List<String> fieldNames = new ArrayList<>();
-    
+
     for (DataColumn column : schema.columns()) {
       fieldNames.add(column.name());
       fieldTypes.add(column.relDataType());
     }
-    
+
     this.rowType = typeFactory.createStructType(fieldTypes, fieldNames);
     this.protoRowType = RelDataTypeImpl.proto(rowType);
   }
@@ -139,7 +138,7 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
    */
   private DataColumn.Cardinality determineCardinality(RelDataType columnType) {
     Objects.requireNonNull(columnType, "Column type cannot be null");
-    
+
     if (columnType.getSqlTypeName() == SqlTypeName.ARRAY) {
       return DataColumn.Cardinality.REPEATED;
     } else if (columnType.isNullable()) {
@@ -196,8 +195,8 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
   }
 
   /**
-   * Adapter that makes the data collection appear as a collection of Object arrays.
-   * This provides compatibility with Calcite's ModifiableTable interface.
+   * Adapter that makes the data collection appear as a collection of Object arrays. This provides
+   * compatibility with Calcite's ModifiableTable interface.
    */
   private class RowCollectionAdapter extends AbstractCollection<Object[]> {
 

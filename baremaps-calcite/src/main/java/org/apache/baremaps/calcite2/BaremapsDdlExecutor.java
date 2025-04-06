@@ -17,7 +17,15 @@
 
 package org.apache.baremaps.calcite2;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
+import static org.apache.calcite.util.Static.RESOURCE;
+
 import com.google.common.collect.ImmutableList;
+import java.io.Reader;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.*;
 import org.apache.baremaps.calcite2.data.DataMaterializedView;
 import org.apache.baremaps.calcite2.data.DataModifiableTable;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -62,15 +70,6 @@ import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.io.Reader;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.*;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.requireNonNull;
-import static org.apache.calcite.util.Static.RESOURCE;
 
 /**
  * Executes DDL commands.
