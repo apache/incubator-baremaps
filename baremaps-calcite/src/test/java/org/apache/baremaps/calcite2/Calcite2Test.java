@@ -20,7 +20,6 @@ package org.apache.baremaps.calcite2;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.List;
@@ -29,6 +28,7 @@ import org.apache.baremaps.calcite2.data.*;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
 import org.apache.baremaps.data.memory.MemoryMappedDirectory;
+import org.apache.baremaps.testing.FileUtils;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -43,6 +43,7 @@ import org.locationtech.jts.geom.Point;
 public class Calcite2Test {
 
   private static final String CITY_DATA_DIR = "city_data";
+  private static final String CITY_POPULATION_DIR = "city_population";
   private static final String POPULATION_DATA_DIR = "population_data";
   private DataCollection<DataRow> cityCollection;
   private DataCollection<DataRow> populationCollection;
@@ -59,7 +60,8 @@ public class Calcite2Test {
         .build();
 
     // Create and initialize population collection
-    MemoryMappedDirectory populationMemory = new MemoryMappedDirectory(Paths.get(POPULATION_DATA_DIR));
+    MemoryMappedDirectory populationMemory =
+        new MemoryMappedDirectory(Paths.get(POPULATION_DATA_DIR));
     DataSchema populationSchema = createPopulationSchema();
     DataRowType populationRowType = new DataRowType(populationSchema);
     populationCollection = AppendOnlyLog.<DataRow>builder()
@@ -71,8 +73,9 @@ public class Calcite2Test {
   @AfterEach
   void tearDown() throws IOException {
     // Clean up directories
-    java.nio.file.Files.deleteIfExists(Paths.get(CITY_DATA_DIR));
-    java.nio.file.Files.deleteIfExists(Paths.get(POPULATION_DATA_DIR));
+    FileUtils.deleteRecursively(Paths.get(CITY_DATA_DIR).toFile());
+    FileUtils.deleteRecursively(Paths.get(POPULATION_DATA_DIR).toFile());
+    FileUtils.deleteRecursively(Paths.get(CITY_POPULATION_DIR).toFile());
   }
 
   private DataSchema createCitySchema() {
