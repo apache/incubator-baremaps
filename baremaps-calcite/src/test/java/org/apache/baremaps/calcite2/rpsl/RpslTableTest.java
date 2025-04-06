@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.calcite2.shapefile;
+package org.apache.baremaps.calcite2.rpsl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,39 +34,49 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.Test;
 
-class ShapefileTableTest {
+class RpslTableTest {
 
-  private static final File SAMPLE_SHAPEFILE =
-      TestFiles.POINT_SHP.toFile();
+  private static final File SAMPLE_RPSL_FILE =
+      TestFiles.RIPE_TXT.toFile();
 
   @Test
   void testSchemaVerification() throws IOException {
-    // Create a ShapefileTable instance
-    ShapefileTable shapefileTable = new ShapefileTable(SAMPLE_SHAPEFILE);
+    // Create a RpslTable instance
+    RpslTable rpslTable = new RpslTable(SAMPLE_RPSL_FILE);
 
     // Get the schema
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-    RelDataType rowType = shapefileTable.getRowType(typeFactory);
+    RelDataType rowType = rpslTable.getRowType(typeFactory);
 
     // Verify that the schema has the expected columns
     assertNotNull(rowType);
     assertTrue(rowType.getFieldCount() > 0);
 
-    // Verify that there is a geometry column
-    boolean hasGeometryColumn = false;
+    // Verify that specific columns exist
+    boolean hasTypeColumn = false;
+    boolean hasIdColumn = false;
+    boolean hasInetnumColumn = false;
+
     for (int i = 0; i < rowType.getFieldCount(); i++) {
-      if (rowType.getFieldList().get(i).getType().getSqlTypeName().getName().equals("GEOMETRY")) {
-        hasGeometryColumn = true;
-        break;
+      String fieldName = rowType.getFieldList().get(i).getName();
+      if (fieldName.equals("type")) {
+        hasTypeColumn = true;
+      } else if (fieldName.equals("id")) {
+        hasIdColumn = true;
+      } else if (fieldName.equals("inetnum")) {
+        hasInetnumColumn = true;
       }
     }
-    assertTrue(hasGeometryColumn, "Schema should have a geometry column");
+
+    assertTrue(hasTypeColumn, "Schema should have a 'type' column");
+    assertTrue(hasIdColumn, "Schema should have an 'id' column");
+    assertTrue(hasInetnumColumn, "Schema should have an 'inetnum' column");
   }
 
   @Test
-  void testSqlQueryWithRealShapefile() throws Exception {
-    // Create a ShapefileTable instance
-    ShapefileTable shapefileTable = new ShapefileTable(SAMPLE_SHAPEFILE);
+  void testSqlQueryWithRealRpslFile() throws Exception {
+    // Create a RpslTable instance
+    RpslTable rpslTable = new RpslTable(SAMPLE_RPSL_FILE);
 
     // Configure Calcite connection properties
     Properties info = new Properties();
@@ -78,15 +88,20 @@ class ShapefileTableTest {
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
       // Register the table in the root schema
-      rootSchema.add("shapefile", shapefileTable);
+      rootSchema.add("rpsl", rpslTable);
 
       // Execute a simple query
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery(
-              "SELECT * FROM shapefile LIMIT 5")) {
+              "SELECT type, id, inetnum FROM rpsl WHERE type = 'inetnum' LIMIT 5")) {
 
         // Verify that we get results
         assertTrue(resultSet.next(), "Should have at least one row");
+
+        // Print the first row for debugging
+        System.out.println("First row: " + resultSet.getString(1) + ", " +
+            resultSet.getString(2) + ", " +
+            resultSet.getString(3));
       }
     }
   }

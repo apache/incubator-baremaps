@@ -25,7 +25,6 @@ import org.apache.baremaps.calcite.DataColumn;
 import org.apache.baremaps.calcite.DataColumn.Cardinality;
 import org.apache.baremaps.calcite.DataColumn.Type;
 import org.apache.baremaps.calcite.DataColumnFixed;
-import org.apache.baremaps.calcite.DataRow;
 import org.apache.baremaps.calcite.DataSchema;
 import org.apache.baremaps.shapefile.ShapefileInputStream;
 import org.apache.baremaps.shapefile.ShapefileReader;
@@ -43,8 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A Calcite table implementation for shapefile data. This table reads data from a shapefile and makes
- * it available through the Apache Calcite framework for SQL querying.
+ * A Calcite table implementation for shapefile data. This table reads data from a shapefile and
+ * makes it available through the Apache Calcite framework for SQL querying.
  */
 public class ShapefileTable extends AbstractTable implements ScannableTable {
 
@@ -75,7 +74,7 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
    */
   private DataSchema buildSchema(String name) {
     var columns = new ArrayList<DataColumn>();
-    
+
     // Add columns from the shapefile's database fields
     for (int i = 0; i < shapeFile.getDatabaseFieldsDescriptors().size(); i++) {
       var fieldDescriptor = shapeFile.getDatabaseFieldsDescriptors().get(i);
@@ -209,4 +208,4 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
       }
     }
   }
-} 
+}

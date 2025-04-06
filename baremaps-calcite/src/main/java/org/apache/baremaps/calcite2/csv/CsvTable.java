@@ -22,8 +22,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.calcite.DataContext;
@@ -223,4 +221,4 @@ public class CsvTable extends AbstractTable implements ScannableTable {
       return result;
     }
   }
-} 
+}

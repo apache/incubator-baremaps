@@ -79,8 +79,11 @@ public class TestFiles {
   public static final Path GEONAMES_CSV =
       resolve("baremaps-testing/data/geonames/sample.txt");
 
-    public static final Path POINT_SHP =
-            resolve("baremaps-testing/data/shapefiles/point.shp");
+  public static final Path POINT_SHP =
+      resolve("baremaps-testing/data/shapefiles/point.shp");
+
+  public static final Path RIPE_TXT =
+      resolve("baremaps-testing/data/ripe/sample.txt");
 
   /* The geometries of the osm-sample/sample.osm.xml file */
 

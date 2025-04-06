@@ -20,6 +20,7 @@ package org.apache.baremaps.calcite2;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.List;
@@ -32,6 +33,8 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -39,16 +42,69 @@ import org.locationtech.jts.geom.Point;
 
 public class Calcite2Test {
 
+  private static final String CITY_DATA_DIR = "city_data";
+  private static final String POPULATION_DATA_DIR = "population_data";
+  private DataCollection<DataRow> cityCollection;
+  private DataCollection<DataRow> populationCollection;
+
+  @BeforeEach
+  void setUp() throws IOException {
+    // Create and initialize city collection
+    MemoryMappedDirectory cityMemory = new MemoryMappedDirectory(Paths.get(CITY_DATA_DIR));
+    DataSchema citySchema = createCitySchema();
+    DataRowType cityRowType = new DataRowType(citySchema);
+    cityCollection = AppendOnlyLog.<DataRow>builder()
+        .dataType(cityRowType)
+        .memory(cityMemory)
+        .build();
+
+    // Create and initialize population collection
+    MemoryMappedDirectory populationMemory = new MemoryMappedDirectory(Paths.get(POPULATION_DATA_DIR));
+    DataSchema populationSchema = createPopulationSchema();
+    DataRowType populationRowType = new DataRowType(populationSchema);
+    populationCollection = AppendOnlyLog.<DataRow>builder()
+        .dataType(populationRowType)
+        .memory(populationMemory)
+        .build();
+  }
+
+  @AfterEach
+  void tearDown() throws IOException {
+    // Clean up directories
+    java.nio.file.Files.deleteIfExists(Paths.get(CITY_DATA_DIR));
+    java.nio.file.Files.deleteIfExists(Paths.get(POPULATION_DATA_DIR));
+  }
+
+  private DataSchema createCitySchema() {
+    RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
+    return new DataSchema("city", List.of(
+        new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED,
+            typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER)),
+        new DataColumnFixed("name", DataColumn.Cardinality.OPTIONAL,
+            typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.VARCHAR)),
+        new DataColumnFixed("geometry", DataColumn.Cardinality.OPTIONAL,
+            typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.GEOMETRY))));
+  }
+
+  private DataSchema createPopulationSchema() {
+    RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
+    return new DataSchema("population", List.of(
+        new DataColumnFixed("city_id", DataColumn.Cardinality.REQUIRED,
+            typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER)),
+        new DataColumnFixed("population", DataColumn.Cardinality.OPTIONAL,
+            typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER))));
+  }
+
   @Test
-  void testMaterializedView() throws SQLException, IOException {
+  void testMaterializedView() throws SQLException {
     GeometryFactory geometryFactory = new GeometryFactory();
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
 
     // Configure Calcite connection properties
     Properties info = new Properties();
-    info.setProperty("lex", "MYSQL"); // Use MySQL dialect
-    info.setProperty("caseSensitive", "false"); // Disable case sensitivity
-    info.setProperty("unquotedCasing", "TO_LOWER"); // Convert unquoted identifiers to lowercase
+    info.setProperty("lex", "MYSQL");
+    info.setProperty("caseSensitive", "false");
+    info.setProperty("unquotedCasing", "TO_LOWER");
     info.setProperty("quotedCasing", "TO_LOWER");
     info.setProperty("parserFactory", BaremapsDdlExecutor.class.getName() + "#PARSER_FACTORY");
     info.setProperty("materializationsEnabled", "true");
@@ -57,27 +113,10 @@ public class Calcite2Test {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Create and add 'city' table
-      DataSchema citySchema = new DataSchema("city", List.of(
-          new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED,
-              typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER)),
-          new DataColumnFixed("name", DataColumn.Cardinality.OPTIONAL,
-              typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.VARCHAR)),
-          new DataColumnFixed("geometry", DataColumn.Cardinality.OPTIONAL,
-              typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.GEOMETRY))));
-
-      DataRowType cityRowType = new DataRowType(citySchema);
-
-      // Create in-memory collection for city data
-      DataCollection<DataRow> cityCollection = AppendOnlyLog.<DataRow>builder()
-          .dataType(cityRowType)
-          .memory(new MemoryMappedDirectory(Paths.get("city_data")))
-          .build();
-
       // Create the city table
       DataModifiableTable cityTable = new DataModifiableTable(
           "city",
-          citySchema,
+          createCitySchema(),
           cityCollection,
           typeFactory);
 
@@ -85,37 +124,22 @@ public class Calcite2Test {
       Point parisPoint = geometryFactory.createPoint(new Coordinate(2.3522, 48.8566));
       Point nyPoint = geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128));
 
-      cityCollection.add(new DataRow(citySchema, List.of(1, "Paris", parisPoint)));
-      cityCollection.add(new DataRow(citySchema, List.of(2, "New York", nyPoint)));
+      cityCollection.add(new DataRow(createCitySchema(), List.of(1, "Paris", parisPoint)));
+      cityCollection.add(new DataRow(createCitySchema(), List.of(2, "New York", nyPoint)));
 
       // Add city table to the schema
       rootSchema.add("city", cityTable);
 
-      // Create and add 'population' table
-      DataSchema populationSchema = new DataSchema("population", List.of(
-          new DataColumnFixed("city_id", DataColumn.Cardinality.REQUIRED,
-              typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER)),
-          new DataColumnFixed("population", DataColumn.Cardinality.OPTIONAL,
-              typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER))));
-
-      DataRowType populationRowType = new DataRowType(populationSchema);
-
-      // Create in-memory collection for population data
-      DataCollection<DataRow> populationCollection = AppendOnlyLog.<DataRow>builder()
-          .dataType(populationRowType)
-          .memory(new MemoryMappedDirectory(Paths.get("population_data")))
-          .build();
-
       // Create the population table
       DataModifiableTable populationTable = new DataModifiableTable(
           "population",
-          populationSchema,
+          createPopulationSchema(),
           populationCollection,
           typeFactory);
 
       // Add data to the population table
-      populationCollection.add(new DataRow(populationSchema, List.of(1, 2_161_000)));
-      populationCollection.add(new DataRow(populationSchema, List.of(2, 8_336_000)));
+      populationCollection.add(new DataRow(createPopulationSchema(), List.of(1, 2_161_000)));
+      populationCollection.add(new DataRow(createPopulationSchema(), List.of(2, 8_336_000)));
 
       // Add population table to the schema
       rootSchema.add("population", populationTable);
@@ -151,13 +175,6 @@ public class Calcite2Test {
 
         // No more rows
         assertFalse(resultSet.next());
-      }
-    } finally {
-      try {
-        java.nio.file.Files.deleteIfExists(Paths.get("city_data"));
-        java.nio.file.Files.deleteIfExists(Paths.get("population_data"));
-      } catch (IOException e) {
-        // Ignore cleanup errors
       }
     }
   }

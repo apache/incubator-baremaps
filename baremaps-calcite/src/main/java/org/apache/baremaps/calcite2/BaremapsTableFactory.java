@@ -33,6 +33,7 @@ import org.apache.baremaps.calcite2.data.DataRow;
 import org.apache.baremaps.calcite2.data.DataRowType;
 import org.apache.baremaps.calcite2.data.DataSchema;
 import org.apache.baremaps.calcite2.openstreetmap.OpenStreetMapTable;
+import org.apache.baremaps.calcite2.rpsl.RpslTable;
 import org.apache.baremaps.calcite2.shapefile.ShapefileTable;
 import org.apache.baremaps.data.collection.AppendOnlyLog;
 import org.apache.baremaps.data.collection.DataCollection;
@@ -77,6 +78,7 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       case "osm" -> createOpenStreetMapTable(operand);
       case "csv" -> createCsvTable(operand);
       case "shp" -> createShapefileTable(operand);
+      case "rpsl" -> createRpslTable(operand);
       default -> throw new RuntimeException("Unsupported format: " + format);
     };
   }
@@ -202,6 +204,27 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       return new ShapefileTable(file);
     } catch (IOException e) {
       throw new RuntimeException("Failed to create ShapefileTable from file: " + filePath, e);
+    }
+  }
+
+  /**
+   * Creates a RPSL table from a file.
+   *
+   * @param operand the operand properties
+   * @return the created table
+   */
+  private Table createRpslTable(Map<String, Object> operand) {
+    // Get the file path from the operand
+    String filePath = (String) operand.get("file");
+    if (filePath == null) {
+      throw new IllegalArgumentException("File path must be specified in the 'file' operand");
+    }
+
+    try {
+      File file = new File(filePath);
+      return new RpslTable(file);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create RpslTable from file: " + filePath, e);
     }
   }
 

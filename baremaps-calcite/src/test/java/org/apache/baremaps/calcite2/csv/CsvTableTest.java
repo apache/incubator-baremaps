@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -209,4 +208,4 @@ public class CsvTableTest {
           "Column " + i + " should have name " + expectedColumnNames[i]);
     }
   }
-} 
+}
