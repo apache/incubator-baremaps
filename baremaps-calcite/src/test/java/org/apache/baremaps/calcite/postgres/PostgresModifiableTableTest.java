@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.calcite.postgis;
+package org.apache.baremaps.calcite.postgres;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.baremaps.calcite.data.DataSchema;
@@ -28,18 +31,22 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.schema.ModifiableTable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.WKBReader;
 
 /**
  * Tests for the PostgisTable class, which provides access to PostgreSQL/PostGIS tables through the
  * Calcite framework for SQL querying.
  */
-class PostgisTableTest extends PostgresContainerTest {
+class PostgresModifiableTableTest extends PostgresContainerTest {
 
   private static final String TEST_TABLE = "postgis_test";
 
@@ -81,7 +88,7 @@ class PostgisTableTest extends PostgresContainerTest {
     @Test
     @Tag("integration")
     void schemaContainsExpectedColumns() throws Exception {
-      PostgisTable table = new PostgisTable(dataSource(), TEST_TABLE);
+      PostgresModifiableTable table = new PostgresModifiableTable(dataSource(), TEST_TABLE);
       DataSchema schema = table.schema();
 
       assertNotNull(schema, "Schema should not be null");
@@ -101,7 +108,8 @@ class PostgisTableTest extends PostgresContainerTest {
     @Tag("integration")
     void rowTypeMatchesSchema() throws Exception {
       RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-      PostgisTable table = new PostgisTable(dataSource(), TEST_TABLE, typeFactory);
+      PostgresModifiableTable table =
+          new PostgresModifiableTable(dataSource(), TEST_TABLE, typeFactory);
       RelDataType rowType = table.getRowType(typeFactory);
 
       assertNotNull(rowType, "Row type should not be null");
@@ -131,8 +139,9 @@ class PostgisTableTest extends PostgresContainerTest {
       calciteConnection = connection.unwrap(CalciteConnection.class);
 
       // Add our PostGIS table to the schema
-      PostgisTable postgisTable = new PostgisTable(dataSource(), TEST_TABLE);
-      calciteConnection.getRootSchema().add(TEST_TABLE, postgisTable);
+      PostgresModifiableTable postgresModifiableTable =
+          new PostgresModifiableTable(dataSource(), TEST_TABLE);
+      calciteConnection.getRootSchema().add(TEST_TABLE, postgresModifiableTable);
     }
 
     @Test
@@ -198,6 +207,149 @@ class PostgisTableTest extends PostgresContainerTest {
 
         // No more rows
         assertFalse(resultSet.next(), "Should have only one matching row");
+      }
+    }
+  }
+
+  @Nested
+  class ModifiableTableTests {
+
+    private PostgresModifiableTable table;
+    private ModifiableTable modifiableTable;
+    private GeometryFactory geometryFactory;
+
+    @BeforeEach
+    void setUp() throws SQLException {
+      table = new PostgresModifiableTable(dataSource(), TEST_TABLE);
+      modifiableTable = (ModifiableTable) table;
+      geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+    }
+
+    @Test
+    @Tag("integration")
+    void insertSingleRow() throws Exception {
+      // Create a new point geometry
+      Point point =
+          geometryFactory.createPoint(new org.locationtech.jts.geom.Coordinate(15.0, 25.0));
+
+      // Create a row with values matching the table schema
+      Object[] row = new Object[] {
+          3, // id
+          "Point 3", // name
+          "Third test point", // description
+          true, // is_active
+          45.67, // height
+          java.time.LocalDateTime.now(), // created_at - using LocalDateTime instead of Timestamp
+          point // geometry
+      };
+
+      // Get the modifiable collection and add the row
+      Collection<Object[]> collection = modifiableTable.getModifiableCollection();
+      boolean added = collection.add(row);
+
+      assertTrue(added, "Row should be added successfully");
+
+      // Verify the row was added by querying the database
+      try (Connection connection = dataSource().getConnection();
+          Statement stmt = connection.createStatement();
+          ResultSet rs = stmt.executeQuery("SELECT * FROM " + TEST_TABLE + " WHERE id = 3")) {
+
+        assertTrue(rs.next(), "Should find the inserted row");
+        assertEquals(3, rs.getInt("id"));
+        assertEquals("Point 3", rs.getString("name"));
+        assertEquals("Third test point", rs.getString("description"));
+        assertTrue(rs.getBoolean("is_active"));
+        assertEquals(45.67, rs.getDouble("height"), 0.01);
+
+        // Check geometry
+        String wkb = rs.getString("geometry");
+        assertNotNull(wkb, "Geometry should not be null");
+        WKBReader reader = new WKBReader(geometryFactory);
+        Geometry geometry = reader.read(WKBReader.hexToBytes(wkb));
+
+        assertTrue(geometry instanceof Point, "Should be a Point geometry");
+        Point resultPoint = (Point) geometry;
+        assertEquals(15.0, resultPoint.getX(), 0.01);
+        assertEquals(25.0, resultPoint.getY(), 0.01);
+        assertEquals(4326, geometry.getSRID(), "SRID should be 4326");
+      }
+    }
+
+    @Test
+    @Tag("integration")
+    void insertMultipleRowsUsingCopyApi() throws Exception {
+      // Create multiple rows to insert
+      List<Object[]> rows = new ArrayList<>();
+
+      // Row 1
+      rows.add(new Object[] {
+          4, // id
+          "Point 4", // name
+          "Fourth test point", // description
+          true, // is_active
+          12.34, // height
+          java.time.LocalDateTime.now(), // created_at - using LocalDateTime instead of Timestamp
+          geometryFactory.createPoint(new org.locationtech.jts.geom.Coordinate(30.0, 40.0)) // geometry
+      });
+
+      // Row 2
+      rows.add(new Object[] {
+          5, // id
+          "Point 5", // name
+          "Fifth test point", // description
+          false, // is_active
+          56.78, // height
+          java.time.LocalDateTime.now(), // created_at - using LocalDateTime instead of Timestamp
+          geometryFactory.createPoint(new org.locationtech.jts.geom.Coordinate(-20.0, 50.0)) // geometry
+      });
+
+      // Get the modifiable collection and add all rows
+      Collection<Object[]> collection = modifiableTable.getModifiableCollection();
+      boolean added = collection.addAll(rows);
+
+      assertTrue(added, "Rows should be added successfully");
+
+      // Verify the rows were added by querying the database
+      try (Connection connection = dataSource().getConnection();
+          Statement stmt = connection.createStatement();
+          ResultSet rs = stmt
+              .executeQuery("SELECT * FROM " + TEST_TABLE + " WHERE id IN (4, 5) ORDER BY id")) {
+
+        // Check first row
+        assertTrue(rs.next(), "Should find the first inserted row");
+        assertEquals(4, rs.getInt("id"));
+        assertEquals("Point 4", rs.getString("name"));
+        assertEquals("Fourth test point", rs.getString("description"));
+        assertTrue(rs.getBoolean("is_active"));
+        assertEquals(12.34, rs.getDouble("height"), 0.01);
+
+        // Check second row
+        assertTrue(rs.next(), "Should find the second inserted row");
+        assertEquals(5, rs.getInt("id"));
+        assertEquals("Point 5", rs.getString("name"));
+        assertEquals("Fifth test point", rs.getString("description"));
+        assertFalse(rs.getBoolean("is_active"));
+        assertEquals(56.78, rs.getDouble("height"), 0.01);
+
+        // No more rows
+        assertFalse(rs.next(), "Should have only two rows");
+      }
+    }
+
+    @Test
+    @Tag("integration")
+    void clearTable() throws Exception {
+      // Get the modifiable collection and clear it
+      Collection<Object[]> collection = modifiableTable.getModifiableCollection();
+      collection.clear();
+
+      // Verify the table is empty
+      try (Connection connection = dataSource().getConnection();
+          Statement stmt = connection.createStatement();
+          ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + TEST_TABLE)) {
+
+        assertTrue(rs.next(), "Should have a result");
+        assertEquals(0, rs.getInt(1), "Table should be empty");
       }
     }
   }

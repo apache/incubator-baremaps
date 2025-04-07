@@ -1,0 +1,633 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to you under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.baremaps.calcite.postgres;
+
+import java.lang.reflect.Type;
+import java.sql.*;
+import java.util.*;
+import javax.sql.DataSource;
+import org.apache.baremaps.calcite.data.DataColumn;
+import org.apache.baremaps.calcite.data.DataColumnFixed;
+import org.apache.baremaps.calcite.data.DataSchema;
+import org.apache.baremaps.postgres.copy.*;
+import org.apache.baremaps.postgres.metadata.ColumnResult;
+import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
+import org.apache.calcite.DataContext;
+import org.apache.calcite.linq4j.AbstractEnumerable;
+import org.apache.calcite.linq4j.Enumerable;
+import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.linq4j.Linq4j;
+import org.apache.calcite.linq4j.QueryProvider;
+import org.apache.calcite.linq4j.Queryable;
+import org.apache.calcite.linq4j.tree.Expression;
+import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.plan.RelOptTable;
+import org.apache.calcite.prepare.Prepare;
+import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.core.TableModify;
+import org.apache.calcite.rel.logical.LogicalTableModify;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.schema.ModifiableTable;
+import org.apache.calcite.schema.QueryableTable;
+import org.apache.calcite.schema.ScannableTable;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.schema.Schemas;
+import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.calcite.schema.impl.AbstractTableQueryable;
+import org.apache.calcite.sql.type.SqlTypeName;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
+import org.postgresql.PGConnection;
+import org.postgresql.copy.PGCopyOutputStream;
+
+/**
+ * A Calcite table implementation for PostGIS. This table allows querying and modifying spatial data
+ * directly from a PostGIS-enabled PostgreSQL database.
+ */
+public class PostgresModifiableTable extends AbstractTable
+    implements ScannableTable, ModifiableTable, QueryableTable {
+
+  private final DataSource dataSource;
+  private final String tableName;
+  private final RelDataType rowType;
+  private final DataSchema dataSchema;
+
+  /**
+   * Constructs a PostgisTable with the specified data source and table name.
+   *
+   * @param dataSource the data source for the PostgreSQL connection
+   * @param tableName the name of the table to access
+   * @throws SQLException if an SQL error occurs
+   */
+  public PostgresModifiableTable(DataSource dataSource, String tableName) throws SQLException {
+    this(dataSource, tableName, new org.apache.calcite.jdbc.JavaTypeFactoryImpl());
+  }
+
+  /**
+   * Constructs a PostgisTable with the specified data source, table name, and type factory.
+   *
+   * @param dataSource the data source for the PostgreSQL connection
+   * @param tableName the name of the table to access
+   * @param typeFactory the type factory
+   * @throws SQLException if an SQL error occurs
+   */
+  public PostgresModifiableTable(DataSource dataSource, String tableName,
+                                 RelDataTypeFactory typeFactory)
+      throws SQLException {
+    this.dataSource = dataSource;
+    this.tableName = tableName;
+    this.dataSchema = discoverSchema();
+    this.rowType = PostgresTypeConversion.toRelDataType(typeFactory, dataSchema);
+  }
+
+  /**
+   * Discovers the schema of the PostGIS table using DatabaseMetadata.
+   *
+   * @return the schema of the table
+   * @throws SQLException if an SQL error occurs
+   */
+  private DataSchema discoverSchema() throws SQLException {
+    List<DataColumn> columns = new ArrayList<>();
+
+    // Use DatabaseMetadata to get column information
+    DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
+    var tableMetadata =
+        metadata.getTableMetaData(null, null, tableName, new String[] {"TABLE", "VIEW"})
+            .stream()
+            .filter(meta -> meta.table().tableName().equalsIgnoreCase(tableName))
+            .findFirst()
+            .orElseThrow(() -> new SQLException("Table not found: " + tableName));
+
+    // Get geometry column information separately since it's PostGIS specific
+    Map<String, String> geometryTypes = getGeometryTypes();
+
+    for (ColumnResult column : tableMetadata.columns()) {
+      String columnName = column.columnName();
+      String dataType = column.typeName();
+      boolean isNullable = "YES".equalsIgnoreCase(column.isNullable());
+
+      // Determine column cardinality
+      DataColumn.Cardinality cardinality =
+          isNullable ? DataColumn.Cardinality.OPTIONAL : DataColumn.Cardinality.REQUIRED;
+
+      // Create a data column based on the type
+      RelDataTypeFactory typeFactory = new org.apache.calcite.jdbc.JavaTypeFactoryImpl();
+      RelDataType relDataType;
+
+      if ("geometry".equalsIgnoreCase(dataType) && geometryTypes.containsKey(columnName)) {
+        // This is a geometry column
+        relDataType = typeFactory.createSqlType(SqlTypeName.GEOMETRY);
+      } else {
+        // Handle regular PostgreSQL types
+        relDataType = PostgresTypeConversion.postgresTypeToRelDataType(
+            typeFactory, dataType);
+      }
+
+      columns.add(new DataColumnFixed(columnName, cardinality, relDataType));
+    }
+
+    return new DataSchema(tableName, columns);
+  }
+
+  /**
+   * Gets geometry column types for the current table.
+   *
+   * @return a map of column names to geometry types
+   * @throws SQLException if an SQL error occurs
+   */
+  private Map<String, String> getGeometryTypes() throws SQLException {
+    Map<String, String> geometryTypes = new HashMap<>();
+
+    try (Connection connection = dataSource.getConnection()) {
+      // Query to get geometry column information
+      String sql = "SELECT f_geometry_column, type FROM geometry_columns WHERE f_table_name = ?";
+
+      try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setString(1, tableName);
+
+        try (ResultSet rs = stmt.executeQuery()) {
+          while (rs.next()) {
+            String column = rs.getString("f_geometry_column");
+            String type = rs.getString("type");
+            geometryTypes.put(column, type);
+          }
+        }
+      }
+    }
+
+    return geometryTypes;
+  }
+
+  @Override
+  public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+    return rowType;
+  }
+
+  /**
+   * Returns the schema of this table.
+   *
+   * @return the schema of the table
+   */
+  public DataSchema schema() {
+    return dataSchema;
+  }
+
+  @Override
+  public Enumerable<Object[]> scan(DataContext root) {
+    return new AbstractEnumerable<>() {
+      @Override
+      public Enumerator<Object[]> enumerator() {
+        return new PostgisEnumerator(dataSource, dataSchema);
+      }
+    };
+  }
+
+  @Override
+  public TableModify toModificationRel(
+      RelOptCluster cluster,
+      RelOptTable table,
+      Prepare.CatalogReader catalogReader,
+      RelNode child,
+      TableModify.Operation operation,
+      @Nullable List<String> updateColumnList,
+      @Nullable List<RexNode> sourceExpressionList,
+      boolean flattened) {
+    return LogicalTableModify.create(table, catalogReader, child, operation,
+        updateColumnList, sourceExpressionList, flattened);
+  }
+
+  @Override
+  public Collection getModifiableCollection() {
+    return new PostgisCollectionAdapter();
+  }
+
+  @Override
+  public <T> Queryable<T> asQueryable(QueryProvider queryProvider, SchemaPlus schema,
+      String tableName) {
+    return new AbstractTableQueryable<T>(queryProvider, schema, this,
+        tableName) {
+      @Override
+      public Enumerator<T> enumerator() {
+        return (Enumerator<T>) Linq4j.enumerator(new PostgisCollectionAdapter());
+      }
+    };
+  }
+
+  @Override
+  public Type getElementType() {
+    return Object[].class;
+  }
+
+  @Override
+  public Expression getExpression(SchemaPlus schema, String tableName, Class clazz) {
+    return Schemas.tableExpression(schema, getElementType(), tableName, clazz);
+  }
+
+  /**
+   * Adapter that makes the PostGIS table appear as a collection of Object arrays. This provides
+   * compatibility with Calcite's ModifiableTable interface.
+   */
+  private class PostgisCollectionAdapter extends AbstractCollection<Object[]> {
+
+    @Override
+    public int size() {
+      try (Connection connection = dataSource.getConnection();
+          Statement stmt = connection.createStatement();
+          ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM \"" + tableName + "\"")) {
+        if (rs.next()) {
+          return rs.getInt(1);
+        }
+        return 0;
+      } catch (SQLException e) {
+        throw new RuntimeException("Error getting table size", e);
+      }
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return size() == 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+      if (!(o instanceof Object[])) {
+        return false;
+      }
+
+      // This is a simplified implementation - in a real-world scenario,
+      // you might want to implement a more efficient way to check for existence
+      try (Connection connection = dataSource.getConnection();
+          Statement stmt = connection.createStatement()) {
+
+        Object[] values = (Object[]) o;
+        StringBuilder whereClause = new StringBuilder();
+
+        for (int i = 0; i < dataSchema.columns().size(); i++) {
+          if (i > 0) {
+            whereClause.append(" AND ");
+          }
+          whereClause.append("\"").append(dataSchema.columns().get(i).name()).append("\" = ?");
+        }
+
+        String sql = "SELECT COUNT(*) FROM \"" + tableName + "\" WHERE " + whereClause;
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+
+        for (int i = 0; i < values.length; i++) {
+          pstmt.setObject(i + 1, values[i]);
+        }
+
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+          return rs.getInt(1) > 0;
+        }
+        return false;
+      } catch (SQLException e) {
+        throw new RuntimeException("Error checking if row exists", e);
+      }
+    }
+
+    @Override
+    public Iterator<Object[]> iterator() {
+      return new Iterator<Object[]>() {
+        private final PostgisEnumerator enumerator = new PostgisEnumerator(dataSource, dataSchema);
+        private boolean hasNext = enumerator.moveNext();
+
+        @Override
+        public boolean hasNext() {
+          return hasNext;
+        }
+
+        @Override
+        public Object[] next() {
+          if (!hasNext) {
+            throw new NoSuchElementException();
+          }
+          Object[] current = enumerator.current();
+          hasNext = enumerator.moveNext();
+          return current;
+        }
+      };
+    }
+
+    @Override
+    public Object[] toArray() {
+      List<Object[]> result = new ArrayList<>();
+      try (Connection connection = dataSource.getConnection();
+          Statement stmt = connection.createStatement();
+          ResultSet rs = stmt.executeQuery("SELECT * FROM \"" + tableName + "\"")) {
+
+        while (rs.next()) {
+          Object[] row = new Object[dataSchema.columns().size()];
+          for (int i = 0; i < dataSchema.columns().size(); i++) {
+            DataColumn column = dataSchema.columns().get(i);
+            if (column.sqlTypeName() == SqlTypeName.GEOMETRY) {
+              byte[] wkb = rs.getBytes(i + 1);
+              row[i] = deserializeWkb(wkb);
+            } else {
+              row[i] = rs.getObject(i + 1);
+            }
+          }
+          result.add(row);
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException("Error converting table to array", e);
+      }
+      return result.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+      return (T[]) toArray();
+    }
+
+    @Override
+    public boolean add(Object[] objects) {
+      return addAll(Collections.singletonList(objects));
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Object[]> c) {
+      Objects.requireNonNull(c, "Collection cannot be null");
+
+      try (Connection connection = dataSource.getConnection()) {
+        // Use COPY API for better performance
+        PGConnection pgConnection = connection.unwrap(PGConnection.class);
+        String copyCommand = "COPY \"" + tableName + "\" (" +
+            dataSchema.columns().stream()
+                .map(col -> "\"" + col.name() + "\"")
+                .collect(java.util.stream.Collectors.joining(", "))
+            +
+            ") FROM STDIN WITH (FORMAT binary)";
+
+        try (
+            CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyCommand))) {
+          writer.writeHeader();
+
+          for (Object[] objects : c) {
+            Objects.requireNonNull(objects, "Values cannot be null");
+            if (objects.length != dataSchema.columns().size()) {
+              throw new IllegalArgumentException(
+                  "Expected " + dataSchema.columns().size() + " values, got " + objects.length);
+            }
+
+            writer.startRow(dataSchema.columns().size());
+
+            for (int i = 0; i < objects.length; i++) {
+              Object value = objects[i];
+              DataColumn column = dataSchema.columns().get(i);
+
+              if (value == null) {
+                writer.writeNull();
+              } else if (column.sqlTypeName() == SqlTypeName.GEOMETRY
+                  && value instanceof Geometry) {
+                writer.write(CopyWriter.GEOMETRY_HANDLER, (Geometry) value);
+              } else if (column.sqlTypeName() == SqlTypeName.VARCHAR) {
+                writer.write((String) value);
+              } else if (column.sqlTypeName() == SqlTypeName.BOOLEAN) {
+                writer.writeBoolean((Boolean) value);
+              } else if (column.sqlTypeName() == SqlTypeName.INTEGER) {
+                writer.writeInteger((Integer) value);
+              } else if (column.sqlTypeName() == SqlTypeName.BIGINT) {
+                writer.writeLong((Long) value);
+              } else if (column.sqlTypeName() == SqlTypeName.DOUBLE) {
+                writer.writeDouble((Double) value);
+              } else if (column.sqlTypeName() == SqlTypeName.FLOAT) {
+                writer.writeFloat((Float) value);
+              } else if (column.sqlTypeName() == SqlTypeName.SMALLINT) {
+                writer.writeShort((Short) value);
+              } else if (column.sqlTypeName() == SqlTypeName.TINYINT) {
+                writer.writeByte((Byte) value);
+              } else if (column.sqlTypeName() == SqlTypeName.DATE) {
+                writer.write(CopyWriter.LOCAL_DATE_HANDLER, (java.time.LocalDate) value);
+              } else if (column.sqlTypeName() == SqlTypeName.TIMESTAMP) {
+                writer.write(CopyWriter.LOCAL_DATE_TIME_HANDLER, (java.time.LocalDateTime) value);
+              } else if (column.sqlTypeName() == SqlTypeName.OTHER) {
+                writer.writeJsonb(value.toString());
+              } else {
+                // For other types, convert to string
+                writer.write(value.toString());
+              }
+            }
+          }
+
+          return true;
+        }
+      } catch (Exception e) {
+        throw new RuntimeException("Error adding rows using COPY API", e);
+      }
+    }
+
+    @Override
+    public void clear() {
+      try (Connection connection = dataSource.getConnection();
+          Statement stmt = connection.createStatement()) {
+        stmt.executeUpdate("DELETE FROM \"" + tableName + "\"");
+      } catch (SQLException e) {
+        throw new RuntimeException("Error clearing table", e);
+      }
+    }
+
+    /**
+     * Deserializes a WKB (Well-Known Binary) representation of a geometry.
+     *
+     * @param wkb the WKB bytes
+     * @return the deserialized geometry
+     */
+    private Geometry deserializeWkb(byte[] wkb) {
+      if (wkb == null) {
+        return null;
+      }
+      try {
+        // Create a WKBReader that handles SRID information
+        WKBReader reader = new WKBReader(new GeometryFactory());
+        // The WKB data is already in the correct format, no need to skip bytes
+        return reader.read(wkb);
+      } catch (ParseException e) {
+        throw new RuntimeException("Error parsing WKB geometry", e);
+      }
+    }
+
+    /**
+     * Serializes a geometry to WKB (Well-Known Binary) format.
+     *
+     * @param geometry the geometry to serialize
+     * @return the WKB bytes
+     */
+    private byte[] serializeWkb(Geometry geometry) {
+      if (geometry == null) {
+        return null;
+      }
+      try {
+        org.locationtech.jts.io.WKBWriter writer = new org.locationtech.jts.io.WKBWriter();
+        return writer.write(geometry);
+      } catch (Exception e) {
+        throw new RuntimeException("Error serializing geometry to WKB", e);
+      }
+    }
+  }
+
+  /**
+   * Enumerator for PostGIS data.
+   */
+  private static class PostgisEnumerator implements Enumerator<Object[]> {
+    private final DataSource dataSource;
+    private final DataSchema schema;
+    private Connection connection;
+    private Statement statement;
+    private ResultSet resultSet;
+    private boolean hasNext;
+    private Object[] current;
+
+    /**
+     * Constructs a PostgisEnumerator with the specified data source and schema.
+     *
+     * @param dataSource the data source
+     * @param schema the schema
+     */
+    public PostgisEnumerator(DataSource dataSource, DataSchema schema) {
+      this.dataSource = dataSource;
+      this.schema = schema;
+      this.current = null;
+      try {
+        this.connection = dataSource.getConnection();
+        this.statement = connection.createStatement();
+        this.resultSet = statement.executeQuery(buildSelectQuery());
+        this.hasNext = resultSet.next();
+        if (this.hasNext) {
+          this.current = convertCurrentRow();
+        }
+      } catch (SQLException e) {
+        close();
+        throw new RuntimeException("Error initializing PostGIS query", e);
+      }
+    }
+
+    private String buildSelectQuery() {
+      List<String> columnProjections = new ArrayList<>();
+
+      for (DataColumn column : schema.columns()) {
+        // Special handling for geometry columns to get WKB format
+        if (column.sqlTypeName() == SqlTypeName.GEOMETRY) {
+          columnProjections.add(String.format("ST_AsBinary(\"%s\") AS \"%s\"",
+              column.name(), column.name()));
+        } else {
+          columnProjections.add(String.format("\"%s\"", column.name()));
+        }
+      }
+
+      return "SELECT " + String.join(", ", columnProjections) +
+          " FROM \"" + schema.name() + "\"";
+    }
+
+    private Object[] convertCurrentRow() throws SQLException {
+      Object[] values = new Object[schema.columns().size()];
+      for (int i = 0; i < schema.columns().size(); i++) {
+        DataColumn column = schema.columns().get(i);
+        Object value;
+
+        // Special handling for geometry columns
+        if (column.sqlTypeName() == SqlTypeName.GEOMETRY) {
+          byte[] wkb = resultSet.getBytes(i + 1);
+          value = deserializeWkb(wkb);
+        } else {
+          value = resultSet.getObject(i + 1);
+        }
+
+        values[i] = value;
+      }
+      return values;
+    }
+
+    private Geometry deserializeWkb(byte[] wkb) {
+      if (wkb == null) {
+        return null;
+      }
+      try {
+        // Create a WKBReader that handles SRID information
+        WKBReader reader = new WKBReader(new GeometryFactory());
+        // The WKB data is already in the correct format, no need to skip bytes
+        return reader.read(wkb);
+      } catch (ParseException e) {
+        throw new RuntimeException("Error parsing WKB geometry", e);
+      }
+    }
+
+    @Override
+    public Object[] current() {
+      return current;
+    }
+
+    @Override
+    public boolean moveNext() {
+      try {
+        if (!hasNext) {
+          current = null;
+          return false;
+        }
+
+        current = convertCurrentRow();
+        hasNext = resultSet.next();
+        return true;
+      } catch (SQLException e) {
+        close();
+        throw new RuntimeException("Error fetching next result", e);
+      }
+    }
+
+    @Override
+    public void reset() {
+      close();
+      try {
+        this.connection = dataSource.getConnection();
+        this.statement = connection.createStatement();
+        this.resultSet = statement.executeQuery(buildSelectQuery());
+        this.hasNext = resultSet.next();
+        if (this.hasNext) {
+          this.current = convertCurrentRow();
+        }
+      } catch (SQLException e) {
+        close();
+        throw new RuntimeException("Error resetting PostGIS query", e);
+      }
+    }
+
+    @Override
+    public void close() {
+      try {
+        if (resultSet != null) {
+          resultSet.close();
+          resultSet = null;
+        }
+        if (statement != null) {
+          statement.close();
+          statement = null;
+        }
+        if (connection != null) {
+          connection.close();
+          connection = null;
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException("Error closing resources", e);
+      }
+    }
+  }
+}

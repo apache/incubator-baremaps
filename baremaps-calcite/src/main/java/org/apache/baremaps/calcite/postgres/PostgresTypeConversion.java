@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.calcite.postgis;
+package org.apache.baremaps.calcite.postgres;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,9 +30,9 @@ import org.apache.calcite.sql.type.SqlTypeName;
 /**
  * Utility class for converting between PostgreSQL/PostGIS types and Calcite types.
  */
-public class PostgisTypeConversion {
+public class PostgresTypeConversion {
 
-  private PostgisTypeConversion() {
+  private PostgresTypeConversion() {
     // Prevent instantiation
   }
 
