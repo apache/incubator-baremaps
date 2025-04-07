@@ -17,6 +17,8 @@
 
 package org.apache.baremaps.calcite.postgis;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,14 +28,14 @@ import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaFactory;
 import org.apache.calcite.schema.SchemaPlus;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * A factory for {@link PostgisSchema} schemas.
  * 
- * <p>This schema factory connects to a PostgreSQL database with PostGIS extensions
- * and exposes tables as Calcite tables.</p>
+ * <p>
+ * This schema factory connects to a PostgreSQL database with PostGIS extensions and exposes tables
+ * as Calcite tables.
+ * </p>
  */
 public class PostgisSchemaFactory implements SchemaFactory {
 
@@ -51,14 +53,14 @@ public class PostgisSchemaFactory implements SchemaFactory {
     String username = (String) operand.get("username");
     String password = (String) operand.get("password");
     String schema = (String) operand.getOrDefault("schema", "public");
-    
+
     if (jdbcUrl == null) {
       throw new IllegalArgumentException("'jdbcUrl' must be specified");
     }
 
     DataSource dataSource = createDataSource(jdbcUrl, username, password);
     validatePostgisAvailability(dataSource);
-    
+
     return new PostgisSchema(dataSource, schema);
   }
 
@@ -79,10 +81,10 @@ public class PostgisSchemaFactory implements SchemaFactory {
     config.setMaximumPoolSize(5);
     config.setAutoCommit(true);
     config.setConnectionTestQuery("SELECT 1");
-    
+
     return new HikariDataSource(config);
   }
-  
+
   /**
    * Validates that the database is PostgreSQL with PostGIS extension installed.
    *
@@ -92,15 +94,15 @@ public class PostgisSchemaFactory implements SchemaFactory {
   private static void validatePostgisAvailability(DataSource dataSource) {
     try (Connection connection = dataSource.getConnection()) {
       DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
-      
+
       // Get database metadata
       java.sql.DatabaseMetaData dbMetadata = connection.getMetaData();
       String productName = dbMetadata.getDatabaseProductName();
-      
+
       if (!"PostgreSQL".equalsIgnoreCase(productName)) {
         throw new IllegalArgumentException("Database is not PostgreSQL: " + productName);
       }
-      
+
       // Check for PostGIS extension
       try (ResultSet rs = connection.createStatement().executeQuery(
           "SELECT postgis_version()")) {
@@ -110,13 +112,14 @@ public class PostgisSchemaFactory implements SchemaFactory {
       } catch (SQLException e) {
         throw new IllegalArgumentException("PostGIS extension not installed", e);
       }
-      
+
       // Check for geometry_columns table
       try {
-        var tables = metadata.getTableMetaData(null, "public", "geometry_columns", 
-            new String[]{"TABLE", "VIEW"});
+        var tables = metadata.getTableMetaData(null, "public", "geometry_columns",
+            new String[] {"TABLE", "VIEW"});
         if (tables.isEmpty()) {
-          throw new IllegalArgumentException("geometry_columns table not found, PostGIS setup is incomplete");
+          throw new IllegalArgumentException(
+              "geometry_columns table not found, PostGIS setup is incomplete");
         }
       } catch (SQLException e) {
         throw new IllegalArgumentException("Failed to query geometry_columns table", e);
@@ -125,4 +128,4 @@ public class PostgisSchemaFactory implements SchemaFactory {
       throw new RuntimeException("Failed to connect to PostgreSQL database", e);
     }
   }
-} 
+}

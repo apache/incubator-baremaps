@@ -36,8 +36,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Tests for the PostgisTable class, which provides access to PostgreSQL/PostGIS tables through
- * the Calcite framework for SQL querying.
+ * Tests for the PostgisTable class, which provides access to PostgreSQL/PostGIS tables through the
+ * Calcite framework for SQL querying.
  */
 class PostgisTableTest extends PostgresContainerTest {
 
@@ -50,10 +50,10 @@ class PostgisTableTest extends PostgresContainerTest {
         Statement statement = connection.createStatement()) {
       // Ensure PostGIS extension is available
       statement.execute("CREATE EXTENSION IF NOT EXISTS postgis");
-      
+
       // Drop the test table if it exists
       statement.execute("DROP TABLE IF EXISTS " + TEST_TABLE);
-      
+
       // Create a test table with various data types including a geometry column
       statement.execute("CREATE TABLE " + TEST_TABLE + " (" +
           "id INTEGER PRIMARY KEY, " +
@@ -64,12 +64,12 @@ class PostgisTableTest extends PostgresContainerTest {
           "created_at TIMESTAMP, " +
           "geometry GEOMETRY(Point, 4326)" +
           ")");
-      
+
       // Insert test data
-      statement.execute("INSERT INTO " + TEST_TABLE + 
+      statement.execute("INSERT INTO " + TEST_TABLE +
           " VALUES (1, 'Point 1', 'First test point', true, 123.45, NOW(), " +
           "ST_SetSRID(ST_MakePoint(10.5, 20.5), 4326))");
-      statement.execute("INSERT INTO " + TEST_TABLE + 
+      statement.execute("INSERT INTO " + TEST_TABLE +
           " VALUES (2, 'Point 2', 'Second test point', false, 67.89, NOW(), " +
           "ST_SetSRID(ST_MakePoint(-5.5, 30.2), 4326))");
     }
@@ -106,10 +106,10 @@ class PostgisTableTest extends PostgresContainerTest {
 
       assertNotNull(rowType, "Row type should not be null");
       assertEquals(7, rowType.getFieldCount(), "Row type should have 7 fields");
-      
+
       // Verify the field names in the row type
       assertTrue(rowType.getFieldNames().contains("id"), "Row type should contain 'id' field");
-      assertTrue(rowType.getFieldNames().contains("geometry"), 
+      assertTrue(rowType.getFieldNames().contains("geometry"),
           "Row type should contain 'geometry' field");
     }
   }
@@ -129,7 +129,7 @@ class PostgisTableTest extends PostgresContainerTest {
 
       connection = DriverManager.getConnection("jdbc:calcite:", info);
       calciteConnection = connection.unwrap(CalciteConnection.class);
-      
+
       // Add our PostGIS table to the schema
       PostgisTable postgisTable = new PostgisTable(dataSource(), TEST_TABLE);
       calciteConnection.getRootSchema().add(TEST_TABLE, postgisTable);
@@ -201,4 +201,4 @@ class PostgisTableTest extends PostgresContainerTest {
       }
     }
   }
-} 
+}

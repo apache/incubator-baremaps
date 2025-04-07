@@ -62,7 +62,7 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
     this.file = file;
     this.reader = new FlatGeoBufReader(FileChannel.open(file.toPath(), StandardOpenOption.READ));
     this.tableName = file.getName();
-    
+
     // Read header to get columns information
     FlatGeoBuf.Header header = reader.readHeader();
     this.columns = header.columns();
@@ -89,12 +89,12 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
     for (FlatGeoBuf.Column column : columns) {
       SqlTypeName sqlTypeName = mapFlatGeoBufTypeToSqlType(column.type());
       RelDataType fieldType = typeFactory.createSqlType(sqlTypeName);
-      
+
       // Handle nullability
       if (column.nullable()) {
         fieldType = typeFactory.createTypeWithNullability(fieldType, true);
       }
-      
+
       builder.add(column.name(), fieldType);
     }
 
@@ -178,10 +178,10 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
 
         // Convert feature to row
         List<Object> values = new ArrayList<>();
-        
+
         // Add properties
         values.addAll(feature.properties());
-        
+
         // Add geometry
         values.add(feature.geometry());
 

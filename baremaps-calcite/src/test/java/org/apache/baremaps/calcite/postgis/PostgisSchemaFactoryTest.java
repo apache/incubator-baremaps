@@ -36,7 +36,7 @@ import org.locationtech.jts.geom.Geometry;
  * Tests for the PostgisSchemaFactory class, which creates PostGIS schemas for Calcite.
  */
 class PostgisSchemaFactoryTest extends PostgresContainerTest {
-  
+
   private static final String TEST_TABLE = "postgis_schema_test";
 
   @BeforeEach
@@ -45,21 +45,21 @@ class PostgisSchemaFactoryTest extends PostgresContainerTest {
         Statement statement = connection.createStatement()) {
       // Ensure PostGIS extension is available
       statement.execute("CREATE EXTENSION IF NOT EXISTS postgis");
-      
+
       // Drop the test table if it exists
       statement.execute("DROP TABLE IF EXISTS " + TEST_TABLE);
-      
+
       // Create a test table with a geometry column
       statement.execute("CREATE TABLE " + TEST_TABLE + " (" +
           "id INTEGER PRIMARY KEY, " +
           "name VARCHAR(100), " +
           "geometry GEOMETRY(Point, 4326)" +
           ")");
-      
+
       // Insert test data
-      statement.execute("INSERT INTO " + TEST_TABLE + 
+      statement.execute("INSERT INTO " + TEST_TABLE +
           " VALUES (1, 'Point 1', ST_SetSRID(ST_MakePoint(10.5, 20.5), 4326))");
-      statement.execute("INSERT INTO " + TEST_TABLE + 
+      statement.execute("INSERT INTO " + TEST_TABLE +
           " VALUES (2, 'Point 2', ST_SetSRID(ST_MakePoint(-5.5, 30.2), 4326))");
     }
   }
@@ -69,7 +69,7 @@ class PostgisSchemaFactoryTest extends PostgresContainerTest {
   void schemaFactoryShouldCreatePostgisSchema() throws Exception {
     // Create schema factory
     PostgisSchemaFactory schemaFactory = new PostgisSchemaFactory();
-    
+
     // Create operand map with connection details
     Map<String, Object> operand = new HashMap<>();
     String url = jdbcUrl();
@@ -79,7 +79,7 @@ class PostgisSchemaFactoryTest extends PostgresContainerTest {
     operand.put("username", username);
     operand.put("password", password);
     operand.put("schema", "public");
-    
+
     // Configure Calcite connection properties
     Properties info = new Properties();
     info.setProperty("lex", "JAVA");
@@ -88,16 +88,16 @@ class PostgisSchemaFactoryTest extends PostgresContainerTest {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
-      
+
       // Create the schema and add it to the root schema
       Schema postgisSchema = schemaFactory.create(rootSchema, "POSTGIS", operand);
       rootSchema.add("POSTGIS", postgisSchema);
-    
+
       // Execute a query that uses the PostGIS schema
       try (Statement statement = calciteConnection.createStatement();
           ResultSet resultSet = statement.executeQuery(
               "SELECT id, name, \"geometry\" FROM \"POSTGIS\"." + TEST_TABLE + " ORDER BY id")) {
-        
+
         // Verify first row
         assertTrue(resultSet.next(), "Should have at least one row");
         assertEquals(1, resultSet.getInt("id"));
@@ -105,7 +105,7 @@ class PostgisSchemaFactoryTest extends PostgresContainerTest {
         Object geometry = resultSet.getObject("geometry");
         assertNotNull(geometry, "Geometry should not be null");
         assertTrue(geometry instanceof Geometry, "Should get a Geometry object");
-        
+
         // Verify second row
         assertTrue(resultSet.next(), "Should have a second row");
         assertEquals(2, resultSet.getInt("id"));
@@ -113,13 +113,13 @@ class PostgisSchemaFactoryTest extends PostgresContainerTest {
         geometry = resultSet.getObject("geometry");
         assertNotNull(geometry, "Geometry should not be null");
         assertTrue(geometry instanceof Geometry, "Should get a Geometry object");
-        
+
         // No more rows
         assertFalse(resultSet.next(), "Should have only two rows");
       }
     }
   }
-  
+
   @Test
   @Tag("integration")
   void schemaFactoryShouldHandleSpatialFilter() throws Exception {
@@ -129,44 +129,44 @@ class PostgisSchemaFactoryTest extends PostgresContainerTest {
     operand.put("jdbcUrl", jdbcUrl());
     operand.put("username", "test");
     operand.put("password", "test");
-    
+
     // Configure Calcite connection properties
     Properties info = new Properties();
     info.setProperty("lex", "JAVA");
     info.setProperty("quoting", "DOUBLE_QUOTE");
-    
+
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
-      
+
       // Create the schema and add it to the root schema
       Schema postgisSchema = schemaFactory.create(rootSchema, "POSTGIS", operand);
       rootSchema.add("POSTGIS", postgisSchema);
-      
+
       // First add a special function to handle ST_Contains in Calcite
       try (Statement statement = calciteConnection.createStatement()) {
         statement.execute(
             "CREATE FUNCTION \"ST_Contains\"(geom1 GEOMETRY, geom2 GEOMETRY) " +
-            "RETURNS BOOLEAN " +
-            "LANGUAGE JAVA " +
-            "PARAMETER STYLE SYSTEM " +
-            "NO SQL " +
-            "EXTERNAL NAME 'org.apache.baremaps.calcite2.postgis.PostgisFunctions.stContains'");
+                "RETURNS BOOLEAN " +
+                "LANGUAGE JAVA " +
+                "PARAMETER STYLE SYSTEM " +
+                "NO SQL " +
+                "EXTERNAL NAME 'org.apache.baremaps.calcite2.postgis.PostgisFunctions.stContains'");
       }
-      
+
       // Execute a query with a simple filter
       try (Statement statement = calciteConnection.createStatement();
           ResultSet resultSet = statement.executeQuery(
               "SELECT id, name FROM \"POSTGIS\"." + TEST_TABLE + " WHERE id = 1")) {
-        
+
         // Should only return the first row
         assertTrue(resultSet.next(), "Should have one row");
         assertEquals(1, resultSet.getInt("id"));
         assertEquals("Point 1", resultSet.getString("name"));
-        
+
         // No more rows
         assertFalse(resultSet.next(), "Should have only one row");
       }
     }
   }
-} 
+}

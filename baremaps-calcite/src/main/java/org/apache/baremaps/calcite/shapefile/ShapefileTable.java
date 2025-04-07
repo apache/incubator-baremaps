@@ -19,7 +19,6 @@ package org.apache.baremaps.calcite.shapefile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.baremaps.shapefile.DBaseFieldDescriptor;
 import org.apache.baremaps.shapefile.ShapefileInputStream;
@@ -101,12 +100,13 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
    * @param fieldDescriptor the DBase field descriptor
    * @return the corresponding RelDataType
    */
-  private RelDataType mapDBaseTypeToSqlType(RelDataTypeFactory typeFactory, DBaseFieldDescriptor fieldDescriptor) {
+  private RelDataType mapDBaseTypeToSqlType(RelDataTypeFactory typeFactory,
+      DBaseFieldDescriptor fieldDescriptor) {
     return switch (fieldDescriptor.getType()) {
       case CHARACTER -> typeFactory.createSqlType(SqlTypeName.VARCHAR);
-      case NUMBER -> fieldDescriptor.getDecimalCount() == 0 ? 
-          typeFactory.createSqlType(SqlTypeName.BIGINT) : 
-          typeFactory.createSqlType(SqlTypeName.DOUBLE);
+      case NUMBER -> fieldDescriptor.getDecimalCount() == 0
+          ? typeFactory.createSqlType(SqlTypeName.BIGINT)
+          : typeFactory.createSqlType(SqlTypeName.DOUBLE);
       case CURRENCY -> typeFactory.createSqlType(SqlTypeName.DOUBLE);
       case DOUBLE -> typeFactory.createSqlType(SqlTypeName.DOUBLE);
       case INTEGER -> typeFactory.createSqlType(SqlTypeName.INTEGER);

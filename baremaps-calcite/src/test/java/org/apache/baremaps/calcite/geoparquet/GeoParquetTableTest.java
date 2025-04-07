@@ -61,7 +61,7 @@ class GeoParquetTableTest {
       // Verify the schema contains a geometry column
       boolean hasGeometryColumn = rowType.getFieldNames().contains("geometry");
       assertTrue(hasGeometryColumn, "Schema should contain a geometry column");
-      
+
       // Find geometry field and verify it's the correct type
       rowType.getFieldList().stream()
           .filter(field -> field.getName().equals("geometry"))

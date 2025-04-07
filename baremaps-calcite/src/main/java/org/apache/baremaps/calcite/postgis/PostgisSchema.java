@@ -32,8 +32,9 @@ import org.apache.calcite.schema.impl.AbstractSchema;
 /**
  * A Calcite schema backed by PostGIS.
  * 
- * <p>This schema exposes tables in a PostgreSQL database with PostGIS extensions 
- * as Calcite tables.</p>
+ * <p>
+ * This schema exposes tables in a PostgreSQL database with PostGIS extensions as Calcite tables.
+ * </p>
  */
 public class PostgisSchema extends AbstractSchema {
 
@@ -56,15 +57,15 @@ public class PostgisSchema extends AbstractSchema {
   protected Map<String, Table> getTableMap() {
     if (tableMap == null) {
       tableMap = new HashMap<>();
-      
+
       try {
         // Use DatabaseMetadata to get all tables in the schema
         DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
-        var tables = metadata.getTableMetaData(null, schemaName, null, new String[]{"BASE TABLE"});
-        
+        var tables = metadata.getTableMetaData(null, schemaName, null, new String[] {"BASE TABLE"});
+
         // Find tables with geometry columns
         Set<String> tablesWithGeometry = findTablesWithGeometry();
-        
+
         // Create a PostgisTable for each table with geometry columns
         for (TableMetadata tableMetadata : tables) {
           String tableName = tableMetadata.table().tableName();
@@ -76,10 +77,10 @@ public class PostgisSchema extends AbstractSchema {
         throw new RuntimeException("Error getting tables from schema: " + schemaName, e);
       }
     }
-    
+
     return tableMap;
   }
-  
+
   /**
    * Find all tables that have geometry columns.
    *
@@ -90,10 +91,10 @@ public class PostgisSchema extends AbstractSchema {
     try (Connection connection = dataSource.getConnection()) {
       // Query to get all tables with geometry columns
       String sql = "SELECT DISTINCT f_table_name FROM geometry_columns WHERE f_table_schema = ?";
-      
+
       try (var stmt = connection.prepareStatement(sql)) {
         stmt.setString(1, schemaName);
-        
+
         try (ResultSet rs = stmt.executeQuery()) {
           Set<String> result = new java.util.HashSet<>();
           while (rs.next()) {
@@ -104,4 +105,4 @@ public class PostgisSchema extends AbstractSchema {
       }
     }
   }
-} 
+}

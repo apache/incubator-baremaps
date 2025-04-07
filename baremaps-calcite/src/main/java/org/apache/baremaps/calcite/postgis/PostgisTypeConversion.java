@@ -66,7 +66,7 @@ public class PostgisTypeConversion {
     POSTGRES_TO_SQL_TYPE.put("jsonb", SqlTypeName.VARCHAR);
     POSTGRES_TO_SQL_TYPE.put("bytea", SqlTypeName.BINARY);
     POSTGRES_TO_SQL_TYPE.put("interval", SqlTypeName.INTERVAL_DAY_SECOND);
-    
+
     // PostGIS specific types
     POSTGRES_TO_SQL_TYPE.put("geometry", SqlTypeName.GEOMETRY);
     POSTGRES_TO_SQL_TYPE.put("geography", SqlTypeName.GEOMETRY);
@@ -81,7 +81,7 @@ public class PostgisTypeConversion {
    * @param postgresType the PostgreSQL data type
    * @return the Calcite RelDataType
    */
-  public static RelDataType postgresTypeToRelDataType(RelDataTypeFactory typeFactory, 
+  public static RelDataType postgresTypeToRelDataType(RelDataTypeFactory typeFactory,
       String postgresType) {
     SqlTypeName sqlTypeName = POSTGRES_TO_SQL_TYPE.getOrDefault(postgresType, SqlTypeName.ANY);
     return typeFactory.createSqlType(sqlTypeName);
@@ -96,18 +96,18 @@ public class PostgisTypeConversion {
    */
   public static RelDataType toRelDataType(RelDataTypeFactory typeFactory, DataSchema schema) {
     List<Map.Entry<String, RelDataType>> fields = new ArrayList<>();
-    
+
     for (DataColumn column : schema.columns()) {
       boolean nullable = column.cardinality() == DataColumn.Cardinality.OPTIONAL;
       RelDataType fieldType = column.relDataType();
-      
+
       if (nullable) {
         fieldType = typeFactory.createTypeWithNullability(fieldType, true);
       }
-      
+
       fields.add(Map.entry(column.name(), fieldType));
     }
-    
+
     return typeFactory.createStructType(fields);
   }
-} 
+}
