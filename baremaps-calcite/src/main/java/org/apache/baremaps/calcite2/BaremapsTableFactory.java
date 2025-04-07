@@ -33,6 +33,7 @@ import org.apache.baremaps.calcite2.data.DataRow;
 import org.apache.baremaps.calcite2.data.DataRowType;
 import org.apache.baremaps.calcite2.data.DataSchema;
 import org.apache.baremaps.calcite2.flatgeobuf.FlatGeoBufTable;
+import org.apache.baremaps.calcite2.geoparquet.GeoParquetTable;
 import org.apache.baremaps.calcite2.openstreetmap.OpenStreetMapTable;
 import org.apache.baremaps.calcite2.rpsl.RpslTable;
 import org.apache.baremaps.calcite2.shapefile.ShapefileTable;
@@ -81,6 +82,7 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       case "shp" -> createShapefileTable(operand);
       case "rpsl" -> createRpslTable(operand);
       case "fgb" -> createFlatGeoBufTable(operand);
+      case "parquet" -> createGeoParquetTable(operand);
       default -> throw new RuntimeException("Unsupported format: " + format);
     };
   }
@@ -291,5 +293,24 @@ public class BaremapsTableFactory implements TableFactory<Table> {
    */
   public static OpenStreetMapTable createTableFromXml(Path path) throws IOException {
     return createTableFromXml(new FileInputStream(path.toFile()));
+  }
+
+  private Table createGeoParquetTable(Map<String, Object> operand) {
+    if (operand.size() < 2) {
+      throw new IllegalArgumentException("Missing file path for GeoParquet table");
+    }
+    try {
+      String filePath = (String) operand.get("file");
+      if (filePath == null) {
+        throw new IllegalArgumentException("File path must be specified in the 'file' operand");
+      }
+
+      // Create a type factory - Calcite doesn't expose one through SchemaPlus
+      RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
+
+      return new GeoParquetTable(new File(filePath), typeFactory);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create GeoParquet table", e);
+    }
   }
 }
