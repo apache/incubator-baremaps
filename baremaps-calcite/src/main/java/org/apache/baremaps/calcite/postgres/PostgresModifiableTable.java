@@ -91,7 +91,7 @@ public class PostgresModifiableTable extends AbstractTable
    * @throws SQLException if an SQL error occurs
    */
   public PostgresModifiableTable(DataSource dataSource, String tableName,
-                                 RelDataTypeFactory typeFactory)
+      RelDataTypeFactory typeFactory)
       throws SQLException {
     this.dataSource = dataSource;
     this.tableName = tableName;
@@ -114,13 +114,30 @@ public class PostgresModifiableTable extends AbstractTable
         metadata.getTableMetaData(null, null, tableName, new String[] {"TABLE", "VIEW"})
             .stream()
             .filter(meta -> meta.table().tableName().equalsIgnoreCase(tableName))
-            .findFirst()
-            .orElseThrow(() -> new SQLException("Table not found: " + tableName));
+            .findFirst();
 
-    // Get geometry column information separately since it's PostGIS specific
+    // If not found, check if it's a materialized view
+    if (tableMetadata.isEmpty()) {
+      try (Connection connection = dataSource.getConnection();
+          PreparedStatement stmt = connection.prepareStatement(
+              "SELECT EXISTS (SELECT 1 FROM pg_matviews WHERE matviewname = ?)")) {
+        stmt.setString(1, tableName);
+        try (ResultSet rs = stmt.executeQuery()) {
+          if (rs.next() && rs.getBoolean(1)) {
+            // It's a materialized view, get column information directly
+            return getSchemaFromDirectQuery();
+          }
+        }
+      }
+
+      // If we get here, it's neither a regular table/view nor a materialized view
+      throw new SQLException("Table not found: " + tableName);
+    }
+
+    // Get geometry column types for the current table.
     Map<String, String> geometryTypes = getGeometryTypes();
 
-    for (ColumnResult column : tableMetadata.columns()) {
+    for (ColumnResult column : tableMetadata.get().columns()) {
       String columnName = column.columnName();
       String dataType = column.typeName();
       boolean isNullable = "YES".equalsIgnoreCase(column.isNullable());
@@ -146,6 +163,180 @@ public class PostgresModifiableTable extends AbstractTable
     }
 
     return new DataSchema(tableName, columns);
+  }
+
+  /**
+   * Gets schema information directly from a query rather than metadata, which is useful for objects
+   * like materialized views that aren't captured by standard metadata.
+   *
+   * @return the schema constructed from direct column query
+   * @throws SQLException if an SQL error occurs
+   */
+  private DataSchema getSchemaFromDirectQuery() throws SQLException {
+    List<DataColumn> columns = new ArrayList<>();
+
+    try (Connection connection = dataSource.getConnection()) {
+      // First try with pg_catalog, which works for both tables and materialized views
+      String sql =
+          "SELECT a.attname AS column_name, " +
+              "       pg_catalog.format_type(a.atttypid, a.atttypmod) AS data_type, " +
+              "       NOT a.attnotnull AS is_nullable " +
+              "FROM pg_catalog.pg_attribute a " +
+              "JOIN pg_catalog.pg_class c ON a.attrelid = c.oid " +
+              "LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace " +
+              "WHERE c.relname = ? " +
+              "  AND a.attnum > 0 " +
+              "  AND NOT a.attisdropped " +
+              "ORDER BY a.attnum";
+
+      try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setString(1, tableName);
+
+        try (ResultSet rs = stmt.executeQuery()) {
+          while (rs.next()) {
+            String columnName = rs.getString("column_name");
+            String dataType = rs.getString("data_type");
+            boolean isNullable = rs.getBoolean("is_nullable");
+
+            // Determine column cardinality
+            DataColumn.Cardinality cardinality =
+                isNullable ? DataColumn.Cardinality.OPTIONAL : DataColumn.Cardinality.REQUIRED;
+
+            // Create a data column based on the type
+            RelDataTypeFactory typeFactory = new org.apache.calcite.jdbc.JavaTypeFactoryImpl();
+            RelDataType relDataType;
+
+            // Check if it's a geometry column by looking at the data type
+            if (dataType.contains("geometry")) {
+              relDataType = typeFactory.createSqlType(SqlTypeName.GEOMETRY);
+            } else {
+              // Map PostgreSQL type to Calcite type
+              relDataType = PostgresTypeConversion.postgresTypeToRelDataType(
+                  typeFactory, mapPostgresTypeName(dataType));
+            }
+
+            columns.add(new DataColumnFixed(columnName, cardinality, relDataType));
+          }
+        }
+      }
+
+      // If we didn't find any columns, try falling back to information_schema.columns
+      if (columns.isEmpty()) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+            "SELECT column_name, data_type, is_nullable " +
+                "FROM information_schema.columns " +
+                "WHERE table_name = ? " +
+                "ORDER BY ordinal_position")) {
+
+          stmt.setString(1, tableName);
+
+          try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+              String columnName = rs.getString("column_name");
+              String dataType = rs.getString("data_type");
+              boolean isNullable = "YES".equalsIgnoreCase(rs.getString("is_nullable"));
+
+              // Determine column cardinality
+              DataColumn.Cardinality cardinality =
+                  isNullable ? DataColumn.Cardinality.OPTIONAL : DataColumn.Cardinality.REQUIRED;
+
+              // Create a data column based on the type
+              RelDataTypeFactory typeFactory = new org.apache.calcite.jdbc.JavaTypeFactoryImpl();
+              RelDataType relDataType;
+
+              // Check if it's a geometry column
+              if ("USER-DEFINED".equals(dataType)) {
+                // Check if this is a geometry column by querying for spatial_ref_sys
+                try (PreparedStatement geometryCheck = connection.prepareStatement(
+                    "SELECT type FROM geometry_columns " +
+                        "WHERE f_table_name = ? AND f_geometry_column = ?")) {
+                  geometryCheck.setString(1, tableName);
+                  geometryCheck.setString(2, columnName);
+                  try (ResultSet geomRs = geometryCheck.executeQuery()) {
+                    if (geomRs.next()) {
+                      relDataType = typeFactory.createSqlType(SqlTypeName.GEOMETRY);
+                    } else {
+                      // Not a geometry, handle as regular type
+                      relDataType = PostgresTypeConversion.postgresTypeToRelDataType(
+                          typeFactory, dataType);
+                    }
+                  }
+                }
+              } else {
+                // Regular PostgreSQL type
+                relDataType = PostgresTypeConversion.postgresTypeToRelDataType(
+                    typeFactory, dataType);
+              }
+
+              columns.add(new DataColumnFixed(columnName, cardinality, relDataType));
+            }
+          }
+        }
+      }
+    }
+
+    if (columns.isEmpty()) {
+      throw new SQLException("No columns found for table: " + tableName);
+    }
+
+    return new DataSchema(tableName, columns);
+  }
+
+  /**
+   * Maps PostgreSQL type name from pg_catalog format to a simpler format that can be used with
+   * PostgresTypeConversion.
+   *
+   * @param pgTypeName the PostgreSQL type name from pg_catalog
+   * @return simplified type name
+   */
+  private String mapPostgresTypeName(String pgTypeName) {
+    if (pgTypeName == null) {
+      return "unknown";
+    }
+
+    // Strip size/precision information
+    if (pgTypeName.contains("(")) {
+      pgTypeName = pgTypeName.substring(0, pgTypeName.indexOf("("));
+    }
+
+    // Map common types
+    switch (pgTypeName.toLowerCase()) {
+      case "int4":
+        return "integer";
+      case "int8":
+        return "bigint";
+      case "int2":
+        return "smallint";
+      case "float4":
+        return "real";
+      case "float8":
+        return "double precision";
+      case "varchar":
+      case "character varying":
+        return "varchar";
+      case "bpchar":
+      case "character":
+        return "char";
+      case "text":
+        return "text";
+      case "bool":
+        return "boolean";
+      case "timestamptz":
+        return "timestamp with time zone";
+      case "timestamp":
+        return "timestamp without time zone";
+      case "date":
+        return "date";
+      case "time":
+        return "time";
+      case "timetz":
+        return "time with time zone";
+      case "numeric":
+      case "decimal":
+        return "numeric";
+      default:
+        return pgTypeName;
+    }
   }
 
   /**
@@ -189,6 +380,24 @@ public class PostgresModifiableTable extends AbstractTable
    */
   public DataSchema schema() {
     return dataSchema;
+  }
+
+  /**
+   * Returns the data source used by this table.
+   *
+   * @return the data source
+   */
+  protected DataSource getDataSource() {
+    return dataSource;
+  }
+
+  /**
+   * Returns the name of this table.
+   *
+   * @return the table name
+   */
+  protected String getTableName() {
+    return tableName;
   }
 
   @Override

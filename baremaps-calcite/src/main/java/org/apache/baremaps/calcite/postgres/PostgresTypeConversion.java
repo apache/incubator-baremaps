@@ -75,39 +75,145 @@ public class PostgresTypeConversion {
   }
 
   /**
-   * Converts a PostgreSQL data type to a Calcite RelDataType.
+   * Converts a PostgreSQL type to a Calcite RelDataType.
    *
    * @param typeFactory the type factory
-   * @param postgresType the PostgreSQL data type
-   * @return the Calcite RelDataType
+   * @param postgresType the PostgreSQL type
+   * @return the corresponding RelDataType
    */
-  public static RelDataType postgresTypeToRelDataType(RelDataTypeFactory typeFactory,
-      String postgresType) {
-    SqlTypeName sqlTypeName = POSTGRES_TO_SQL_TYPE.getOrDefault(postgresType, SqlTypeName.ANY);
-    return typeFactory.createSqlType(sqlTypeName);
+  public static RelDataType postgresTypeToRelDataType(
+      RelDataTypeFactory typeFactory, String postgresType) {
+    switch (postgresType.toLowerCase()) {
+      case "int4":
+      case "integer":
+        return typeFactory.createSqlType(SqlTypeName.INTEGER);
+      case "bigint":
+      case "int8":
+        return typeFactory.createSqlType(SqlTypeName.BIGINT);
+      case "smallint":
+      case "int2":
+        return typeFactory.createSqlType(SqlTypeName.SMALLINT);
+      case "real":
+      case "float4":
+        return typeFactory.createSqlType(SqlTypeName.FLOAT);
+      case "double precision":
+      case "float8":
+        return typeFactory.createSqlType(SqlTypeName.DOUBLE);
+      case "numeric":
+      case "decimal":
+        return typeFactory.createSqlType(SqlTypeName.DECIMAL);
+      case "boolean":
+      case "bool":
+        return typeFactory.createSqlType(SqlTypeName.BOOLEAN);
+      case "varchar":
+      case "character varying":
+      case "text":
+        return typeFactory.createSqlType(SqlTypeName.VARCHAR);
+      case "char":
+      case "character":
+        return typeFactory.createSqlType(SqlTypeName.CHAR);
+      case "date":
+        return typeFactory.createSqlType(SqlTypeName.DATE);
+      case "timestamp":
+      case "timestamp without time zone":
+        return typeFactory.createSqlType(SqlTypeName.TIMESTAMP);
+      case "timestamp with time zone":
+        return typeFactory.createSqlType(SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE);
+      case "time":
+      case "time without time zone":
+        return typeFactory.createSqlType(SqlTypeName.TIME);
+      case "time with time zone":
+        return typeFactory.createSqlType(SqlTypeName.TIME_WITH_LOCAL_TIME_ZONE);
+      case "bytea":
+        return typeFactory.createSqlType(SqlTypeName.BINARY);
+      case "geometry":
+        return typeFactory.createSqlType(SqlTypeName.GEOMETRY);
+      case "json":
+      case "jsonb":
+        return typeFactory.createSqlType(SqlTypeName.OTHER);
+      default:
+        // Default to VARCHAR for unknown types
+        return typeFactory.createSqlType(SqlTypeName.VARCHAR);
+    }
   }
 
   /**
-   * Converts a DataSchema to a Calcite RelDataType.
+   * Converts a RelDataType to a PostgreSQL type string.
+   *
+   * @param type the RelDataType
+   * @return the corresponding PostgreSQL type string
+   */
+  public static String toPostgresTypeString(RelDataType type) {
+    SqlTypeName typeName = type.getSqlTypeName();
+    switch (typeName) {
+      case INTEGER:
+        return "INTEGER";
+      case BIGINT:
+        return "BIGINT";
+      case SMALLINT:
+        return "SMALLINT";
+      case TINYINT:
+        return "SMALLINT";
+      case FLOAT:
+        return "REAL";
+      case DOUBLE:
+      case DECIMAL:
+        return "DOUBLE PRECISION";
+      case BOOLEAN:
+        return "BOOLEAN";
+      case VARCHAR:
+      case CHAR:
+        int precision = type.getPrecision();
+        if (precision == RelDataType.PRECISION_NOT_SPECIFIED) {
+          return "TEXT";
+        } else {
+          return typeName == SqlTypeName.VARCHAR
+              ? "VARCHAR(" + precision + ")"
+              : "CHAR(" + precision + ")";
+        }
+      case DATE:
+        return "DATE";
+      case TIMESTAMP:
+        return "TIMESTAMP";
+      case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
+        return "TIMESTAMP WITH TIME ZONE";
+      case TIME:
+        return "TIME";
+      case TIME_WITH_LOCAL_TIME_ZONE:
+        return "TIME WITH TIME ZONE";
+      case BINARY:
+      case VARBINARY:
+        return "BYTEA";
+      case GEOMETRY:
+        return "GEOMETRY";
+      case ARRAY:
+        return toPostgresTypeString(type.getComponentType()) + "[]";
+      case OTHER:
+        // For JSON/JSONB and other types
+        return "JSONB";
+      default:
+        // Default to TEXT for unknown types
+        return "TEXT";
+    }
+  }
+
+  /**
+   * Converts a DataSchema to a RelDataType.
    *
    * @param typeFactory the type factory
-   * @param schema the schema
-   * @return the RelDataType
+   * @param schema the data schema
+   * @return the corresponding RelDataType
    */
-  public static RelDataType toRelDataType(RelDataTypeFactory typeFactory, DataSchema schema) {
-    List<Map.Entry<String, RelDataType>> fields = new ArrayList<>();
+  public static RelDataType toRelDataType(RelDataTypeFactory typeFactory,
+      DataSchema schema) {
+    List<RelDataType> types = new ArrayList<>();
+    List<String> names = new ArrayList<>();
 
     for (DataColumn column : schema.columns()) {
-      boolean nullable = column.cardinality() == DataColumn.Cardinality.OPTIONAL;
-      RelDataType fieldType = column.relDataType();
-
-      if (nullable) {
-        fieldType = typeFactory.createTypeWithNullability(fieldType, true);
-      }
-
-      fields.add(Map.entry(column.name(), fieldType));
+      names.add(column.name());
+      types.add(column.relDataType());
     }
 
-    return typeFactory.createStructType(fields);
+    return typeFactory.createStructType(types, names);
   }
 }
