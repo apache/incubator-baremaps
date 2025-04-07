@@ -26,6 +26,10 @@
       <artifactId>jackson-dataformat-csv</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+    </dependency>
+    <dependency>
       <groupId>mil.nga.geopackage</groupId>
       <artifactId>geopackage</artifactId>
     </dependency>
