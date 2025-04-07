@@ -22,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.sql.*;
 import java.util.Properties;
-import org.apache.baremaps.calcite.DataColumn;
-import org.apache.baremaps.calcite.DataSchema;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
@@ -54,22 +52,29 @@ class GeoParquetTableTest {
   class SchemaTests {
 
     @Test
-    void schemaContainsExpectedColumns() throws Exception {
-      DataSchema schema = table.schema();
+    void rowTypeContainsExpectedColumns() throws Exception {
+      RelDataType rowType = table.getRowType(typeFactory);
 
-      assertNotNull(schema, "Schema should not be null");
-      assertFalse(schema.columns().isEmpty(), "Schema should have columns");
+      assertNotNull(rowType, "Row type should not be null");
+      assertFalse(rowType.getFieldList().isEmpty(), "Row type should have fields");
 
       // Verify the schema contains a geometry column
-      boolean hasGeometryColumn = schema.columns().stream()
-          .anyMatch(column -> column.name().equals("geometry") &&
-              column.type() == DataColumn.Type.GEOMETRY);
-
+      boolean hasGeometryColumn = rowType.getFieldNames().contains("geometry");
       assertTrue(hasGeometryColumn, "Schema should contain a geometry column");
+      
+      // Find geometry field and verify it's the correct type
+      rowType.getFieldList().stream()
+          .filter(field -> field.getName().equals("geometry"))
+          .findFirst()
+          .ifPresent(field -> {
+            String typeString = field.getType().getFullTypeString();
+            assertTrue(typeString.contains(Geometry.class.getName()),
+                "Geometry field should have the correct type: " + typeString);
+          });
     }
 
     @Test
-    void rowTypeMatchesSchema() throws Exception {
+    void rowTypeFieldsAreCorrect() throws Exception {
       RelDataType rowType = table.getRowType(typeFactory);
 
       assertNotNull(rowType, "Row type should not be null");

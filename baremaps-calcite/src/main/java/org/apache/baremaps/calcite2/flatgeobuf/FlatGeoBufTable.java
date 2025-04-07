@@ -23,11 +23,6 @@ import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.baremaps.calcite.DataColumn;
-import org.apache.baremaps.calcite.DataColumn.Cardinality;
-import org.apache.baremaps.calcite.DataColumn.Type;
-import org.apache.baremaps.calcite.DataColumnFixed;
-import org.apache.baremaps.calcite.DataSchema;
 import org.apache.baremaps.flatgeobuf.FlatGeoBuf;
 import org.apache.baremaps.flatgeobuf.FlatGeoBufReader;
 import org.apache.calcite.DataContext;
@@ -53,7 +48,8 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
 
   private final File file;
   private final FlatGeoBufReader reader;
-  private final DataSchema schema;
+  private final String tableName;
+  private final List<FlatGeoBuf.Column> columns;
   private RelDataType rowType;
 
   /**
@@ -65,59 +61,11 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
   public FlatGeoBufTable(File file) throws IOException {
     this.file = file;
     this.reader = new FlatGeoBufReader(FileChannel.open(file.toPath(), StandardOpenOption.READ));
-    this.schema = buildSchema(file.getName());
-  }
-
-  /**
-   * Builds a schema from the FlatGeoBuf file.
-   *
-   * @param name the name of the schema
-   * @return the schema
-   */
-  private DataSchema buildSchema(String name) {
-    var columns = new ArrayList<DataColumn>();
-
-    try {
-      // Read the header to get the schema information
-      FlatGeoBuf.Header header = reader.readHeader();
-
-      // Add columns from the FlatGeoBuf header
-      for (FlatGeoBuf.Column column : header.columns()) {
-        var columnName = column.name();
-        var columnType = convertColumnType(column.type());
-        columns.add(new DataColumnFixed(columnName,
-            column.nullable() ? Cardinality.OPTIONAL : Cardinality.REQUIRED,
-            columnType));
-      }
-    } catch (IOException e) {
-      logger.error("Error reading FlatGeoBuf header", e);
-      throw new RuntimeException("Failed to read FlatGeoBuf header", e);
-    }
-
-    // Add geometry column
-    columns.add(new DataColumnFixed("geometry", Cardinality.OPTIONAL, Type.GEOMETRY));
-
-    return new DataSchema(name, columns);
-  }
-
-  /**
-   * Converts FlatGeoBuf column type to DataColumn.Type
-   * 
-   * @param columnType the FlatGeoBuf column type
-   * @return the corresponding DataColumn.Type
-   */
-  private Type convertColumnType(FlatGeoBuf.ColumnType columnType) {
-    return switch (columnType) {
-      case BYTE, UBYTE -> Type.BYTE;
-      case BOOL -> Type.BOOLEAN;
-      case SHORT, USHORT -> Type.SHORT;
-      case INT, UINT -> Type.INTEGER;
-      case LONG, ULONG -> Type.LONG;
-      case FLOAT -> Type.FLOAT;
-      case DOUBLE -> Type.DOUBLE;
-      case STRING -> Type.STRING;
-      case JSON, DATETIME, BINARY -> Type.STRING; // Map unsupported types to STRING
-    };
+    this.tableName = file.getName();
+    
+    // Read header to get columns information
+    FlatGeoBuf.Header header = reader.readHeader();
+    this.columns = header.columns();
   }
 
   @Override
@@ -137,16 +85,44 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
   private RelDataType createRowType(RelDataTypeFactory typeFactory) {
     RelDataTypeFactory.Builder builder = typeFactory.builder();
 
-    // Define the columns based on the schema
-    for (DataColumn column : schema.columns()) {
-      if (column.type() == Type.GEOMETRY) {
-        builder.add(column.name(), typeFactory.createJavaType(Geometry.class));
-      } else {
-        builder.add(column.name(), typeFactory.createSqlType(SqlTypeName.VARCHAR));
+    // Add columns from the FlatGeoBuf schema
+    for (FlatGeoBuf.Column column : columns) {
+      SqlTypeName sqlTypeName = mapFlatGeoBufTypeToSqlType(column.type());
+      RelDataType fieldType = typeFactory.createSqlType(sqlTypeName);
+      
+      // Handle nullability
+      if (column.nullable()) {
+        fieldType = typeFactory.createTypeWithNullability(fieldType, true);
       }
+      
+      builder.add(column.name(), fieldType);
     }
 
+    // Add geometry column
+    builder.add("geometry", typeFactory.createJavaType(Geometry.class));
+
     return builder.build();
+  }
+
+  /**
+   * Maps FlatGeoBuf column types to SqlTypeName
+   * 
+   * @param columnType the FlatGeoBuf column type
+   * @return the corresponding SqlTypeName
+   */
+  private SqlTypeName mapFlatGeoBufTypeToSqlType(FlatGeoBuf.ColumnType columnType) {
+    return switch (columnType) {
+      case BYTE, UBYTE -> SqlTypeName.TINYINT;
+      case BOOL -> SqlTypeName.BOOLEAN;
+      case SHORT, USHORT -> SqlTypeName.SMALLINT;
+      case INT, UINT -> SqlTypeName.INTEGER;
+      case LONG, ULONG -> SqlTypeName.BIGINT;
+      case FLOAT -> SqlTypeName.FLOAT;
+      case DOUBLE -> SqlTypeName.DOUBLE;
+      case STRING -> SqlTypeName.VARCHAR;
+      case JSON, DATETIME -> SqlTypeName.VARCHAR;
+      case BINARY -> SqlTypeName.VARBINARY;
+    };
   }
 
   @Override
@@ -154,7 +130,7 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
     return new AbstractEnumerable<Object[]>() {
       @Override
       public Enumerator<Object[]> enumerator() {
-        return new FlatGeoBufEnumerator(file, schema);
+        return new FlatGeoBufEnumerator(file);
       }
     };
   }
@@ -164,15 +140,13 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
    */
   private static class FlatGeoBufEnumerator implements Enumerator<Object[]> {
     private final File file;
-    private final DataSchema schema;
     private FlatGeoBufReader reader;
-    private List<Object> current;
+    private Object[] current;
     private long cursor = 0;
     private long featureCount;
 
-    public FlatGeoBufEnumerator(File file, DataSchema schema) {
+    public FlatGeoBufEnumerator(File file) {
       this.file = file;
-      this.schema = schema;
       initialize();
     }
 
@@ -189,10 +163,7 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
 
     @Override
     public Object[] current() {
-      if (current == null) {
-        return null;
-      }
-      return current.toArray();
+      return current;
     }
 
     @Override
@@ -207,16 +178,14 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
 
         // Convert feature to row
         List<Object> values = new ArrayList<>();
-
+        
+        // Add properties
+        values.addAll(feature.properties());
+        
         // Add geometry
         values.add(feature.geometry());
 
-        // Add properties
-        if (!feature.properties().isEmpty()) {
-          values.addAll(feature.properties());
-        }
-
-        current = values;
+        current = values.toArray();
         return true;
       } catch (IOException e) {
         logger.error("Error reading FlatGeoBuf row", e);

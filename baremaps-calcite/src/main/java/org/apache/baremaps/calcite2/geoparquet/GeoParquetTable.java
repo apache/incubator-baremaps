@@ -20,8 +20,6 @@ package org.apache.baremaps.calcite2.geoparquet;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import org.apache.baremaps.calcite.DataColumn;
-import org.apache.baremaps.calcite.DataSchema;
 import org.apache.baremaps.geoparquet.GeoParquetGroup;
 import org.apache.baremaps.geoparquet.GeoParquetReader;
 import org.apache.baremaps.geoparquet.GeoParquetSchema;
@@ -44,7 +42,6 @@ public class GeoParquetTable extends AbstractTable implements ScannableTable {
   private final File file;
   private final RelDataType rowType;
   private final GeoParquetSchema geoParquetSchema;
-  private DataSchema dataSchema;
 
   /**
    * Constructs a GeoParquetTable with the specified file.
@@ -76,60 +73,6 @@ public class GeoParquetTable extends AbstractTable implements ScannableTable {
   @Override
   public RelDataType getRowType(RelDataTypeFactory typeFactory) {
     return rowType;
-  }
-
-  /**
-   * Returns the schema of this table.
-   *
-   * @return the schema
-   */
-  public DataSchema schema() {
-    if (dataSchema == null) {
-      try (GeoParquetReader reader = new GeoParquetReader(new Path(file.toURI()))) {
-        this.dataSchema = new DataSchema(
-            file.getName(),
-            reader.getGeoParquetSchema().fields().stream()
-                .map(this::convertFieldToDataColumn)
-                .toList());
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to read GeoParquet schema", e);
-      }
-    }
-    return dataSchema;
-  }
-
-  private DataColumn convertFieldToDataColumn(GeoParquetSchema.Field field) {
-    return new DataColumn() {
-      @Override
-      public String name() {
-        return field.name();
-      }
-
-      @Override
-      public Cardinality cardinality() {
-        return switch (field.cardinality()) {
-          case REQUIRED -> Cardinality.REQUIRED;
-          case OPTIONAL -> Cardinality.OPTIONAL;
-          case REPEATED -> Cardinality.REPEATED;
-        };
-      }
-
-      @Override
-      public Type type() {
-        return switch (field.type()) {
-          case BINARY -> Type.BINARY;
-          case BOOLEAN -> Type.BOOLEAN;
-          case INTEGER -> Type.INTEGER;
-          case INT96, LONG -> Type.LONG;
-          case FLOAT -> Type.FLOAT;
-          case DOUBLE -> Type.DOUBLE;
-          case STRING -> Type.STRING;
-          case GEOMETRY -> Type.GEOMETRY;
-          case ENVELOPE -> Type.ENVELOPE;
-          case GROUP -> Type.NESTED;
-        };
-      }
-    };
   }
 
   @Override
