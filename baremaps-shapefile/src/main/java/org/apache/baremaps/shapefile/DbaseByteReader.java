@@ -27,6 +27,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.MessageFormat;
 import java.util.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Reader of a Database Binary content.
@@ -132,7 +134,20 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
         case DOUBLE -> Double.parseDouble(value.trim());
         case AUTO_INCREMENT -> Integer.parseInt(value.trim());
         case LOGICAL -> value;
-        case DATE -> value;
+        case DATE -> {
+          if (value.trim().isEmpty()) {
+            yield null;
+          } else {
+            // Convert date string to LocalDate
+            // DBF date format is YYYYMMDD
+            try {
+              yield LocalDate.parse(value.trim(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+            } catch (Exception e) {
+              // If parsing fails, return the original string
+              yield value;
+            }
+          }
+        }
         case MEMO -> value;
         case FLOATING_POINT -> value;
         case PICTURE -> value;
