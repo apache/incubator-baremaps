@@ -40,7 +40,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-public class CalciteTest {
+public class BaremapsDdlExecutorTest {
 
   private static final String CITY_DATA_DIR = "city_data";
   private static final String CITY_POPULATION_DIR = "city_population";
