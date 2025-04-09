@@ -70,6 +70,9 @@ public class TestFiles {
   public static final Path GEOPARQUET =
       resolve("baremaps-testing/data/samples/example.parquet");
 
+  public static final Path GEOPACKAGE =
+      resolve("baremaps-testing/data/samples/countries.gpkg");
+
   public static final Path TILESET_JSON =
       resolve("baremaps-testing/data/tilesets/tileset.json");
 

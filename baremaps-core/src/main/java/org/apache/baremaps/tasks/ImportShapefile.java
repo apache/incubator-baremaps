@@ -19,27 +19,23 @@ package org.apache.baremaps.tasks;
 
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Properties;
 import java.util.StringJoiner;
-import javax.sql.DataSource;
 import org.apache.baremaps.calcite.postgres.PostgresDdlExecutor;
 import org.apache.baremaps.calcite.shapefile.ShapefileTable;
-import org.apache.baremaps.shapefile.DBaseFieldDescriptor;
-import org.apache.baremaps.shapefile.ShapefileReader;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
-import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Import a shapefile into a database.
+ * Import a shapefile into a database using Calcite.
  */
 public class ImportShapefile implements Task {
 
@@ -77,122 +73,117 @@ public class ImportShapefile implements Task {
    */
   @Override
   public void execute(WorkflowContext context) throws Exception {
+    // Validate required parameters
+    if (file == null) {
+      throw new WorkflowException("Shapefile path cannot be null");
+    }
+    if (fileSrid == null) {
+      throw new WorkflowException("Source SRID cannot be null");
+    }
+    if (database == null) {
+      throw new WorkflowException("Database connection cannot be null");
+    }
+    if (databaseSrid == null) {
+      throw new WorkflowException("Target SRID cannot be null");
+    }
+
     var path = file.toAbsolutePath();
+    logger.info("Importing shapefile from: {}", path);
+
     var dataSource = context.getDataSource(database);
-    var tableName = file.getFileName().toString().replaceFirst("[.][^.]+$", "").toLowerCase();
+    // Sanitize table name to prevent SQL injection
+    var tableName = sanitizeTableName(
+        file.getFileName().toString().replaceFirst("[.][^.]+$", "").toLowerCase());
+    logger.info("Creating table: {}", tableName);
 
-    // Create a ShapefileTable to get schema information
-    var shapefileTable = new ShapefileTable(path.toFile());
-    var shapefileReader = new ShapefileReader(path.toString());
-    var fieldDescriptors = shapefileReader.getDatabaseFieldsDescriptors();
+    // Set ThreadLocal DataSource for PostgresDdlExecutor to use
+    PostgresDdlExecutor.setThreadLocalDataSource(dataSource);
 
-    // Create table using PostgresDdlExecutor
-    createTable(dataSource, tableName, fieldDescriptors);
+    try {
+      // Setup Calcite connection properties
+      Properties info = new Properties();
+      info.setProperty("lex", "MYSQL");
+      info.setProperty("caseSensitive", "false");
+      info.setProperty("unquotedCasing", "TO_LOWER");
+      info.setProperty("quotedCasing", "TO_LOWER");
+      info.setProperty("parserFactory", PostgresDdlExecutor.class.getName() + "#PARSER_FACTORY");
 
-    // Import data using JDBC batch inserts
-    importData(dataSource, tableName, shapefileReader);
-  }
+      // Create a ShapefileTable instance
+      ShapefileTable shapefileTable = new ShapefileTable(path.toFile());
 
-  private void createTable(DataSource dataSource, String tableName, List<DBaseFieldDescriptor> fieldDescriptors) throws Exception {
-    // Configure Calcite connection properties
-    Properties info = new Properties();
-    info.setProperty("lex", "MYSQL");
-    info.setProperty("caseSensitive", "false");
-    info.setProperty("parserFactory", PostgresDdlExecutor.class.getName() + "#PARSER_FACTORY");
+      // Create a temporary table name for the shapefile data
+      String shapefileTableName = "shapefile_data_" + System.currentTimeMillis();
 
-    try (Connection connection = dataSource.getConnection()) {
-      // First ensure PostGIS extension is available
-      try (Statement stmt = connection.createStatement()) {
-        stmt.execute("CREATE EXTENSION IF NOT EXISTS postgis");
-      }
+      try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
+        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+        SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Create table DDL
-      StringBuilder ddl = new StringBuilder();
-      ddl.append("CREATE TABLE IF NOT EXISTS ").append(tableName).append(" (");
-      
-      // Add columns from shapefile
-      for (DBaseFieldDescriptor field : fieldDescriptors) {
-        String sqlType = getSqlType(field);
-        ddl.append(field.getName()).append(" ").append(sqlType).append(", ");
-      }
+        // Register the shapefile table in the Calcite schema
+        rootSchema.add(shapefileTableName, shapefileTable);
 
-      // Add geometry column
-      ddl.append("geometry geometry)");
+        // Create a table in PostgreSQL by selecting from the shapefile table
+        String createTableSql = "CREATE TABLE " + tableName + " AS " +
+            "SELECT * FROM " + shapefileTableName;
 
-      // Execute CREATE TABLE
-      try (Statement stmt = connection.createStatement()) {
-        stmt.execute(ddl.toString());
-      }
+        logger.info("Executing SQL: {}", createTableSql);
 
-      // Set SRID on geometry column if specified
-      if (databaseSrid != null) {
-        try (Statement stmt = connection.createStatement()) {
-          stmt.execute(String.format(
-              "SELECT UpdateGeometrySRID('%s', 'geometry', %d)",
-              tableName, databaseSrid));
+        // Execute the DDL statement to create the table
+        try (Statement statement = connection.createStatement()) {
+          statement.execute(createTableSql);
         }
-      }
-    }
-  }
 
-  private void importData(DataSource dataSource, String tableName, ShapefileReader shapefileReader) throws Exception {
-    try (Connection connection = dataSource.getConnection();
-         var shapefileInputStream = shapefileReader.read()) {
-
-      // Build INSERT statement
-      StringBuilder sql = new StringBuilder();
-      sql.append("INSERT INTO ").append(tableName).append(" VALUES (");
-      var fieldDescriptors = shapefileReader.getDatabaseFieldsDescriptors();
-      for (int i = 0; i < fieldDescriptors.size(); i++) {
-        sql.append("?, ");
-      }
-      sql.append("ST_Transform(ST_SetSRID(?, ?), ?))");
-
-      try (PreparedStatement pstmt = connection.prepareStatement(sql.toString())) {
-        List<Object> row;
-        int batchSize = 0;
-        final int MAX_BATCH = 1000;
-
-        while ((row = shapefileInputStream.readRow()) != null) {
-          // Set field values
-          for (int i = 0; i < row.size() - 1; i++) {
-            pstmt.setObject(i + 1, row.get(i));
-          }
-
-          // Set geometry with SRID transformation
-          Geometry geom = (Geometry) row.get(row.size() - 1);
-          pstmt.setString(row.size(), geom.toText());
-          pstmt.setInt(row.size() + 1, fileSrid);
-          pstmt.setInt(row.size() + 2, databaseSrid);
-
-          pstmt.addBatch();
-          batchSize++;
-
-          if (batchSize >= MAX_BATCH) {
-            pstmt.executeBatch();
-            batchSize = 0;
+        // Set SRID on geometry column if specified
+        if (databaseSrid != null) {
+          try (Connection pgConnection = dataSource.getConnection();
+              Statement stmt = pgConnection.createStatement()) {
+            stmt.execute(String.format(
+                "SELECT UpdateGeometrySRID('%s', 'geometry', %d)",
+                tableName, databaseSrid));
           }
         }
 
-        if (batchSize > 0) {
-          pstmt.executeBatch();
+        // Verify that the table was created in PostgreSQL
+        try (Connection pgConnection = dataSource.getConnection();
+            Statement statement = pgConnection.createStatement();
+            ResultSet resultSet = statement.executeQuery(
+                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '" +
+                    tableName + "')")) {
+          if (!resultSet.next() || !resultSet.getBoolean(1)) {
+            throw new WorkflowException("Failed to create table: " + tableName);
+          }
+        }
+
+        // Verify that the table has data
+        try (Connection pgConnection = dataSource.getConnection();
+            Statement statement = pgConnection.createStatement();
+            ResultSet resultSet = statement.executeQuery(
+                "SELECT COUNT(*) FROM " + tableName)) {
+          if (resultSet.next()) {
+            int count = resultSet.getInt(1);
+            logger.info("Imported {} rows to table: {}", count, tableName);
+            if (count == 0) {
+              logger.warn("No rows were imported from shapefile to table: {}", tableName);
+            }
+          }
         }
       }
+    } finally {
+      // Clean up thread local storage
+      PostgresDdlExecutor.clearThreadLocalDataSource();
     }
+
+    logger.info("Successfully imported shapefile to table: {}", tableName);
   }
 
-  private String getSqlType(DBaseFieldDescriptor field) {
-    return switch (field.getType()) {
-      case CHARACTER -> "VARCHAR";
-      case NUMBER -> field.getDecimalCount() == 0 ? "BIGINT" : "DOUBLE PRECISION";
-      case CURRENCY, DOUBLE, FLOATING_POINT -> "DOUBLE PRECISION";
-      case INTEGER, AUTO_INCREMENT -> "INTEGER";
-      case LOGICAL -> "BOOLEAN";
-      case DATE -> "DATE";
-      case MEMO -> "TEXT";
-      case TIMESTAMP, DATE_TIME -> "TIMESTAMP";
-      default -> "VARCHAR";
-    };
+  /**
+   * Sanitizes a table name to prevent SQL injection.
+   * 
+   * @param name the table name to sanitize
+   * @return the sanitized table name
+   */
+  private String sanitizeTableName(String name) {
+    // Replace any non-alphanumeric characters with underscores
+    return name.replaceAll("[^a-zA-Z0-9]", "_");
   }
 
   /**

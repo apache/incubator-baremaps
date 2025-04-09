@@ -20,7 +20,6 @@ package org.apache.baremaps.calcite.postgres;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -99,8 +98,8 @@ class PostgresShapefileImportTest extends PostgresContainerTest {
       try (Connection pgConnection = dataSource().getConnection();
           Statement statement = pgConnection.createStatement();
           ResultSet resultSet = statement.executeQuery(
-              "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '" + 
-              IMPORTED_TABLE_NAME + "')")) {
+              "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '" +
+                  IMPORTED_TABLE_NAME + "')")) {
         assertTrue(resultSet.next());
         assertTrue(resultSet.getBoolean(1));
       }
@@ -119,8 +118,8 @@ class PostgresShapefileImportTest extends PostgresContainerTest {
           Statement statement = pgConnection.createStatement();
           ResultSet resultSet = statement.executeQuery(
               "SELECT EXISTS (SELECT 1 FROM information_schema.columns " +
-              "WHERE table_name = '" + IMPORTED_TABLE_NAME + "' " +
-              "AND data_type = 'USER-DEFINED' AND udt_name = 'geometry')")) {
+                  "WHERE table_name = '" + IMPORTED_TABLE_NAME + "' " +
+                  "AND data_type = 'USER-DEFINED' AND udt_name = 'geometry')")) {
         assertTrue(resultSet.next());
         assertTrue(resultSet.getBoolean(1), "Table should have a geometry column");
       }
@@ -133,4 +132,4 @@ class PostgresShapefileImportTest extends PostgresContainerTest {
       }
     }
   }
-} 
+}

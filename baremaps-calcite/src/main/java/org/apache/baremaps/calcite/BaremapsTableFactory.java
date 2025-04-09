@@ -33,6 +33,7 @@ import org.apache.baremaps.calcite.data.DataRow;
 import org.apache.baremaps.calcite.data.DataRowType;
 import org.apache.baremaps.calcite.data.DataSchema;
 import org.apache.baremaps.calcite.flatgeobuf.FlatGeoBufTable;
+import org.apache.baremaps.calcite.geopackage.GeoPackageTable;
 import org.apache.baremaps.calcite.geoparquet.GeoParquetTable;
 import org.apache.baremaps.calcite.openstreetmap.OpenStreetMapTable;
 import org.apache.baremaps.calcite.rpsl.RpslTable;
@@ -83,6 +84,7 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       case "rpsl" -> createRpslTable(operand);
       case "fgb" -> createFlatGeoBufTable(operand);
       case "parquet" -> createGeoParquetTable(operand);
+      case "geopackage" -> createGeoPackageTable(operand);
       default -> throw new RuntimeException("Unsupported format: " + format);
     };
   }
@@ -311,6 +313,30 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       return new GeoParquetTable(new File(filePath), typeFactory);
     } catch (IOException e) {
       throw new RuntimeException("Failed to create GeoParquet table", e);
+    }
+  }
+
+  private Table createGeoPackageTable(Map<String, Object> operand) {
+    if (operand.size() < 2) {
+      throw new IllegalArgumentException("Missing file path and table name for GeoPackage table");
+    }
+    try {
+      String filePath = (String) operand.get("file");
+      if (filePath == null) {
+        throw new IllegalArgumentException("File path must be specified in the 'file' operand");
+      }
+
+      String tableName = (String) operand.get("table");
+      if (tableName == null) {
+        throw new IllegalArgumentException("Table name must be specified in the 'table' operand");
+      }
+
+      // Create a type factory - Calcite doesn't expose one through SchemaPlus
+      RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
+
+      return new GeoPackageTable(new File(filePath), tableName, typeFactory);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create GeoPackage table", e);
     }
   }
 }
