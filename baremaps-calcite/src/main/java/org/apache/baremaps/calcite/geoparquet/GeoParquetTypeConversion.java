@@ -244,35 +244,13 @@ public class GeoParquetTypeConversion {
 
     for (int i = 0; i < schema.fields().size(); i++) {
       Field field = schema.fields().get(i);
+      // Use convertValue to get values converted to Calcite types
       Object value = convertValue(field, group, i);
 
-      // Convert record types to JSON strings
-      if (field.type() == Type.GROUP || field.type() == Type.ENVELOPE) {
+      // Only handle GROUP types for PostgreSQL - other types pass through Calcite
+      if (field.type() == Type.GROUP) {
         try {
-          if (field.type() == Type.GROUP) {
-            value = MAPPER.writeValueAsString(value);
-          } else if (field.type() == Type.ENVELOPE) {
-            // Convert envelope to a map with minx, miny, maxx, maxy
-            Map<String, Object> envelopeMap = new HashMap<>();
-            if (value instanceof org.locationtech.jts.geom.Envelope) {
-              org.locationtech.jts.geom.Envelope envelope =
-                  (org.locationtech.jts.geom.Envelope) value;
-              envelopeMap.put("minx", envelope.getMinX());
-              envelopeMap.put("miny", envelope.getMinY());
-              envelopeMap.put("maxx", envelope.getMaxX());
-              envelopeMap.put("maxy", envelope.getMaxY());
-            } else if (value instanceof Object[]) {
-              Object[] envelope = (Object[]) value;
-              envelopeMap.put("minx", envelope[0]);
-              envelopeMap.put("miny", envelope[1]);
-              envelopeMap.put("maxx", envelope[2]);
-              envelopeMap.put("maxy", envelope[3]);
-            } else {
-              throw new IllegalArgumentException(
-                  "Unexpected envelope type: " + value.getClass().getName());
-            }
-            value = MAPPER.writeValueAsString(envelopeMap);
-          }
+          value = MAPPER.writeValueAsString(value);
         } catch (Exception e) {
           throw new RuntimeException("Error converting record type to JSON", e);
         }

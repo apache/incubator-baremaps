@@ -57,7 +57,7 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
   }
 
   /**
-   * <<<<<<< HEAD Returns the size of each segment. ======= Returns the size of the header.
+   * Returns the size of the header.
    *
    * @return the size of the header
    */

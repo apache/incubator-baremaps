@@ -101,11 +101,18 @@ public class GeoParquetTable extends AbstractTable implements ScannableTable {
     private GeoParquetGroup currentRow;
     private boolean hasNext;
     private final Path path;
+    private java.util.Iterator<GeoParquetGroup> iterator;
 
     public GeoParquetEnumerator(GeoParquetReader reader, GeoParquetSchema schema) {
       this.reader = reader;
       this.schema = schema;
       this.path = new Path(reader.getGeoParquetSchema().name());
+      try {
+        // Initialize the iterator once from the stream
+        this.iterator = reader.read().iterator();
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to initialize GeoParquet reader", e);
+      }
       this.hasNext = true;
       moveNext();
     }
@@ -124,12 +131,14 @@ public class GeoParquetTable extends AbstractTable implements ScannableTable {
       if (!hasNext) {
         return false;
       }
-      try {
-        currentRow = reader.read().findFirst().orElse(null);
-        hasNext = currentRow != null;
-        return hasNext;
-      } catch (Exception e) {
-        throw new RuntimeException("Failed to read GeoParquet row", e);
+
+      if (iterator.hasNext()) {
+        currentRow = iterator.next();
+        return true;
+      } else {
+        currentRow = null;
+        hasNext = false;
+        return false;
       }
     }
 
@@ -138,6 +147,7 @@ public class GeoParquetTable extends AbstractTable implements ScannableTable {
       try {
         reader.close();
         GeoParquetReader newReader = new GeoParquetReader(this.path);
+        this.iterator = newReader.read().iterator();
         currentRow = null;
         hasNext = true;
         moveNext();
