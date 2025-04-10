@@ -35,11 +35,14 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.PrimitiveType;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 public class GeoParquetTypeConversion {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
   private GeoParquetTypeConversion() {}
 
@@ -77,13 +80,7 @@ public class GeoParquetTypeConversion {
     } else if (type == Type.GEOMETRY) {
       return typeFactory.createJavaType(Geometry.class);
     } else if (type == Type.ENVELOPE) {
-      return typeFactory.createStructType(
-          List.of(
-              typeFactory.createSqlType(SqlTypeName.DOUBLE),
-              typeFactory.createSqlType(SqlTypeName.DOUBLE),
-              typeFactory.createSqlType(SqlTypeName.DOUBLE),
-              typeFactory.createSqlType(SqlTypeName.DOUBLE)),
-          List.of("minx", "miny", "maxx", "maxy"));
+      return typeFactory.createJavaType(Envelope.class);
     } else if (type == Type.LONG || type == Type.INT96) {
       return typeFactory.createSqlType(SqlTypeName.BIGINT);
     } else if (type == Type.GROUP) {
