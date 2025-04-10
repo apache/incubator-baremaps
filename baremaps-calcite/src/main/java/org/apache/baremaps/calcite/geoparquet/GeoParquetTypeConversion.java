@@ -80,7 +80,7 @@ public class GeoParquetTypeConversion {
     } else if (type == Type.GEOMETRY) {
       return typeFactory.createJavaType(Geometry.class);
     } else if (type == Type.ENVELOPE) {
-      return typeFactory.createJavaType(Envelope.class);
+      return typeFactory.createJavaType(Geometry.class);
     } else if (type == Type.LONG || type == Type.INT96) {
       return typeFactory.createSqlType(SqlTypeName.BIGINT);
     } else if (type == Type.GROUP) {
@@ -173,7 +173,10 @@ public class GeoParquetTypeConversion {
       } else if (type == Type.GEOMETRY) {
         return group.getGeometryValues(index);
       } else if (type == Type.ENVELOPE) {
-        return group.getEnvelopeValues(index);
+        List<Envelope> envelopes = group.getEnvelopeValues(index);
+        return envelopes.stream()
+            .map(envelope -> envelope != null ? GEOMETRY_FACTORY.toGeometry(envelope) : null)
+            .collect(Collectors.toList());
       } else if (type == Type.GROUP) {
         return group.getGroupValues(index).stream().map(GeoParquetTypeConversion::asNested)
             .toList();
@@ -201,7 +204,8 @@ public class GeoParquetTypeConversion {
       } else if (type == Type.GEOMETRY) {
         return group.getGeometryValue(index);
       } else if (type == Type.ENVELOPE) {
-        return group.getEnvelopeValue(index);
+        Envelope envelope = group.getEnvelopeValue(index);
+        return envelope != null ? GEOMETRY_FACTORY.toGeometry(envelope) : null;
       } else if (type == Type.GROUP) {
         return asNested(group.getGroupValue(index));
       } else {
