@@ -115,7 +115,7 @@ public class GeoParquetTable extends AbstractTable implements ScannableTable {
       if (currentRow == null) {
         return new Object[0];
       }
-      List<Object> values = GeoParquetTypeConversion.asRowValues(currentRow);
+      List<Object> values = GeoParquetTypeConversion.asPostgresRowValues(currentRow);
       return values.toArray();
     }
 

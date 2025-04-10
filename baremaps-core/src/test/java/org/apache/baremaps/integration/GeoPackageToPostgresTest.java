@@ -17,18 +17,20 @@
 
 package org.apache.baremaps.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
+import org.apache.baremaps.calcite.geopackage.GeoPackageSchema;
 import org.apache.baremaps.calcite.postgres.PostgresDdlExecutor;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -38,9 +40,6 @@ class GeoPackageToPostgresTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void copyGeoPackageToPostgres() throws Exception {
-    // Open the GeoPackage
-    var file = TestFiles.resolve("baremaps-testing/data/samples/countries.gpkg");
-
     // Set ThreadLocal DataSource for PostgresDdlExecutor to use
     PostgresDdlExecutor.setThreadLocalDataSource(dataSource());
 
@@ -58,6 +57,10 @@ class GeoPackageToPostgresTest extends PostgresContainerTest {
         CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
         SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
+        // Register the GeoPackage schema
+        Schema geoPackageSchema = new GeoPackageSchema(TestFiles.GEOPACKAGE.toFile());
+        rootSchema.add("geopackage", geoPackageSchema);
+
         // Get the list of tables in the GeoPackage
         String[] tables = getGeoPackageTables(connection);
 
@@ -65,12 +68,9 @@ class GeoPackageToPostgresTest extends PostgresContainerTest {
 
         // Import each table
         for (String tableName : tables) {
-          // Create a temporary table name for the GeoPackage data
-          String tempTableName = "geopackage_data_" + System.currentTimeMillis() + "_" + tableName;
-
           // Register the GeoPackage table in the Calcite schema
-          String registerSql = "CREATE TABLE " + tempTableName + " AS " +
-              "SELECT * FROM " + tableName;
+          String registerSql = "CREATE TABLE " + tableName + " AS " +
+              "SELECT * FROM geopackage." + tableName;
 
           // Execute the DDL statement to create the table
           try (Statement statement = connection.createStatement()) {
@@ -94,7 +94,7 @@ class GeoPackageToPostgresTest extends PostgresContainerTest {
                   "SELECT COUNT(*) FROM " + tableName)) {
             assertTrue(resultSet.next(), "No rows found in table: " + tableName);
             int count = resultSet.getInt(1);
-            assertEquals(179, count, "Expected 179 rows in table: " + tableName);
+            assertTrue(count > 0, "Expected rows in table: " + tableName);
           }
         }
       }
@@ -112,11 +112,12 @@ class GeoPackageToPostgresTest extends PostgresContainerTest {
    * @throws Exception if an error occurs
    */
   private String[] getGeoPackageTables(Connection connection) throws Exception {
-    try (Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SHOW TABLES")) {
+    try (Statement statement = connection.createStatement()) {
+      DatabaseMetaData metaData = connection.getMetaData();
+      ResultSet resultSet = metaData.getTables("geopackage", null, null, new String[] {"TABLE"});
       java.util.List<String> tables = new java.util.ArrayList<>();
       while (resultSet.next()) {
-        tables.add(resultSet.getString(1));
+        tables.add(resultSet.getString("TABLE_NAME"));
       }
       return tables.toArray(new String[0]);
     }

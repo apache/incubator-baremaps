@@ -609,8 +609,6 @@ public class PostgresModifiableTable extends AbstractTable
               } else if (column.sqlTypeName() == SqlTypeName.GEOMETRY
                   && value instanceof Geometry) {
                 writer.write(CopyWriter.GEOMETRY_HANDLER, (Geometry) value);
-              } else if (column.sqlTypeName() == SqlTypeName.VARCHAR) {
-                writer.write((String) value);
               } else if (column.sqlTypeName() == SqlTypeName.BOOLEAN) {
                 writer.writeBoolean((Boolean) value);
               } else if (column.sqlTypeName() == SqlTypeName.INTEGER) {

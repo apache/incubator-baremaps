@@ -108,15 +108,6 @@ public class GeoPackageTable extends AbstractTable implements ScannableTable {
     List<RelDataType> types = new ArrayList<>();
     List<String> names = new ArrayList<>();
 
-    // Debug: Print all feature columns
-    System.out.println("Feature columns:");
-    for (FeatureColumn column : featureDao.getColumns()) {
-      System.out.println("Column: " + column.getName());
-      System.out.println("  Is Geometry: " + column.isGeometry());
-      System.out.println("  Data Type: " + column.getDataType());
-      System.out.println("  Class Type: " + column.getDataType().getClassType());
-    }
-
     for (FeatureColumn column : featureDao.getColumns()) {
       String columnName = column.getName();
       RelDataType sqlType;

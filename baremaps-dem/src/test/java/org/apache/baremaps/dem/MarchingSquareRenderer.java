@@ -61,7 +61,6 @@ public class MarchingSquareRenderer extends JPanel {
     if (geometry.isClosed()) {
       g2d.setColor(Color.RED);
     } else {
-      System.out.println(geometry);
       g2d.setColor(Color.BLUE);
     }
 

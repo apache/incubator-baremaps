@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.calcite.geoparquet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,8 @@ import org.apache.parquet.schema.PrimitiveType;
 import org.locationtech.jts.geom.Geometry;
 
 public class GeoParquetTypeConversion {
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private GeoParquetTypeConversion() {}
 
@@ -225,5 +228,58 @@ public class GeoParquetTypeConversion {
     }
 
     return nested;
+  }
+
+  /**
+   * Converts a GeoParquetGroup to a list of values suitable for PostgreSQL. This method handles
+   * record types by converting them to JSON strings.
+   *
+   * @param group the GeoParquetGroup to convert
+   * @return a list of values suitable for PostgreSQL
+   */
+  public static List<Object> asPostgresRowValues(GeoParquetGroup group) {
+    List<Object> values = new ArrayList<>();
+    GeoParquetSchema schema = group.getGeoParquetSchema();
+
+    for (int i = 0; i < schema.fields().size(); i++) {
+      Field field = schema.fields().get(i);
+      Object value = convertValue(field, group, i);
+
+      // Convert record types to JSON strings
+      if (field.type() == Type.GROUP || field.type() == Type.ENVELOPE) {
+        try {
+          if (field.type() == Type.GROUP) {
+            value = MAPPER.writeValueAsString(value);
+          } else if (field.type() == Type.ENVELOPE) {
+            // Convert envelope to a map with minx, miny, maxx, maxy
+            Map<String, Object> envelopeMap = new HashMap<>();
+            if (value instanceof org.locationtech.jts.geom.Envelope) {
+              org.locationtech.jts.geom.Envelope envelope =
+                  (org.locationtech.jts.geom.Envelope) value;
+              envelopeMap.put("minx", envelope.getMinX());
+              envelopeMap.put("miny", envelope.getMinY());
+              envelopeMap.put("maxx", envelope.getMaxX());
+              envelopeMap.put("maxy", envelope.getMaxY());
+            } else if (value instanceof Object[]) {
+              Object[] envelope = (Object[]) value;
+              envelopeMap.put("minx", envelope[0]);
+              envelopeMap.put("miny", envelope[1]);
+              envelopeMap.put("maxx", envelope[2]);
+              envelopeMap.put("maxy", envelope[3]);
+            } else {
+              throw new IllegalArgumentException(
+                  "Unexpected envelope type: " + value.getClass().getName());
+            }
+            value = MAPPER.writeValueAsString(envelopeMap);
+          }
+        } catch (Exception e) {
+          throw new RuntimeException("Error converting record type to JSON", e);
+        }
+      }
+
+      values.add(value);
+    }
+
+    return values;
   }
 }

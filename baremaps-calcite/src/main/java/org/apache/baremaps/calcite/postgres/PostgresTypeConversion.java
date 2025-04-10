@@ -62,8 +62,8 @@ public class PostgresTypeConversion {
     POSTGRES_TO_SQL_TYPE.put("timestamp", SqlTypeName.TIMESTAMP);
     POSTGRES_TO_SQL_TYPE.put("timestamptz", SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE);
     POSTGRES_TO_SQL_TYPE.put("uuid", SqlTypeName.VARCHAR);
-    POSTGRES_TO_SQL_TYPE.put("json", SqlTypeName.VARCHAR);
-    POSTGRES_TO_SQL_TYPE.put("jsonb", SqlTypeName.VARCHAR);
+    POSTGRES_TO_SQL_TYPE.put("json", SqlTypeName.OTHER);
+    POSTGRES_TO_SQL_TYPE.put("jsonb", SqlTypeName.OTHER);
     POSTGRES_TO_SQL_TYPE.put("bytea", SqlTypeName.BINARY);
     POSTGRES_TO_SQL_TYPE.put("interval", SqlTypeName.INTERVAL_DAY_SECOND);
 
@@ -144,6 +144,12 @@ public class PostgresTypeConversion {
    * @return the corresponding PostgreSQL type string
    */
   public static String toPostgresTypeString(RelDataType type) {
+    // Handle record types (structs)
+    if (type.isStruct()) {
+      // For struct types, use JSONB in PostgreSQL
+      return "JSONB";
+    }
+
     SqlTypeName typeName = type.getSqlTypeName();
     switch (typeName) {
       case INTEGER:
@@ -180,7 +186,7 @@ public class PostgresTypeConversion {
       case TIME:
         return "TIME";
       case TIME_WITH_LOCAL_TIME_ZONE:
-        return "TIME WITH TIME ZONE";
+        return "TIME WITH LOCAL TIME ZONE";
       case BINARY:
       case VARBINARY:
         return "BYTEA";

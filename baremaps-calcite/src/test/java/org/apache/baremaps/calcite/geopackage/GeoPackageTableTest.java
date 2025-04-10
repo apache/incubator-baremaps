@@ -53,16 +53,6 @@ class GeoPackageTableTest {
     assertNotNull(rowType);
     assertTrue(rowType.getFieldCount() > 0);
 
-    // Debug: Print all columns and their types
-    System.out.println("Schema columns:");
-    for (int i = 0; i < rowType.getFieldCount(); i++) {
-      RelDataType fieldType = rowType.getFieldList().get(i).getType();
-      String columnName = rowType.getFieldList().get(i).getName();
-      System.out.println("Column: " + columnName);
-      System.out.println("  SQL Type: " + fieldType.getSqlTypeName().getName());
-      System.out.println("  Full Type: " + fieldType.getFullTypeString());
-    }
-
     // Verify that there is a geometry column
     boolean hasGeometryColumn = false;
     for (int i = 0; i < rowType.getFieldCount(); i++) {
