@@ -39,7 +39,7 @@ class FlatGeoBufTest {
 
   @Test
   void readWrite() throws IOException {
-    Path file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    Path file = TestFiles.POINT_FLATGEOBUF;
     Path tempFile = Files.createTempFile("countries", ".fgb");
 
     Header headerFlatGeoBuf1 = null;
@@ -94,7 +94,7 @@ class FlatGeoBufTest {
 
   @Test
   void readWriteBuffer() throws IOException {
-    Path file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    Path file = TestFiles.POINT_FLATGEOBUF;
     Path tempFile = Files.createTempFile("countries", ".fgb");
 
     Header headerFlatGeoBuf1 = null;
@@ -151,7 +151,7 @@ class FlatGeoBufTest {
 
   @Test
   void readWriteRecord() throws IOException {
-    Path file = TestFiles.resolve("baremaps-testing/data/samples/countries.fgb");
+    Path file = TestFiles.POINT_FLATGEOBUF;
     Path tempFile = Files.createTempFile("countries", ".fgb");
 
     Header headerFlatGeoBuf1 = null;

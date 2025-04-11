@@ -69,8 +69,8 @@ class FlatGeoBufSchemaTest {
     assertFalse(tableMap.isEmpty(), "Schema should have at least one table");
 
     // Verify that the test table exists
-    assertTrue(tableMap.containsKey("point"), "Schema should contain the 'point' table");
-    assertNotNull(tableMap.get("point"), "Point table should not be null");
+    assertTrue(tableMap.containsKey("countries"), "Schema should contain the 'countries' table");
+    assertNotNull(tableMap.get("countries"), "Countries table should not be null");
   }
 
   @Test
@@ -93,7 +93,7 @@ class FlatGeoBufSchemaTest {
       // Execute a simple query
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery(
-              "SELECT * FROM flatgeobuf.point LIMIT 5")) {
+              "SELECT * FROM flatgeobuf.countries LIMIT 5")) {
 
         // Verify that we get results
         assertTrue(resultSet.next(), "Should have at least one row");
