@@ -20,38 +20,32 @@ package org.apache.baremaps.calcite.csv;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
+import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 public class CsvTableTest {
 
-  @TempDir
-  File tempDir;
+  private static final File CITIES_CSV = TestFiles.CITIES_CSV.toFile();
+  private static final File COUNTRIES_CSV = TestFiles.COUNTRIES_CSV.toFile();
+  private static final char SEPARATOR = ',';
+  private static final boolean HAS_HEADER = true;
 
   @Test
-  void testSchemaVerification() throws Exception {
-    // Create a sample CSV file
-    File csvFile = new File(tempDir, "sample.csv");
-    try (FileWriter writer = new FileWriter(csvFile)) {
-      writer.write("id,name,age,city\n");
-      writer.write("1,John,30,New York\n");
-      writer.write("2,Jane,25,Los Angeles\n");
-      writer.write("3,Bob,35,Chicago\n");
-    }
-
-    // Create a CsvTable
-    CsvTable csvTable = new CsvTable(csvFile, ',', true);
+  void testSchemaVerification() throws IOException {
+    // Create a CsvTable for cities.csv
+    CsvTable csvTable = new CsvTable(CITIES_CSV, SEPARATOR, HAS_HEADER);
 
     // Verify the schema structure
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
@@ -61,10 +55,10 @@ public class CsvTableTest {
     int fieldCount = rowType.getFieldCount();
 
     // Verify the schema has the expected number of columns
-    assertEquals(4, fieldCount, "Schema should have 4 columns");
+    assertEquals(3, fieldCount, "Schema should have 3 columns");
 
     // Verify column names
-    String[] expectedColumnNames = {"id", "name", "age", "city"};
+    String[] expectedColumnNames = {"city", "country", "population"};
 
     for (int i = 0; i < fieldCount; i++) {
       assertEquals(expectedColumnNames[i], rowType.getFieldList().get(i).getName(),
@@ -74,17 +68,8 @@ public class CsvTableTest {
 
   @Test
   void testSqlQueryWithRealCsvFile() throws Exception {
-    // Create a sample CSV file
-    File csvFile = new File(tempDir, "sample.csv");
-    try (FileWriter writer = new FileWriter(csvFile)) {
-      writer.write("id,name,age,city\n");
-      writer.write("1,John,30,New York\n");
-      writer.write("2,Jane,25,Los Angeles\n");
-      writer.write("3,Bob,35,Chicago\n");
-    }
-
     // Create the table
-    CsvTable csvTable = new CsvTable(csvFile, ',', true);
+    CsvTable csvTable = new CsvTable(CITIES_CSV, SEPARATOR, HAS_HEADER);
 
     // Configure Calcite connection properties
     Properties info = new Properties();
@@ -96,25 +81,23 @@ public class CsvTableTest {
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
       // Add the table to the schema
-      rootSchema.add("csv", csvTable);
+      rootSchema.add("cities", csvTable);
 
       // Test a simple query to select all rows
       try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery("SELECT * FROM csv")) {
+          ResultSet resultSet = statement.executeQuery("SELECT * FROM cities")) {
         int rowCount = 0;
 
         while (resultSet.next()) {
           rowCount++;
-          String id = resultSet.getString("id");
-          String name = resultSet.getString("name");
-          String age = resultSet.getString("age");
           String city = resultSet.getString("city");
+          String country = resultSet.getString("country");
+          String population = resultSet.getString("population");
 
           // Verify basic properties
-          assertNotNull(id, "Row should have an ID");
-          assertNotNull(name, "Row should have a name");
-          assertNotNull(age, "Row should have an age");
           assertNotNull(city, "Row should have a city");
+          assertNotNull(country, "Row should have a country");
+          assertNotNull(population, "Row should have a population");
         }
 
         // Verify that we got the expected number of rows
@@ -123,21 +106,19 @@ public class CsvTableTest {
 
       // Test a query with a filter
       try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery("SELECT * FROM csv WHERE age = '30'")) {
+          ResultSet resultSet = statement.executeQuery("SELECT * FROM cities WHERE country = 'France'")) {
         int rowCount = 0;
 
         while (resultSet.next()) {
           rowCount++;
-          String id = resultSet.getString("id");
-          String name = resultSet.getString("name");
-          String age = resultSet.getString("age");
           String city = resultSet.getString("city");
+          String country = resultSet.getString("country");
+          String population = resultSet.getString("population");
 
           // Verify that this is the row we expect
-          assertEquals("1", id, "ID should be 1");
-          assertEquals("John", name, "Name should be John");
-          assertEquals("30", age, "Age should be 30");
-          assertEquals("New York", city, "City should be New York");
+          assertEquals("Paris", city, "City should be Paris");
+          assertEquals("France", country, "Country should be France");
+          assertEquals("2148000", population, "Population should be 2148000");
         }
 
         // Verify that we got exactly one row
@@ -148,16 +129,18 @@ public class CsvTableTest {
 
   @Test
   void testCsvWithoutHeader() throws Exception {
-    // Create a sample CSV file without a header
-    File csvFile = new File(tempDir, "no_header.csv");
-    try (FileWriter writer = new FileWriter(csvFile)) {
-      writer.write("1,John,30,New York\n");
-      writer.write("2,Jane,25,Los Angeles\n");
-      writer.write("3,Bob,35,Chicago\n");
-    }
+    // Create a temporary file without a header
+    File tempFile = File.createTempFile("no_header", ".csv");
+    tempFile.deleteOnExit();
+    
+    // Write data without header
+    Files.writeString(tempFile.toPath(), 
+        "Paris,France,2148000\n" +
+        "London,UK,8982000\n" +
+        "Tokyo,Japan,37400000\n");
 
     // Create a CsvTable with hasHeader=false
-    CsvTable csvTable = new CsvTable(csvFile, ',', false);
+    CsvTable csvTable = new CsvTable(tempFile, SEPARATOR, false);
 
     // Verify the schema structure
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
@@ -167,7 +150,7 @@ public class CsvTableTest {
     int fieldCount = rowType.getFieldCount();
 
     // Verify the schema has the expected number of columns
-    assertEquals(4, fieldCount, "Schema should have 4 columns");
+    assertEquals(3, fieldCount, "Schema should have 3 columns");
 
     // Verify column names (should be column1, column2, etc.)
     for (int i = 0; i < fieldCount; i++) {
@@ -178,17 +161,19 @@ public class CsvTableTest {
 
   @Test
   void testCsvWithCustomSeparator() throws Exception {
-    // Create a sample CSV file with a custom separator
-    File csvFile = new File(tempDir, "custom_separator.csv");
-    try (FileWriter writer = new FileWriter(csvFile)) {
-      writer.write("id|name|age|city\n");
-      writer.write("1|John|30|New York\n");
-      writer.write("2|Jane|25|Los Angeles\n");
-      writer.write("3|Bob|35|Chicago\n");
-    }
+    // Create a temporary file with a custom separator
+    File tempFile = File.createTempFile("custom_separator", ".csv");
+    tempFile.deleteOnExit();
+    
+    // Write data with pipe separator
+    Files.writeString(tempFile.toPath(), 
+        "city|country|population\n" +
+        "Paris|France|2148000\n" +
+        "London|UK|8982000\n" +
+        "Tokyo|Japan|37400000\n");
 
     // Create a CsvTable with a custom separator
-    CsvTable csvTable = new CsvTable(csvFile, '|', true);
+    CsvTable csvTable = new CsvTable(tempFile, '|', true);
 
     // Verify the schema structure
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
@@ -198,10 +183,10 @@ public class CsvTableTest {
     int fieldCount = rowType.getFieldCount();
 
     // Verify the schema has the expected number of columns
-    assertEquals(4, fieldCount, "Schema should have 4 columns");
+    assertEquals(3, fieldCount, "Schema should have 3 columns");
 
     // Verify column names
-    String[] expectedColumnNames = {"id", "name", "age", "city"};
+    String[] expectedColumnNames = {"city", "country", "population"};
 
     for (int i = 0; i < fieldCount; i++) {
       assertEquals(expectedColumnNames[i], rowType.getFieldList().get(i).getName(),

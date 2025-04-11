@@ -82,6 +82,15 @@ public class TestFiles {
   public static final Path GEONAMES_CSV =
       resolve("baremaps-testing/data/geonames/sample.txt");
 
+  public static final Path SAMPLE_CSV_DIR =
+      resolve("baremaps-testing/data/csv/");
+
+  public static final Path CITIES_CSV =
+      resolve("baremaps-testing/data/csv/cities.csv");
+
+  public static final Path COUNTRIES_CSV =
+      resolve("baremaps-testing/data/csv/countries.csv");
+
   public static final Path POINT_SHP =
       resolve("baremaps-testing/data/shapefiles/point.shp");
 

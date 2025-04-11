@@ -22,6 +22,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import org.apache.calcite.DataContext;
@@ -75,7 +76,9 @@ public class CsvTable extends AbstractTable implements ScannableTable {
     CsvMapper mapper = new CsvMapper();
     if (hasHeader) {
       // Read the header to infer column names
-      CsvSchema baseSchema = CsvSchema.emptySchema().withHeader().withColumnSeparator(separator);
+      CsvSchema baseSchema = CsvSchema.emptySchema()
+          .withHeader()
+          .withColumnSeparator(separator);
       try (MappingIterator<Map<String, String>> iterator = mapper.readerFor(Map.class)
           .with(baseSchema)
           .readValues(file)) {
@@ -93,7 +96,7 @@ public class CsvTable extends AbstractTable implements ScannableTable {
     } else {
       // No header: read the first row to determine the number of columns
       CsvSchema.Builder builder = CsvSchema.builder().setColumnSeparator(separator);
-      String firstLine = java.nio.file.Files.readAllLines(file.toPath()).get(0);
+      String firstLine = Files.readAllLines(file.toPath()).get(0);
       String[] columns = firstLine.split(String.valueOf(separator));
       for (int i = 0; i < columns.length; i++) {
         builder.addColumn("column" + (i + 1));
