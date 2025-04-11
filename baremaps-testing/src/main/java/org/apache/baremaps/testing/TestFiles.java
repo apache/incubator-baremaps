@@ -94,8 +94,12 @@ public class TestFiles {
   public static final Path POINT_SHP =
       resolve("baremaps-testing/data/shapefiles/point.shp");
 
-  public static final Path POINT_FGB =
-      resolve("baremaps-testing/data/samples/countries.fgb");
+
+  public static final Path SAMPLE_FLATGEOBUF_DIR =
+      resolve("baremaps-testing/data/flatgeobuf/");
+
+  public static final Path POINT_FLATGEOBUF =
+      resolve("baremaps-testing/data/flatgeobuf/countries.fgb");
 
   public static final Path RIPE_TXT =
       resolve("baremaps-testing/data/ripe/sample.txt");

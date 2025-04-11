@@ -106,7 +106,8 @@ public class CsvTableTest {
 
       // Test a query with a filter
       try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery("SELECT * FROM cities WHERE country = 'France'")) {
+          ResultSet resultSet =
+              statement.executeQuery("SELECT * FROM cities WHERE country = 'France'")) {
         int rowCount = 0;
 
         while (resultSet.next()) {
@@ -132,12 +133,12 @@ public class CsvTableTest {
     // Create a temporary file without a header
     File tempFile = File.createTempFile("no_header", ".csv");
     tempFile.deleteOnExit();
-    
+
     // Write data without header
-    Files.writeString(tempFile.toPath(), 
+    Files.writeString(tempFile.toPath(),
         "Paris,France,2148000\n" +
-        "London,UK,8982000\n" +
-        "Tokyo,Japan,37400000\n");
+            "London,UK,8982000\n" +
+            "Tokyo,Japan,37400000\n");
 
     // Create a CsvTable with hasHeader=false
     CsvTable csvTable = new CsvTable(tempFile, SEPARATOR, false);
@@ -164,13 +165,13 @@ public class CsvTableTest {
     // Create a temporary file with a custom separator
     File tempFile = File.createTempFile("custom_separator", ".csv");
     tempFile.deleteOnExit();
-    
+
     // Write data with pipe separator
-    Files.writeString(tempFile.toPath(), 
+    Files.writeString(tempFile.toPath(),
         "city|country|population\n" +
-        "Paris|France|2148000\n" +
-        "London|UK|8982000\n" +
-        "Tokyo|Japan|37400000\n");
+            "Paris|France|2148000\n" +
+            "London|UK|8982000\n" +
+            "Tokyo|Japan|37400000\n");
 
     // Create a CsvTable with a custom separator
     CsvTable csvTable = new CsvTable(tempFile, '|', true);

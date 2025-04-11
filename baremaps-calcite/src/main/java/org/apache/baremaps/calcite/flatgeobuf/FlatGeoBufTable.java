@@ -47,7 +47,6 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
   private static final Logger logger = LoggerFactory.getLogger(FlatGeoBufTable.class);
 
   private final File file;
-  private final FlatGeoBufReader reader;
   private final String tableName;
   private final List<FlatGeoBuf.Column> columns;
   private RelDataType rowType;
@@ -60,12 +59,14 @@ public class FlatGeoBufTable extends AbstractTable implements ScannableTable {
    */
   public FlatGeoBufTable(File file) throws IOException {
     this.file = file;
-    this.reader = new FlatGeoBufReader(FileChannel.open(file.toPath(), StandardOpenOption.READ));
-    this.tableName = file.getName();
+    this.tableName = file.getName().replaceFirst("[.][^.]+$", ""); // Remove extension
 
     // Read header to get columns information
-    FlatGeoBuf.Header header = reader.readHeader();
-    this.columns = header.columns();
+    try (FlatGeoBufReader reader =
+        new FlatGeoBufReader(FileChannel.open(file.toPath(), StandardOpenOption.READ))) {
+      FlatGeoBuf.Header header = reader.readHeader();
+      this.columns = header.columns();
+    }
   }
 
   @Override

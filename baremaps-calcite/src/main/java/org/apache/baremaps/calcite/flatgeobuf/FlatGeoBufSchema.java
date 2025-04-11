@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.baremaps.calcite.csv;
+package org.apache.baremaps.calcite.flatgeobuf;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,36 +25,30 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 
 /**
- * A Calcite schema implementation for CSV data. This schema provides access to CSV files through
- * the Apache Calcite framework for SQL querying.
+ * A Calcite schema implementation for FlatGeoBuf data. This schema provides access to FlatGeoBuf
+ * files through the Apache Calcite framework for SQL querying.
  */
-public class CsvSchema extends AbstractSchema {
+public class FlatGeoBufSchema extends AbstractSchema {
 
   private final File directory;
   private final Map<String, Table> tableMap;
-  private final char separator;
-  private final boolean hasHeader;
 
   /**
-   * Constructs a CsvSchema with the specified directory.
+   * Constructs a FlatGeoBufSchema with the specified directory.
    *
-   * @param directory the directory containing CSV files
-   * @param separator the separator character used in CSV files
-   * @param hasHeader whether CSV files have headers
+   * @param directory the directory containing FlatGeoBuf files
    * @throws IOException if an I/O error occurs
    */
-  public CsvSchema(File directory, char separator, boolean hasHeader) throws IOException {
+  public FlatGeoBufSchema(File directory) throws IOException {
     this.directory = directory;
-    this.separator = separator;
-    this.hasHeader = hasHeader;
     this.tableMap = new HashMap<>();
 
-    // Only process .csv files in the directory
-    File[] files = directory.listFiles((dir, name) -> name.toLowerCase().endsWith(".csv"));
+    // Only process .fgb files in the directory
+    File[] files = directory.listFiles((dir, name) -> name.toLowerCase().endsWith(".fgb"));
     if (files != null) {
       for (File file : files) {
         String tableName = file.getName().replaceFirst("[.][^.]+$", ""); // Remove extension
-        tableMap.put(tableName, new CsvTable(file, separator, hasHeader));
+        tableMap.put(tableName, new FlatGeoBufTable(file));
       }
     }
   }

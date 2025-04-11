@@ -20,74 +20,190 @@ package org.apache.baremaps.calcite.flatgeobuf;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.schema.SchemaPlus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Geometry;
 
+/**
+ * Tests for the FlatGeoBufTable class, which reads FlatGeoBuf files and exposes them as Calcite
+ * tables for SQL querying.
+ */
 class FlatGeoBufTableTest {
 
-  private static final File SAMPLE_FLATGEOBUF =
-      TestFiles.POINT_FGB.toFile();
+  private static final File SAMPLE_FLATGEOBUF = TestFiles.POINT_FLATGEOBUF.toFile();
+  private FlatGeoBufTable table;
+  private RelDataTypeFactory typeFactory;
 
-  @Test
-  void testSchemaVerification() throws IOException {
-    // Create a FlatGeoBufTable instance
-    FlatGeoBufTable flatGeoBufTable = new FlatGeoBufTable(SAMPLE_FLATGEOBUF);
-
-    // Get the schema
-    RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-    RelDataType rowType = flatGeoBufTable.getRowType(typeFactory);
-
-    // Verify that the schema has the expected columns
-    assertNotNull(rowType);
-    assertTrue(rowType.getFieldCount() > 0);
-
-    // Verify that there is a geometry column
-    boolean hasGeometryColumn = false;
-    for (int i = 0; i < rowType.getFieldCount(); i++) {
-      if (rowType.getFieldList().get(i).getType().getSqlTypeName().getName().equals("GEOMETRY")) {
-        hasGeometryColumn = true;
-        break;
-      }
-    }
-    assertTrue(hasGeometryColumn, "Schema should have a geometry column");
+  @BeforeEach
+  void setUp() throws Exception {
+    table = new FlatGeoBufTable(SAMPLE_FLATGEOBUF);
+    typeFactory = new JavaTypeFactoryImpl();
   }
 
-  @Test
-  void testSqlQueryWithRealFlatGeoBuf() throws Exception {
-    // Create a FlatGeoBufTable instance
-    FlatGeoBufTable flatGeoBufTable = new FlatGeoBufTable(SAMPLE_FLATGEOBUF);
+  @Nested
+  class SchemaTests {
 
-    // Configure Calcite connection properties
-    Properties info = new Properties();
-    info.setProperty("lex", "MYSQL");
+    @Test
+    void rowTypeContainsExpectedColumns() throws Exception {
+      RelDataType rowType = table.getRowType(typeFactory);
 
-    // Set up a connection and register our table
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+      assertNotNull(rowType, "Row type should not be null");
+      assertFalse(rowType.getFieldList().isEmpty(), "Row type should have fields");
 
-      // Register the table in the root schema
-      rootSchema.add("flatgeobuf", flatGeoBufTable);
+      // Verify the schema contains a geometry column
+      boolean hasGeometryColumn = rowType.getFieldNames().contains("geometry");
+      assertTrue(hasGeometryColumn, "Schema should contain a geometry column");
 
-      // Execute a simple query
-      try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery(
-              "SELECT * FROM flatgeobuf LIMIT 5")) {
+      // Find geometry field and verify it's the correct type
+      rowType.getFieldList().stream()
+          .filter(field -> field.getName().equals("geometry"))
+          .findFirst()
+          .ifPresent(field -> {
+            String typeString = field.getType().getFullTypeString();
+            assertTrue(typeString.contains(Geometry.class.getName()),
+                "Geometry field should have the correct type: " + typeString);
+          });
+    }
 
-        // Verify that we get results
-        assertTrue(resultSet.next(), "Should have at least one row");
+    @Test
+    void rowTypeFieldsAreCorrect() throws Exception {
+      RelDataType rowType = table.getRowType(typeFactory);
+
+      assertNotNull(rowType, "Row type should not be null");
+      assertTrue(rowType.getFieldCount() > 0, "Row type should have fields");
+
+      // Verify field names in row type
+      assertTrue(rowType.getFieldNames().contains("geometry"),
+          "Row type should contain 'geometry' field");
+    }
+  }
+
+  @Nested
+  class SqlQueryTests {
+
+    private Connection connection;
+    private CalciteConnection calciteConnection;
+
+    @BeforeEach
+    void setUpCalciteConnection() throws Exception {
+      Class.forName("org.apache.calcite.jdbc.Driver");
+      Properties info = new Properties();
+      info.setProperty("lex", "JAVA");
+      info.setProperty("quoting", "DOUBLE_QUOTE");
+
+      connection = DriverManager.getConnection("jdbc:calcite:", info);
+      calciteConnection = connection.unwrap(CalciteConnection.class);
+      calciteConnection.getRootSchema().add("FLATGEOBUF", table);
+    }
+
+    @Test
+    void simpleSelectReturnsExpectedResults() throws Exception {
+      try (Statement statement = calciteConnection.createStatement();
+          ResultSet resultSet = statement.executeQuery("SELECT * FROM FLATGEOBUF LIMIT 10")) {
+
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        assertTrue(columnCount > 0, "Result should have columns");
+        assertTrue(resultSet.next(), "Result should have at least one row");
+
+        // Find and verify geometry column
+        int geometryColumnIndex = findColumnIndex(metaData, "geometry");
+        assertTrue(geometryColumnIndex > 0, "Should find geometry column");
+
+        Object geometryValue = resultSet.getObject(geometryColumnIndex);
+        assertNotNull(geometryValue, "Geometry column should have value");
+
+        // Verify geometry is either a String WKT or a JTS Geometry
+        assertValidGeometry(geometryValue);
       }
+    }
+
+    @Test
+    void geometryFilterReturnsFilteredResults() throws Exception {
+      try (Statement statement = calciteConnection.createStatement();
+          ResultSet resultSet = statement.executeQuery(
+              "SELECT * FROM FLATGEOBUF WHERE geometry IS NOT NULL LIMIT 5")) {
+
+        int rowCount = 0;
+        while (resultSet.next()) {
+          rowCount++;
+          Object geometry = resultSet.getObject("geometry");
+          assertNotNull(geometry, "Geometry should not be null");
+
+          // Verify geometry is either a String WKT or a JTS Geometry
+          assertValidGeometry(geometry);
+        }
+
+        assertTrue(rowCount > 0, "Should return at least one row");
+        assertTrue(rowCount <= 5, "Should respect LIMIT clause");
+      }
+    }
+
+    @Test
+    void projectionLimitsColumns() throws Exception {
+      try (Statement statement = calciteConnection.createStatement();
+          ResultSet resultSet = statement.executeQuery(
+              "SELECT geometry FROM FLATGEOBUF LIMIT 5")) {
+
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        assertEquals(1, metaData.getColumnCount(), "Should return only one column");
+        assertEquals("geometry", metaData.getColumnName(1), "Column should be 'geometry'");
+
+        int rowCount = 0;
+        while (resultSet.next()) {
+          rowCount++;
+          Object geometry = resultSet.getObject(1);
+          assertNotNull(geometry, "Geometry should not be null");
+
+          // Verify geometry is either a String WKT or a JTS Geometry
+          assertValidGeometry(geometry);
+        }
+
+        assertTrue(rowCount > 0, "Should return at least one row");
+        assertTrue(rowCount <= 5, "Should respect LIMIT clause");
+      }
+    }
+
+    /**
+     * Helper method to check if an object is a valid geometry representation. Accepts either a WKT
+     * string or a JTS Geometry object.
+     */
+    private void assertValidGeometry(Object geometry) {
+      if (geometry instanceof String) {
+        String wkt = (String) geometry;
+        // Check if it contains typical WKT keywords
+        assertTrue(
+            wkt.contains("POLYGON") || wkt.contains("POINT") ||
+                wkt.contains("LINESTRING") || wkt.contains("MULTIPOLYGON") ||
+                wkt.contains("MULTIPOINT") || wkt.contains("MULTILINESTRING"),
+            "Geometry column should contain valid WKT");
+      } else if (geometry instanceof Geometry) {
+        // JTS Geometry object is valid as is
+        assertFalse(((Geometry) geometry).isEmpty(), "Geometry should not be empty");
+      } else if (geometry instanceof byte[]) {
+        // Binary geometry representation
+        assertTrue(((byte[]) geometry).length > 0, "Binary geometry should not be empty");
+      } else {
+        fail("Unexpected geometry type: " + geometry.getClass().getName());
+      }
+    }
+
+    private int findColumnIndex(ResultSetMetaData metaData, String columnName) throws SQLException {
+      for (int i = 1; i <= metaData.getColumnCount(); i++) {
+        if (metaData.getColumnName(i).equals(columnName)) {
+          return i;
+        }
+      }
+      return -1;
     }
   }
 }
