@@ -133,13 +133,11 @@ public class ImportShapefile implements Task {
         }
 
         // Set SRID on geometry column if specified
-        if (databaseSrid != null) {
-          try (Connection pgConnection = dataSource.getConnection();
-              Statement stmt = pgConnection.createStatement()) {
-            stmt.execute(String.format(
-                "SELECT UpdateGeometrySRID('%s', 'geometry', %d)",
-                tableName, databaseSrid));
-          }
+        try (Connection pgConnection = dataSource.getConnection();
+            Statement stmt = pgConnection.createStatement()) {
+          stmt.execute(String.format(
+              "SELECT UpdateGeometrySRID('%s', 'geometry', %d)",
+              tableName, databaseSrid));
         }
 
         // Verify that the table was created in PostgreSQL

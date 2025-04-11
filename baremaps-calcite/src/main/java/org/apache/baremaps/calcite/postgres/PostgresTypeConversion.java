@@ -18,9 +18,7 @@
 package org.apache.baremaps.calcite.postgres;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.baremaps.calcite.data.DataColumn;
 import org.apache.baremaps.calcite.data.DataSchema;
 import org.apache.calcite.rel.type.RelDataType;
@@ -34,44 +32,6 @@ public class PostgresTypeConversion {
 
   private PostgresTypeConversion() {
     // Prevent instantiation
-  }
-
-  private static final Map<String, SqlTypeName> POSTGRES_TO_SQL_TYPE = new HashMap<>();
-
-  static {
-    // Standard PostgreSQL types
-    POSTGRES_TO_SQL_TYPE.put("varchar", SqlTypeName.VARCHAR);
-    POSTGRES_TO_SQL_TYPE.put("char", SqlTypeName.CHAR);
-    POSTGRES_TO_SQL_TYPE.put("text", SqlTypeName.VARCHAR);
-    POSTGRES_TO_SQL_TYPE.put("smallint", SqlTypeName.SMALLINT);
-    POSTGRES_TO_SQL_TYPE.put("int2", SqlTypeName.SMALLINT);
-    POSTGRES_TO_SQL_TYPE.put("integer", SqlTypeName.INTEGER);
-    POSTGRES_TO_SQL_TYPE.put("int4", SqlTypeName.INTEGER);
-    POSTGRES_TO_SQL_TYPE.put("bigint", SqlTypeName.BIGINT);
-    POSTGRES_TO_SQL_TYPE.put("int8", SqlTypeName.BIGINT);
-    POSTGRES_TO_SQL_TYPE.put("decimal", SqlTypeName.DECIMAL);
-    POSTGRES_TO_SQL_TYPE.put("numeric", SqlTypeName.DECIMAL);
-    POSTGRES_TO_SQL_TYPE.put("real", SqlTypeName.REAL);
-    POSTGRES_TO_SQL_TYPE.put("float4", SqlTypeName.FLOAT);
-    POSTGRES_TO_SQL_TYPE.put("double precision", SqlTypeName.DOUBLE);
-    POSTGRES_TO_SQL_TYPE.put("float8", SqlTypeName.DOUBLE);
-    POSTGRES_TO_SQL_TYPE.put("boolean", SqlTypeName.BOOLEAN);
-    POSTGRES_TO_SQL_TYPE.put("bool", SqlTypeName.BOOLEAN);
-    POSTGRES_TO_SQL_TYPE.put("date", SqlTypeName.DATE);
-    POSTGRES_TO_SQL_TYPE.put("time", SqlTypeName.TIME);
-    POSTGRES_TO_SQL_TYPE.put("timestamp", SqlTypeName.TIMESTAMP);
-    POSTGRES_TO_SQL_TYPE.put("timestamptz", SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE);
-    POSTGRES_TO_SQL_TYPE.put("uuid", SqlTypeName.VARCHAR);
-    POSTGRES_TO_SQL_TYPE.put("json", SqlTypeName.OTHER);
-    POSTGRES_TO_SQL_TYPE.put("jsonb", SqlTypeName.OTHER);
-    POSTGRES_TO_SQL_TYPE.put("bytea", SqlTypeName.BINARY);
-    POSTGRES_TO_SQL_TYPE.put("interval", SqlTypeName.INTERVAL_DAY_SECOND);
-
-    // PostGIS specific types
-    POSTGRES_TO_SQL_TYPE.put("geometry", SqlTypeName.GEOMETRY);
-    POSTGRES_TO_SQL_TYPE.put("geography", SqlTypeName.GEOMETRY);
-    POSTGRES_TO_SQL_TYPE.put("box2d", SqlTypeName.OTHER);
-    POSTGRES_TO_SQL_TYPE.put("box3d", SqlTypeName.OTHER);
   }
 
   /**

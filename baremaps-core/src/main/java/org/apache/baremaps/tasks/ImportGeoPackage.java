@@ -127,7 +127,12 @@ public class ImportGeoPackage implements Task {
         logger.info("Is GeoPackageSchema: {}", registeredSchema instanceof GeoPackageSchema);
 
         // Get the list of tables in the GeoPackage
-        List<String> tables = getGeoPackageTables(geoPackageSchema);
+        List<String> tables = new ArrayList<>();
+
+        // Get the tables directly from the GeoPackage file
+        GeoPackage geoPackage = GeoPackageManager.open(file.toFile());
+        tables.addAll(geoPackage.getFeatureTables());
+        geoPackage.close();
 
         if (tables.isEmpty()) {
           logger.warn("No tables found in GeoPackage: {}", path);
@@ -152,13 +157,11 @@ public class ImportGeoPackage implements Task {
           }
 
           // Set SRID on geometry column if specified
-          if (databaseSrid != null) {
-            try (Connection pgConnection = dataSource.getConnection();
-                Statement stmt = pgConnection.createStatement()) {
-              stmt.execute(String.format(
-                  "SELECT UpdateGeometrySRID('%s', 'geom', %d)",
-                  sanitizedTableName, databaseSrid));
-            }
+          try (Connection pgConnection = dataSource.getConnection();
+              Statement stmt = pgConnection.createStatement()) {
+            stmt.execute(String.format(
+                "SELECT UpdateGeometrySRID('%s', 'geom', %d)",
+                sanitizedTableName, databaseSrid));
           }
 
           // Verify that the table was created in PostgreSQL
@@ -194,24 +197,6 @@ public class ImportGeoPackage implements Task {
     }
 
     logger.info("Successfully imported GeoPackage to database");
-  }
-
-  /**
-   * Gets the list of tables in the GeoPackage.
-   * 
-   * @param geoPackageSchema the GeoPackage schema
-   * @return the list of table names
-   * @throws Exception if an error occurs
-   */
-  private List<String> getGeoPackageTables(GeoPackageSchema geoPackageSchema) throws Exception {
-    List<String> tables = new ArrayList<>();
-
-    // Get the tables directly from the GeoPackage file
-    GeoPackage geoPackage = GeoPackageManager.open(file.toFile());
-    tables.addAll(geoPackage.getFeatureTables());
-    geoPackage.close();
-
-    return tables;
   }
 
   /**

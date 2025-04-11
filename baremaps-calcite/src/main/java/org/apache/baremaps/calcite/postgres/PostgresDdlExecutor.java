@@ -218,9 +218,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
   /** Truncate the PostgreSQL table. */
   static void truncate(SqlIdentifier name, CalcitePrepare.Context context, DataSource dataSource) {
     final Pair<@Nullable CalciteSchema, String> pair = schema(context, true, name);
-    final @Nullable CalciteSchema schema = pair.left;
     final String tableName = pair.right;
-
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt =
             connection.prepareStatement("TRUNCATE TABLE \"" + tableName + "\"")) {
@@ -619,7 +617,6 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
     boolean first = true;
     // Process column declarations for the CREATE TABLE statement
     final ImmutableList.Builder<ColumnDef> b = ImmutableList.builder();
-    final RelDataTypeFactory.Builder builder = typeFactory.builder();
     final RelDataTypeFactory.Builder storedBuilder = typeFactory.builder();
     final SqlValidator validator = validator(context, true);
 
@@ -632,7 +629,6 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
       if (c.e instanceof SqlColumnDeclaration) {
         final SqlColumnDeclaration d = (SqlColumnDeclaration) c.e;
         final RelDataType type = d.dataType.deriveType(validator, true);
-        builder.add(d.name.getSimple(), type);
         if (d.strategy != ColumnStrategy.VIRTUAL) {
           storedBuilder.add(d.name.getSimple(), type);
         }
@@ -655,7 +651,6 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
             ? ColumnStrategy.NULLABLE
             : ColumnStrategy.NOT_NULLABLE;
         b.add(ColumnDef.of(c.e, f.getType(), strategy));
-        builder.add(id.getSimple(), f.getType());
         storedBuilder.add(id.getSimple(), f.getType());
 
         // Add column to SQL statement
@@ -671,7 +666,6 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
 
     createTableSql.append(")");
 
-    final RelDataType rowType = builder.build();
     if (pair.left.plus().getTable(pair.right) != null) {
       // Table exists.
       if (create.ifNotExists) {

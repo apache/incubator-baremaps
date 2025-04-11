@@ -28,8 +28,6 @@ import org.apache.baremaps.calcite.postgres.PostgresDdlExecutor;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
-import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.schema.SchemaPlus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +106,6 @@ public class ImportGeoParquet implements Task {
 
       // Create a connection to Calcite
       try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
-        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-        SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
         // Get the list of tables in the GeoParquet
         String[] tables = getGeoParquetTables(connection);
@@ -137,13 +133,11 @@ public class ImportGeoParquet implements Task {
           }
 
           // Set SRID on geometry column if specified
-          if (databaseSrid != null) {
-            try (Connection pgConnection = dataSource.getConnection();
-                Statement stmt = pgConnection.createStatement()) {
-              stmt.execute(String.format(
-                  "SELECT UpdateGeometrySRID('%s', 'geometry', %d)",
-                  sanitizedTableName, databaseSrid));
-            }
+          try (Connection pgConnection = dataSource.getConnection();
+              Statement stmt = pgConnection.createStatement()) {
+            stmt.execute(String.format(
+                "SELECT UpdateGeometrySRID('%s', 'geometry', %d)",
+                sanitizedTableName, databaseSrid));
           }
 
           // Verify that the table was created in PostgreSQL

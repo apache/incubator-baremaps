@@ -38,13 +38,11 @@ import org.apache.calcite.linq4j.Ord;
 import org.apache.calcite.materialize.MaterializationKey;
 import org.apache.calcite.materialize.MaterializationService;
 import org.apache.calcite.model.JsonSchema;
-import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
-import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.*;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.impl.ViewTable;
@@ -62,9 +60,6 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.parser.ddl.SqlDdlParserImpl;
 import org.apache.calcite.sql.pretty.SqlPrettyWriter;
 import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.InitializerContext;
-import org.apache.calcite.sql2rel.InitializerExpressionFactory;
-import org.apache.calcite.sql2rel.NullInitializerExpressionFactory;
 import org.apache.calcite.tools.*;
 import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Pair;
@@ -557,27 +552,6 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
         schema.getTable(tableName, context.config().caseSensitive());
     final Table table = requireNonNull(tableEntry, "tableEntry").getTable();
 
-    InitializerExpressionFactory ief = NullInitializerExpressionFactory.INSTANCE;
-    if (table instanceof Wrapper) {
-      final InitializerExpressionFactory sourceIef =
-          ((Wrapper) table).unwrap(InitializerExpressionFactory.class);
-      if (sourceIef != null) {
-        final Set<SqlCreateTableLike.LikeOption> optionSet = create.options();
-        final boolean includingGenerated =
-            optionSet.contains(SqlCreateTableLike.LikeOption.GENERATED)
-                || optionSet.contains(SqlCreateTableLike.LikeOption.ALL);
-        final boolean includingDefaults =
-            optionSet.contains(SqlCreateTableLike.LikeOption.DEFAULTS)
-                || optionSet.contains(SqlCreateTableLike.LikeOption.ALL);
-
-        // initializes columns based on the source table InitializerExpressionFactory
-        // and like options.
-        ief =
-            new CopiedTableInitializerExpressionFactory(
-                includingGenerated, includingDefaults, sourceIef);
-      }
-    }
-
     final JavaTypeFactory typeFactory = context.getTypeFactory();
     final RelDataType rowType = table.getRowType(typeFactory);
     // Table does not exist. Create it.
@@ -636,52 +610,6 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
     final TranslatableTable x = viewTableMacro.apply(ImmutableList.of());
     Util.discard(x);
     schemaPlus.add(pair.right, viewTableMacro);
-  }
-
-  /**
-   * Initializes columns based on the source {@link InitializerExpressionFactory} and like options.
-   */
-  private static class CopiedTableInitializerExpressionFactory
-      extends NullInitializerExpressionFactory {
-
-    private final boolean includingGenerated;
-    private final boolean includingDefaults;
-    private final InitializerExpressionFactory sourceIef;
-
-    CopiedTableInitializerExpressionFactory(
-        boolean includingGenerated,
-        boolean includingDefaults,
-        InitializerExpressionFactory sourceIef) {
-      this.includingGenerated = includingGenerated;
-      this.includingDefaults = includingDefaults;
-      this.sourceIef = sourceIef;
-    }
-
-    @Override
-    public ColumnStrategy generationStrategy(
-        RelOptTable table, int iColumn) {
-      final ColumnStrategy sourceStrategy = sourceIef.generationStrategy(table, iColumn);
-      if (includingGenerated
-          && (sourceStrategy == ColumnStrategy.STORED
-              || sourceStrategy == ColumnStrategy.VIRTUAL)) {
-        return sourceStrategy;
-      }
-      if (includingDefaults && sourceStrategy == ColumnStrategy.DEFAULT) {
-        return ColumnStrategy.DEFAULT;
-      }
-
-      return super.generationStrategy(table, iColumn);
-    }
-
-    @Override
-    public RexNode newColumnDefaultValue(
-        RelOptTable table, int iColumn, InitializerContext context) {
-      if (includingDefaults || includingGenerated) {
-        return sourceIef.newColumnDefaultValue(table, iColumn, context);
-      } else {
-        return super.newColumnDefaultValue(table, iColumn, context);
-      }
-    }
   }
 
   /** Column definition. */

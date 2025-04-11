@@ -498,15 +498,15 @@ public class PostgresModifiableTable extends AbstractTable
         }
 
         String sql = "SELECT COUNT(*) FROM \"" + tableName + "\" WHERE " + whereClause;
-        PreparedStatement pstmt = connection.prepareStatement(sql);
-
-        for (int i = 0; i < values.length; i++) {
-          pstmt.setObject(i + 1, values[i]);
-        }
-
-        ResultSet rs = pstmt.executeQuery();
-        if (rs.next()) {
-          return rs.getInt(1) > 0;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+          for (int i = 0; i < values.length; i++) {
+            statement.setObject(i + 1, values[i]);
+          }
+          try (ResultSet rs = statement.executeQuery()) {
+            if (rs.next()) {
+              return rs.getInt(1) > 0;
+            }
+          }
         }
         return false;
       } catch (SQLException e) {

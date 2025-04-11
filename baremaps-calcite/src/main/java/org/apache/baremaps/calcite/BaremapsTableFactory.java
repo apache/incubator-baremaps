@@ -47,8 +47,6 @@ import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeImpl;
-import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.TableFactory;
@@ -69,15 +67,13 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       String name,
       Map<String, Object> operand,
       RelDataType rowType) {
-    final RelProtoDataType protoRowType =
-        rowType != null ? RelDataTypeImpl.proto(rowType) : null;
     String format = (String) operand.get("format");
 
     // Create a type factory - Calcite doesn't expose one through SchemaPlus
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
 
     return switch (format) {
-      case "data" -> createDataTable(name, operand, protoRowType, typeFactory);
+      case "data" -> createDataTable(name, operand, typeFactory);
       case "osm" -> createOpenStreetMapTable(operand);
       case "csv" -> createCsvTable(operand);
       case "shp" -> createShapefileTable(operand);
@@ -94,14 +90,12 @@ public class BaremapsTableFactory implements TableFactory<Table> {
    *
    * @param name the table name
    * @param operand the operand properties
-   * @param protoRowType the prototype row type
    * @param typeFactory the type factory to use
    * @return the created table
    */
   private Table createDataTable(
       String name,
       Map<String, Object> operand,
-      RelProtoDataType protoRowType,
       RelDataTypeFactory typeFactory) {
     String directory = (String) operand.get("directory");
     if (directory == null) {
@@ -110,7 +104,7 @@ public class BaremapsTableFactory implements TableFactory<Table> {
     try {
       Memory<MappedByteBuffer> memory = new MemoryMappedDirectory(Paths.get(directory));
       ByteBuffer header = memory.header();
-      long size = header.getLong();
+      header.getLong(); // Skip the size
       int length = header.getInt();
       byte[] bytes = new byte[length];
       header.get(bytes);

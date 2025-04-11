@@ -28,17 +28,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 
 /**
  * Tests for the PostgresDdlExecutor class, which provides DDL execution abilities for PostgreSQL
  * tables through Calcite.
  */
 class PostgresDdlExecutorTest extends PostgresContainerTest {
-
-  private GeometryFactory geometryFactory = new GeometryFactory();
 
   @BeforeEach
   void setUp() throws SQLException {
@@ -79,9 +74,6 @@ class PostgresDdlExecutorTest extends PostgresContainerTest {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
-
-      // Create a custom PostgresDdlExecutor with our DataSource
-      PostgresDdlExecutor ddlExecutor = new PostgresDdlExecutor(dataSource());
 
       // Add schema and tables to Calcite
       try {
@@ -164,7 +156,6 @@ class PostgresDdlExecutorTest extends PostgresContainerTest {
           "population INTEGER)");
 
       // Insert Paris
-      Point parisPoint = geometryFactory.createPoint(new Coordinate(2.3522, 48.8566));
       String parisWKT = "POINT(2.3522 48.8566)";
       try (PreparedStatement ps = connection.prepareStatement(
           "INSERT INTO city VALUES (1, 'Paris', ST_GeomFromText(?, 4326))")) {
@@ -173,7 +164,6 @@ class PostgresDdlExecutorTest extends PostgresContainerTest {
       }
 
       // Insert New York
-      Point nyPoint = geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128));
       String nyWKT = "POINT(-74.0060 40.7128)";
       try (PreparedStatement ps = connection.prepareStatement(
           "INSERT INTO city VALUES (2, 'New York', ST_GeomFromText(?, 4326))")) {
@@ -201,9 +191,6 @@ class PostgresDdlExecutorTest extends PostgresContainerTest {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
-
-      // Create a custom PostgresDdlExecutor with our DataSource
-      PostgresDdlExecutor ddlExecutor = new PostgresDdlExecutor(dataSource());
 
       try {
         // Test CREATE TABLE
@@ -279,9 +266,6 @@ class PostgresDdlExecutorTest extends PostgresContainerTest {
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
-
-      // Create a custom PostgresDdlExecutor with our DataSource
-      PostgresDdlExecutor ddlExecutor = new PostgresDdlExecutor(dataSource());
 
       try {
         // Register tables with Calcite
