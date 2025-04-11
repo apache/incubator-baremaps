@@ -36,8 +36,8 @@ import org.apache.baremaps.tasks.*;
 @JsonSubTypes({
     @Type(value = CleanContextCache.class, name = "CleanContextCache"),
     @Type(value = CleanContextData.class, name = "CleanContextData"),
-    @Type(value = CreateGeonamesIndex.class, name = "CreateGeonamesIndex"),
-    @Type(value = CreateIplocIndex.class, name = "CreateIplocIndex"),
+    // @Type(value = CreateGeonamesIndex.class, name = "CreateGeonamesIndex"),
+    // @Type(value = CreateIplocIndex.class, name = "CreateIplocIndex"),
     @Type(value = DecompressFile.class, name = "DecompressFile"),
     @Type(value = DownloadUrl.class, name = "DownloadUrl"),
     @Type(value = ExecuteCommand.class, name = "ExecuteCommand"),

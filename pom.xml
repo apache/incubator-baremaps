@@ -48,13 +48,12 @@ limitations under the License.
 
   <modules>
     <module>baremaps-benchmarking</module>
+    <module>baremaps-calcite</module>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
-    <module>baremaps-csv</module>
     <module>baremaps-data</module>
     <module>baremaps-dem</module>
     <module>baremaps-flatgeobuf</module>
-    <module>baremaps-geopackage</module>
     <module>baremaps-geoparquet</module>
     <module>baremaps-maplibre</module>
     <module>baremaps-openstreetmap</module>
@@ -63,7 +62,6 @@ limitations under the License.
     <module>baremaps-rpsl</module>
     <module>baremaps-server</module>
     <module>baremaps-shapefile</module>
-    <module>baremaps-store</module>
     <module>baremaps-testing</module>
   </modules>
 
@@ -86,7 +84,7 @@ limitations under the License.
     <version.lib.awssdk>2.27.17</version.lib.awssdk>
     <version.lib.brotli4j>1.16.0</version.lib.brotli4j>
     <version.lib.caffeine>3.1.8</version.lib.caffeine>
-    <version.lib.calcite>1.37.0</version.lib.calcite>
+    <version.lib.calcite>1.38.0</version.lib.calcite>
     <version.lib.commons-compress>1.27.1</version.lib.commons-compress>
     <version.lib.fastutil>8.5.14</version.lib.fastutil>
     <version.lib.flatgeobuf>3.26.2</version.lib.flatgeobuf>
@@ -257,17 +255,17 @@ limitations under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
+        <artifactId>baremaps-calcite</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-cli</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-core</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-csv</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -283,11 +281,6 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-flatgeobuf</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-geopackage</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -332,11 +325,6 @@ limitations under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.baremaps</groupId>
-        <artifactId>baremaps-store</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.baremaps</groupId>
         <artifactId>baremaps-testing</artifactId>
         <version>${project.parent.version}</version>
         <scope>test</scope>
@@ -344,6 +332,11 @@ limitations under the License.
       <dependency>
         <groupId>org.apache.calcite</groupId>
         <artifactId>calcite-core</artifactId>
+        <version>${version.lib.calcite}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.calcite</groupId>
+        <artifactId>calcite-server</artifactId>
         <version>${version.lib.calcite}</version>
       </dependency>
       <dependency>
@@ -599,11 +592,6 @@ limitations under the License.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
@@ -755,7 +743,10 @@ limitations under the License.
             <exclude>**/ways.wkt</exclude>
             <exclude>**/relations.wkt</exclude>
             <exclude>**/labels.wkt</exclude>
+            <exclude>**/point.prj</exclude>
+            <exclude>**/point.cpg</exclude>
             <exclude>**/result</exclude>
+            <exclude>**/*.csv</exclude>
             <exclude>**/*.txt</exclude>
             <exclude>**/*.md</exclude>
             <exclude>**/*.pmtiles</exclude>

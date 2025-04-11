@@ -25,14 +25,14 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class ImportGeoPackageTest extends PostgresContainerTest {
+public class ImportGeoPackageTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
   void execute() throws Exception {
     var task =
         new ImportGeoPackage(
-            TestFiles.resolve("baremaps-testing/data/samples/data.gpkg"),
+            TestFiles.GEOPACKAGE,
             4326,
             jdbcUrl(),
             3857);

@@ -21,6 +21,7 @@ package org.apache.baremaps.data.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -30,6 +31,10 @@ public class FileUtils {
 
   private FileUtils() {
     // Prevent instantiation
+  }
+
+  public static ByteBuffer read(Path path) throws IOException {
+    return ByteBuffer.wrap(Files.readAllBytes(path));
   }
 
   public static void deleteRecursively(Path path) throws IOException {

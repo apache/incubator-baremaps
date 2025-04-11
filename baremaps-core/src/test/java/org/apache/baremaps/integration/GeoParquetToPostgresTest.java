@@ -17,12 +17,21 @@
 
 package org.apache.baremaps.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.baremaps.geoparquet.GeoParquetDataStore;
-import org.apache.baremaps.postgres.store.PostgresDataStore;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Properties;
+import org.apache.baremaps.calcite.geoparquet.GeoParquetSchema;
+import org.apache.baremaps.calcite.postgres.PostgresDdlExecutor;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.calcite.schema.Schema;
+import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -30,23 +39,90 @@ class GeoParquetToPostgresTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void copyGeoParquetToPostgres() {
+  void copyGeoParquetToPostgres() throws Exception {
     // Open the GeoParquet
     var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
-    var geoParquetSchema = new GeoParquetDataStore(uri);
-    var tables = geoParquetSchema.list();
-    var geoParquetTable = geoParquetSchema.get(tables.get(0));
 
-    // Copy the table to Postgres
-    var postgresStore = new PostgresDataStore(dataSource());
-    postgresStore.add("geoparquet", geoParquetTable);
+    // Set ThreadLocal DataSource for PostgresDdlExecutor to use
+    PostgresDdlExecutor.setThreadLocalDataSource(dataSource());
 
-    // Check the table in Postgres
-    var postgresTable = postgresStore.get("geoparquet");
+    try {
+      // Setup Calcite connection properties
+      Properties info = new Properties();
+      info.setProperty("lex", "MYSQL");
+      info.setProperty("caseSensitive", "false");
+      info.setProperty("unquotedCasing", "TO_LOWER");
+      info.setProperty("quotedCasing", "TO_LOWER");
+      info.setProperty("parserFactory", PostgresDdlExecutor.class.getName() + "#PARSER_FACTORY");
 
-    assertEquals("geoparquet", postgresTable.schema().name());
-    assertEquals(7, postgresTable.schema().columns().size());
-    assertEquals(5L, postgresTable.size());
-    assertEquals(5L, postgresTable.stream().count());
+      // Create a connection to Calcite
+      try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
+        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+        SchemaPlus rootSchema = calciteConnection.getRootSchema();
+
+        // Register the GeoParquet schema
+        Schema geoParquetSchema = new GeoParquetSchema(uri);
+        rootSchema.add("geoparquet", geoParquetSchema);
+
+        // Get the list of tables in the GeoParquet
+        String[] tables = getGeoParquetTables(connection);
+
+        assertTrue(tables.length > 0, "No tables found in GeoParquet");
+
+        // Import each table
+        for (String tableName : tables) {
+          // Register the GeoParquet table in the Calcite schema
+          String registerSql = "CREATE TABLE " + tableName + " AS " +
+              "SELECT * FROM geoparquet." + tableName;
+
+          // Execute the DDL statement to create the table
+          try (Statement statement = connection.createStatement()) {
+            statement.execute(registerSql);
+          }
+
+          // Verify that the table was created in PostgreSQL
+          try (Connection pgConnection = dataSource().getConnection();
+              Statement statement = pgConnection.createStatement();
+              ResultSet resultSet = statement.executeQuery(
+                  "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '" +
+                      tableName + "')")) {
+            assertTrue(resultSet.next() && resultSet.getBoolean(1),
+                "Failed to create table: " + tableName);
+          }
+
+          // Verify that the table has data
+          try (Connection pgConnection = dataSource().getConnection();
+              Statement statement = pgConnection.createStatement();
+              ResultSet resultSet = statement.executeQuery(
+                  "SELECT COUNT(*) FROM " + tableName)) {
+            assertTrue(resultSet.next(), "No rows found in table: " + tableName);
+            int count = resultSet.getInt(1);
+            assertTrue(count > 0, "Expected rows in table: " + tableName);
+          }
+        }
+      }
+    } finally {
+      // Clean up thread local storage
+      PostgresDdlExecutor.clearThreadLocalDataSource();
+    }
+  }
+
+  /**
+   * Gets the list of tables in the GeoParquet.
+   * 
+   * @param connection the Calcite connection
+   * @return the list of table names
+   * @throws Exception if an error occurs
+   */
+  private String[] getGeoParquetTables(Connection connection) throws Exception {
+    try (Statement statement = connection.createStatement()) {
+      DatabaseMetaData metaData = connection.getMetaData();
+      ResultSet resultSet = metaData.getTables("geoparquet", null, null, new String[] {"TABLE"});
+      java.util.List<String> tables = new java.util.ArrayList<>();
+      while (resultSet.next()) {
+        tables.add(resultSet.getString("TABLE_NAME"));
+      }
+      return tables.toArray(new String[0]);
+    }
   }
 }

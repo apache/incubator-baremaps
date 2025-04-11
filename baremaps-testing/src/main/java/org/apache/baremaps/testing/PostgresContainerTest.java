@@ -21,6 +21,7 @@ package org.apache.baremaps.testing;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.time.Duration;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,12 +40,19 @@ public abstract class PostgresContainerTest {
     var postgis =
         DockerImageName.parse("ghcr.io/baosystems/postgis:14-3.3")
             .asCompatibleSubstituteFor("postgres");
-    container = new PostgreSQLContainer(postgis);
+    container = (PostgreSQLContainer) new PostgreSQLContainer(postgis)
+        .withDatabaseName("test")
+        .withUsername("test")
+        .withPassword("test")
+        .withStartupTimeout(Duration.ofSeconds(60));
     container.start();
 
     // set the datasource
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl(jdbcUrl());
+    config.setConnectionTimeout(30000);
+    config.setMaximumPoolSize(4);
+    config.setMinimumIdle(1);
     dataSource = new HikariDataSource(config);
   }
 
