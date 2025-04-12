@@ -18,20 +18,21 @@
 package org.apache.baremaps.tasks;
 
 import java.net.URI;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Properties;
 import java.util.StringJoiner;
-import org.apache.baremaps.geoparquet.GeoParquetDataStore;
-import org.apache.baremaps.geoparquet.GeoParquetDataTable;
-import org.apache.baremaps.openstreetmap.function.ProjectionTransformer;
-import org.apache.baremaps.postgres.store.PostgresDataStore;
-import org.apache.baremaps.store.DataTableGeometryMapper;
-import org.apache.baremaps.store.DataTableMapper;
+import org.apache.baremaps.calcite.postgres.PostgresDdlExecutor;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Import a GeoParquet into a database.
+ * Import a GeoParquet into a database using Calcite.
  */
 public class ImportGeoParquet implements Task {
 
@@ -53,6 +54,7 @@ public class ImportGeoParquet implements Task {
    * Constructs an {@code ImportGeoParquet}.
    *
    * @param uri the GeoParquet uri
+   * @param tableName the target table name
    * @param database the database
    * @param databaseSrid the target SRID
    */
@@ -68,19 +70,138 @@ public class ImportGeoParquet implements Task {
    */
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var geoParquetDataStore = new GeoParquetDataStore(uri);
-    var dataSource = context.getDataSource(database);
-    var postgresDataStore = new PostgresDataStore(dataSource);
-    for (var name : geoParquetDataStore.list()) {
-      var geoParquetTable = (GeoParquetDataTable) geoParquetDataStore.get(name);
-      var projectionTransformer =
-          new ProjectionTransformer(geoParquetTable.srid("geometry"), databaseSrid);
-      var rowTransformer =
-          new DataTableGeometryMapper(geoParquetTable, projectionTransformer);
-      var transformedDataTable =
-          new DataTableMapper(geoParquetDataStore.get(name), rowTransformer);
-      postgresDataStore.add(tableName, transformedDataTable);
+    // Validate required parameters
+    if (uri == null) {
+      throw new WorkflowException("GeoParquet URI cannot be null");
     }
+    if (tableName == null || tableName.isEmpty()) {
+      throw new WorkflowException("Table name cannot be null or empty");
+    }
+    if (database == null) {
+      throw new WorkflowException("Database connection cannot be null");
+    }
+    if (databaseSrid == null) {
+      throw new WorkflowException("Target SRID cannot be null");
+    }
+
+    logger.info("Importing GeoParquet from: {}", uri);
+
+    var dataSource = context.getDataSource(database);
+
+    // Sanitize table name to prevent SQL injection
+    String sanitizedTableName = sanitizeTableName(tableName);
+    logger.info("Creating table: {}", sanitizedTableName);
+
+    // Set ThreadLocal DataSource for PostgresDdlExecutor to use
+    PostgresDdlExecutor.setThreadLocalDataSource(dataSource);
+
+    try {
+      // Setup Calcite connection properties
+      Properties info = new Properties();
+      info.setProperty("lex", "MYSQL");
+      info.setProperty("caseSensitive", "false");
+      info.setProperty("unquotedCasing", "TO_LOWER");
+      info.setProperty("quotedCasing", "TO_LOWER");
+      info.setProperty("parserFactory", PostgresDdlExecutor.class.getName() + "#PARSER_FACTORY");
+
+      // Create a connection to Calcite
+      try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
+
+        // Get the list of tables in the GeoParquet
+        String[] tables = getGeoParquetTables(connection);
+
+        if (tables.length == 0) {
+          logger.warn("No tables found in GeoParquet: {}", uri);
+          return;
+        }
+
+        // Import each table
+        for (String sourceTableName : tables) {
+          // Create a temporary table name for the GeoParquet data
+          String tempTableName =
+              "geoparquet_data_" + System.currentTimeMillis() + "_" + sourceTableName;
+
+          // Register the GeoParquet table in the Calcite schema
+          String registerSql = "CREATE TABLE " + tempTableName + " AS " +
+              "SELECT * FROM " + sourceTableName;
+
+          logger.info("Executing SQL: {}", registerSql);
+
+          // Execute the DDL statement to create the table
+          try (Statement statement = connection.createStatement()) {
+            statement.execute(registerSql);
+          }
+
+          // Set SRID on geometry column if specified
+          try (Connection pgConnection = dataSource.getConnection();
+              Statement stmt = pgConnection.createStatement()) {
+            stmt.execute(String.format(
+                "SELECT UpdateGeometrySRID('%s', 'geometry', %d)",
+                sanitizedTableName, databaseSrid));
+          }
+
+          // Verify that the table was created in PostgreSQL
+          try (Connection pgConnection = dataSource.getConnection();
+              Statement statement = pgConnection.createStatement();
+              ResultSet resultSet = statement.executeQuery(
+                  "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '" +
+                      sanitizedTableName + "')")) {
+            if (!resultSet.next() || !resultSet.getBoolean(1)) {
+              throw new WorkflowException("Failed to create table: " + sanitizedTableName);
+            }
+          }
+
+          // Verify that the table has data
+          try (Connection pgConnection = dataSource.getConnection();
+              Statement statement = pgConnection.createStatement();
+              ResultSet resultSet = statement.executeQuery(
+                  "SELECT COUNT(*) FROM " + sanitizedTableName)) {
+            if (resultSet.next()) {
+              int count = resultSet.getInt(1);
+              logger.info("Imported {} rows to table: {}", count, sanitizedTableName);
+              if (count == 0) {
+                logger.warn("No rows were imported from GeoParquet to table: {}",
+                    sanitizedTableName);
+              }
+            }
+          }
+        }
+      }
+    } finally {
+      // Clean up thread local storage
+      PostgresDdlExecutor.clearThreadLocalDataSource();
+    }
+
+    logger.info("Successfully imported GeoParquet to table: {}", sanitizedTableName);
+  }
+
+  /**
+   * Gets the list of tables in the GeoParquet.
+   * 
+   * @param connection the Calcite connection
+   * @return the list of table names
+   * @throws Exception if an error occurs
+   */
+  private String[] getGeoParquetTables(Connection connection) throws Exception {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SHOW TABLES")) {
+      java.util.List<String> tables = new java.util.ArrayList<>();
+      while (resultSet.next()) {
+        tables.add(resultSet.getString(1));
+      }
+      return tables.toArray(new String[0]);
+    }
+  }
+
+  /**
+   * Sanitizes a table name to prevent SQL injection.
+   * 
+   * @param name the table name to sanitize
+   * @return the sanitized table name
+   */
+  private String sanitizeTableName(String name) {
+    // Replace any non-alphanumeric characters with underscores
+    return name.replaceAll("[^a-zA-Z0-9]", "_");
   }
 
   /**
@@ -90,6 +211,7 @@ public class ImportGeoParquet implements Task {
   public String toString() {
     return new StringJoiner(", ", ImportGeoParquet.class.getSimpleName() + "[", "]")
         .add("uri=" + uri)
+        .add("tableName=" + tableName)
         .add("database=" + database)
         .add("databaseSrid=" + databaseSrid)
         .toString();

@@ -24,9 +24,6 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
-import org.apache.baremaps.store.*;
-import org.apache.baremaps.store.DataColumn.Cardinality;
-import org.apache.baremaps.store.DataColumn.Type;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -50,9 +47,6 @@ public class ShapefileByteReader extends CommonByteReader {
 
   /** Database Field descriptors. */
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
-
-  /** Schema of the rows contained in this shapefile. */
-  private DataSchema schema;
 
   /** Shapefile index. */
   private File shapeFileIndex;
@@ -87,7 +81,7 @@ public class ShapefileByteReader extends CommonByteReader {
       loadShapefileIndexes();
     }
 
-    this.schema = getSchema(shapefile.getName());
+    // this.schema = getSchema(shapefile.getName());
   }
 
   /**
@@ -106,56 +100,6 @@ public class ShapefileByteReader extends CommonByteReader {
    */
   public ShapefileDescriptor getShapefileDescriptor() {
     return this.shapefileDescriptor;
-  }
-
-  /**
-   * Returns the schema of the data contained in this shapefile.
-   *
-   * @return the schema
-   */
-  public DataSchema getSchema() {
-    return this.schema;
-  }
-
-  /**
-   * Create a row descriptor.
-   *
-   * @param name Name of the field.
-   * @return The schema.
-   */
-  private DataSchema getSchema(final String name) {
-    Objects.requireNonNull(name, "The row name cannot be null.");
-
-    var columns = new ArrayList<DataColumn>();
-    for (int i = 0; i < databaseFieldsDescriptors.size(); i++) {
-      var fieldDescriptor = this.databaseFieldsDescriptors.get(i);
-      var columnName = fieldDescriptor.getName();
-      var columnType = switch (fieldDescriptor.getType()) {
-        case CHARACTER -> Type.STRING;
-        case NUMBER -> fieldDescriptor.getDecimalCount() == 0 ? Type.LONG : Type.DOUBLE;
-        case CURRENCY -> Type.DOUBLE;
-        case DOUBLE -> Type.DOUBLE;
-        case INTEGER -> Type.INTEGER;
-        case AUTO_INCREMENT -> Type.INTEGER;
-
-        // TODO: Implement the following types
-        case LOGICAL -> Type.STRING;
-        case DATE -> Type.STRING;
-        case MEMO -> Type.STRING;
-        case FLOATING_POINT -> Type.STRING;
-        case PICTURE -> Type.STRING;
-        case VARI_FIELD -> Type.STRING;
-        case VARIANT -> Type.STRING;
-        case TIMESTAMP -> Type.STRING;
-        case DATE_TIME -> Type.STRING;
-      };
-      columns.add(new DataColumnFixed(columnName, Cardinality.OPTIONAL, columnType));
-    }
-
-    // Add geometry column.
-    columns.add(new DataColumnFixed(GEOMETRY_NAME, Cardinality.OPTIONAL, Type.GEOMETRY));
-
-    return new DataSchemaImpl(name, columns);
   }
 
   /** Load shapefile descriptor. */
@@ -255,7 +199,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param row the row to complete
    */
-  public void completeRow(DataRow row) throws ShapefileException {
+  public void completeRow(List<Object> row) throws ShapefileException {
     // insert points into some type of list
     getByteBuffer().getInt(); // record number
     getByteBuffer().getInt(); // content length
@@ -299,8 +243,8 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param row the row to fill.
    */
-  private void loadNullRow(DataRow row) {
-    row.set(GEOMETRY_NAME, null);
+  private void loadNullRow(List<Object> row) {
+    row.add(null);
   }
 
   /**
@@ -308,11 +252,11 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param row the row to fill.
    */
-  private void loadPointRow(DataRow row) {
+  private void loadPointRow(List<Object> row) {
     double x = getByteBuffer().getDouble();
     double y = getByteBuffer().getDouble();
     Point pnt = geometryFactory.createPoint(new Coordinate(x, y));
-    row.set(GEOMETRY_NAME, pnt);
+    row.add(pnt);
   }
 
   /**
@@ -320,7 +264,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param row the row to fill.
    */
-  private void loadPolygonRow(DataRow row) {
+  private void loadPolygonRow(List<Object> row) {
     /* double xmin = */ getByteBuffer().getDouble();
     /* double ymin = */ getByteBuffer().getDouble();
     /* double xmax = */ getByteBuffer().getDouble();
@@ -331,7 +275,7 @@ public class ShapefileByteReader extends CommonByteReader {
 
     Geometry multiPolygon = readMultiplePolygon(numParts, numPoints);
 
-    row.set(GEOMETRY_NAME, multiPolygon);
+    row.add(multiPolygon);
   }
 
   /**
@@ -396,7 +340,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param row the row to fill.
    */
-  private void loadPolylineRow(DataRow row) {
+  private void loadPolylineRow(List<Object> row) {
     /* double xmin = */ getByteBuffer().getDouble();
     /* double ymin = */ getByteBuffer().getDouble();
     /* double xmax = */ getByteBuffer().getDouble();
@@ -429,7 +373,6 @@ public class ShapefileByteReader extends CommonByteReader {
       }
     }
 
-    row.set(GEOMETRY_NAME,
-        geometryFactory.createLineString(coordinates.toCoordinateArray()));
+    row.add(geometryFactory.createLineString(coordinates.toCoordinateArray()));
   }
 }

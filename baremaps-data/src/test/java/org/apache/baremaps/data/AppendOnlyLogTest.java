@@ -40,10 +40,10 @@ class AppendOnlyLogTest {
         .memory(new OffHeapMemory(1 << 10))
         .build();
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(Long.BYTES + (i << 2), collection.addPositioned(i));
+      assertEquals((i << 2), collection.addPositioned(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i, collection.getPositioned(Long.BYTES + (i << 2)));
+      assertEquals(i, collection.getPositioned((i << 2)));
     }
   }
 

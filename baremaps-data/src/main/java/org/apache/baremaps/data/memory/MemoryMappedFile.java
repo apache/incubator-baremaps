@@ -47,17 +47,32 @@ public class MemoryMappedFile extends Memory<MappedByteBuffer> {
    * @param segmentBytes the size of each segment in bytes
    */
   public MemoryMappedFile(Path file, int segmentBytes) {
-    super(segmentBytes);
+    super(1024, segmentBytes);
     this.file = file;
+  }
+
+  @Override
+  protected MappedByteBuffer allocateHeader() {
+    try {
+      try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE,
+          StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+        return channel.map(MapMode.READ_WRITE, 0, headerSize());
+      }
+    } catch (IOException e) {
+      throw new MemoryException(e);
+    }
   }
 
   /** {@inheritDoc} */
   @Override
-  protected MappedByteBuffer allocate(int index, int size) {
+  protected MappedByteBuffer allocateSegment(int index) {
     try {
       try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE,
           StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-        return channel.map(MapMode.READ_WRITE, (long) index * size, size);
+        int headerSize = headerSize();
+        int segmentSize = segmentSize();
+        int segmentPosition = headerSize + index * segmentSize;
+        return channel.map(MapMode.READ_WRITE, segmentPosition, segmentSize);
       }
     } catch (IOException e) {
       throw new MemoryException(e);

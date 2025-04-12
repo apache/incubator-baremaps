@@ -25,13 +25,17 @@ import java.util.List;
 /** A base class for managing on-heap, off-heap, or memory-mapped segments. */
 public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
 
+  private final int headerSize;
+
   private final int segmentSize;
 
   private final long segmentShift;
 
   private final long segmentMask;
 
-  protected final List<T> segments = new ArrayList<>();
+  protected T header;
+
+  protected List<T> segments = new ArrayList<>();
 
   // Flag to track if this Memory has been closed
   protected volatile boolean closed = false;
@@ -42,17 +46,27 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
    * @param segmentSize the size of the segments (must be a power of 2)
    * @throws IllegalArgumentException if the segment size is not a power of 2
    */
-  protected Memory(int segmentSize) {
+  protected Memory(int headerSize, int segmentSize) {
     if ((segmentSize & -segmentSize) != segmentSize) {
       throw new IllegalArgumentException("The segment size must be a power of 2");
     }
+    this.headerSize = headerSize;
     this.segmentSize = segmentSize;
     this.segmentShift = (long) (Math.log(this.segmentSize) / Math.log(2));
     this.segmentMask = this.segmentSize - 1l;
   }
 
   /**
-   * Returns the size of each segment.
+   * Returns the size of the header.
+   *
+   * @return the size of the header
+   */
+  public int headerSize() {
+    return headerSize;
+  }
+
+  /**
+   * Returns the size of the segments. >>>>>>> 251ea904 (Add header to memory)
    *
    * @return the segment size in bytes
    */
@@ -78,6 +92,22 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
     return segmentMask;
   }
 
+  public ByteBuffer header() {
+    if (header == null) {
+      synchronized (this) {
+        header = allocateHeader();
+      }
+    }
+    return header;
+  }
+
+  /**
+   * Allocates a header.
+   *
+   * @return the header
+   */
+  protected abstract T allocateHeader();
+
   /**
    * Returns a segment at the specified index, allocating it if necessary.
    *
@@ -87,11 +117,11 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
    */
   public ByteBuffer segment(int index) {
     if (segments.size() <= index) {
-      return allocate(index);
+      return allocateSegmentInternal(index);
     }
     ByteBuffer segment = segments.get(index);
     if (segment == null) {
-      return allocate(index);
+      return allocateSegmentInternal(index);
     }
     return segment;
   }
@@ -123,7 +153,7 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
       }
       T segment = segments.get(index);
       if (segment == null) {
-        segment = allocate(index, segmentSize);
+        segment = allocateSegment(index);
         segments.set(index, segment);
       }
       return segment;
@@ -145,14 +175,26 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
     return (long) segments.size() * (long) segmentSize;
   }
 
+  /** The allocation of segments is synchronized to enable access by multiple threads. */
+  private synchronized ByteBuffer allocateSegmentInternal(int index) {
+    while (segments.size() <= index) {
+      segments.add(null);
+    }
+    T segment = segments.get(index);
+    if (segment == null) {
+      segment = allocateSegment(index);
+      segments.set(index, segment);
+    }
+    return segment;
+  }
+
   /**
    * Allocates a segment of the specified size.
    *
-   * @param index the segment index
-   * @param size the segment size in bytes
-   * @return the allocated segment
+   * @param index the index of the segment
+   * @return the segment
    */
-  protected abstract T allocate(int index, int size);
+  protected abstract T allocateSegment(int index);
 
   /**
    * Releases resources associated with this memory. Unlike {@link #clear()}, this method does not
@@ -174,4 +216,5 @@ public abstract class Memory<T extends ByteBuffer> implements AutoCloseable {
    * @throws IOException if an I/O error occurs
    */
   public abstract void clear() throws IOException;
+
 }
