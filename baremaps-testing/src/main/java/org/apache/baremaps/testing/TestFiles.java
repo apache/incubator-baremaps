@@ -101,8 +101,8 @@ public class TestFiles {
   public static final Path POINT_FLATGEOBUF =
       resolve("baremaps-testing/data/flatgeobuf/countries.fgb");
 
-  public static final Path RIPE_TXT =
-      resolve("baremaps-testing/data/ripe/sample.txt");
+  public static final Path RPSL_TXT =
+      resolve("baremaps-testing/data/rpsl/sample.txt");
 
   /* The geometries of the osm-sample/sample.osm.xml file */
 

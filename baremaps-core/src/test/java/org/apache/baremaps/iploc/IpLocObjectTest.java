@@ -61,7 +61,7 @@ class IpLocObjectTest {
   @BeforeAll
   public static void beforeAll() throws Exception {
     // Load the NIC sample objects
-    var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
+    var file = TestFiles.RPSL_TXT;
     try (var input = Files.newInputStream(file)) {
       rpslObjects = new RpslReader().read(input).toList();
     }

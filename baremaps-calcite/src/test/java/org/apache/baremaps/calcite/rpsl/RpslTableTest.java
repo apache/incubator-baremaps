@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 class RpslTableTest {
 
   private static final File SAMPLE_RPSL_FILE =
-      TestFiles.RIPE_TXT.toFile();
+      TestFiles.RPSL_TXT.toFile();
 
   @Test
   void testSchemaVerification() throws IOException {
