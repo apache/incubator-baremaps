@@ -41,7 +41,7 @@ class GeoParquetToPostgresTest extends PostgresContainerTest {
   @Tag("integration")
   void copyGeoParquetToPostgres() throws Exception {
     // Open the GeoParquet
-    var uri = TestFiles.resolve("baremaps-testing/data/samples/example.parquet").toUri();
+    var uri = TestFiles.GEOPARQUET.toUri();
 
     // Set ThreadLocal DataSource for PostgresDdlExecutor to use
     PostgresDdlExecutor.setThreadLocalDataSource(dataSource());

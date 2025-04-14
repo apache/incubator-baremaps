@@ -68,10 +68,10 @@ public class TestFiles {
       resolve("baremaps-testing/data/archives/file.zip");
 
   public static final Path GEOPARQUET =
-      resolve("baremaps-testing/data/samples/example.parquet");
+      resolve("baremaps-testing/data/geoparquet/example.parquet");
 
   public static final Path GEOPACKAGE =
-      resolve("baremaps-testing/data/samples/countries.gpkg");
+      resolve("baremaps-testing/data/geopackage/countries.gpkg");
 
   public static final Path TILESET_JSON =
       resolve("baremaps-testing/data/tilesets/tileset.json");
