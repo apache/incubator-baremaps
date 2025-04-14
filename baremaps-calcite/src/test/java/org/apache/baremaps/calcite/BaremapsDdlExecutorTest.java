@@ -52,7 +52,7 @@ public class BaremapsDdlExecutorTest {
   void setUp() throws IOException {
     // Create and initialize city collection
     MemoryMappedDirectory cityMemory = new MemoryMappedDirectory(Paths.get(CITY_DATA_DIR));
-    DataSchema citySchema = createCitySchema();
+    DataTableSchema citySchema = createCitySchema();
     DataRowType cityRowType = new DataRowType(citySchema);
     cityCollection = AppendOnlyLog.<DataRow>builder()
         .dataType(cityRowType)
@@ -62,7 +62,7 @@ public class BaremapsDdlExecutorTest {
     // Create and initialize population collection
     MemoryMappedDirectory populationMemory =
         new MemoryMappedDirectory(Paths.get(POPULATION_DATA_DIR));
-    DataSchema populationSchema = createPopulationSchema();
+    DataTableSchema populationSchema = createPopulationSchema();
     DataRowType populationRowType = new DataRowType(populationSchema);
     populationCollection = AppendOnlyLog.<DataRow>builder()
         .dataType(populationRowType)
@@ -78,9 +78,9 @@ public class BaremapsDdlExecutorTest {
     FileUtils.deleteRecursively(Paths.get(CITY_POPULATION_DIR).toFile());
   }
 
-  private DataSchema createCitySchema() {
+  private DataTableSchema createCitySchema() {
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-    return new DataSchema("city", List.of(
+    return new DataTableSchema("city", List.of(
         new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED,
             typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER)),
         new DataColumnFixed("name", DataColumn.Cardinality.OPTIONAL,
@@ -89,9 +89,9 @@ public class BaremapsDdlExecutorTest {
             typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.GEOMETRY))));
   }
 
-  private DataSchema createPopulationSchema() {
+  private DataTableSchema createPopulationSchema() {
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-    return new DataSchema("population", List.of(
+    return new DataTableSchema("population", List.of(
         new DataColumnFixed("city_id", DataColumn.Cardinality.REQUIRED,
             typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.INTEGER)),
         new DataColumnFixed("population", DataColumn.Cardinality.OPTIONAL,

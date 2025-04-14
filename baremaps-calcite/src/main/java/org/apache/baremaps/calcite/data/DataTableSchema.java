@@ -36,10 +36,10 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.type.SqlTypeName;
 
 /**
- * A {@link DataSchema} defines the structure of a table.
+ * A {@link DataTableSchema} defines the structure of a table.
  */
-public record DataSchema(String name,
-    List<DataColumn> columns) implements Serializable {
+public record DataTableSchema(String name,
+                              List<DataColumn> columns) implements Serializable {
 
   /**
    * Constructs a schema with validation.
@@ -50,7 +50,7 @@ public record DataSchema(String name,
    * @throws IllegalArgumentException if name is blank, columns is empty, or columns contains
    *         duplicates
    */
-  public DataSchema {
+  public DataTableSchema {
     Objects.requireNonNull(name, "Schema name cannot be null");
     Objects.requireNonNull(columns, "Columns cannot be null");
 
@@ -143,7 +143,7 @@ public record DataSchema(String name,
   /**
    * Custom JSON deserializer for DataSchema.
    */
-  static class DataSchemaDeserializer extends JsonDeserializer<DataSchema> {
+  static class DataSchemaDeserializer extends JsonDeserializer<DataTableSchema> {
     private RelDataTypeFactory typeFactory;
 
     /**
@@ -156,7 +156,7 @@ public record DataSchema(String name,
     }
 
     @Override
-    public DataSchema deserialize(JsonParser parser, DeserializationContext ctxt)
+    public DataTableSchema deserialize(JsonParser parser, DeserializationContext ctxt)
         throws IOException {
       ObjectNode node = parser.getCodec().readTree(parser);
       if (!node.has("name")) {
@@ -182,7 +182,7 @@ public record DataSchema(String name,
         }
       });
 
-      return new DataSchema(name, columns);
+      return new DataTableSchema(name, columns);
     }
 
     DataColumn deserialize(JsonNode node) {
@@ -252,7 +252,7 @@ public record DataSchema(String name,
         new NamedType(DataColumnFixed.class, "FIXED"),
         new NamedType(DataColumnNested.class, "NESTED"));
     var module = new SimpleModule();
-    module.addDeserializer(DataSchema.class, new DataSchemaDeserializer(typeFactory));
+    module.addDeserializer(DataTableSchema.class, new DataSchemaDeserializer(typeFactory));
     mapper.registerModule(module);
     return mapper;
   }
@@ -265,13 +265,13 @@ public record DataSchema(String name,
    * @return the schema
    * @throws IOException if an I/O error occurs
    */
-  public static DataSchema read(InputStream inputStream, RelDataTypeFactory typeFactory)
+  public static DataTableSchema read(InputStream inputStream, RelDataTypeFactory typeFactory)
       throws IOException {
     Objects.requireNonNull(inputStream, "Input stream cannot be null");
     Objects.requireNonNull(typeFactory, "Type factory cannot be null");
 
     var mapper = configureObjectMapper(typeFactory);
-    return mapper.readValue(inputStream, DataSchema.class);
+    return mapper.readValue(inputStream, DataTableSchema.class);
   }
 
   /**
@@ -282,7 +282,7 @@ public record DataSchema(String name,
    * @param typeFactory the type factory to use
    * @throws IOException if an I/O error occurs
    */
-  public static void write(OutputStream outputStream, DataSchema schema,
+  public static void write(OutputStream outputStream, DataTableSchema schema,
       RelDataTypeFactory typeFactory) throws IOException {
     Objects.requireNonNull(outputStream, "Output stream cannot be null");
     Objects.requireNonNull(schema, "Schema cannot be null");

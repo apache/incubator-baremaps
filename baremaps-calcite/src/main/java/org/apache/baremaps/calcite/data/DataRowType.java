@@ -118,14 +118,14 @@ public class DataRowType implements DataType<DataRow> {
     return dataType;
   }
 
-  private final DataSchema rowType;
+  private final DataTableSchema rowType;
 
   /**
    * Constructs a DataRowType with the given schema.
    *
    * @param rowType the row schema
    */
-  public DataRowType(DataSchema rowType) {
+  public DataRowType(DataTableSchema rowType) {
     this.rowType = Objects.requireNonNull(rowType, "Row type cannot be null");
   }
 

@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * A row in a table with values corresponding to the schema columns.
  */
-public record DataRow(DataSchema schema, List<Object> values) {
+public record DataRow(DataTableSchema schema, List<Object> values) {
 
   /**
    * Constructs a row with validation.

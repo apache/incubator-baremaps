@@ -31,7 +31,7 @@ import org.apache.baremaps.calcite.csv.CsvTable;
 import org.apache.baremaps.calcite.data.DataModifiableTable;
 import org.apache.baremaps.calcite.data.DataRow;
 import org.apache.baremaps.calcite.data.DataRowType;
-import org.apache.baremaps.calcite.data.DataSchema;
+import org.apache.baremaps.calcite.data.DataTableSchema;
 import org.apache.baremaps.calcite.flatgeobuf.FlatGeoBufTable;
 import org.apache.baremaps.calcite.geopackage.GeoPackageTable;
 import org.apache.baremaps.calcite.geoparquet.GeoParquetTable;
@@ -108,15 +108,15 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       int length = header.getInt();
       byte[] bytes = new byte[length];
       header.get(bytes);
-      DataSchema dataSchema = DataSchema.read(new ByteArrayInputStream(bytes), typeFactory);
-      DataRowType dataRowType = new DataRowType(dataSchema);
+      DataTableSchema dataTableSchema = DataTableSchema.read(new ByteArrayInputStream(bytes), typeFactory);
+      DataRowType dataRowType = new DataRowType(dataTableSchema);
       DataCollection<DataRow> dataCollection = AppendOnlyLog.<DataRow>builder()
           .dataType(dataRowType)
           .memory(memory)
           .build();
       return new DataModifiableTable(
           name,
-          dataSchema,
+              dataTableSchema,
           dataCollection,
           typeFactory);
     } catch (IOException e) {

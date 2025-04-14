@@ -20,7 +20,7 @@ package org.apache.baremaps.calcite.postgres;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.baremaps.calcite.data.DataColumn;
-import org.apache.baremaps.calcite.data.DataSchema;
+import org.apache.baremaps.calcite.data.DataTableSchema;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.type.SqlTypeName;
@@ -171,7 +171,7 @@ public class PostgresTypeConversion {
    * @return the corresponding RelDataType
    */
   public static RelDataType toRelDataType(RelDataTypeFactory typeFactory,
-      DataSchema schema) {
+      DataTableSchema schema) {
     List<RelDataType> types = new ArrayList<>();
     List<String> names = new ArrayList<>();
 

@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import javax.sql.DataSource;
-import org.apache.baremaps.calcite.data.DataSchema;
+import org.apache.baremaps.calcite.data.DataTableSchema;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
@@ -89,7 +89,7 @@ class PostgresModifiableTableTest extends PostgresContainerTest {
     @Tag("integration")
     void schemaContainsExpectedColumns() throws Exception {
       PostgresModifiableTable table = new PostgresModifiableTable(dataSource(), TEST_TABLE);
-      DataSchema schema = table.schema();
+      DataTableSchema schema = table.schema();
 
       assertNotNull(schema, "Schema should not be null");
       assertEquals(TEST_TABLE, schema.name(), "Schema should have correct name");
