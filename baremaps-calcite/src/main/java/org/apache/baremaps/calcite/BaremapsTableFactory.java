@@ -143,9 +143,9 @@ public class BaremapsTableFactory implements TableFactory<Table> {
 
       // Create an entity reader based on the file extension
       if (filePath.endsWith(".pbf") || filePath.endsWith(".osm.pbf")) {
-        return createTableFromPbf(inputStream);
+        return createTableFromPbf(Paths.get(filePath));
       } else if (filePath.endsWith(".xml") || filePath.endsWith(".osm")) {
-        return createTableFromXml(inputStream);
+        return createTableFromXml(Paths.get(filePath));
       } else {
         throw new IllegalArgumentException(
             "Unsupported file format. Supported formats are .pbf, .osm.pbf, .xml, and .osm");
@@ -252,32 +252,14 @@ public class BaremapsTableFactory implements TableFactory<Table> {
   /**
    * Create a table from a PBF file.
    *
-   * @param inputStream the input stream
-   * @return the table
-   */
-  public static OpenStreetMapTable createTableFromPbf(InputStream inputStream) {
-    return new OpenStreetMapTable(new PbfEntityReader().setGeometries(true), inputStream);
-  }
-
-  /**
-   * Create a table from a PBF file.
-   *
    * @param path the path to the PBF file
    * @return the table
    * @throws IOException if an I/O error occurs
    */
   public static OpenStreetMapTable createTableFromPbf(Path path) throws IOException {
-    return createTableFromPbf(new FileInputStream(path.toFile()));
-  }
-
-  /**
-   * Create a table from an XML file.
-   *
-   * @param inputStream the input stream
-   * @return the table
-   */
-  public static OpenStreetMapTable createTableFromXml(InputStream inputStream) {
-    return new OpenStreetMapTable(new XmlEntityReader().setGeometries(true), inputStream);
+    PbfEntityReader reader = new PbfEntityReader();
+    reader.setGeometries(true);
+    return new OpenStreetMapTable(path.toFile(), reader);
   }
 
   /**
@@ -288,7 +270,9 @@ public class BaremapsTableFactory implements TableFactory<Table> {
    * @throws IOException if an I/O error occurs
    */
   public static OpenStreetMapTable createTableFromXml(Path path) throws IOException {
-    return createTableFromXml(new FileInputStream(path.toFile()));
+    XmlEntityReader reader = new XmlEntityReader();
+    reader.setGeometries(true);
+    return new OpenStreetMapTable(path.toFile(), reader);
   }
 
   private Table createGeoParquetTable(Map<String, Object> operand) {
