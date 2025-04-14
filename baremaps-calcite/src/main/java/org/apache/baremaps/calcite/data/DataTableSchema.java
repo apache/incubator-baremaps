@@ -39,7 +39,7 @@ import org.apache.calcite.sql.type.SqlTypeName;
  * A {@link DataTableSchema} defines the structure of a table.
  */
 public record DataTableSchema(String name,
-                              List<DataColumn> columns) implements Serializable {
+    List<DataColumn> columns) implements Serializable {
 
   /**
    * Constructs a schema with validation.

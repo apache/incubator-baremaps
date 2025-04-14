@@ -4,7 +4,7 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * License.  You may obtain a copy of the License at
+ * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -49,15 +49,14 @@ public class ShapefileSchema extends AbstractSchema {
     this.tableMap = new HashMap<>();
 
     // Process files in the directory
-    File[] files = directory.listFiles((dir, name) -> 
-        name.toLowerCase().endsWith(".shp"));
-    
+    File[] files = directory.listFiles((dir, name) -> name.toLowerCase().endsWith(".shp"));
+
     if (files != null) {
       for (File file : files) {
         // Extract the base name without extension (e.g., "countries" from "countries.shp")
         String fileName = file.getName();
         String tableName = fileName;
-        
+
         // Remove all extensions (e.g., "countries.shp" -> "countries")
         while (tableName.contains(".")) {
           int lastDotIndex = tableName.lastIndexOf('.');
@@ -67,7 +66,7 @@ public class ShapefileSchema extends AbstractSchema {
             break;
           }
         }
-        
+
         // Create the table with the file reference
         tableMap.put(tableName, createTable(file));
       }
@@ -81,7 +80,8 @@ public class ShapefileSchema extends AbstractSchema {
    * @param typeFactory the type factory to use for creating tables
    * @throws IOException if an I/O error occurs
    */
-  public ShapefileSchema(File file, RelDataTypeFactory typeFactory, boolean isDirectory) throws IOException {
+  public ShapefileSchema(File file, RelDataTypeFactory typeFactory, boolean isDirectory)
+      throws IOException {
     if (isDirectory) {
       // If isDirectory is true, treat the file as a directory
       this.directory = Objects.requireNonNull(file, "Directory cannot be null");
@@ -89,15 +89,14 @@ public class ShapefileSchema extends AbstractSchema {
       this.tableMap = new HashMap<>();
 
       // Process files in the directory
-      File[] files = file.listFiles((dir, name) -> 
-          name.toLowerCase().endsWith(".shp"));
-      
+      File[] files = file.listFiles((dir, name) -> name.toLowerCase().endsWith(".shp"));
+
       if (files != null) {
         for (File shapeFile : files) {
           // Extract the base name without extension (e.g., "countries" from "countries.shp")
           String fileName = shapeFile.getName();
           String tableName = fileName;
-          
+
           // Remove all extensions (e.g., "countries.shp" -> "countries")
           while (tableName.contains(".")) {
             int lastDotIndex = tableName.lastIndexOf('.');
@@ -107,7 +106,7 @@ public class ShapefileSchema extends AbstractSchema {
               break;
             }
           }
-          
+
           // Create the table with the file reference
           tableMap.put(tableName, createTable(shapeFile));
         }
@@ -121,7 +120,7 @@ public class ShapefileSchema extends AbstractSchema {
       // Extract the base name without extension (e.g., "countries" from "countries.shp")
       String fileName = file.getName();
       String tableName = fileName;
-      
+
       // Remove all extensions (e.g., "countries.shp" -> "countries")
       while (tableName.contains(".")) {
         int lastDotIndex = tableName.lastIndexOf('.');
@@ -131,7 +130,7 @@ public class ShapefileSchema extends AbstractSchema {
           break;
         }
       }
-      
+
       // Create the table with the file reference
       tableMap.put(tableName, createTable(file));
     }
@@ -152,4 +151,4 @@ public class ShapefileSchema extends AbstractSchema {
   protected Map<String, Table> getTableMap() {
     return tableMap;
   }
-} 
+}

@@ -43,7 +43,7 @@ public class OpenStreetMapSchemaTest {
 
   @TempDir
   Path tempDir;
-  
+
   private Path sampleDataDir;
   private RelDataTypeFactory typeFactory;
 
@@ -52,15 +52,15 @@ public class OpenStreetMapSchemaTest {
     // Create a temporary directory for test files
     sampleDataDir = tempDir.resolve("osm-data");
     Files.createDirectories(sampleDataDir);
-    
+
     // Get the absolute paths to the sample files
     Path pbfSourcePath = TestFiles.SAMPLE_OSM_PBF.toAbsolutePath();
     Path xmlSourcePath = TestFiles.SAMPLE_OSM_XML.toAbsolutePath();
-    
+
     // Copy sample OSM files to the test directory
     Path pbfPath = sampleDataDir.resolve("sample.osm.pbf");
     Path xmlPath = sampleDataDir.resolve("sample.osm.xml");
-    
+
     // Check if source files exist
     if (!Files.exists(pbfSourcePath)) {
       throw new IOException("Sample PBF file not found: " + pbfSourcePath);
@@ -68,14 +68,14 @@ public class OpenStreetMapSchemaTest {
     if (!Files.exists(xmlSourcePath)) {
       throw new IOException("Sample XML file not found: " + xmlSourcePath);
     }
-    
+
     Files.copy(pbfSourcePath, pbfPath);
     Files.copy(xmlSourcePath, xmlPath);
-    
+
     // Set up Calcite connection to get a RelDataTypeFactory
     Properties info = new Properties();
     info.setProperty("lex", "MYSQL");
-    
+
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       typeFactory = calciteConnection.getTypeFactory();
@@ -86,15 +86,15 @@ public class OpenStreetMapSchemaTest {
   void testSchemaCreation() throws IOException {
     // Create an OpenStreetMapSchema with the test directory
     OpenStreetMapSchema schema = new OpenStreetMapSchema(sampleDataDir.toFile(), typeFactory);
-    
+
     // Verify that the schema contains the expected tables
     // The table name is based on the filename without extension
     assertTrue(schema.getTableMap().containsKey("sample"), "Schema should contain 'sample' table");
-    
+
     // Verify that the table has the expected structure
     OpenStreetMapTable table = (OpenStreetMapTable) schema.getTableMap().get("sample");
     assertNotNull(table, "Table should not be null");
-    
+
     // Verify the schema structure
     int fieldCount = table.getRowType(typeFactory).getFieldCount();
     assertEquals(9, fieldCount, "Schema should have 9 columns");
@@ -104,35 +104,36 @@ public class OpenStreetMapSchemaTest {
   void testSqlQueryWithDirectory() throws Exception {
     // Create an OpenStreetMapSchema with the test directory
     OpenStreetMapSchema schema = new OpenStreetMapSchema(sampleDataDir.toFile(), typeFactory);
-    
+
     // Configure Calcite connection properties
     Properties info = new Properties();
     info.setProperty("lex", "MYSQL");
-    
+
     // Set up a connection and register our schema
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
-      
+
       // Add the schema to the root schema
       rootSchema.add("osm", schema);
-      
+
       // Test a simple query to select a limited number of entities
       // The table name is based on the filename without extension
       try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery("SELECT id, type FROM osm.sample LIMIT 10")) {
+          ResultSet resultSet =
+              statement.executeQuery("SELECT id, type FROM osm.sample LIMIT 10")) {
         int rowCount = 0;
-        
+
         while (resultSet.next()) {
           rowCount++;
           long id = resultSet.getLong("id");
           String type = resultSet.getString("type");
-          
+
           // Verify basic properties
           assertTrue(id != 0, "Entity should have non-zero ID");
           assertNotNull(type, "Entity should have a type");
         }
-        
+
         // Verify that we got some rows
         assertTrue(rowCount > 0, "Should have retrieved at least one entity");
       }
@@ -150,38 +151,39 @@ public class OpenStreetMapSchemaTest {
     // Create an OpenStreetMapSchema with a single file
     File pbfFile = sampleDataDir.resolve("sample.osm.pbf").toFile();
     OpenStreetMapSchema schema = new OpenStreetMapSchema(pbfFile, typeFactory, false);
-    
+
     // Configure Calcite connection properties
     Properties info = new Properties();
     info.setProperty("lex", "MYSQL");
-    
+
     // Set up a connection and register our schema
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       SchemaPlus rootSchema = calciteConnection.getRootSchema();
-      
+
       // Add the schema to the root schema
       rootSchema.add("osm", schema);
-      
+
       // Test a simple query to select a limited number of entities
       // For a single file, the table name is "sample" (not "osm")
       try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery("SELECT id, type FROM osm.sample LIMIT 10")) {
+          ResultSet resultSet =
+              statement.executeQuery("SELECT id, type FROM osm.sample LIMIT 10")) {
         int rowCount = 0;
-        
+
         while (resultSet.next()) {
           rowCount++;
           long id = resultSet.getLong("id");
           String type = resultSet.getString("type");
-          
+
           // Verify basic properties
           assertTrue(id != 0, "Entity should have non-zero ID");
           assertNotNull(type, "Entity should have a type");
         }
-        
+
         // Verify that we got some rows
         assertTrue(rowCount > 0, "Should have retrieved at least one entity");
       }
     }
   }
-} 
+}

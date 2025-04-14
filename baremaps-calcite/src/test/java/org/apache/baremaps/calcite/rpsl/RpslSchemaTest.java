@@ -4,7 +4,7 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * License.  You may obtain a copy of the License at
+ * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.calcite.rpsl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,11 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.apache.baremaps.testing.TestFiles;
-import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +65,8 @@ public class RpslSchemaTest {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     // Create and register the RPSL schema
-    RpslSchema schema = new RpslSchema(tempDir.resolve("rpsl-test").toFile(), calciteConnection.getTypeFactory());
+    RpslSchema schema =
+        new RpslSchema(tempDir.resolve("rpsl-test").toFile(), calciteConnection.getTypeFactory());
     rootSchema.add("rpsl", schema);
 
     // Verify that the schema contains the expected table
@@ -88,7 +84,8 @@ public class RpslSchemaTest {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     // Create and register the RPSL schema
-    RpslSchema schema = new RpslSchema(tempDir.resolve("rpsl-test").toFile(), calciteConnection.getTypeFactory());
+    RpslSchema schema =
+        new RpslSchema(tempDir.resolve("rpsl-test").toFile(), calciteConnection.getTypeFactory());
     rootSchema.add("rpsl", schema);
 
     // Execute a simple SQL query - use lowercase for schema and table names
@@ -98,11 +95,11 @@ public class RpslSchemaTest {
 
       // Verify that we get results
       assertTrue(resultSet.next());
-      
+
       // Verify that the result set has the expected columns
       assertNotNull(resultSet.getMetaData());
       assertTrue(resultSet.getMetaData().getColumnCount() > 0);
-      
+
       // Verify that we can access the data
       String inetnum = resultSet.getString("inetnum");
       assertNotNull(inetnum);
@@ -136,11 +133,11 @@ public class RpslSchemaTest {
 
       // Verify that we get results
       assertTrue(resultSet.next());
-      
+
       // Verify that the result set has the expected columns
       assertNotNull(resultSet.getMetaData());
       assertTrue(resultSet.getMetaData().getColumnCount() > 0);
-      
+
       // Verify that we can access the data
       String inetnum = resultSet.getString("inetnum");
       assertNotNull(inetnum);
@@ -148,4 +145,4 @@ public class RpslSchemaTest {
 
     connection.close();
   }
-} 
+}

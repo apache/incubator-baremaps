@@ -4,7 +4,7 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * License.  You may obtain a copy of the License at
+ * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -27,8 +27,8 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 
 /**
- * A Calcite schema implementation for RPSL data. This schema provides access to RPSL files
- * through the Apache Calcite framework for SQL querying.
+ * A Calcite schema implementation for RPSL data. This schema provides access to RPSL files through
+ * the Apache Calcite framework for SQL querying.
  */
 public class RpslSchema extends AbstractSchema {
 
@@ -49,15 +49,15 @@ public class RpslSchema extends AbstractSchema {
     this.tableMap = new HashMap<>();
 
     // Process files in the directory
-    File[] files = directory.listFiles((dir, name) -> 
-        name.toLowerCase().endsWith(".rpsl") || name.toLowerCase().endsWith(".txt"));
-    
+    File[] files = directory.listFiles(
+        (dir, name) -> name.toLowerCase().endsWith(".rpsl") || name.toLowerCase().endsWith(".txt"));
+
     if (files != null) {
       for (File file : files) {
         // Extract the base name without extension (e.g., "routing" from "routing.rpsl")
         String fileName = file.getName();
         String tableName = fileName;
-        
+
         // Remove all extensions (e.g., "routing.rpsl" -> "routing")
         while (tableName.contains(".")) {
           int lastDotIndex = tableName.lastIndexOf('.');
@@ -67,7 +67,7 @@ public class RpslSchema extends AbstractSchema {
             break;
           }
         }
-        
+
         // Create the table with the file reference
         tableMap.put(tableName, createTable(file));
       }
@@ -81,7 +81,8 @@ public class RpslSchema extends AbstractSchema {
    * @param typeFactory the type factory to use for creating tables
    * @throws IOException if an I/O error occurs
    */
-  public RpslSchema(File file, RelDataTypeFactory typeFactory, boolean isDirectory) throws IOException {
+  public RpslSchema(File file, RelDataTypeFactory typeFactory, boolean isDirectory)
+      throws IOException {
     if (isDirectory) {
       // If isDirectory is true, treat the file as a directory
       this.directory = Objects.requireNonNull(file, "Directory cannot be null");
@@ -89,15 +90,15 @@ public class RpslSchema extends AbstractSchema {
       this.tableMap = new HashMap<>();
 
       // Process files in the directory
-      File[] files = file.listFiles((dir, name) -> 
-          name.toLowerCase().endsWith(".rpsl") || name.toLowerCase().endsWith(".txt"));
-      
+      File[] files = file.listFiles((dir, name) -> name.toLowerCase().endsWith(".rpsl")
+          || name.toLowerCase().endsWith(".txt"));
+
       if (files != null) {
         for (File rpslFile : files) {
           // Extract the base name without extension (e.g., "routing" from "routing.rpsl")
           String fileName = rpslFile.getName();
           String tableName = fileName;
-          
+
           // Remove all extensions (e.g., "routing.rpsl" -> "routing")
           while (tableName.contains(".")) {
             int lastDotIndex = tableName.lastIndexOf('.');
@@ -107,7 +108,7 @@ public class RpslSchema extends AbstractSchema {
               break;
             }
           }
-          
+
           // Create the table with the file reference
           tableMap.put(tableName, createTable(rpslFile));
         }
@@ -121,7 +122,7 @@ public class RpslSchema extends AbstractSchema {
       // Extract the base name without extension (e.g., "routing" from "routing.rpsl")
       String fileName = file.getName();
       String tableName = fileName;
-      
+
       // Remove all extensions (e.g., "routing.rpsl" -> "routing")
       while (tableName.contains(".")) {
         int lastDotIndex = tableName.lastIndexOf('.');
@@ -131,7 +132,7 @@ public class RpslSchema extends AbstractSchema {
           break;
         }
       }
-      
+
       // Create the table with the file reference
       tableMap.put(tableName, createTable(file));
     }
@@ -152,4 +153,4 @@ public class RpslSchema extends AbstractSchema {
   protected Map<String, Table> getTableMap() {
     return tableMap;
   }
-} 
+}

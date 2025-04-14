@@ -4,7 +4,7 @@
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * License.  You may obtain a copy of the License at
+ * the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,7 +17,6 @@
 
 package org.apache.baremaps.calcite.shapefile;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,11 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.apache.baremaps.testing.TestFiles;
-import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,7 +75,8 @@ public class ShapefileSchemaTest {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     // Create and register the shapefile schema
-    ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(), calciteConnection.getTypeFactory());
+    ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
+        calciteConnection.getTypeFactory());
     rootSchema.add("shapefile", schema);
 
     // Verify that the schema contains the expected table
@@ -98,7 +94,8 @@ public class ShapefileSchemaTest {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     // Create and register the shapefile schema
-    ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(), calciteConnection.getTypeFactory());
+    ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
+        calciteConnection.getTypeFactory());
     rootSchema.add("shapefile", schema);
 
     // Execute a simple SQL query - use lowercase for schema and table names
@@ -108,7 +105,7 @@ public class ShapefileSchemaTest {
 
       // Verify that we get results
       assertTrue(resultSet.next());
-      
+
       // Verify that the result set has the expected columns
       // Note: The actual column names will depend on the sample shapefile
       assertNotNull(resultSet.getMetaData());
@@ -129,7 +126,8 @@ public class ShapefileSchemaTest {
     File sampleFile = tempDir.resolve("shapefile-test").resolve("point.shp").toFile();
 
     // Create and register the shapefile schema with a single file
-    ShapefileSchema schema = new ShapefileSchema(sampleFile, calciteConnection.getTypeFactory(), false);
+    ShapefileSchema schema =
+        new ShapefileSchema(sampleFile, calciteConnection.getTypeFactory(), false);
     rootSchema.add("single", schema);
 
     // Verify that the schema contains the expected table
@@ -143,7 +141,7 @@ public class ShapefileSchemaTest {
 
       // Verify that we get results
       assertTrue(resultSet.next());
-      
+
       // Verify that the result set has the expected columns
       assertNotNull(resultSet.getMetaData());
       assertTrue(resultSet.getMetaData().getColumnCount() > 0);
@@ -151,4 +149,4 @@ public class ShapefileSchemaTest {
 
     connection.close();
   }
-} 
+}

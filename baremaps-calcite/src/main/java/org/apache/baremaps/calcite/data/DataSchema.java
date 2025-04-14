@@ -35,8 +35,8 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 
 /**
- * A Calcite schema implementation for data stored in directories. This schema provides access to data
- * through the Apache Calcite framework for SQL querying.
+ * A Calcite schema implementation for data stored in directories. This schema provides access to
+ * data through the Apache Calcite framework for SQL querying.
  */
 public class DataSchema extends AbstractSchema {
 
@@ -62,12 +62,12 @@ public class DataSchema extends AbstractSchema {
       for (File subdirectory : subdirectories) {
         String tableName = subdirectory.getName();
         Path schemaPath = subdirectory.toPath().resolve("schema.json");
-        
+
         if (Files.exists(schemaPath)) {
           // Read the schema from the schema.json file
           try (FileInputStream fis = new FileInputStream(schemaPath.toFile())) {
             DataTableSchema schema = DataTableSchema.read(fis, typeFactory);
-            
+
             // Create the data collection
             DataRowType dataRowType = new DataRowType(schema);
             Memory<MappedByteBuffer> memory = new MemoryMappedDirectory(schemaPath.getParent());
@@ -75,7 +75,7 @@ public class DataSchema extends AbstractSchema {
                 .dataType(dataRowType)
                 .memory(memory)
                 .build();
-            
+
             // Create the table
             tableMap.put(tableName, new DataModifiableTable(tableName, schema, rows, typeFactory));
           }

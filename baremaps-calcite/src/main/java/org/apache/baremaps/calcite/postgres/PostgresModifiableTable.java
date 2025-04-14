@@ -517,7 +517,8 @@ public class PostgresModifiableTable extends AbstractTable
     @Override
     public Iterator<Object[]> iterator() {
       return new Iterator<Object[]>() {
-        private final PostgisEnumerator enumerator = new PostgisEnumerator(dataSource, dataTableSchema);
+        private final PostgisEnumerator enumerator =
+            new PostgisEnumerator(dataSource, dataTableSchema);
         private boolean hasNext = enumerator.moveNext();
 
         @Override
@@ -595,7 +596,8 @@ public class PostgresModifiableTable extends AbstractTable
             Objects.requireNonNull(objects, "Values cannot be null");
             if (objects.length != dataTableSchema.columns().size()) {
               throw new IllegalArgumentException(
-                  "Expected " + dataTableSchema.columns().size() + " values, got " + objects.length);
+                  "Expected " + dataTableSchema.columns().size() + " values, got "
+                      + objects.length);
             }
 
             writer.startRow(dataTableSchema.columns().size());

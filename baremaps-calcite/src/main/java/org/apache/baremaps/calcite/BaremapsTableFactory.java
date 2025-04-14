@@ -108,7 +108,8 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       int length = header.getInt();
       byte[] bytes = new byte[length];
       header.get(bytes);
-      DataTableSchema dataTableSchema = DataTableSchema.read(new ByteArrayInputStream(bytes), typeFactory);
+      DataTableSchema dataTableSchema =
+          DataTableSchema.read(new ByteArrayInputStream(bytes), typeFactory);
       DataRowType dataRowType = new DataRowType(dataTableSchema);
       DataCollection<DataRow> dataCollection = AppendOnlyLog.<DataRow>builder()
           .dataType(dataRowType)
@@ -116,7 +117,7 @@ public class BaremapsTableFactory implements TableFactory<Table> {
           .build();
       return new DataModifiableTable(
           name,
-              dataTableSchema,
+          dataTableSchema,
           dataCollection,
           typeFactory);
     } catch (IOException e) {

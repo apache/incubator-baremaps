@@ -18,9 +18,7 @@
 package org.apache.baremaps.calcite.openstreetmap;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -33,8 +31,8 @@ import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 
 /**
- * A Calcite schema implementation for OpenStreetMap data. This schema provides access to OpenStreetMap
- * files through the Apache Calcite framework for SQL querying.
+ * A Calcite schema implementation for OpenStreetMap data. This schema provides access to
+ * OpenStreetMap files through the Apache Calcite framework for SQL querying.
  */
 public class OpenStreetMapSchema extends AbstractSchema {
 
@@ -55,18 +53,17 @@ public class OpenStreetMapSchema extends AbstractSchema {
     this.tableMap = new HashMap<>();
 
     // Process files in the directory
-    File[] files = directory.listFiles((dir, name) -> 
-        name.toLowerCase().endsWith(".pbf") || 
-        name.toLowerCase().endsWith(".osm.pbf") || 
-        name.toLowerCase().endsWith(".xml") || 
+    File[] files = directory.listFiles((dir, name) -> name.toLowerCase().endsWith(".pbf") ||
+        name.toLowerCase().endsWith(".osm.pbf") ||
+        name.toLowerCase().endsWith(".xml") ||
         name.toLowerCase().endsWith(".osm"));
-    
+
     if (files != null) {
       for (File file : files) {
         // Extract the base name without extension (e.g., "sample" from "sample.osm.pbf")
         String fileName = file.getName();
         String tableName = fileName;
-        
+
         // Remove all extensions (e.g., "sample.osm.pbf" -> "sample")
         while (tableName.contains(".")) {
           int lastDotIndex = tableName.lastIndexOf('.');
@@ -76,7 +73,7 @@ public class OpenStreetMapSchema extends AbstractSchema {
             break;
           }
         }
-        
+
         // Create the table with the file reference
         tableMap.put(tableName, createTable(file));
       }
@@ -90,7 +87,8 @@ public class OpenStreetMapSchema extends AbstractSchema {
    * @param typeFactory the type factory to use for creating tables
    * @throws IOException if an I/O error occurs
    */
-  public OpenStreetMapSchema(File file, RelDataTypeFactory typeFactory, boolean isDirectory) throws IOException {
+  public OpenStreetMapSchema(File file, RelDataTypeFactory typeFactory, boolean isDirectory)
+      throws IOException {
     if (isDirectory) {
       // If isDirectory is true, treat the file as a directory
       this.directory = Objects.requireNonNull(file, "Directory cannot be null");
@@ -98,18 +96,17 @@ public class OpenStreetMapSchema extends AbstractSchema {
       this.tableMap = new HashMap<>();
 
       // Process files in the directory
-      File[] files = file.listFiles((dir, name) -> 
-          name.toLowerCase().endsWith(".pbf") || 
-          name.toLowerCase().endsWith(".osm.pbf") || 
-          name.toLowerCase().endsWith(".xml") || 
+      File[] files = file.listFiles((dir, name) -> name.toLowerCase().endsWith(".pbf") ||
+          name.toLowerCase().endsWith(".osm.pbf") ||
+          name.toLowerCase().endsWith(".xml") ||
           name.toLowerCase().endsWith(".osm"));
-      
+
       if (files != null) {
         for (File osmFile : files) {
           // Extract the base name without extension (e.g., "sample" from "sample.osm.pbf")
           String fileName = osmFile.getName();
           String tableName = fileName;
-          
+
           // Remove all extensions (e.g., "sample.osm.pbf" -> "sample")
           while (tableName.contains(".")) {
             int lastDotIndex = tableName.lastIndexOf('.');
@@ -119,7 +116,7 @@ public class OpenStreetMapSchema extends AbstractSchema {
               break;
             }
           }
-          
+
           // Create the table with the file reference
           tableMap.put(tableName, createTable(osmFile));
         }
@@ -133,7 +130,7 @@ public class OpenStreetMapSchema extends AbstractSchema {
       // Extract the base name without extension (e.g., "sample" from "sample.osm.pbf")
       String fileName = file.getName();
       String tableName = fileName;
-      
+
       // Remove all extensions (e.g., "sample.osm.pbf" -> "sample")
       while (tableName.contains(".")) {
         int lastDotIndex = tableName.lastIndexOf('.');
@@ -143,7 +140,7 @@ public class OpenStreetMapSchema extends AbstractSchema {
           break;
         }
       }
-      
+
       // Create the table with the file reference
       tableMap.put(tableName, createTable(file));
     }
@@ -158,7 +155,7 @@ public class OpenStreetMapSchema extends AbstractSchema {
   private Table createTable(File file) {
     // Determine the appropriate entity reader based on file extension
     OpenStreetMapFormat.EntityReader<Entity> entityReader;
-    if (file.getName().toLowerCase().endsWith(".pbf") || 
+    if (file.getName().toLowerCase().endsWith(".pbf") ||
         file.getName().toLowerCase().endsWith(".osm.pbf")) {
       PbfEntityReader pbfReader = new PbfEntityReader();
       pbfReader.setGeometries(true);
@@ -172,7 +169,7 @@ public class OpenStreetMapSchema extends AbstractSchema {
       xmlReader.setReferenceMap(new HashMap<>());
       entityReader = xmlReader;
     }
-    
+
     // Create the table with the file reference
     return new OpenStreetMapTable(file, entityReader);
   }
@@ -181,4 +178,4 @@ public class OpenStreetMapSchema extends AbstractSchema {
   protected Map<String, Table> getTableMap() {
     return tableMap;
   }
-} 
+}

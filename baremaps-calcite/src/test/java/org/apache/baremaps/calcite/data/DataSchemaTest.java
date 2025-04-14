@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,17 +32,13 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
-import org.apache.calcite.sql.type.SqlTypeName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -52,7 +47,7 @@ class DataSchemaTest {
 
   @TempDir
   Path tempDir;
-  
+
   private File sampleDataDir;
   private File citiesDir;
   private File countriesDir;
@@ -64,96 +59,96 @@ class DataSchemaTest {
     sampleDataDir = tempDir.resolve("data").toFile();
     citiesDir = new File(sampleDataDir, "cities");
     countriesDir = new File(sampleDataDir, "countries");
-    
+
     sampleDataDir.mkdirs();
     citiesDir.mkdirs();
     countriesDir.mkdirs();
-    
+
     // Create schema files
     createCitiesSchema();
     createCountriesSchema();
-    
+
     // Initialize the type factory
     Properties props = new Properties();
     props.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), "false");
     CalciteConnectionConfig config = new CalciteConnectionConfigImpl(props);
-    
+
     // Create a connection to get the type factory
     try (Connection connection = DriverManager.getConnection("jdbc:calcite:", props)) {
       CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
       typeFactory = calciteConnection.getTypeFactory();
     }
   }
-  
+
   private void createCitiesSchema() throws IOException {
     // Create a schema for cities
     Map<String, Object> schemaMap = new HashMap<>();
     schemaMap.put("name", "cities");
-    
+
     // Define columns
     Map<String, Object>[] columns = new Map[3];
-    
+
     // city column
     Map<String, Object> cityColumn = new HashMap<>();
     cityColumn.put("name", "city");
     cityColumn.put("cardinality", "REQUIRED");
     cityColumn.put("sqlTypeName", "VARCHAR");
     columns[0] = cityColumn;
-    
+
     // country column
     Map<String, Object> countryColumn = new HashMap<>();
     countryColumn.put("name", "country");
     countryColumn.put("cardinality", "REQUIRED");
     countryColumn.put("sqlTypeName", "VARCHAR");
     columns[1] = countryColumn;
-    
+
     // population column
     Map<String, Object> populationColumn = new HashMap<>();
     populationColumn.put("name", "population");
     populationColumn.put("cardinality", "REQUIRED");
     populationColumn.put("sqlTypeName", "INTEGER");
     columns[2] = populationColumn;
-    
+
     schemaMap.put("columns", columns);
-    
+
     // Write schema to file
     ObjectMapper mapper = new ObjectMapper();
     try (FileOutputStream fos = new FileOutputStream(new File(citiesDir, "schema.json"))) {
       mapper.writeValue(fos, schemaMap);
     }
   }
-  
+
   private void createCountriesSchema() throws IOException {
     // Create a schema for countries
     Map<String, Object> schemaMap = new HashMap<>();
     schemaMap.put("name", "countries");
-    
+
     // Define columns
     Map<String, Object>[] columns = new Map[3];
-    
+
     // country column
     Map<String, Object> countryColumn = new HashMap<>();
     countryColumn.put("name", "country");
     countryColumn.put("cardinality", "REQUIRED");
     countryColumn.put("sqlTypeName", "VARCHAR");
     columns[0] = countryColumn;
-    
+
     // continent column
     Map<String, Object> continentColumn = new HashMap<>();
     continentColumn.put("name", "continent");
     continentColumn.put("cardinality", "REQUIRED");
     continentColumn.put("sqlTypeName", "VARCHAR");
     columns[1] = continentColumn;
-    
+
     // population column
     Map<String, Object> populationColumn = new HashMap<>();
     populationColumn.put("name", "population");
     populationColumn.put("cardinality", "REQUIRED");
     populationColumn.put("sqlTypeName", "INTEGER");
     columns[2] = populationColumn;
-    
+
     schemaMap.put("columns", columns);
-    
+
     // Write schema to file
     ObjectMapper mapper = new ObjectMapper();
     try (FileOutputStream fos = new FileOutputStream(new File(countriesDir, "schema.json"))) {
@@ -240,4 +235,4 @@ class DataSchemaTest {
       }
     }
   }
-} 
+}
