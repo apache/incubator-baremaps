@@ -43,8 +43,6 @@ public class CsvTable extends AbstractTable implements ScannableTable {
 
   private final File file;
   private final CsvSchema csvSchema;
-  private final boolean hasHeader;
-  private final char separator;
   private RelDataType rowType;
 
   /**
@@ -57,8 +55,6 @@ public class CsvTable extends AbstractTable implements ScannableTable {
    */
   public CsvTable(File file, char separator, boolean hasHeader) throws IOException {
     this.file = file;
-    this.separator = separator;
-    this.hasHeader = hasHeader;
     this.csvSchema = buildSchema(file, separator, hasHeader);
   }
 
