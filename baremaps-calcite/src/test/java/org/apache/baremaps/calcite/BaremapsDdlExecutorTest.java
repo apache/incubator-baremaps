@@ -52,7 +52,7 @@ public class BaremapsDdlExecutorTest {
   void setUp() throws IOException {
     // Create and initialize city collection
     MemoryMappedDirectory cityMemory = new MemoryMappedDirectory(Paths.get(CITY_DATA_DIR));
-    DataTableSchema citySchema = createCitySchema();
+    DataTableSchema citySchema = createCityGetSchema();
     DataRowType cityRowType = new DataRowType(citySchema);
     cityCollection = AppendOnlyLog.<DataRow>builder()
         .dataType(cityRowType)
@@ -62,7 +62,7 @@ public class BaremapsDdlExecutorTest {
     // Create and initialize population collection
     MemoryMappedDirectory populationMemory =
         new MemoryMappedDirectory(Paths.get(POPULATION_DATA_DIR));
-    DataTableSchema populationSchema = createPopulationSchema();
+    DataTableSchema populationSchema = createPopulationGetSchema();
     DataRowType populationRowType = new DataRowType(populationSchema);
     populationCollection = AppendOnlyLog.<DataRow>builder()
         .dataType(populationRowType)
@@ -78,7 +78,7 @@ public class BaremapsDdlExecutorTest {
     FileUtils.deleteRecursively(Paths.get(CITY_POPULATION_DIR).toFile());
   }
 
-  private DataTableSchema createCitySchema() {
+  private DataTableSchema createCityGetSchema() {
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
     return new DataTableSchema("city", List.of(
         new DataColumnFixed("id", DataColumn.Cardinality.REQUIRED,
@@ -89,7 +89,7 @@ public class BaremapsDdlExecutorTest {
             typeFactory.createSqlType(org.apache.calcite.sql.type.SqlTypeName.GEOMETRY))));
   }
 
-  private DataTableSchema createPopulationSchema() {
+  private DataTableSchema createPopulationGetSchema() {
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
     return new DataTableSchema("population", List.of(
         new DataColumnFixed("city_id", DataColumn.Cardinality.REQUIRED,
@@ -119,7 +119,7 @@ public class BaremapsDdlExecutorTest {
       // Create the city table
       DataModifiableTable cityTable = new DataModifiableTable(
           "city",
-          createCitySchema(),
+          createCityGetSchema(),
           cityCollection,
           typeFactory);
 
@@ -127,8 +127,8 @@ public class BaremapsDdlExecutorTest {
       Point parisPoint = geometryFactory.createPoint(new Coordinate(2.3522, 48.8566));
       Point nyPoint = geometryFactory.createPoint(new Coordinate(-74.0060, 40.7128));
 
-      cityCollection.add(new DataRow(createCitySchema(), List.of(1, "Paris", parisPoint)));
-      cityCollection.add(new DataRow(createCitySchema(), List.of(2, "New York", nyPoint)));
+      cityCollection.add(new DataRow(createCityGetSchema(), List.of(1, "Paris", parisPoint)));
+      cityCollection.add(new DataRow(createCityGetSchema(), List.of(2, "New York", nyPoint)));
 
       // Add city table to the schema
       rootSchema.add("city", cityTable);
@@ -136,13 +136,13 @@ public class BaremapsDdlExecutorTest {
       // Create the population table
       DataModifiableTable populationTable = new DataModifiableTable(
           "population",
-          createPopulationSchema(),
+          createPopulationGetSchema(),
           populationCollection,
           typeFactory);
 
       // Add data to the population table
-      populationCollection.add(new DataRow(createPopulationSchema(), List.of(1, 2_161_000)));
-      populationCollection.add(new DataRow(createPopulationSchema(), List.of(2, 8_336_000)));
+      populationCollection.add(new DataRow(createPopulationGetSchema(), List.of(1, 2_161_000)));
+      populationCollection.add(new DataRow(createPopulationGetSchema(), List.of(2, 8_336_000)));
 
       // Add population table to the schema
       rootSchema.add("population", populationTable);

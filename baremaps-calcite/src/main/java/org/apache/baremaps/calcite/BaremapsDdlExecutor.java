@@ -96,7 +96,7 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /**
    * Record to hold schema information.
    */
-  private record SchemaInfo(@Nullable CalciteSchema schema, String name) {
+  private record SchemaInfo(String name, @Nullable CalciteSchema schema) {
   }
 
   /**
@@ -127,11 +127,11 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       @Nullable
       CalciteSchema subSchema = schema.getSubSchema(p, true);
       if (subSchema == null) {
-        return new SchemaInfo(null, name);
+        return new SchemaInfo(name, null);
       }
       schema = subSchema;
     }
-    return new SchemaInfo(schema, name);
+    return new SchemaInfo(name, schema);
   }
 
   /**
