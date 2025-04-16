@@ -94,6 +94,12 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       };
 
   /**
+   * Record to hold schema information.
+   */
+  private record SchemaInfo(@Nullable CalciteSchema schema, String name) {
+  }
+
+  /**
    * Creates a ServerDdlExecutor. Protected only to allow sub-classing; use {@link #INSTANCE} where
    * possible.
    */
@@ -103,7 +109,7 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
    * Returns the schema in which to create an object; the left part is null if the schema does not
    * exist.
    */
-  static Pair<@Nullable CalciteSchema, String> schema(
+  static SchemaInfo schema(
       CalcitePrepare.Context context, boolean mutable, SqlIdentifier id) {
     final String name;
     final List<String> path;
@@ -121,11 +127,11 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       @Nullable
       CalciteSchema subSchema = schema.getSubSchema(p, true);
       if (subSchema == null) {
-        return Pair.of(null, name);
+        return new SchemaInfo(null, name);
       }
       schema = subSchema;
     }
-    return Pair.of(schema, name);
+    return new SchemaInfo(schema, name);
   }
 
   /**
@@ -160,10 +166,10 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Erase the table date that calcite-sever created. */
   static void erase(SqlIdentifier name, CalcitePrepare.Context context) {
     // Directly clearing data is more efficient than executing SQL
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, name);
-    final CalciteSchema calciteSchema = requireNonNull(pair.left);
-    final String tblName = pair.right;
+    final CalciteSchema calciteSchema = requireNonNull(schemaInfo.schema());
+    final String tblName = schemaInfo.name();
     final CalciteSchema.TableEntry tableEntry =
         calciteSchema.getTable(tblName, context.config().caseSensitive());
     final Table table = requireNonNull(tableEntry, "tableEntry").getTable();
@@ -222,13 +228,13 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE FOREIGN SCHEMA} command. */
   public void execute(SqlCreateForeignSchema create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    if (pair.left.plus().getSubSchema(pair.right) != null) {
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    if (schemaInfo.schema().plus().getSubSchema(schemaInfo.name()) != null) {
       if (!create.getReplace() && !create.ifNotExists) {
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.schemaExists(pair.right));
+            RESOURCE.schemaExists(schemaInfo.name()));
       }
     }
     final Schema subSchema;
@@ -267,8 +273,8 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
           requireNonNull(value(option.right)));
     }
     subSchema =
-        schemaFactory.create(pair.left.plus(), pair.right, operandMap);
-    pair.left.add(pair.right, subSchema);
+        schemaFactory.create(schemaInfo.schema().plus(), schemaInfo.name(), operandMap);
+    schemaInfo.schema().add(schemaInfo.name(), subSchema);
   }
 
   /** Executes a {@code CREATE FUNCTION} command. */
@@ -283,11 +289,11 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
    */
   public void execute(SqlDropObject drop,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, false, drop.name);
     final @Nullable CalciteSchema schema =
-        pair.left; // null if schema does not exist
-    final String objectName = pair.right;
+        schemaInfo.schema(); // null if schema does not exist
+    final String objectName = schemaInfo.name();
 
     boolean existed;
     switch (drop.getKind()) {
@@ -344,12 +350,12 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
    */
   public void execute(SqlTruncateTable truncate,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, truncate.name);
-    if (pair.left == null
-        || pair.left.plus().getTable(pair.right) == null) {
+    if (schemaInfo.schema() == null
+        || schemaInfo.schema().plus().getTable(schemaInfo.name()) == null) {
       throw SqlUtil.newContextException(truncate.name.getParserPosition(),
-          RESOURCE.tableNotFound(pair.right));
+          RESOURCE.tableNotFound(schemaInfo.name()));
     }
 
     if (!truncate.continueIdentify) {
@@ -363,66 +369,66 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE MATERIALIZED VIEW} command. */
   public void execute(SqlCreateMaterializedView create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    if (pair.left != null
-        && pair.left.plus().getTable(pair.right) != null) {
+    if (schemaInfo.schema() != null
+        && schemaInfo.schema().plus().getTable(schemaInfo.name()) != null) {
       // Materialized view exists.
       if (!create.ifNotExists) {
         // They did not specify IF NOT EXISTS, so give error.
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.tableExists(pair.right));
+            RESOURCE.tableExists(schemaInfo.name()));
       }
       return;
     }
     final SqlNode q = renameColumns(create.columnList, create.query);
     final String sql = q.toSqlString(CalciteSqlDialect.DEFAULT).getSql();
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    final List<String> schemaPath = pair.left.path(null);
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    final List<String> schemaPath = schemaInfo.schema().path(null);
     final ViewTableMacro viewTableMacro =
-        ViewTable.viewMacro(pair.left.plus(), sql, schemaPath,
+        ViewTable.viewMacro(schemaInfo.schema().plus(), sql, schemaPath,
             context.getObjectPath(), false);
     final TranslatableTable x = viewTableMacro.apply(ImmutableList.of());
     final RelDataType rowType = x.getRowType(context.getTypeFactory());
 
     // Table does not exist. Create it.
     final DataMaterializedView table =
-        new DataMaterializedView(pair.right, RelDataTypeImpl.proto(rowType),
+        new DataMaterializedView(schemaInfo.name(), RelDataTypeImpl.proto(rowType),
             context.getTypeFactory());
-    pair.left.add(pair.right, table);
+    schemaInfo.schema().add(schemaInfo.name(), table);
     populate(create.name, create.query, context);
     table.key =
-        MaterializationService.instance().defineMaterialization(pair.left, null,
-            sql, schemaPath, pair.right, true, true);
+        MaterializationService.instance().defineMaterialization(schemaInfo.schema(), null,
+            sql, schemaPath, schemaInfo.name(), true, true);
   }
 
   /** Executes a {@code CREATE SCHEMA} command. */
   public void execute(SqlCreateSchema create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    if (pair.left.plus().getSubSchema(pair.right) != null) {
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    if (schemaInfo.schema().plus().getSubSchema(schemaInfo.name()) != null) {
       if (create.ifNotExists) {
         return;
       }
       if (!create.getReplace()) {
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.schemaExists(pair.right));
+            RESOURCE.schemaExists(schemaInfo.name()));
       }
     }
     final Schema subSchema = new AbstractSchema();
-    pair.left.add(pair.right, subSchema);
+    schemaInfo.schema().add(schemaInfo.name(), subSchema);
   }
 
   /** Executes a {@code DROP SCHEMA} command. */
   public void execute(SqlDropSchema drop,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, false, drop.name);
-    final String name = pair.right;
-    final boolean existed = pair.left != null
-        && pair.left.removeSubSchema(name);
+    final String name = schemaInfo.name();
+    final boolean existed = schemaInfo.schema() != null
+        && schemaInfo.schema().removeSubSchema(name);
     if (!existed && !drop.ifExists) {
       throw SqlUtil.newContextException(drop.name.getParserPosition(),
           RESOURCE.schemaNotFound(name));
@@ -432,9 +438,9 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE TABLE} command. */
   public void execute(SqlCreateTable create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
     final JavaTypeFactory typeFactory = context.getTypeFactory();
     final RelDataType queryRowType;
     if (create.query != null) {
@@ -442,7 +448,7 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       final String sql =
           create.query.toSqlString(CalciteSqlDialect.DEFAULT).getSql();
       final ViewTableMacro viewTableMacro =
-          ViewTable.viewMacro(pair.left.plus(), sql, pair.left.path(null),
+          ViewTable.viewMacro(schemaInfo.schema().plus(), sql, schemaInfo.schema().path(null),
               context.getObjectPath(), false);
       final TranslatableTable x = viewTableMacro.apply(ImmutableList.of());
       queryRowType = x.getRowType(typeFactory);
@@ -504,7 +510,7 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       }
     }
     final RelDataType rowType = builder.build();
-    if (pair.left.plus().getTable(pair.right) != null) {
+    if (schemaInfo.schema().plus().getTable(schemaInfo.name()) != null) {
       // Table exists.
       if (create.ifNotExists) {
         return;
@@ -512,12 +518,12 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       if (!create.getReplace()) {
         // They did not specify IF NOT EXISTS, so give error.
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.tableExists(pair.right));
+            RESOURCE.tableExists(schemaInfo.name()));
       }
     }
     // Table does not exist. Create it.
-    pair.left.add(pair.right,
-        new DataModifiableTable(pair.right,
+    schemaInfo.schema().add(schemaInfo.name(),
+        new DataModifiableTable(schemaInfo.name(),
             RelDataTypeImpl.proto(rowType), context.getTypeFactory()));
     if (create.query != null) {
       populate(create.name, create.query, context);
@@ -527,10 +533,10 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE TABLE LIKE} command. */
   public void execute(SqlCreateTableLike create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    if (pair.left.plus().getTable(pair.right) != null) {
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    if (schemaInfo.schema().plus().getTable(schemaInfo.name()) != null) {
       // Table exists.
       if (create.ifNotExists) {
         return;
@@ -538,16 +544,16 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       if (!create.getReplace()) {
         // They did not specify IF NOT EXISTS, so give error.
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.tableExists(pair.right));
+            RESOURCE.tableExists(schemaInfo.name()));
       }
     }
 
-    final Pair<@Nullable CalciteSchema, String> sourceTablePair =
+    final SchemaInfo sourceTableSchemaInfo =
         schema(context, true, create.sourceTable);
     final CalciteSchema schema =
         // TODO: should not assume parent schema exists
-        requireNonNull(sourceTablePair.left);
-    final String tableName = sourceTablePair.right;
+        requireNonNull(sourceTableSchemaInfo.schema());
+    final String tableName = sourceTableSchemaInfo.name();
     final CalciteSchema.TableEntry tableEntry =
         schema.getTable(tableName, context.config().caseSensitive());
     final Table table = requireNonNull(tableEntry, "tableEntry").getTable();
@@ -555,19 +561,19 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
     final JavaTypeFactory typeFactory = context.getTypeFactory();
     final RelDataType rowType = table.getRowType(typeFactory);
     // Table does not exist. Create it.
-    pair.left.add(pair.right,
-        new DataModifiableTable(pair.right,
+    schemaInfo.schema().add(schemaInfo.name(),
+        new DataModifiableTable(schemaInfo.name(),
             RelDataTypeImpl.proto(rowType), typeFactory));
   }
 
   /** Executes a {@code CREATE TYPE} command. */
   public void execute(SqlCreateType create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
     final SqlValidator validator = validator(context, false);
-    pair.left.add(pair.right, typeFactory -> {
+    schemaInfo.schema().add(schemaInfo.name(), typeFactory -> {
       if (create.dataType != null) {
         return create.dataType.deriveType(validator);
       } else {
@@ -589,27 +595,27 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE VIEW} command. */
   public void execute(SqlCreateView create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    final SchemaPlus schemaPlus = pair.left.plus();
-    for (Function function : schemaPlus.getFunctions(pair.right)) {
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    final SchemaPlus schemaPlus = schemaInfo.schema().plus();
+    for (Function function : schemaPlus.getFunctions(schemaInfo.name())) {
       if (function.getParameters().isEmpty()) {
         if (!create.getReplace()) {
           throw SqlUtil.newContextException(create.name.getParserPosition(),
-              RESOURCE.viewExists(pair.right));
+              RESOURCE.viewExists(schemaInfo.name()));
         }
-        pair.left.removeFunction(pair.right);
+        schemaInfo.schema().removeFunction(schemaInfo.name());
       }
     }
     final SqlNode q = renameColumns(create.columnList, create.query);
     final String sql = q.toSqlString(CalciteSqlDialect.DEFAULT).getSql();
     final ViewTableMacro viewTableMacro =
-        ViewTable.viewMacro(schemaPlus, sql, pair.left.path(null),
+        ViewTable.viewMacro(schemaPlus, sql, schemaInfo.schema().path(null),
             context.getObjectPath(), false);
     final TranslatableTable x = viewTableMacro.apply(ImmutableList.of());
     Util.discard(x);
-    schemaPlus.add(pair.right, viewTableMacro);
+    schemaPlus.add(schemaInfo.name(), viewTableMacro);
   }
 
   /** Column definition. */
