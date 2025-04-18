@@ -27,11 +27,12 @@ data: {
     # List of import statements.
     imports: [
       "org.apache.calcite.schema.ColumnStrategy"
+      "org.apache.calcite.sql.SqlBasicCall"
       "org.apache.calcite.sql.SqlCreate"
       "org.apache.calcite.sql.SqlDrop"
       "org.apache.calcite.sql.SqlTruncate"
       "org.apache.calcite.sql.ddl.SqlCreateTableLike"
-      "org.apache.calcite.sql.ddl.SqlDdlNodes"
+      "org.apache.baremaps.calcite.ddl.SqlDdlNodes"
     ]
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is

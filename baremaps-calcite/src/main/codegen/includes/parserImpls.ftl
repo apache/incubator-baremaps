@@ -241,13 +241,49 @@ SqlCreate SqlCreateType(Span s, boolean replace) :
     }
 }
 
+SqlNodeList WithOptions() :
+{
+    SqlNodeList list;
+}
+{
+    <WITH> <LPAREN> list = OptionList() <RPAREN> { return list; }
+}
+
+SqlNodeList OptionList() :
+{
+    List<SqlNode> options = new ArrayList<>();
+    SqlNode option;
+}
+{
+    option = OptionAssignment() { options.add(option); }
+    ( <COMMA> option = OptionAssignment() { options.add(option); } )*
+    {
+        return new SqlNodeList(options,
+            Span.of(options.get(0), options.get(options.size() - 1)).pos());
+    }
+}
+
+SqlNode OptionAssignment() :
+{
+    SqlIdentifier key;
+    SqlNode value;
+}
+{
+    key = CompoundIdentifier() <EQ> value = Literal() {
+        return new SqlBasicCall(
+            SqlStdOperatorTable.EQUALS,
+            new SqlNode[] { key, value },
+            Span.of(key, value).pos());
+    }
+}
+
 SqlCreate SqlCreateTable(Span s, boolean replace) :
 {
     final boolean ifNotExists;
     final SqlIdentifier id;
     SqlNodeList tableElementList = null;
     SqlNode query = null;
-
+    SqlNodeList withOptions = null;
     SqlCreate createTableLike = null;
 }
 {
@@ -259,8 +295,9 @@ SqlCreate SqlCreateTable(Span s, boolean replace) :
     |
         [ tableElementList = TableElementList() ]
         [ <AS> query = OrderedQueryOrExpr(ExprContext.ACCEPT_QUERY) ]
+        [ withOptions = WithOptions() ]
         {
-            return SqlDdlNodes.createTable(s.end(this), replace, ifNotExists, id, tableElementList, query);
+            return SqlDdlNodes.createTable(s.end(this), replace, ifNotExists, id, tableElementList, query, withOptions);
         }
     )
 }

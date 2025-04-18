@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.*;
 import org.apache.baremaps.calcite.data.DataMaterializedView;
 import org.apache.baremaps.calcite.data.DataModifiableTable;
+import org.apache.baremaps.calcite.ddl.*;
 import org.apache.baremaps.calcite.sql.BaremapsSqlDdlParser;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
@@ -51,7 +52,6 @@ import org.apache.calcite.schema.impl.ViewTableMacro;
 import org.apache.calcite.server.DdlExecutor;
 import org.apache.calcite.server.DdlExecutorImpl;
 import org.apache.calcite.sql.*;
-import org.apache.calcite.sql.ddl.*;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlAbstractParserImpl;
@@ -65,6 +65,8 @@ import org.apache.calcite.util.NlsString;
 import org.apache.calcite.util.Pair;
 import org.apache.calcite.util.Util;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes DDL commands.
@@ -77,6 +79,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class BaremapsDdlExecutor extends DdlExecutorImpl {
   /** Singleton instance. */
   public static final BaremapsDdlExecutor INSTANCE = new BaremapsDdlExecutor();
+
+  /** Logger for this class. */
+  private static final Logger LOGGER = LoggerFactory.getLogger(BaremapsDdlExecutor.class);
 
   /** Parser factory. */
   @SuppressWarnings("unused") // used via reflection
@@ -443,6 +448,10 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
     requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
     final JavaTypeFactory typeFactory = context.getTypeFactory();
     final RelDataType queryRowType;
+
+    // Process WITH options if present
+    Map<String, String> withOptions = processWithOptions(create.withOptions);
+
     if (create.query != null) {
       // A bit of a hack: pretend it's a view, to get its row type
       final String sql =
@@ -521,13 +530,67 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
             RESOURCE.tableExists(schemaInfo.name()));
       }
     }
-    // Table does not exist. Create it.
-    schemaInfo.schema().add(schemaInfo.name(),
-        new DataModifiableTable(schemaInfo.name(),
-            RelDataTypeImpl.proto(rowType), context.getTypeFactory()));
+
+    // Check if we have format and file options in withOptions
+    if (!withOptions.isEmpty() && withOptions.containsKey("format")
+        && withOptions.containsKey("file")) {
+      // Create a table using BaremapsTableFactory based on the format
+      String format = withOptions.get("format");
+      String file = withOptions.get("file");
+
+      // Create a map of operands for the table factory
+      Map<String, Object> operand = new HashMap<>();
+      operand.put("format", format);
+      operand.put("file", file);
+
+      // Add any additional options from withOptions
+      for (Map.Entry<String, String> entry : withOptions.entrySet()) {
+        if (!entry.getKey().equals("format") && !entry.getKey().equals("file")) {
+          operand.put(entry.getKey(), entry.getValue());
+        }
+      }
+
+      // Create the table using BaremapsTableFactory
+      BaremapsTableFactory tableFactory = new BaremapsTableFactory();
+      Table table =
+          tableFactory.create(schemaInfo.schema().plus(), schemaInfo.name(), operand, rowType);
+
+      // Add the table to the schema
+      schemaInfo.schema().add(schemaInfo.name(), table);
+    } else {
+      // Default behavior: create a DataModifiableTable
+      schemaInfo.schema().add(schemaInfo.name(),
+          new DataModifiableTable(schemaInfo.name(),
+              RelDataTypeImpl.proto(rowType), context.getTypeFactory()));
+    }
+
     if (create.query != null) {
       populate(create.name, create.query, context);
     }
+  }
+
+  /**
+   * Process WITH options from a SqlNodeList and return them as a Map.
+   * 
+   * @param withOptions The WITH options to process
+   * @return A map of option keys to values
+   */
+  private Map<String, String> processWithOptions(@Nullable SqlNodeList withOptions) {
+    Map<String, String> options = new HashMap<>();
+    if (withOptions != null) {
+      for (SqlNode option : withOptions) {
+        if (option instanceof SqlBasicCall) {
+          SqlBasicCall call = (SqlBasicCall) option;
+          SqlNode[] operands = call.getOperandList().toArray(new SqlNode[0]);
+          if (operands.length == 2) {
+            String key = operands[0].toString();
+            String value = operands[1].toString();
+            options.put(key, value);
+          }
+        }
+      }
+    }
+    return options;
   }
 
   /** Executes a {@code CREATE TABLE LIKE} command. */

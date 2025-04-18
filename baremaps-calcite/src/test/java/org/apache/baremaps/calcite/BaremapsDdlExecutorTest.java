@@ -95,12 +95,18 @@ public class BaremapsDdlExecutorTest {
   }
 
   @AfterEach
-  void tearDown() throws IOException {
+  void tearDown() throws Exception {
     // Clean up directories
     FileUtils.deleteRecursively(Paths.get(CITY_DATA_DIR).toFile());
     FileUtils.deleteRecursively(Paths.get(POPULATION_DATA_DIR).toFile());
     FileUtils.deleteRecursively(Paths.get(CITY_POPULATION_DIR).toFile());
     FileUtils.deleteRecursively(Paths.get(TEST_TABLE_DATA_DIR).toFile());
+
+    // Clean up any additional directories created during test execution
+    FileUtils.deleteRecursively(Paths.get("options_table").toFile());
+    FileUtils.deleteRecursively(Paths.get("options_table_as").toFile());
+    FileUtils.deleteRecursively(Paths.get("new_table").toFile());
+    FileUtils.deleteRecursively(Paths.get("city_view").toFile());
   }
 
   private DataTableSchema createCitySchema() {
@@ -387,6 +393,67 @@ public class BaremapsDdlExecutorTest {
       try (Statement statement = connection.createStatement();
           ResultSet resultSet = statement.executeQuery("SELECT * FROM test_table")) {
         assertFalse(resultSet.next());
+      }
+    }
+  }
+
+  @Test
+  void testCreateTableWithOptions() throws SQLException {
+    // Set up test data
+    populateTestData();
+
+    try (Connection connection = createCalciteConnection()) {
+      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+
+      // Create the test table
+      DataModifiableTable testTable = new DataModifiableTable(
+          "test_table",
+          testTableSchema,
+          testTableCollection,
+          typeFactory);
+
+      // Add test table to the schema
+      rootSchema.add("test_table", testTable);
+
+      // Test CREATE TABLE with WITH options
+      try (Statement statement = connection.createStatement()) {
+        statement.execute("CREATE TABLE options_table (id INTEGER, name VARCHAR) " +
+            "WITH (option1 = 'value1', option2 = 'value2')");
+      }
+
+      // Add data to the new table
+      try (Statement statement = connection.createStatement()) {
+        statement.execute("INSERT INTO options_table VALUES (1, 'Options Table Name')");
+      }
+
+      // Query the new table
+      try (Statement statement = connection.createStatement();
+          ResultSet resultSet = statement.executeQuery("SELECT * FROM options_table")) {
+        assertTrue(resultSet.next());
+        assertEquals(1, resultSet.getInt("id"));
+        assertEquals("Options Table Name", resultSet.getString("name"));
+      }
+
+      // Test CREATE TABLE AS with WITH options
+      try (Statement statement = connection.createStatement()) {
+        statement.execute("CREATE TABLE options_table_as AS " +
+            "SELECT id, name FROM test_table " +
+            "WITH (option3 = 'value3', option4 = 'value4')");
+      }
+
+      // Query the new table created with AS
+      try (Statement statement = connection.createStatement();
+          ResultSet resultSet = statement.executeQuery("SELECT * FROM options_table_as")) {
+        assertTrue(resultSet.next());
+        assertEquals(1, resultSet.getInt("id"));
+        assertEquals("Test Name", resultSet.getString("name"));
+      }
+
+      // Clean up
+      try (Statement statement = connection.createStatement()) {
+        statement.execute("DROP TABLE options_table");
+        statement.execute("DROP TABLE options_table_as");
       }
     }
   }
