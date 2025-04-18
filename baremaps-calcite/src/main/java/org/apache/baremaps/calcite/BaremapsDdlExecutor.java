@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.*;
 import org.apache.baremaps.calcite.data.DataMaterializedView;
 import org.apache.baremaps.calcite.data.DataModifiableTable;
+import org.apache.baremaps.calcite.sql.BaremapsSqlDdlParser;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.avatica.AvaticaUtils;
@@ -57,7 +58,6 @@ import org.apache.calcite.sql.parser.SqlAbstractParserImpl;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParserImplFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.parser.ddl.SqlDdlParserImpl;
 import org.apache.calcite.sql.pretty.SqlPrettyWriter;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.tools.*;
@@ -84,7 +84,7 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       new SqlParserImplFactory() {
         @Override
         public SqlAbstractParserImpl getParser(Reader stream) {
-          return SqlDdlParserImpl.FACTORY.getParser(stream);
+          return BaremapsSqlDdlParser.FACTORY.getParser(stream);
         }
 
         @Override
