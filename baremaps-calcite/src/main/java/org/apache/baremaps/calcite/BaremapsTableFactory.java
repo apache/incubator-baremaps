@@ -97,12 +97,12 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       String name,
       Map<String, Object> operand,
       RelDataTypeFactory typeFactory) {
-    String directory = (String) operand.get("directory");
-    if (directory == null) {
-      throw new RuntimeException("A directory should be specified");
+    String file = (String) operand.get("file");
+    if (file == null) {
+      throw new RuntimeException("A file should be specified");
     }
     try {
-      Memory<MappedByteBuffer> memory = new MemoryMappedDirectory(Paths.get(directory));
+      Memory<MappedByteBuffer> memory = new MemoryMappedDirectory(Paths.get(file));
       ByteBuffer header = memory.header();
       header.getLong(); // Skip the size
       int length = header.getInt();
