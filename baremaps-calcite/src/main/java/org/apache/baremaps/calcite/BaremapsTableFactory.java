@@ -17,6 +17,7 @@
 
 package org.apache.baremaps.calcite;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,12 +27,10 @@ import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.baremaps.calcite.csv.CsvTable;
-import org.apache.baremaps.calcite.data.DataModifiableTable;
-import org.apache.baremaps.calcite.data.DataRow;
-import org.apache.baremaps.calcite.data.DataRowType;
-import org.apache.baremaps.calcite.data.DataTableSchema;
+import org.apache.baremaps.calcite.data.*;
 import org.apache.baremaps.calcite.flatgeobuf.FlatGeoBufTable;
 import org.apache.baremaps.calcite.geopackage.GeoPackageTable;
 import org.apache.baremaps.calcite.geoparquet.GeoParquetTable;
@@ -68,12 +67,9 @@ public class BaremapsTableFactory implements TableFactory<Table> {
       Map<String, Object> operand,
       RelDataType rowType) {
     String format = (String) operand.get("format");
-
-    // Create a type factory - Calcite doesn't expose one through SchemaPlus
     RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
-
     return switch (format) {
-      case "data" -> createDataTable(name, operand, typeFactory);
+      case "data" -> createDataTable(name, operand, typeFactory, rowType);
       case "osm" -> createOpenStreetMapTable(operand);
       case "csv" -> createCsvTable(operand);
       case "shp" -> createShapefileTable(operand);
@@ -96,30 +92,55 @@ public class BaremapsTableFactory implements TableFactory<Table> {
   private Table createDataTable(
       String name,
       Map<String, Object> operand,
-      RelDataTypeFactory typeFactory) {
+      RelDataTypeFactory typeFactory,
+      RelDataType rowType) {
     String file = (String) operand.get("file");
     if (file == null) {
       throw new RuntimeException("A file should be specified");
     }
+
     try {
       Memory<MappedByteBuffer> memory = new MemoryMappedDirectory(Paths.get(file));
       ByteBuffer header = memory.header();
-      header.getLong(); // Skip the size
+
+      // For new tables, initialize with schema
+      if (rowType != null) {
+        // Create and serialize schema
+        Map<String, Object> schemaMap = new HashMap<>();
+        schemaMap.put("name", name);
+        schemaMap.put("columns", rowType.getFieldList().stream()
+            .map(field -> {
+              Map<String, Object> column = new HashMap<>();
+              column.put("name", field.getName());
+              column.put("cardinality",
+                  field.getType().isNullable() ? DataColumn.Cardinality.OPTIONAL.name()
+                      : DataColumn.Cardinality.REQUIRED.name());
+              column.put("sqlTypeName", field.getType().getSqlTypeName().name());
+              return column;
+            })
+            .toList());
+
+        // Serialize and write schema to header
+        byte[] schemaBytes = new ObjectMapper().writeValueAsBytes(schemaMap);
+        header.putLong(0L);
+        header.putInt(schemaBytes.length);
+        header.put(schemaBytes);
+      }
+
+      // Read schema and create table
+      header.position(0);
+      long size = header.getLong();
       int length = header.getInt();
       byte[] bytes = new byte[length];
       header.get(bytes);
-      DataTableSchema dataTableSchema =
-          DataTableSchema.read(new ByteArrayInputStream(bytes), typeFactory);
-      DataRowType dataRowType = new DataRowType(dataTableSchema);
+      DataTableSchema schema = DataTableSchema.read(new ByteArrayInputStream(bytes), typeFactory);
+      DataRowType dataRowType = new DataRowType(schema);
       DataCollection<DataRow> dataCollection = AppendOnlyLog.<DataRow>builder()
           .dataType(dataRowType)
           .memory(memory)
           .build();
-      return new DataModifiableTable(
-          name,
-          dataTableSchema,
-          dataCollection,
-          typeFactory);
+
+      return new DataModifiableTable(name, schema, dataCollection, typeFactory);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

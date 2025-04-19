@@ -22,12 +22,14 @@ import static java.util.Objects.requireNonNull;
 import static org.apache.calcite.util.Static.RESOURCE;
 
 import com.google.common.collect.ImmutableList;
+import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
-import org.apache.baremaps.calcite.data.DataMaterializedView;
-import org.apache.baremaps.calcite.data.DataModifiableTable;
+import org.apache.baremaps.calcite.data.*;
 import org.apache.baremaps.calcite.ddl.*;
 import org.apache.baremaps.calcite.sql.BaremapsSqlDdlParser;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -531,38 +533,25 @@ public class BaremapsDdlExecutor extends DdlExecutorImpl {
       }
     }
 
-    // Check if we have format and file options in withOptions
-    if (!withOptions.isEmpty() && withOptions.containsKey("format")
-        && withOptions.containsKey("file")) {
-      // Create a table using BaremapsTableFactory based on the format
-      String format = withOptions.get("format");
-      String file = withOptions.get("file");
-
-      // Create a map of operands for the table factory
-      Map<String, Object> operand = new HashMap<>();
-      operand.put("format", format);
-      operand.put("file", file);
-
-      // Add any additional options from withOptions
-      for (Map.Entry<String, String> entry : withOptions.entrySet()) {
-        if (!entry.getKey().equals("format") && !entry.getKey().equals("file")) {
-          operand.put(entry.getKey(), entry.getValue());
-        }
+    // Create the operand map for the table
+    Map<String, Object> operand = new HashMap<>();
+    operand.put("format", withOptions.computeIfAbsent("format", k -> "data"));
+    operand.put("file", withOptions.computeIfAbsent("file", k -> {
+      try {
+        Path file = Files.createTempDirectory("baremaps_");
+        return file.toString();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
+    }));
 
-      // Create the table using BaremapsTableFactory
-      BaremapsTableFactory tableFactory = new BaremapsTableFactory();
-      Table table =
-          tableFactory.create(schemaInfo.schema().plus(), schemaInfo.name(), operand, rowType);
+    // Create the table using BaremapsTableFactory
+    BaremapsTableFactory tableFactory = new BaremapsTableFactory();
+    Table table =
+        tableFactory.create(schemaInfo.schema().plus(), schemaInfo.name(), operand, rowType);
 
-      // Add the table to the schema
-      schemaInfo.schema().add(schemaInfo.name(), table);
-    } else {
-      // Default behavior: create a DataModifiableTable
-      schemaInfo.schema().add(schemaInfo.name(),
-          new DataModifiableTable(schemaInfo.name(),
-              RelDataTypeImpl.proto(rowType), context.getTypeFactory()));
-    }
+    // Add the table to the schema
+    schemaInfo.schema().add(schemaInfo.name(), table);
 
     if (create.query != null) {
       populate(create.name, create.query, context);
