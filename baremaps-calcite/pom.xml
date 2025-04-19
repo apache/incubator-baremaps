@@ -164,6 +164,13 @@ limitations under the License.
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <excludePackageNames>org.apache.baremaps.calcite.sql</excludePackageNames>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
