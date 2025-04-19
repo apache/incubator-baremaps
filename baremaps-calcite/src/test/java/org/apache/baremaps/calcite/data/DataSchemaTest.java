@@ -39,6 +39,7 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -52,6 +53,8 @@ class DataSchemaTest {
   private File citiesDir;
   private File countriesDir;
   private RelDataTypeFactory typeFactory;
+  private Connection connection;
+  private DataSchema schema;
 
   @BeforeEach
   void setup() throws IOException, SQLException {
@@ -74,10 +77,20 @@ class DataSchemaTest {
     CalciteConnectionConfig config = new CalciteConnectionConfigImpl(props);
 
     // Create a connection to get the type factory
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", props)) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      typeFactory = calciteConnection.getTypeFactory();
+    connection = DriverManager.getConnection("jdbc:calcite:", props);
+    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+    typeFactory = calciteConnection.getTypeFactory();
+  }
+
+  @AfterEach
+  void cleanup() throws SQLException {
+    if (connection != null && !connection.isClosed()) {
+      connection.close();
+      connection = null;
     }
+
+    // Force garbage collection to release file handles
+    System.gc();
   }
 
   private void createCitiesSchema() throws IOException {
@@ -159,7 +172,7 @@ class DataSchemaTest {
   @Test
   void testSchemaCreation() throws IOException {
     // Create a DataSchema instance
-    DataSchema schema = new DataSchema(sampleDataDir, typeFactory);
+    schema = new DataSchema(sampleDataDir, typeFactory);
 
     // Get the table map
     Map<String, Table> tableMap = schema.getTableMap();
@@ -178,61 +191,65 @@ class DataSchemaTest {
   @Test
   void testSqlQueryWithSchema() throws Exception {
     // Create a DataSchema instance
-    DataSchema schema = new DataSchema(sampleDataDir, typeFactory);
+    schema = new DataSchema(sampleDataDir, typeFactory);
 
     // Configure Calcite connection properties
     Properties info = new Properties();
     info.setProperty("lex", "MYSQL");
 
     // Set up a connection and register our schema
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+    connection = DriverManager.getConnection("jdbc:calcite:", info);
+    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+    SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Register the schema
-      rootSchema.add("data", schema);
+    // Register the schema
+    rootSchema.add("data", schema);
 
-      // Execute a simple query
-      try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery(
-              "SELECT * FROM data.cities WHERE country = 'France'")) {
+    // Execute a simple query
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery(
+        "SELECT * FROM data.cities WHERE country = 'France'");
 
-        // Since we don't have actual data in the tables, we just verify the query executes
-        // In a real test, we would add data to the tables and verify the results
-        assertNotNull(resultSet, "ResultSet should not be null");
-      }
-    }
+    // Since we don't have actual data in the tables, we just verify the query executes
+    // In a real test, we would add data to the tables and verify the results
+    assertNotNull(resultSet, "ResultSet should not be null");
+
+    // Close resources
+    resultSet.close();
+    statement.close();
   }
 
   @Test
   void testJoinQuery() throws Exception {
     // Create a DataSchema instance
-    DataSchema schema = new DataSchema(sampleDataDir, typeFactory);
+    schema = new DataSchema(sampleDataDir, typeFactory);
 
     // Configure Calcite connection properties
     Properties info = new Properties();
     info.setProperty("lex", "MYSQL");
 
     // Set up a connection and register our schema
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+    connection = DriverManager.getConnection("jdbc:calcite:", info);
+    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+    SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Register the schema
-      rootSchema.add("data", schema);
+    // Register the schema
+    rootSchema.add("data", schema);
 
-      // Execute a join query
-      try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery(
-              "SELECT c.city, c.country, co.continent "
-                  + "FROM data.cities c "
-                  + "JOIN data.countries co ON c.country = co.country "
-                  + "WHERE co.continent = 'Europe'")) {
+    // Execute a join query
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery(
+        "SELECT c.city, c.country, co.continent "
+            + "FROM data.cities c "
+            + "JOIN data.countries co ON c.country = co.country "
+            + "WHERE co.continent = 'Europe'");
 
-        // Since we don't have actual data in the tables, we just verify the query executes
-        // In a real test, we would add data to the tables and verify the results
-        assertNotNull(resultSet, "ResultSet should not be null");
-      }
-    }
+    // Since we don't have actual data in the tables, we just verify the query executes
+    // In a real test, we would add data to the tables and verify the results
+    assertNotNull(resultSet, "ResultSet should not be null");
+
+    // Close resources
+    resultSet.close();
+    statement.close();
   }
 }

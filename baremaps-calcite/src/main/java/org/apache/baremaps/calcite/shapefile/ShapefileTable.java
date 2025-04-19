@@ -57,8 +57,9 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
   public ShapefileTable(File file) throws IOException {
     this.file = file;
     // Create a ShapefileReader to get field descriptors
-    ShapefileReader shapeFile = new ShapefileReader(file.getPath());
-    this.fieldDescriptors = shapeFile.getDatabaseFieldsDescriptors();
+    try (ShapefileReader shapeFile = new ShapefileReader(file.getPath())) {
+      this.fieldDescriptors = shapeFile.getDatabaseFieldsDescriptors();
+    }
   }
 
   @Override
@@ -136,8 +137,8 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
    */
   private static class ShapefileEnumerator implements Enumerator<Object[]> {
     private final File file;
-    private ShapefileInputStream shapefileInputStream;
     private ShapefileReader shapeFile;
+    private ShapefileInputStream shapefileInputStream;
     private List<Object> current;
 
     public ShapefileEnumerator(File file) {
@@ -198,9 +199,10 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
         shapefileInputStream = null;
       }
       if (shapeFile != null) {
-        // ShapefileReader doesn't implement AutoCloseable, so we don't call close()
+        shapeFile.close();
         shapeFile = null;
       }
+      current = null;
     }
   }
 }

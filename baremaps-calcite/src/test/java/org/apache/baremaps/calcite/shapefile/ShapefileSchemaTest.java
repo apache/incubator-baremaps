@@ -33,6 +33,7 @@ import java.sql.Statement;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -44,6 +45,9 @@ public class ShapefileSchemaTest {
 
   @TempDir
   Path tempDir;
+
+  private Connection connection;
+  private ShapefileSchema schema;
 
   @BeforeEach
   public void setup() throws SQLException, IOException {
@@ -67,83 +71,97 @@ public class ShapefileSchemaTest {
     Files.copy(sourceShx, targetShx, StandardCopyOption.REPLACE_EXISTING);
   }
 
+  @AfterEach
+  public void cleanup() throws SQLException {
+    if (connection != null && !connection.isClosed()) {
+      connection.close();
+      connection = null;
+    }
+
+    // Force garbage collection to release file handles
+    System.gc();
+  }
+
   @Test
   public void testSchemaCreation() throws SQLException, IOException {
     // Create a connection to Calcite
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+    connection = DriverManager.getConnection("jdbc:calcite:");
+    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+    SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Create and register the shapefile schema
-      ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
-          calciteConnection.getTypeFactory());
-      rootSchema.add("shapefile", schema);
+    // Create and register the shapefile schema
+    schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
+        calciteConnection.getTypeFactory());
+    rootSchema.add("shapefile", schema);
 
-      // Verify that the schema contains the expected table
-      assertTrue(rootSchema.getSubSchemaNames().contains("shapefile"));
-      assertTrue(rootSchema.getSubSchema("shapefile").getTableNames().contains("point"));
-    }
+    // Verify that the schema contains the expected table
+    assertTrue(rootSchema.getSubSchemaNames().contains("shapefile"));
+    assertTrue(rootSchema.getSubSchema("shapefile").getTableNames().contains("point"));
   }
 
   @Test
   public void testSqlQuery() throws SQLException, IOException {
     // Create a connection to Calcite
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+    connection = DriverManager.getConnection("jdbc:calcite:");
+    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+    SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Create and register the shapefile schema
-      ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
-          calciteConnection.getTypeFactory());
-      rootSchema.add("shapefile", schema);
+    // Create and register the shapefile schema
+    schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
+        calciteConnection.getTypeFactory());
+    rootSchema.add("shapefile", schema);
 
-      // Execute a simple SQL query - use lowercase for schema and table names
-      try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery(
-              "SELECT * FROM \"shapefile\".\"point\"")) {
+    // Execute a simple SQL query - use lowercase for schema and table names
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery(
+        "SELECT * FROM \"shapefile\".\"point\"");
 
-        // Verify that we get results
-        assertTrue(resultSet.next());
+    // Verify that we get results
+    assertTrue(resultSet.next());
 
-        // Verify that the result set has the expected columns
-        // Note: The actual column names will depend on the sample shapefile
-        assertNotNull(resultSet.getMetaData());
-        assertTrue(resultSet.getMetaData().getColumnCount() > 0);
-      }
-    }
+    // Verify that the result set has the expected columns
+    // Note: The actual column names will depend on the sample shapefile
+    assertNotNull(resultSet.getMetaData());
+    assertTrue(resultSet.getMetaData().getColumnCount() > 0);
+
+    // Close resources
+    resultSet.close();
+    statement.close();
   }
 
   @Test
   public void testSingleFileSchema() throws SQLException, IOException {
     // Create a connection to Calcite
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:")) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      SchemaPlus rootSchema = calciteConnection.getRootSchema();
+    connection = DriverManager.getConnection("jdbc:calcite:");
+    CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+    SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-      // Get the sample shapefile
-      File sampleFile = tempDir.resolve("shapefile-test").resolve("point.shp").toFile();
+    // Get the sample shapefile
+    File sampleFile = tempDir.resolve("shapefile-test").resolve("point.shp").toFile();
 
-      // Create and register the shapefile schema with a single file
-      ShapefileSchema schema =
-          new ShapefileSchema(sampleFile, calciteConnection.getTypeFactory(), false);
-      rootSchema.add("single", schema);
+    // Create and register the shapefile schema with a single file
+    schema =
+        new ShapefileSchema(sampleFile, calciteConnection.getTypeFactory(), false);
+    rootSchema.add("single", schema);
 
-      // Verify that the schema contains the expected table
-      assertTrue(rootSchema.getSubSchemaNames().contains("single"));
-      assertTrue(rootSchema.getSubSchema("single").getTableNames().contains("point"));
+    // Verify that the schema contains the expected table
+    assertTrue(rootSchema.getSubSchemaNames().contains("single"));
+    assertTrue(rootSchema.getSubSchema("single").getTableNames().contains("point"));
 
-      // Execute a simple SQL query - use lowercase for schema and table names
-      try (Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery(
-              "SELECT * FROM \"single\".\"point\"")) {
+    // Execute a simple SQL query - use lowercase for schema and table names
+    Statement statement = connection.createStatement();
+    ResultSet resultSet = statement.executeQuery(
+        "SELECT * FROM \"single\".\"point\"");
 
-        // Verify that we get results
-        assertTrue(resultSet.next());
+    // Verify that we get results
+    assertTrue(resultSet.next());
 
-        // Verify that the result set has the expected columns
-        assertNotNull(resultSet.getMetaData());
-        assertTrue(resultSet.getMetaData().getColumnCount() > 0);
-      }
-    }
+    // Verify that the result set has the expected columns
+    assertNotNull(resultSet.getMetaData());
+    assertTrue(resultSet.getMetaData().getColumnCount() > 0);
+
+    // Close resources
+    resultSet.close();
+    statement.close();
   }
 }
