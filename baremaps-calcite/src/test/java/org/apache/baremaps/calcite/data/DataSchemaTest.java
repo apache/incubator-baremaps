@@ -39,6 +39,7 @@ import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -52,6 +53,7 @@ class DataSchemaTest {
   private File citiesDir;
   private File countriesDir;
   private RelDataTypeFactory typeFactory;
+  private DataSchema schema;
 
   @BeforeEach
   void setup() throws IOException, SQLException {
@@ -156,10 +158,27 @@ class DataSchemaTest {
     }
   }
 
+  @AfterEach
+  void cleanup() throws IOException {
+    // Close the schema if it was created
+    if (schema != null) {
+      // Close all tables in the schema
+      for (Table table : schema.getTableMap().values()) {
+        if (table instanceof AutoCloseable) {
+          try {
+            ((AutoCloseable) table).close();
+          } catch (Exception e) {
+            // Ignore exceptions during cleanup
+          }
+        }
+      }
+    }
+  }
+
   @Test
   void testSchemaCreation() throws IOException {
     // Create a DataSchema instance
-    DataSchema schema = new DataSchema(sampleDataDir, typeFactory);
+    schema = new DataSchema(sampleDataDir, typeFactory);
 
     // Get the table map
     Map<String, Table> tableMap = schema.getTableMap();
@@ -178,7 +197,7 @@ class DataSchemaTest {
   @Test
   void testSqlQueryWithSchema() throws Exception {
     // Create a DataSchema instance
-    DataSchema schema = new DataSchema(sampleDataDir, typeFactory);
+    schema = new DataSchema(sampleDataDir, typeFactory);
 
     // Configure Calcite connection properties
     Properties info = new Properties();
@@ -207,7 +226,7 @@ class DataSchemaTest {
   @Test
   void testJoinQuery() throws Exception {
     // Create a DataSchema instance
-    DataSchema schema = new DataSchema(sampleDataDir, typeFactory);
+    schema = new DataSchema(sampleDataDir, typeFactory);
 
     // Configure Calcite connection properties
     Properties info = new Properties();

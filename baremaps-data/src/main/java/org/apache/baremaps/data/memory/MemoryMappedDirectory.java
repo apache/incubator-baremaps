@@ -32,6 +32,7 @@ import org.apache.baremaps.data.util.MappedByteBufferUtils;
 public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
 
   private final Path directory;
+  private boolean closed = false;
 
   /**
    * Constructs a MemoryMappedDirectory with the specified directory and 1GB segment size.
@@ -94,11 +95,20 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
    */
   @Override
   public synchronized void close() throws IOException {
-    MappedByteBufferUtils.unmap(header);
-    for (MappedByteBuffer buffer : segments) {
-      if (buffer != null) {
-        MappedByteBufferUtils.unmap(buffer);
+    if (!closed) {
+      closed = true;
+      // Unmap the header buffer
+      if (header != null) {
+        MappedByteBufferUtils.unmap(header);
+        header = null;
       }
+      // Unmap all segment buffers
+      for (MappedByteBuffer buffer : segments) {
+        if (buffer != null) {
+          MappedByteBufferUtils.unmap(buffer);
+        }
+      }
+      segments.clear();
     }
   }
 
@@ -111,10 +121,6 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
   public synchronized void clear() throws IOException {
     // Release resources first
     close();
-
-    // Clear the header and segment list
-    header.clear();
-    segments.clear();
 
     // Delete the directory and all files in it if it exists
     if (Files.exists(directory)) {
