@@ -30,16 +30,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 import org.apache.baremaps.testing.TestFiles;
-import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionConfigImpl;
-import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.schema.Table;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -51,10 +44,6 @@ public class ShapefileSchemaTest {
 
   @TempDir
   Path tempDir;
-
-  private File shapefileDir;
-  private RelDataTypeFactory typeFactory;
-  private ShapefileSchema schema;
 
   @BeforeEach
   public void setup() throws SQLException, IOException {
@@ -76,36 +65,6 @@ public class ShapefileSchemaTest {
     Path sourceShx = sourceFile.resolveSibling("point.shx");
     Path targetShx = targetFile.resolveSibling("point.shx");
     Files.copy(sourceShx, targetShx, StandardCopyOption.REPLACE_EXISTING);
-
-    shapefileDir = testDir.toFile();
-
-    // Initialize the type factory
-    Properties props = new Properties();
-    props.setProperty(CalciteConnectionProperty.CASE_SENSITIVE.camelName(), "false");
-    CalciteConnectionConfig config = new CalciteConnectionConfigImpl(props);
-
-    // Create a connection to get the type factory
-    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", props)) {
-      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-      typeFactory = calciteConnection.getTypeFactory();
-    }
-  }
-
-  @AfterEach
-  void cleanup() throws IOException {
-    // Close the schema if it was created
-    if (schema != null) {
-      // Close all tables in the schema
-      for (Table table : schema.getTableMap().values()) {
-        if (table instanceof AutoCloseable) {
-          try {
-            ((AutoCloseable) table).close();
-          } catch (Exception e) {
-            // Ignore exceptions during cleanup
-          }
-        }
-      }
-    }
   }
 
   @Test
@@ -116,7 +75,8 @@ public class ShapefileSchemaTest {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     // Create and register the shapefile schema
-    schema = new ShapefileSchema(shapefileDir, typeFactory);
+    ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
+        calciteConnection.getTypeFactory());
     rootSchema.add("shapefile", schema);
 
     // Verify that the schema contains the expected table
@@ -134,7 +94,8 @@ public class ShapefileSchemaTest {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     // Create and register the shapefile schema
-    schema = new ShapefileSchema(shapefileDir, typeFactory);
+    ShapefileSchema schema = new ShapefileSchema(tempDir.resolve("shapefile-test").toFile(),
+        calciteConnection.getTypeFactory());
     rootSchema.add("shapefile", schema);
 
     // Execute a simple SQL query - use lowercase for schema and table names
@@ -162,10 +123,11 @@ public class ShapefileSchemaTest {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     // Get the sample shapefile
-    File sampleFile = new File(shapefileDir, "point.shp");
+    File sampleFile = tempDir.resolve("shapefile-test").resolve("point.shp").toFile();
 
     // Create and register the shapefile schema with a single file
-    schema = new ShapefileSchema(sampleFile, typeFactory, false);
+    ShapefileSchema schema =
+        new ShapefileSchema(sampleFile, calciteConnection.getTypeFactory(), false);
     rootSchema.add("single", schema);
 
     // Verify that the schema contains the expected table
