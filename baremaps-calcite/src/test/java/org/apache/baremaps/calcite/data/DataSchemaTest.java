@@ -41,6 +41,7 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -170,6 +171,7 @@ class DataSchemaTest {
   }
 
   @Test
+  @Tag("integration")
   void testSchemaCreation() throws IOException {
     // Create a DataSchema instance
     schema = new DataSchema(sampleDataDir, typeFactory);
@@ -189,6 +191,7 @@ class DataSchemaTest {
   }
 
   @Test
+  @Tag("integration")
   void testSqlQueryWithSchema() throws Exception {
     // Create a DataSchema instance
     schema = new DataSchema(sampleDataDir, typeFactory);
@@ -220,6 +223,7 @@ class DataSchemaTest {
   }
 
   @Test
+  @Tag("integration")
   void testJoinQuery() throws Exception {
     // Create a DataSchema instance
     schema = new DataSchema(sampleDataDir, typeFactory);

@@ -107,6 +107,7 @@ public class BaremapsDdlExecutorTest {
     FileUtils.deleteRecursively(Paths.get("options_table_as").toFile());
     FileUtils.deleteRecursively(Paths.get("new_table").toFile());
     FileUtils.deleteRecursively(Paths.get("city_view").toFile());
+    FileUtils.deleteRecursively(Paths.get("test_table").toFile());
   }
 
   private DataTableSchema createCitySchema() {
