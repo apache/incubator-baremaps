@@ -24,12 +24,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.baremaps.data.util.FileUtils;
-import org.apache.baremaps.tilestore.TileDataSchemaTest;
+import org.apache.baremaps.tilestore.TileDataTableSchemaTest;
 import org.apache.baremaps.tilestore.TileStore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-class FileTileStoreTest extends TileDataSchemaTest {
+class FileTileStoreTest extends TileDataTableSchemaTest {
 
   Path directory;
 

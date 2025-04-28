@@ -68,10 +68,10 @@ public class TestFiles {
       resolve("baremaps-testing/data/archives/file.zip");
 
   public static final Path GEOPARQUET =
-      resolve("baremaps-testing/data/samples/example.parquet");
+      resolve("baremaps-testing/data/geoparquet/example.parquet");
 
   public static final Path GEOPACKAGE =
-      resolve("baremaps-testing/data/samples/countries.gpkg");
+      resolve("baremaps-testing/data/geopackage/countries.gpkg");
 
   public static final Path TILESET_JSON =
       resolve("baremaps-testing/data/tilesets/tileset.json");
@@ -101,8 +101,8 @@ public class TestFiles {
   public static final Path POINT_FLATGEOBUF =
       resolve("baremaps-testing/data/flatgeobuf/countries.fgb");
 
-  public static final Path RIPE_TXT =
-      resolve("baremaps-testing/data/ripe/sample.txt");
+  public static final Path RPSL_TXT =
+      resolve("baremaps-testing/data/rpsl/sample.txt");
 
   /* The geometries of the osm-sample/sample.osm.xml file */
 

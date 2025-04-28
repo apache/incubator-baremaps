@@ -26,13 +26,13 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.baremaps.data.util.FileUtils;
-import org.apache.baremaps.tilestore.TileDataSchemaTest;
+import org.apache.baremaps.tilestore.TileDataTableSchemaTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sqlite.SQLiteDataSource;
 
-class MBTilesStoreTest extends TileDataSchemaTest {
+class MBTilesStoreTest extends TileDataTableSchemaTest {
 
   Path file;
 

@@ -65,7 +65,7 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
   private final String name;
   private final RelProtoDataType protoRowType;
   private final RelDataType rowType;
-  private final DataSchema schema;
+  private final DataTableSchema schema;
   public final DataCollection<DataRow> rows;
 
   /**
@@ -92,7 +92,7 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
       columns.add(new DataColumnFixed(columnName, columnCardinality, relDataType));
     });
 
-    this.schema = new DataSchema(name, columns);
+    this.schema = new DataTableSchema(name, columns);
 
     // Create the collection
     DataRowType dataRowType = new DataRowType(schema);
@@ -109,7 +109,7 @@ public class DataModifiableTable extends AbstractTable implements ModifiableTabl
    * @param typeFactory the type factory
    */
   public DataModifiableTable(String name,
-      DataSchema schema,
+      DataTableSchema schema,
       DataCollection<DataRow> rows,
       RelDataTypeFactory typeFactory) {
     super();

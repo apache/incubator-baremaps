@@ -51,7 +51,7 @@ public class OpenStreetMapTableTest {
       entityReader.setGeometries(false); // Don't generate geometries to avoid errors
 
       // Create the OpenStreetMapTable
-      OpenStreetMapTable osmTable = new OpenStreetMapTable(entityReader, inputStream);
+      OpenStreetMapTable osmTable = new OpenStreetMapTable(SAMPLE_OSM_PATH.toFile(), entityReader);
 
       // Verify the schema structure
       RelDataTypeFactory typeFactory = new JavaTypeFactoryImpl();
@@ -91,7 +91,7 @@ public class OpenStreetMapTableTest {
 
     try (var inputStream = new FileInputStream(SAMPLE_OSM_PATH.toFile())) {
       // Create the table with our configured reader
-      OpenStreetMapTable osmTable = new OpenStreetMapTable(entityReader, inputStream);
+      OpenStreetMapTable osmTable = new OpenStreetMapTable(SAMPLE_OSM_PATH.toFile(), entityReader);
 
       // Configure Calcite connection properties
       Properties info = new Properties();

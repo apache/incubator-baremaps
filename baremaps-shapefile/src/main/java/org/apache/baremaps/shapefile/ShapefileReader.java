@@ -37,7 +37,7 @@ import java.util.Objects;
  * @see <a href="http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm">dBASE III File
  *      Structure</a>
  */
-public class ShapefileReader {
+public class ShapefileReader implements AutoCloseable {
   /** Shapefile. */
   private File shapefile;
 
@@ -52,6 +52,9 @@ public class ShapefileReader {
 
   /** Database field descriptors. */
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
+
+  /** The underlying input stream, if open */
+  private ShapefileInputStream inputStream;
 
   /**
    * Construct a Shapefile from a file.
@@ -170,11 +173,10 @@ public class ShapefileReader {
    * @return Features
    */
   public ShapefileInputStream read() throws IOException {
-    ShapefileInputStream is =
-        new ShapefileInputStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
-    this.shapefileDescriptor = is.getShapefileDescriptor();
-    this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
-    return is;
+    inputStream = new ShapefileInputStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
+    this.shapefileDescriptor = inputStream.getShapefileDescriptor();
+    this.databaseFieldsDescriptors = inputStream.getDatabaseFieldsDescriptors();
+    return inputStream;
   }
 
   /**
@@ -184,6 +186,20 @@ public class ShapefileReader {
   public void loadDescriptors() throws IOException {
     try (ShapefileInputStream is = read()) {
       // Doing a read is sufficient to initialize the internal descriptors.
+    }
+  }
+
+  /**
+   * Closes this reader and releases any system resources associated with it. If the reader is
+   * already closed then invoking this method has no effect.
+   *
+   * @throws IOException if an I/O error occurs
+   */
+  @Override
+  public void close() throws IOException {
+    if (inputStream != null) {
+      inputStream.close();
+      inputStream = null;
     }
   }
 }

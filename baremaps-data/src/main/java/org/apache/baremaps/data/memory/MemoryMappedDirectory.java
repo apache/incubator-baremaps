@@ -116,7 +116,9 @@ public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
     header.clear();
     segments.clear();
 
-    // Delete the directory and all files in it
-    FileUtils.deleteRecursively(directory);
+    // Delete the directory and all files in it if it exists
+    if (Files.exists(directory)) {
+      FileUtils.deleteRecursively(directory);
+    }
   }
 }

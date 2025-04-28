@@ -17,6 +17,9 @@
 
 package org.apache.baremaps.calcite.openstreetmap;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Stream;
@@ -40,19 +43,19 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class OpenStreetMapTable extends AbstractTable implements ScannableTable {
 
+  private final File file;
   private final EntityReader<Entity> entityReader;
-  private final InputStream inputStream;
   private RelDataType rowType;
 
   /**
    * Constructs an OpenStreetMapTable with the specified parameters.
    *
+   * @param file the OpenStreetMap file
    * @param entityReader the EntityReader for parsing the OSM data
-   * @param inputStream the input stream containing the OSM data
    */
-  public OpenStreetMapTable(EntityReader<Entity> entityReader, InputStream inputStream) {
-    this.entityReader = entityReader;
-    this.inputStream = inputStream;
+  public OpenStreetMapTable(File file, EntityReader<Entity> entityReader) {
+    this.file = Objects.requireNonNull(file, "File cannot be null");
+    this.entityReader = Objects.requireNonNull(entityReader, "Entity reader cannot be null");
   }
 
   @Override
@@ -97,7 +100,11 @@ public class OpenStreetMapTable extends AbstractTable implements ScannableTable 
     return new AbstractEnumerable<Object[]>() {
       @Override
       public Enumerator<Object[]> enumerator() {
-        return new OpenStreetMapEnumerator(entityReader, inputStream);
+        try {
+          return new OpenStreetMapEnumerator(entityReader, new FileInputStream(file));
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to open input stream", e);
+        }
       }
     };
   }

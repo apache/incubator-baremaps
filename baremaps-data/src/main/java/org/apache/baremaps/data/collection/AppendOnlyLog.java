@@ -199,9 +199,8 @@ public class AppendOnlyLog<E> implements DataCollection<E> {
   /** {@inheritDoc} */
   public void clear() {
     try {
-      memory.clear();
       this.size = 0;
-      persistSize();
+      memory.clear();
     } catch (IOException e) {
       throw new DataCollectionException(e);
     }

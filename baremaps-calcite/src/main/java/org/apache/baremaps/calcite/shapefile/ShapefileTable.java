@@ -45,8 +45,6 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
   private static final Logger logger = LoggerFactory.getLogger(ShapefileTable.class);
 
   private final File file;
-  private final ShapefileReader shapeFile;
-  private final String tableName;
   private final List<DBaseFieldDescriptor> fieldDescriptors;
   private RelDataType rowType;
 
@@ -58,9 +56,10 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
    */
   public ShapefileTable(File file) throws IOException {
     this.file = file;
-    this.shapeFile = new ShapefileReader(file.getPath());
-    this.tableName = file.getName();
-    this.fieldDescriptors = shapeFile.getDatabaseFieldsDescriptors();
+    // Create a ShapefileReader to get field descriptors
+    try (ShapefileReader shapeFile = new ShapefileReader(file.getPath())) {
+      this.fieldDescriptors = shapeFile.getDatabaseFieldsDescriptors();
+    }
   }
 
   @Override
@@ -138,6 +137,7 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
    */
   private static class ShapefileEnumerator implements Enumerator<Object[]> {
     private final File file;
+    private ShapefileReader shapeFile;
     private ShapefileInputStream shapefileInputStream;
     private List<Object> current;
 
@@ -148,7 +148,7 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
 
     private void initialize() {
       try {
-        var shapeFile = new ShapefileReader(file.getPath());
+        this.shapeFile = new ShapefileReader(file.getPath());
         this.shapefileInputStream = shapeFile.read();
       } catch (IOException e) {
         throw new RuntimeException("Failed to initialize shapefile iterator", e);
@@ -177,7 +177,7 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
     @Override
     public void reset() {
       try {
-        shapefileInputStream.close();
+        closeResources();
         initialize();
       } catch (IOException e) {
         throw new RuntimeException("Failed to reset shapefile iterator", e);
@@ -187,12 +187,22 @@ public class ShapefileTable extends AbstractTable implements ScannableTable {
     @Override
     public void close() {
       try {
-        if (shapefileInputStream != null) {
-          shapefileInputStream.close();
-        }
+        closeResources();
       } catch (IOException e) {
-        // Ignore
+        logger.error("Error closing shapefile resources", e);
       }
+    }
+
+    private void closeResources() throws IOException {
+      if (shapefileInputStream != null) {
+        shapefileInputStream.close();
+        shapefileInputStream = null;
+      }
+      if (shapeFile != null) {
+        shapeFile.close();
+        shapeFile = null;
+      }
+      current = null;
     }
   }
 }

@@ -32,7 +32,7 @@ class RpslObjectTest {
 
   @BeforeEach
   public void before() throws IOException {
-    var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
+    var file = TestFiles.RPSL_TXT;
     try (var input = Files.newInputStream(file)) {
       objects = new RpslReader().read(input).toList();
     }

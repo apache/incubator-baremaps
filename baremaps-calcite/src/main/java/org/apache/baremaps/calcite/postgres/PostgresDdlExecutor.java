@@ -28,6 +28,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import javax.sql.DataSource;
+import org.apache.baremaps.calcite.ddl.*;
+import org.apache.baremaps.calcite.sql.BaremapsSqlDdlParser;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.avatica.AvaticaUtils;
@@ -49,14 +51,12 @@ import org.apache.calcite.schema.impl.ViewTableMacro;
 import org.apache.calcite.server.DdlExecutor;
 import org.apache.calcite.server.DdlExecutorImpl;
 import org.apache.calcite.sql.*;
-import org.apache.calcite.sql.ddl.*;
 import org.apache.calcite.sql.dialect.CalciteSqlDialect;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlAbstractParserImpl;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParserImplFactory;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.sql.parser.ddl.SqlDdlParserImpl;
 import org.apache.calcite.sql.pretty.SqlPrettyWriter;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.tools.*;
@@ -89,7 +89,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
       new SqlParserImplFactory() {
         @Override
         public SqlAbstractParserImpl getParser(Reader stream) {
-          return SqlDdlParserImpl.FACTORY.getParser(stream);
+          return BaremapsSqlDdlParser.FACTORY.getParser(stream);
         }
 
         @Override
@@ -97,6 +97,12 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
           return PostgresDdlExecutor.INSTANCE;
         }
       };
+
+  /**
+   * Record to hold schema information.
+   */
+  private record SchemaInfo(String name, @Nullable CalciteSchema schema) {
+  }
 
   /**
    * Default constructor that assumes a DataSource is provided by PostgresSchemaFactory or similar.
@@ -138,7 +144,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
    * Returns the schema in which to create an object; the left part is null if the schema does not
    * exist.
    */
-  static Pair<@Nullable CalciteSchema, String> schema(
+  static SchemaInfo schema(
       CalcitePrepare.Context context, boolean mutable, SqlIdentifier id) {
     final String name;
     final List<String> path;
@@ -156,11 +162,11 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
       @Nullable
       CalciteSchema subSchema = schema.getSubSchema(p, true);
       if (subSchema == null) {
-        return Pair.of(null, name);
+        return new SchemaInfo(name, null);
       }
       schema = subSchema;
     }
-    return Pair.of(schema, name);
+    return new SchemaInfo(name, schema);
   }
 
   /**
@@ -217,8 +223,8 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
 
   /** Truncate the PostgreSQL table. */
   static void truncate(SqlIdentifier name, CalcitePrepare.Context context, DataSource dataSource) {
-    final Pair<@Nullable CalciteSchema, String> pair = schema(context, true, name);
-    final String tableName = pair.right;
+    final SchemaInfo schemaInfo = schema(context, true, name);
+    final String tableName = schemaInfo.name();
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt =
             connection.prepareStatement("TRUNCATE TABLE \"" + tableName + "\"")) {
@@ -274,13 +280,13 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE FOREIGN SCHEMA} command. */
   public void execute(SqlCreateForeignSchema create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    if (pair.left.plus().getSubSchema(pair.right) != null) {
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    if (schemaInfo.schema().plus().getSubSchema(schemaInfo.name()) != null) {
       if (!create.getReplace() && !create.ifNotExists) {
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.schemaExists(pair.right));
+            RESOURCE.schemaExists(schemaInfo.name()));
       }
     }
     final Schema subSchema;
@@ -319,8 +325,8 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
           requireNonNull(value(option.right)));
     }
     subSchema =
-        schemaFactory.create(pair.left.plus(), pair.right, operandMap);
-    pair.left.add(pair.right, subSchema);
+        schemaFactory.create(schemaInfo.schema().plus(), schemaInfo.name(), operandMap);
+    schemaInfo.schema().add(schemaInfo.name(), subSchema);
   }
 
   /** Executes a {@code CREATE FUNCTION} command. */
@@ -335,11 +341,11 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
    */
   public void execute(SqlDropObject drop,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, false, drop.name);
     final @Nullable CalciteSchema schema =
-        pair.left; // null if schema does not exist
-    final String objectName = pair.right;
+        schemaInfo.schema(); // null if schema does not exist
+    final String objectName = schemaInfo.name();
 
     boolean existed;
     switch (drop.getKind()) {
@@ -435,12 +441,12 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
    */
   public void execute(SqlTruncateTable truncate,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, truncate.name);
-    if (pair.left == null
-        || pair.left.plus().getTable(pair.right) == null) {
+    if (schemaInfo.schema() == null
+        || schemaInfo.schema().plus().getTable(schemaInfo.name()) == null) {
       throw SqlUtil.newContextException(truncate.name.getParserPosition(),
-          RESOURCE.tableNotFound(pair.right));
+          RESOURCE.tableNotFound(schemaInfo.name()));
     }
 
     if (!truncate.continueIdentify) {
@@ -456,14 +462,14 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
    */
   public void execute(SqlCreateMaterializedView create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    if (pair.left == null) {
+    if (schemaInfo.schema() == null) {
       throw new RuntimeException("Schema " + create.name + " not found");
     }
 
-    final String viewName = pair.right;
-    final CalciteSchema schema = pair.left;
+    final String viewName = schemaInfo.name();
+    final CalciteSchema schema = schemaInfo.schema();
     final SqlNode query = renameColumns(create.columnList, create.query);
 
     // Get target schema
@@ -507,16 +513,16 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE SCHEMA} command. */
   public void execute(SqlCreateSchema create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    if (pair.left.plus().getSubSchema(pair.right) != null) {
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    if (schemaInfo.schema().plus().getSubSchema(schemaInfo.name()) != null) {
       if (create.ifNotExists) {
         return;
       }
       if (!create.getReplace()) {
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.schemaExists(pair.right));
+            RESOURCE.schemaExists(schemaInfo.name()));
       }
     }
 
@@ -525,25 +531,25 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
     try {
       try (Connection connection = ds.getConnection();
           PreparedStatement stmt = connection.prepareStatement(
-              "CREATE SCHEMA IF NOT EXISTS \"" + pair.right + "\"")) {
+              "CREATE SCHEMA IF NOT EXISTS \"" + schemaInfo.name() + "\"")) {
         stmt.executeUpdate();
       }
     } catch (SQLException e) {
-      throw new RuntimeException("Error creating schema in PostgreSQL: " + pair.right, e);
+      throw new RuntimeException("Error creating schema in PostgreSQL: " + schemaInfo.name(), e);
     }
 
     final Schema subSchema = new AbstractSchema();
-    pair.left.add(pair.right, subSchema);
+    schemaInfo.schema().add(schemaInfo.name(), subSchema);
   }
 
   /** Executes a {@code DROP SCHEMA} command. */
   public void execute(SqlDropSchema drop,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, false, drop.name);
-    final String name = pair.right;
-    final boolean existed = pair.left != null
-        && pair.left.removeSubSchema(name);
+    final String name = schemaInfo.name();
+    final boolean existed = schemaInfo.schema() != null
+        && schemaInfo.schema().removeSubSchema(name);
 
     if (existed) {
       // Drop PostgreSQL schema
@@ -566,9 +572,9 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
   /** Executes a {@code CREATE TABLE} command. */
   public void execute(SqlCreateTable create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
     final JavaTypeFactory typeFactory = context.getTypeFactory();
     final RelDataType queryRowType;
     if (create.query != null) {
@@ -576,7 +582,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
       final String sql =
           create.query.toSqlString(CalciteSqlDialect.DEFAULT).getSql();
       final ViewTableMacro viewTableMacro =
-          ViewTable.viewMacro(pair.left.plus(), sql, pair.left.path(null),
+          ViewTable.viewMacro(schemaInfo.schema().plus(), sql, schemaInfo.schema().path(null),
               context.getObjectPath(), false);
       final TranslatableTable x = viewTableMacro.apply(ImmutableList.of());
       queryRowType = x.getRowType(typeFactory);
@@ -612,7 +618,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
     if (create.ifNotExists) {
       createTableSql.append("IF NOT EXISTS ");
     }
-    createTableSql.append("\"").append(pair.right).append("\" (");
+    createTableSql.append("\"").append(schemaInfo.name()).append("\" (");
 
     boolean first = true;
     // Process column declarations for the CREATE TABLE statement
@@ -666,7 +672,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
 
     createTableSql.append(")");
 
-    if (pair.left.plus().getTable(pair.right) != null) {
+    if (schemaInfo.schema().plus().getTable(schemaInfo.name()) != null) {
       // Table exists.
       if (create.ifNotExists) {
         return;
@@ -674,7 +680,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
       if (!create.getReplace()) {
         // They did not specify IF NOT EXISTS, so give error.
         throw SqlUtil.newContextException(create.name.getParserPosition(),
-            RESOURCE.tableExists(pair.right));
+            RESOURCE.tableExists(schemaInfo.name()));
       }
 
       // Drop existing table
@@ -682,11 +688,12 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
         DataSource ds = getDataSource(context);
         try (Connection connection = ds.getConnection();
             PreparedStatement stmt =
-                connection.prepareStatement("DROP TABLE \"" + pair.right + "\"")) {
+                connection.prepareStatement("DROP TABLE \"" + schemaInfo.name() + "\"")) {
           stmt.executeUpdate();
         }
       } catch (SQLException e) {
-        throw new RuntimeException("Error dropping existing table in PostgreSQL: " + pair.right, e);
+        throw new RuntimeException(
+            "Error dropping existing table in PostgreSQL: " + schemaInfo.name(), e);
       }
     }
 
@@ -700,32 +707,32 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
 
       // Create Calcite wrapper for the table
       PostgresModifiableTable table =
-          new PostgresModifiableTable(ds, pair.right, context.getTypeFactory());
-      pair.left.add(pair.right, table);
+          new PostgresModifiableTable(ds, schemaInfo.name(), context.getTypeFactory());
+      schemaInfo.schema().add(schemaInfo.name(), table);
 
       // Populate the table if query is provided
       if (create.query != null) {
         populate(create.name, create.query, context);
       }
     } catch (SQLException e) {
-      throw new RuntimeException("Error creating table in PostgreSQL: " + pair.right, e);
+      throw new RuntimeException("Error creating table in PostgreSQL: " + schemaInfo.name(), e);
     }
   }
 
   /** Executes a {@code CREATE VIEW} command. */
   public void execute(SqlCreateView create,
       CalcitePrepare.Context context) {
-    final Pair<@Nullable CalciteSchema, String> pair =
+    final SchemaInfo schemaInfo =
         schema(context, true, create.name);
-    requireNonNull(pair.left); // TODO: should not assume parent schema exists
-    final SchemaPlus schemaPlus = pair.left.plus();
-    for (Function function : schemaPlus.getFunctions(pair.right)) {
+    requireNonNull(schemaInfo.schema()); // TODO: should not assume parent schema exists
+    final SchemaPlus schemaPlus = schemaInfo.schema().plus();
+    for (Function function : schemaPlus.getFunctions(schemaInfo.name())) {
       if (function.getParameters().isEmpty()) {
         if (!create.getReplace()) {
           throw SqlUtil.newContextException(create.name.getParserPosition(),
-              RESOURCE.viewExists(pair.right));
+              RESOURCE.viewExists(schemaInfo.name()));
         }
-        pair.left.removeFunction(pair.right);
+        schemaInfo.schema().removeFunction(schemaInfo.name());
       }
     }
 
@@ -739,7 +746,7 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
       if (create.getReplace()) {
         createViewSql += " OR REPLACE";
       }
-      createViewSql += " VIEW \"" + pair.right + "\" AS " + sql;
+      createViewSql += " VIEW \"" + schemaInfo.name() + "\" AS " + sql;
 
       try (Connection connection = ds.getConnection();
           PreparedStatement stmt = connection.prepareStatement(createViewSql)) {
@@ -748,11 +755,11 @@ public class PostgresDdlExecutor extends DdlExecutorImpl {
 
       // Create Calcite wrapper for the view
       final ViewTableMacro viewTableMacro =
-          ViewTable.viewMacro(schemaPlus, sql, pair.left.path(null),
+          ViewTable.viewMacro(schemaPlus, sql, schemaInfo.schema().path(null),
               context.getObjectPath(), false);
-      schemaPlus.add(pair.right, viewTableMacro);
+      schemaPlus.add(schemaInfo.name(), viewTableMacro);
     } catch (SQLException e) {
-      throw new RuntimeException("Error creating view in PostgreSQL: " + pair.right, e);
+      throw new RuntimeException("Error creating view in PostgreSQL: " + schemaInfo.name(), e);
     }
   }
 

@@ -108,11 +108,32 @@ public class ShapefileInputStream extends InputStream {
   /** @see java.io.InputStream#close() */
   @Override
   public void close() throws IOException {
-    if (this.dbaseReader != null) {
-      this.dbaseReader.close();
+    IOException firstException = null;
+
+    try {
+      if (this.dbaseReader != null) {
+        this.dbaseReader.close();
+        this.dbaseReader = null;
+      }
+    } catch (IOException e) {
+      firstException = e;
     }
-    if (this.shapefileReader != null) {
-      this.shapefileReader.close();
+
+    try {
+      if (this.shapefileReader != null) {
+        this.shapefileReader.close();
+        this.shapefileReader = null;
+      }
+    } catch (IOException e) {
+      if (firstException == null) {
+        firstException = e;
+      } else {
+        firstException.addSuppressed(e);
+      }
+    }
+
+    if (firstException != null) {
+      throw firstException;
     }
   }
 

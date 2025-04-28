@@ -23,7 +23,7 @@ import java.util.*;
 import javax.sql.DataSource;
 import org.apache.baremaps.calcite.data.DataColumn;
 import org.apache.baremaps.calcite.data.DataColumnFixed;
-import org.apache.baremaps.calcite.data.DataSchema;
+import org.apache.baremaps.calcite.data.DataTableSchema;
 import org.apache.baremaps.postgres.copy.*;
 import org.apache.baremaps.postgres.metadata.ColumnResult;
 import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
@@ -67,9 +67,10 @@ public class PostgresModifiableTable extends AbstractTable
     implements ScannableTable, ModifiableTable, QueryableTable {
 
   private final DataSource dataSource;
+  private final String schema;
   private final String tableName;
   private final RelDataType rowType;
-  private final DataSchema dataSchema;
+  private final DataTableSchema dataTableSchema;
 
   /**
    * Constructs a PostgisTable with the specified data source and table name.
@@ -79,7 +80,7 @@ public class PostgresModifiableTable extends AbstractTable
    * @throws SQLException if an SQL error occurs
    */
   public PostgresModifiableTable(DataSource dataSource, String tableName) throws SQLException {
-    this(dataSource, tableName, new org.apache.calcite.jdbc.JavaTypeFactoryImpl());
+    this(dataSource, "public", tableName, new org.apache.calcite.jdbc.JavaTypeFactoryImpl());
   }
 
   /**
@@ -93,10 +94,26 @@ public class PostgresModifiableTable extends AbstractTable
   public PostgresModifiableTable(DataSource dataSource, String tableName,
       RelDataTypeFactory typeFactory)
       throws SQLException {
+    this(dataSource, "public", tableName, typeFactory);
+  }
+
+  /**
+   * Constructs a PostgisTable with the specified data source, schema, table name, and type factory.
+   *
+   * @param dataSource the data source for the PostgreSQL connection
+   * @param schema the schema name
+   * @param tableName the name of the table to access
+   * @param typeFactory the type factory
+   * @throws SQLException if an SQL error occurs
+   */
+  public PostgresModifiableTable(DataSource dataSource, String schema, String tableName,
+      RelDataTypeFactory typeFactory)
+      throws SQLException {
     this.dataSource = dataSource;
+    this.schema = schema;
     this.tableName = tableName;
-    this.dataSchema = discoverSchema();
-    this.rowType = PostgresTypeConversion.toRelDataType(typeFactory, dataSchema);
+    this.dataTableSchema = discoverSchema();
+    this.rowType = PostgresTypeConversion.toRelDataType(typeFactory, dataTableSchema);
   }
 
   /**
@@ -105,13 +122,13 @@ public class PostgresModifiableTable extends AbstractTable
    * @return the schema of the table
    * @throws SQLException if an SQL error occurs
    */
-  private DataSchema discoverSchema() throws SQLException {
+  private DataTableSchema discoverSchema() throws SQLException {
     List<DataColumn> columns = new ArrayList<>();
 
     // Use DatabaseMetadata to get column information
     DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
     var tableMetadata =
-        metadata.getTableMetaData(null, null, tableName, new String[] {"TABLE", "VIEW"})
+        metadata.getTableMetaData(schema, null, tableName, new String[] {"TABLE", "VIEW"})
             .stream()
             .filter(meta -> meta.table().tableName().equalsIgnoreCase(tableName))
             .findFirst();
@@ -120,8 +137,9 @@ public class PostgresModifiableTable extends AbstractTable
     if (tableMetadata.isEmpty()) {
       try (Connection connection = dataSource.getConnection();
           PreparedStatement stmt = connection.prepareStatement(
-              "SELECT EXISTS (SELECT 1 FROM pg_matviews WHERE matviewname = ?)")) {
-        stmt.setString(1, tableName);
+              "SELECT EXISTS (SELECT 1 FROM pg_matviews WHERE schemaname = ? AND matviewname = ?)")) {
+        stmt.setString(1, schema);
+        stmt.setString(2, tableName);
         try (ResultSet rs = stmt.executeQuery()) {
           if (rs.next() && rs.getBoolean(1)) {
             // It's a materialized view, get column information directly
@@ -131,7 +149,7 @@ public class PostgresModifiableTable extends AbstractTable
       }
 
       // If we get here, it's neither a regular table/view nor a materialized view
-      throw new SQLException("Table not found: " + tableName);
+      throw new SQLException("Table not found: " + schema + "." + tableName);
     }
 
     // Get geometry column types for the current table.
@@ -162,7 +180,7 @@ public class PostgresModifiableTable extends AbstractTable
       columns.add(new DataColumnFixed(columnName, cardinality, relDataType));
     }
 
-    return new DataSchema(tableName, columns);
+    return new DataTableSchema(tableName, columns);
   }
 
   /**
@@ -172,7 +190,7 @@ public class PostgresModifiableTable extends AbstractTable
    * @return the schema constructed from direct column query
    * @throws SQLException if an SQL error occurs
    */
-  private DataSchema getSchemaFromDirectQuery() throws SQLException {
+  private DataTableSchema getSchemaFromDirectQuery() throws SQLException {
     List<DataColumn> columns = new ArrayList<>();
 
     try (Connection connection = dataSource.getConnection()) {
@@ -184,13 +202,15 @@ public class PostgresModifiableTable extends AbstractTable
               "FROM pg_catalog.pg_attribute a " +
               "JOIN pg_catalog.pg_class c ON a.attrelid = c.oid " +
               "LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace " +
-              "WHERE c.relname = ? " +
+              "WHERE n.nspname = ? " +
+              "  AND c.relname = ? " +
               "  AND a.attnum > 0 " +
               "  AND NOT a.attisdropped " +
               "ORDER BY a.attnum";
 
       try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-        stmt.setString(1, tableName);
+        stmt.setString(1, schema);
+        stmt.setString(2, tableName);
 
         try (ResultSet rs = stmt.executeQuery()) {
           while (rs.next()) {
@@ -276,10 +296,10 @@ public class PostgresModifiableTable extends AbstractTable
     }
 
     if (columns.isEmpty()) {
-      throw new SQLException("No columns found for table: " + tableName);
+      throw new SQLException("No columns found for table: " + schema + "." + tableName);
     }
 
-    return new DataSchema(tableName, columns);
+    return new DataTableSchema(tableName, columns);
   }
 
   /**
@@ -350,10 +370,12 @@ public class PostgresModifiableTable extends AbstractTable
 
     try (Connection connection = dataSource.getConnection()) {
       // Query to get geometry column information
-      String sql = "SELECT f_geometry_column, type FROM geometry_columns WHERE f_table_name = ?";
+      String sql =
+          "SELECT f_geometry_column, type FROM geometry_columns WHERE f_table_schema = ? AND f_table_name = ?";
 
       try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-        stmt.setString(1, tableName);
+        stmt.setString(1, schema);
+        stmt.setString(2, tableName);
 
         try (ResultSet rs = stmt.executeQuery()) {
           while (rs.next()) {
@@ -378,8 +400,8 @@ public class PostgresModifiableTable extends AbstractTable
    *
    * @return the schema of the table
    */
-  public DataSchema schema() {
-    return dataSchema;
+  public DataTableSchema schema() {
+    return dataTableSchema;
   }
 
   /**
@@ -400,12 +422,21 @@ public class PostgresModifiableTable extends AbstractTable
     return tableName;
   }
 
+  /**
+   * Returns the schema name of this table.
+   *
+   * @return the schema name
+   */
+  protected String getSchema() {
+    return schema;
+  }
+
   @Override
   public Enumerable<Object[]> scan(DataContext root) {
     return new AbstractEnumerable<>() {
       @Override
       public Enumerator<Object[]> enumerator() {
-        return new PostgisEnumerator(dataSource, dataSchema);
+        return new PostgisEnumerator(dataSource, dataTableSchema, schema, tableName);
       }
     };
   }
@@ -461,7 +492,8 @@ public class PostgresModifiableTable extends AbstractTable
     public int size() {
       try (Connection connection = dataSource.getConnection();
           Statement stmt = connection.createStatement();
-          ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM \"" + tableName + "\"")) {
+          ResultSet rs =
+              stmt.executeQuery("SELECT COUNT(*) FROM \"" + schema + "\".\"" + tableName + "\"")) {
         if (rs.next()) {
           return rs.getInt(1);
         }
@@ -490,14 +522,15 @@ public class PostgresModifiableTable extends AbstractTable
         Object[] values = (Object[]) o;
         StringBuilder whereClause = new StringBuilder();
 
-        for (int i = 0; i < dataSchema.columns().size(); i++) {
+        for (int i = 0; i < dataTableSchema.columns().size(); i++) {
           if (i > 0) {
             whereClause.append(" AND ");
           }
-          whereClause.append("\"").append(dataSchema.columns().get(i).name()).append("\" = ?");
+          whereClause.append("\"").append(dataTableSchema.columns().get(i).name()).append("\" = ?");
         }
 
-        String sql = "SELECT COUNT(*) FROM \"" + tableName + "\" WHERE " + whereClause;
+        String sql =
+            "SELECT COUNT(*) FROM \"" + schema + "\".\"" + tableName + "\" WHERE " + whereClause;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
           for (int i = 0; i < values.length; i++) {
             statement.setObject(i + 1, values[i]);
@@ -517,7 +550,8 @@ public class PostgresModifiableTable extends AbstractTable
     @Override
     public Iterator<Object[]> iterator() {
       return new Iterator<Object[]>() {
-        private final PostgisEnumerator enumerator = new PostgisEnumerator(dataSource, dataSchema);
+        private final PostgisEnumerator enumerator =
+            new PostgisEnumerator(dataSource, dataTableSchema, schema, tableName);
         private boolean hasNext = enumerator.moveNext();
 
         @Override
@@ -542,12 +576,13 @@ public class PostgresModifiableTable extends AbstractTable
       List<Object[]> result = new ArrayList<>();
       try (Connection connection = dataSource.getConnection();
           Statement stmt = connection.createStatement();
-          ResultSet rs = stmt.executeQuery("SELECT * FROM \"" + tableName + "\"")) {
+          ResultSet rs =
+              stmt.executeQuery("SELECT * FROM \"" + schema + "\".\"" + tableName + "\"")) {
 
         while (rs.next()) {
-          Object[] row = new Object[dataSchema.columns().size()];
-          for (int i = 0; i < dataSchema.columns().size(); i++) {
-            DataColumn column = dataSchema.columns().get(i);
+          Object[] row = new Object[dataTableSchema.columns().size()];
+          for (int i = 0; i < dataTableSchema.columns().size(); i++) {
+            DataColumn column = dataTableSchema.columns().get(i);
             if (column.sqlTypeName() == SqlTypeName.GEOMETRY) {
               byte[] wkb = rs.getBytes(i + 1);
               row[i] = deserializeWkb(wkb);
@@ -580,8 +615,8 @@ public class PostgresModifiableTable extends AbstractTable
       try (Connection connection = dataSource.getConnection()) {
         // Use COPY API for better performance
         PGConnection pgConnection = connection.unwrap(PGConnection.class);
-        String copyCommand = "COPY \"" + tableName + "\" (" +
-            dataSchema.columns().stream()
+        String copyCommand = "COPY \"" + schema + "\".\"" + tableName + "\" (" +
+            dataTableSchema.columns().stream()
                 .map(col -> "\"" + col.name() + "\"")
                 .collect(java.util.stream.Collectors.joining(", "))
             +
@@ -593,16 +628,17 @@ public class PostgresModifiableTable extends AbstractTable
 
           for (Object[] objects : c) {
             Objects.requireNonNull(objects, "Values cannot be null");
-            if (objects.length != dataSchema.columns().size()) {
+            if (objects.length != dataTableSchema.columns().size()) {
               throw new IllegalArgumentException(
-                  "Expected " + dataSchema.columns().size() + " values, got " + objects.length);
+                  "Expected " + dataTableSchema.columns().size() + " values, got "
+                      + objects.length);
             }
 
-            writer.startRow(dataSchema.columns().size());
+            writer.startRow(dataTableSchema.columns().size());
 
             for (int i = 0; i < objects.length; i++) {
               Object value = objects[i];
-              DataColumn column = dataSchema.columns().get(i);
+              DataColumn column = dataTableSchema.columns().get(i);
 
               if (value == null) {
                 writer.writeNull();
@@ -647,7 +683,7 @@ public class PostgresModifiableTable extends AbstractTable
     public void clear() {
       try (Connection connection = dataSource.getConnection();
           Statement stmt = connection.createStatement()) {
-        stmt.executeUpdate("DELETE FROM \"" + tableName + "\"");
+        stmt.executeUpdate("DELETE FROM \"" + schema + "\".\"" + tableName + "\"");
       } catch (SQLException e) {
         throw new RuntimeException("Error clearing table", e);
       }
@@ -697,7 +733,9 @@ public class PostgresModifiableTable extends AbstractTable
    */
   private static class PostgisEnumerator implements Enumerator<Object[]> {
     private final DataSource dataSource;
-    private final DataSchema schema;
+    private final DataTableSchema schema;
+    private final String tableSchema;
+    private final String tableName;
     private Connection connection;
     private Statement statement;
     private ResultSet resultSet;
@@ -710,9 +748,12 @@ public class PostgresModifiableTable extends AbstractTable
      * @param dataSource the data source
      * @param schema the schema
      */
-    public PostgisEnumerator(DataSource dataSource, DataSchema schema) {
+    public PostgisEnumerator(DataSource dataSource, DataTableSchema schema, String tableSchema,
+        String tableName) {
       this.dataSource = dataSource;
       this.schema = schema;
+      this.tableSchema = tableSchema;
+      this.tableName = tableName;
       this.current = null;
       try {
         this.connection = dataSource.getConnection();
@@ -742,7 +783,7 @@ public class PostgresModifiableTable extends AbstractTable
       }
 
       return "SELECT " + String.join(", ", columnProjections) +
-          " FROM \"" + schema.name() + "\"";
+          " FROM \"" + tableSchema + "\".\"" + tableName + "\"";
     }
 
     private Object[] convertCurrentRow() throws SQLException {

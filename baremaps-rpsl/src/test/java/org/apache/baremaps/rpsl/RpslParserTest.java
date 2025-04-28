@@ -30,7 +30,7 @@ class RpslParserTest {
 
   @Test
   void parseObjects() throws IOException {
-    var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
+    var file = TestFiles.RPSL_TXT;
     try (var input = Files.newInputStream(file)) {
       List<RpslObject> objects = new RpslReader().read(input).toList();
       assertEquals(10, objects.size());
@@ -39,7 +39,7 @@ class RpslParserTest {
 
   @Test
   void parseAttributes() throws IOException {
-    var file = TestFiles.resolve("baremaps-testing/data/ripe/sample.txt");
+    var file = TestFiles.RPSL_TXT;
     try (var input = Files.newInputStream(file)) {
       List<RpslObject> objects = new RpslReader().read(input).toList();
       List<RpslAttribute> attributes = objects.stream()
