@@ -38,7 +38,7 @@ import org.locationtech.jts.geom.Geometry;
 class GeoPackageTableTest {
 
   private static final File SAMPLE_GEOPACKAGE = TestFiles.GEOPACKAGE.toFile();
-  private static final String TABLE_NAME = "countries"; // The table name in the sample GeoPackage
+  private static final String TABLE_NAME = "countries";
 
   @Test
   void testSchemaVerification() throws IOException {

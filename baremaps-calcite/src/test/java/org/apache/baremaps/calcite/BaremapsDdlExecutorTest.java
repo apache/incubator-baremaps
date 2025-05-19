@@ -20,6 +20,7 @@ package org.apache.baremaps.calcite;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -46,10 +48,17 @@ import org.locationtech.jts.geom.Point;
  */
 public class BaremapsDdlExecutorTest {
 
-  private static final String CITY_DATA_DIR = "city_data";
-  private static final String CITY_POPULATION_DIR = "city_population";
-  private static final String POPULATION_DATA_DIR = "population_data";
-  private static final String TEST_TABLE_DATA_DIR = "test_table_data";
+  @TempDir
+  Path cityDataDir;
+
+  @TempDir
+  Path cityPopulationDir;
+
+  @TempDir
+  Path populationDataDir;
+
+  @TempDir
+  Path testTableDataDir;
 
   private DataCollection<DataRow> cityCollection;
   private DataCollection<DataRow> populationCollection;
@@ -70,7 +79,7 @@ public class BaremapsDdlExecutorTest {
     testTableSchema = createTestTableSchema();
 
     // Create and initialize collections
-    MemoryMappedDirectory cityMemory = new MemoryMappedDirectory(Paths.get(CITY_DATA_DIR));
+    MemoryMappedDirectory cityMemory = new MemoryMappedDirectory(cityDataDir);
     DataRowType cityRowType = new DataRowType(citySchema);
     cityCollection = AppendOnlyLog.<DataRow>builder()
         .dataType(cityRowType)
@@ -78,7 +87,7 @@ public class BaremapsDdlExecutorTest {
         .build();
 
     MemoryMappedDirectory populationMemory =
-        new MemoryMappedDirectory(Paths.get(POPULATION_DATA_DIR));
+        new MemoryMappedDirectory(populationDataDir);
     DataRowType populationRowType = new DataRowType(populationSchema);
     populationCollection = AppendOnlyLog.<DataRow>builder()
         .dataType(populationRowType)
@@ -86,7 +95,7 @@ public class BaremapsDdlExecutorTest {
         .build();
 
     MemoryMappedDirectory testTableMemory =
-        new MemoryMappedDirectory(Paths.get(TEST_TABLE_DATA_DIR));
+        new MemoryMappedDirectory(testTableDataDir);
     DataRowType testTableRowType = new DataRowType(testTableSchema);
     testTableCollection = AppendOnlyLog.<DataRow>builder()
         .dataType(testTableRowType)
@@ -96,12 +105,6 @@ public class BaremapsDdlExecutorTest {
 
   @AfterEach
   void tearDown() throws Exception {
-    // Clean up directories
-    FileUtils.deleteRecursively(Paths.get(CITY_DATA_DIR).toFile());
-    FileUtils.deleteRecursively(Paths.get(POPULATION_DATA_DIR).toFile());
-    FileUtils.deleteRecursively(Paths.get(CITY_POPULATION_DIR).toFile());
-    FileUtils.deleteRecursively(Paths.get(TEST_TABLE_DATA_DIR).toFile());
-
     // Clean up any additional directories created during test execution
     FileUtils.deleteRecursively(Paths.get("options_table").toFile());
     FileUtils.deleteRecursively(Paths.get("options_table_as").toFile());

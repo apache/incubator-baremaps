@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -32,8 +33,8 @@ import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests for the FlatGeoBufSchema class, which provides access to FlatGeoBuf files through the
@@ -43,18 +44,8 @@ class FlatGeoBufSchemaTest {
 
   private static final File SAMPLE_FLATGEOBUF_DIR = TestFiles.SAMPLE_FLATGEOBUF_DIR.toFile();
 
-  @BeforeAll
-  static void setup() throws IOException {
-    // Ensure the test directory exists
-    SAMPLE_FLATGEOBUF_DIR.mkdirs();
-
-    // Create test FlatGeoBuf files if they don't exist
-    if (!TestFiles.POINT_FLATGEOBUF.toFile().exists()) {
-      // We can't easily create FlatGeoBuf files in the test, so we'll just ensure the directory
-      // exists
-      // and rely on the test files being present in the test resources
-    }
-  }
+  @TempDir
+  Path tempDir;
 
   @Test
   void testSchemaCreation() throws IOException {
@@ -106,12 +97,8 @@ class FlatGeoBufSchemaTest {
 
   @Test
   void testSchemaWithMultipleFiles() throws IOException {
-    // Create a temporary directory for test files
-    File tempDir = Files.createTempDirectory("flatgeobuf-test").toFile();
-    tempDir.deleteOnExit();
-
     // Create a FlatGeoBufSchema instance with the temporary directory
-    FlatGeoBufSchema schema = new FlatGeoBufSchema(tempDir);
+    FlatGeoBufSchema schema = new FlatGeoBufSchema(tempDir.toFile());
 
     // Get the table map
     Map<String, Table> tableMap = schema.getTableMap();
@@ -123,7 +110,7 @@ class FlatGeoBufSchemaTest {
   @Test
   void testSchemaWithNonExistentDirectory() throws IOException {
     // Create a non-existent directory path
-    File nonExistentDir = new File(SAMPLE_FLATGEOBUF_DIR, "non-existent-subdirectory");
+    File nonExistentDir = tempDir.resolve("non-existent-directory").toFile();
 
     // Create a FlatGeoBufSchema instance with the non-existent directory
     FlatGeoBufSchema schema = new FlatGeoBufSchema(nonExistentDir);
@@ -137,51 +124,43 @@ class FlatGeoBufSchemaTest {
 
   @Test
   void testSchemaWithMultipleFlatGeoBufFiles() throws Exception {
-    // Create a temporary directory for test files
-    File tempDir = Files.createTempDirectory("flatgeobuf-multi-test").toFile();
-    tempDir.deleteOnExit();
-
     // Copy the sample FlatGeoBuf file to the temporary directory with different names
     File pointFile = TestFiles.POINT_FLATGEOBUF.toFile();
-    if (pointFile.exists()) {
-      // Copy the file with different names to simulate multiple files
-      Files.copy(pointFile.toPath(), new File(tempDir, "points.fgb").toPath());
-      Files.copy(pointFile.toPath(), new File(tempDir, "cities.fgb").toPath());
 
-      // Create a FlatGeoBufSchema instance with the temporary directory
-      FlatGeoBufSchema schema = new FlatGeoBufSchema(tempDir);
+    // Copy the file with different names to simulate multiple files
+    Files.copy(pointFile.toPath(), new File(tempDir.toFile(), "points.fgb").toPath());
+    Files.copy(pointFile.toPath(), new File(tempDir.toFile(), "cities.fgb").toPath());
 
-      // Get the table map
-      Map<String, Table> tableMap = schema.getTableMap();
+    // Create a FlatGeoBufSchema instance with the temporary directory
+    FlatGeoBufSchema schema = new FlatGeoBufSchema(tempDir.toFile());
 
-      // Verify that the schema has the expected tables
-      assertEquals(2, tableMap.size(), "Schema should have 2 tables");
-      assertTrue(tableMap.containsKey("points"), "Schema should contain the 'points' table");
-      assertTrue(tableMap.containsKey("cities"), "Schema should contain the 'cities' table");
+    // Get the table map
+    Map<String, Table> tableMap = schema.getTableMap();
 
-      // Test SQL query with one of the tables
-      Properties info = new Properties();
-      info.setProperty("lex", "MYSQL");
+    // Verify that the schema has the expected tables
+    assertEquals(2, tableMap.size(), "Schema should have 2 tables");
+    assertTrue(tableMap.containsKey("points"), "Schema should contain the 'points' table");
+    assertTrue(tableMap.containsKey("cities"), "Schema should contain the 'cities' table");
 
-      try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
-        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
-        SchemaPlus rootSchema = calciteConnection.getRootSchema();
+    // Test SQL query with one of the tables
+    Properties info = new Properties();
+    info.setProperty("lex", "MYSQL");
 
-        // Register the schema
-        rootSchema.add("multi_flatgeobuf", schema);
+    try (Connection connection = DriverManager.getConnection("jdbc:calcite:", info)) {
+      CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+      SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
-        // Execute a query on one of the tables
-        try (Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(
-                "SELECT * FROM multi_flatgeobuf.points LIMIT 5")) {
+      // Register the schema
+      rootSchema.add("multi_flatgeobuf", schema);
 
-          // Verify that we get results
-          assertTrue(resultSet.next(), "Should have at least one row");
-        }
+      // Execute a query on one of the tables
+      try (Statement statement = connection.createStatement();
+          ResultSet resultSet = statement.executeQuery(
+              "SELECT * FROM multi_flatgeobuf.points LIMIT 5")) {
+
+        // Verify that we get results
+        assertTrue(resultSet.next(), "Should have at least one row");
       }
-    } else {
-      // Skip the test if the sample file doesn't exist
-      System.out.println("Skipping testSchemaWithMultipleFlatGeoBufFiles: sample file not found");
     }
   }
 }

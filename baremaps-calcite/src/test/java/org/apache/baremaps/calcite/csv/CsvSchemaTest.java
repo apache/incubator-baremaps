@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -32,7 +31,6 @@ import org.apache.baremaps.testing.TestFiles;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.schema.Table;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class CsvSchemaTest {
@@ -40,31 +38,6 @@ class CsvSchemaTest {
   private static final File SAMPLE_CSV_DIR = TestFiles.SAMPLE_CSV_DIR.toFile();
   private static final char SEPARATOR = ',';
   private static final boolean HAS_HEADER = true;
-
-  @BeforeAll
-  static void setup() throws IOException {
-    // Ensure the test directory exists
-    SAMPLE_CSV_DIR.mkdirs();
-
-    // Create test CSV files if they don't exist
-    if (!TestFiles.CITIES_CSV.toFile().exists()) {
-      // Create a sample cities.csv file
-      String citiesContent = "city,country,population\n"
-          + "Paris,France,2148000\n"
-          + "London,UK,8982000\n"
-          + "Tokyo,Japan,37400000\n";
-      Files.writeString(TestFiles.CITIES_CSV, citiesContent);
-    }
-
-    if (!TestFiles.COUNTRIES_CSV.toFile().exists()) {
-      // Create a sample countries.csv file
-      String countriesContent = "country,continent,population\n"
-          + "France,Europe,67390000\n"
-          + "UK,Europe,67220000\n"
-          + "Japan,Asia,125700000\n";
-      Files.writeString(TestFiles.COUNTRIES_CSV, countriesContent);
-    }
-  }
 
   @Test
   void testSchemaCreation() throws IOException {

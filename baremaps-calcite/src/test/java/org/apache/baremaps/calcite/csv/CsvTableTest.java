@@ -38,7 +38,6 @@ import org.junit.jupiter.api.Test;
 public class CsvTableTest {
 
   private static final File CITIES_CSV = TestFiles.CITIES_CSV.toFile();
-  private static final File COUNTRIES_CSV = TestFiles.COUNTRIES_CSV.toFile();
   private static final char SEPARATOR = ',';
   private static final boolean HAS_HEADER = true;
 
