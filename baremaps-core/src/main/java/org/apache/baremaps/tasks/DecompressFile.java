@@ -162,6 +162,9 @@ public class DecompressFile implements Task {
       File destination = target.resolve(entry.getName()).normalize().toFile();
       String canonicalDestinationPath = destination.getCanonicalPath();
       String canonicalTargetPath = target.toFile().getCanonicalPath();
+      if (!canonicalTargetPath.endsWith(File.separator)) {
+        canonicalTargetPath += File.separator;
+      }
       if (canonicalDestinationPath.startsWith(canonicalTargetPath)) {
         if (entry.isDirectory()) {
           Files.createDirectories(destination.toPath());
@@ -196,7 +199,9 @@ public class DecompressFile implements Task {
         File destination = target.resolve(entry.getName()).normalize().toFile();
         String canonicalDestinationPath = destination.getCanonicalPath();
         String canonicalTargetPath = target.toFile().getCanonicalPath();
-
+        if (!canonicalTargetPath.endsWith(File.separator)) {
+          canonicalTargetPath += File.separator;
+        }
         if (canonicalDestinationPath.startsWith(canonicalTargetPath)) {
           if (entry.isDirectory()) {
             Files.createDirectories(destination.toPath());
