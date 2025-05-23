@@ -36,6 +36,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.locationtech.jts.geom.Coordinate;
@@ -110,6 +111,7 @@ public class BaremapsDdlExecutorTest {
     FileUtils.deleteRecursively(Paths.get("options_table_as").toFile());
     FileUtils.deleteRecursively(Paths.get("new_table").toFile());
     FileUtils.deleteRecursively(Paths.get("city_view").toFile());
+    FileUtils.deleteRecursively(Paths.get("city_population").toFile());
     FileUtils.deleteRecursively(Paths.get("test_table").toFile());
   }
 
@@ -176,6 +178,7 @@ public class BaremapsDdlExecutorTest {
   }
 
   @Test
+  @Tag("integration")
   void testMaterializedView() throws SQLException {
     // Set up test data
     populateTestData();
@@ -240,6 +243,7 @@ public class BaremapsDdlExecutorTest {
   }
 
   @Test
+  @Tag("integration")
   void testCreateAndDropTable() throws SQLException {
     // Set up test data
     populateTestData();
@@ -293,6 +297,7 @@ public class BaremapsDdlExecutorTest {
   }
 
   @Test
+  @Tag("integration")
   void testCreateAndDropView() throws SQLException {
     // Set up test data
     populateTestData();
@@ -362,6 +367,7 @@ public class BaremapsDdlExecutorTest {
   }
 
   @Test
+  @Tag("integration")
   void testTruncateTable() throws SQLException {
     // Set up test data
     populateTestData();
@@ -402,6 +408,7 @@ public class BaremapsDdlExecutorTest {
   }
 
   @Test
+  @Tag("integration")
   void testCreateTableWithOptions() throws SQLException {
     // Set up test data
     populateTestData();

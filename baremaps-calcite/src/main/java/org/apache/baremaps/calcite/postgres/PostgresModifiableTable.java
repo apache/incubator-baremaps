@@ -128,7 +128,7 @@ public class PostgresModifiableTable extends AbstractTable
     // Use DatabaseMetadata to get column information
     DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
     var tableMetadata =
-        metadata.getTableMetaData(schema, null, tableName, new String[] {"TABLE", "VIEW"})
+        metadata.getTableMetaData(null, schema, tableName, new String[] {"TABLE", "VIEW"})
             .stream()
             .filter(meta -> meta.table().tableName().equalsIgnoreCase(tableName))
             .findFirst();
