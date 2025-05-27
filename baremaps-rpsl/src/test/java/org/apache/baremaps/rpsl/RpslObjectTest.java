@@ -22,9 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Stream;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class RpslObjectTest {
 
@@ -38,11 +42,17 @@ class RpslObjectTest {
     }
   }
 
-  @Test
-  void type() {
-    assertEquals("inetnum", objects.get(0).type());
-    assertEquals("organisation", objects.get(8).type());
-    assertEquals("inet6num", objects.get(9).type());
+  @ParameterizedTest
+  @MethodSource("typeProvider")
+  void testType(int index, String expectedType) {
+    assertEquals(expectedType, objects.get(index).type());
+  }
+
+  private static Stream<Arguments> typeProvider() {
+    return Stream.of(
+        Arguments.of(0, "inetnum"),
+        Arguments.of(8, "organisation"),
+        Arguments.of(9, "inet6num"));
   }
 
   @Test
