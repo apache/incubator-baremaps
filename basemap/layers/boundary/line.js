@@ -55,7 +55,24 @@ export default asLayerObject(withSortKeys(directives), {
         visibility: 'visible',
     },
     paint: {
-        'line-dasharray': [4, 1, 1, 1],
+        'line-width': [
+            'interpolate',
+            ['exponential', 1],
+            ['zoom'],
+            0, 0.5,
+            10, [
+                'case',
+                ['==', ['get', 'maritime'], 'yes'],
+                2, // If maritime is 'yes'
+                [
+                    'case',
+                    ['==', ['get', 'admin_level'], '4'],
+                    1, // If admin_level is '4'
+                    3 // For all other cases
+                ]
+            ],
+            20, 5
+        ]
     },
     filter: ['==', ["geometry-type"], 'LineString'],
 });

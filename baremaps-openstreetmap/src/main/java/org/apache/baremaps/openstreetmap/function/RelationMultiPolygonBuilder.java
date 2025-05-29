@@ -62,6 +62,9 @@ public class RelationMultiPolygonBuilder implements Consumer<Entity> {
   @Override
   public void accept(Entity entity) {
     if (entity instanceof Relation relation) {
+      if (relation.getTags().containsKey("boundary")) {
+        return;
+      }
       try {
         var start = System.currentTimeMillis();
 
