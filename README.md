@@ -29,7 +29,7 @@ limitations under the License.
 
 ## 🔥 Live Demo
 
-[Live Demo](https://baremaps.apache.org/map/)
+[Live Demo](https://demo.baremaps.com/)
 
 ## 📖 How do I use Apache Baremaps?
 
