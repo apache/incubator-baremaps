@@ -18,10 +18,36 @@ export default {
     id: 'boundary',
     queries: [
         {
-            minzoom: 13,
+            minzoom: 7,
             maxzoom: 20,
             sql:
-                "SELECT id, tags, geom FROM osm_boundary",
+                "SELECT id, tags, ST_SimplifyPreserveTopology(geom, 0.01) AS geom FROM osm_boundary",
         },
+        {
+          minzoom: 0,
+          maxzoom: 20,
+          sql:
+            "SELECT id, tags, ST_SimplifyPreserveTopology(geom, 0.01) AS geom " +
+            "FROM osm_boundary " +
+            "WHERE tags ->> 'admin_level' = '2' " +
+            "AND COALESCE(tags ->> 'maritime', '') != 'yes';",
+        },
+        {
+          minzoom: 3.5,
+          maxzoom: 20,
+          sql:
+            "SELECT id, tags, ST_SimplifyPreserveTopology(geom, 0.01) AS geom " +
+            "FROM osm_boundary " +
+            "WHERE tags ->> 'admin_level' = '2' " +
+            "AND tags ->> 'maritime' = 'yes';",
+        },
+        {
+          minzoom: 3.5,
+          maxzoom: 20,
+          sql:
+            "SELECT id, tags, ST_SimplifyPreserveTopology(geom, 0.01) AS geom " +
+            "FROM osm_boundary " +
+            "WHERE tags ->> 'admin_level' = '4';"
+        }
     ],
 }

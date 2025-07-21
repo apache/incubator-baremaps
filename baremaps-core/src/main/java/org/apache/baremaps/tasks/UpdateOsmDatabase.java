@@ -158,12 +158,20 @@ public class UpdateOsmDatabase implements Task {
         new ChangeEntitiesHandler(buildRelationGeometry.andThen(reprojectRelationGeometry));
     var importRelations = new ChangeElementsImporter<>(Relation.class, relationRepository);
 
+    var buildBoundaryGeometry = new RelationBoundaryBuilder(coordinateMap, referenceMap);
+    var reprojectBoundaryGeometry = new EntityProjectionTransformer(4326, databaseSrid);
+    var prepareBoundaryGeometry =
+        new ChangeEntitiesHandler(buildBoundaryGeometry.andThen(reprojectBoundaryGeometry));
+    var importBoundaries = new ChangeElementsImporter<>(Relation.class, relationRepository);
+
     var entityProcessor = prepareNodeGeometry
         .andThen(importNodes)
         .andThen(prepareWayGeometry)
         .andThen(importWays)
         .andThen(prepareRelationGeometry)
-        .andThen(importRelations);
+        .andThen(importRelations)
+        .andThen(prepareBoundaryGeometry)
+        .andThen(importBoundaries);
 
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
