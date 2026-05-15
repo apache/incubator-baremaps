@@ -18,13 +18,13 @@ github:
   description: Create custom vector tiles from OpenStreetMap and other data sources with Postgis and Java.
   homepage: baremaps.apache.org
   labels:
-    - java 
-    - vector-tiles 
-    - openstreetmap 
-    - postgresql 
-    - postgis 
-    - mapbox 
-    - spatial-data 
+    - java
+    - vector-tiles
+    - openstreetmap
+    - postgresql
+    - postgis
+    - mapbox
+    - spatial-data
     - web-mapping
   enabled_merge_buttons:
     squash: true
@@ -32,9 +32,22 @@ github:
     rebase: false
   ghp_branch: gh-pages
   ghp_path: /
-  protected_branches: ~
-  
+  protected_branches:
+
+  rulesets:
+    - name: "Default Branch Protection"
+      type: branch
+      branches:
+        includes:
+          - "~DEFAULT_BRANCH"
+          - "release/*"
+          - "rel/*"
+        excludes: []
+      bypass_teams:
+        - root
+      restrict_deletion: true
+      restrict_force_push: true
 notifications:
-  commits:      commits@baremaps.apache.org
-  issues:       commits@baremaps.apache.org
+  commits: commits@baremaps.apache.org
+  issues: commits@baremaps.apache.org
   pullrequests: commits@baremaps.apache.org
